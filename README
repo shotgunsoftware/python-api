@@ -1,0 +1,26 @@
+# ---------------------------------------------------------------------------------------------
+# Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools. 
+#
+# Maintained by: Shotgun Software (support@shotgunsoftware.com)
+# ---------------------------------------------------------------------------------------------
+
+Documentation on the current supported API is available on the Shotgun Support website at 
+https://support.shotgunsoftware.com/forums/48807-developer-api-info
+
+Some useful direct links within this section are below:
+
+Introduction and Video Tour
+https://support.shotgunsoftware.com/entries/38181-api-introduction-video-tour
+
+Method Reference
+https://support.shotgunsoftware.com/entries/21668-reference-methods
+
+Data Type Reference
+https://support.shotgunsoftware.com/entries/38362-reference-data-types
+
+Filter Syntax Reference
+https://support.shotgunsoftware.com/entries/38359-reference-filter-syntax
+
+
+
+
