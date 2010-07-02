@@ -4,7 +4,7 @@
 #   https://support.shotgunsoftware.com/forums/48807-developer-api-info
 # ---------------------------------------------------------------------------------------------
 
-__version__ = "3.0"
+__version__ = "3.0.1"
 
 # ---------------------------------------------------------------------------------------------
 # SUMMARY
@@ -30,13 +30,16 @@ Python Shotgun API library.
 # CHANGELOG
 # ---------------------------------------------------------------------------------------------
 """
+v3.0.1 - 2010 May 10
+  + find(): default sorting to ascending, if not set (instead of requiring ascending/descending)
+  + upload() and upload_thumbnail(): pass auth info through
+
 v3.0 - 2010 May 5
-  + Non-beta!
-  + Add batch() method to do multiple create, update, and delete requests in one
+  + add batch() method to do multiple create, update, and delete requests in one
     request to the server (requires Shotgun server to be v1.13.0 or higher)
 
 v3.0b8 - 2010 Feb 19
-  + Fix python gotcha about using lists / dictionaries as defaults.  See:
+  + fix python gotcha about using lists / dictionaries as defaults.  See:
      http://www.ferg.org/projects/python_gotchas.html#contents_item_6
   + add schema_read method
   
@@ -152,7 +155,7 @@ class Shotgun:
         Returns the URL for the thumbnail of an entity given the 
         entity type and the entity id 
         """
-        url = self.base_url + "/upload/api2_get_thumbnail_url?entity_type=%s&entity_id=%d"%(entity_type,entity_id)
+        url = self.base_url + "/upload/get_thumbnail_url?entity_type=%s&entity_id=%d"%(entity_type,entity_id)
         for i in range(3):
             f = urllib.urlopen(url)
             response_code = f.readline().strip()
@@ -270,6 +273,8 @@ class Shotgun:
                if sort.has_key('column'):
                    # TODO: warn about deprecation of 'column' param name
                    sort['field_name'] = sort['column']
+               if not sort.has_key('direction'):
+                   sort['direction'] = 'asc'
                req['sorts'].append({'field_name': sort['field_name'],'direction' : sort['direction']})
         
         if (limit and limit > 0 and limit < self.records_per_page):
@@ -300,11 +305,11 @@ class Shotgun:
         
         return records
     
-    def find_one(self, entity_type, filters, fields=None, order=None, filter_operator=None):
+    def find_one(self, entity_type, filters, fields=None, order=None, filter_operator=None, retired_only=False):
         """
         Same as find, but only returns 1 result as a dict 
         """
-        result = self.find(entity_type, filters, fields, order, filter_operator, 1)
+        result = self.find(entity_type, filters, fields, order, filter_operator, 1, retired_only)
         if len(result) > 0:
             return result[0]
         else:
@@ -425,16 +430,21 @@ class Shotgun:
         """
         is_thumbnail = (field_name == "thumb_image")
         
-        params = {"entity_type": entity_type, 
-                  "entity_id": entity_id,
-                 }
+        params = {}
+        params["entity_type"] = entity_type
+        params["entity_id"] = entity_id
+        
+        # send auth, so server knows which 
+        # script uploaded the file
+        params["script_name"] = self.script_name
+        params["script_key"] = self.api_key
         
         if not os.path.isfile(path):
             raise ShotgunError("Path must be a valid file.")
         
-        url = "%s/upload/api2_upload_file" % (self.base_url)
+        url = "%s/upload/upload_file" % (self.base_url)
         if is_thumbnail:
-            url = "%s/upload/api2_publish_thumbnail" % (self.base_url)
+            url = "%s/upload/publish_thumbnail" % (self.base_url)
             params["thumb_image"] = open(path, "rb")
         else:
             if display_name is None:
