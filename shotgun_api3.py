@@ -153,7 +153,7 @@ class Shotgun(object):
 
     def __init__(self, base_url, script_name, api_key, convert_datetimes_to_utc=True, http_proxy=None):
         """
-z       Initialize Shotgun.
+        Initialize Shotgun.
         """
         self.server = None
         if base_url.split("/")[0] not in ("http:","https:"):
