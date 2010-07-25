@@ -145,7 +145,7 @@ from urlparse import urlparse
 # ---------------------------------------------------------------------------------------------
 class ShotgunError(Exception): pass
 
-class Shotgun:
+class Shotgun(object):
     # Used to split up requests into batches of records_per_page when doing requests.  this helps speed tremendously
     # when getting lots of results back.  doesn't affect the interface of the api at all (you always get the full set
     # of results back as one array) but just how the client class communicates with the server.
@@ -153,7 +153,7 @@ class Shotgun:
 
     def __init__(self, base_url, script_name, api_key, convert_datetimes_to_utc=True, http_proxy=None):
         """
-        Initialize Shotgun.
+z       Initialize Shotgun.
         """
         self.server = None
         if base_url.split("/")[0] not in ("http:","https:"):
@@ -564,7 +564,7 @@ class Shotgun:
     def entity_types(self):
         raise ShotgunError("Deprecated: use schema_entity_read() instead")
 
-class ShotgunCRUD:
+class ShotgunCRUD(object):
     def __init__(self, options):
         self.__sg_url = options['server_url']
         self.__auth_args = {'script_name': options['script_name'], 'script_key': options['script_key']}
