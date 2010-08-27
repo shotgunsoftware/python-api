@@ -32,7 +32,7 @@
 #   https://support.shotgunsoftware.com/forums/48807-developer-api-info
 # ---------------------------------------------------------------------------------------------
 
-__version__ = "3.0.1"
+__version__ = "3.0.2"
 
 # ---------------------------------------------------------------------------------------------
 # SUMMARY
@@ -58,6 +58,9 @@ Python Shotgun API library.
 # CHANGELOG
 # ---------------------------------------------------------------------------------------------
 """
++v3.0.2 - 2010 May 10
+  + add revive() method to revive deleted entities
+
 v3.0.1 - 2010 May 10
   + find(): default sorting to ascending, if not set (instead of requiring ascending/descending)
   + upload() and upload_thumbnail(): pass auth info through
@@ -443,6 +446,13 @@ class Shotgun:
         Retire an entity given the entity_type, and entity_id
         """
         resp = self._api3.delete( {"type":entity_type, "id":entity_id} )
+        return resp["results"]
+
+    def revive(self, entity_type, entity_id):
+        """
+        Revive an entity given the entity_type, and entity_id
+        """
+        resp = self._api3.revive( {"type":entity_type, "id":entity_id} )
         return resp["results"]
 
     def upload(self, entity_type, entity_id, path, field_name=None, display_name=None, tag_list=None):
