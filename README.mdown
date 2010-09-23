@@ -1,0 +1,67 @@
+# Shotgun Python API
+
+Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools. This is the official API that is maintained by Shotgun Software (support@shotgunsoftware.com)
+
+## New home
+
+This is the new official location for the latest Shotgun Python API. We will no longer be including it in our code tree that is deployed to your servers or posting it for download from our support site. So update your bookmarks!
+
+## Minimum Requirements
+- Shotgun server v1.8.0 or higher.
+- Python v2.4 or higher.
+
+## Installing
+To use Shotgun's Python API module, you need to place it in one of the directories specified by the environment variable PYTHONPATH. For more information on PYTHONPATH and using modules in Python, see http://docs.python.org/tutorial/modules.html
+
+
+## Changelog
+v3.0.2 - 2010 May 10
+
+  + add revive() method to revive deleted entities
+
+v3.0.1 - 2010 May 10
+
+  + find(): default sorting to ascending, if not set (instead of requiring ascending/descending)
+  + upload() and upload_thumbnail(): pass auth info through
+
+v3.0 - 2010 May 5 
+
+  + non-beta! 
+  + add batch() method to do multiple create, update, and delete requests in one 
+      request to the server (requires Shotgun server to be v1.13.0 or higher)
+
+v3.0b8 - 2010 February 19 
+
+  + fix python gotcha about using lists / dictionaries as defaults. 
+      See: http://www.ferg.org/projects/python_gotchas.html#contents_item_6 
+  + add schema_read method
+
+v3.0b7 - 2009 November 30 
+
+  + add additional retries for connection errors and a catch for broken pipe exceptions
+
+v3.0b6 - 2009 October 20 
+
+  + add support for HTTP/1.1 keepalive, which greatly improves performance for multiple requests 
+  + add more helpful error if server entered is not http or https 
+  + add support assigning tags to file uploads (for Shotgun version >= 1.10.6)
+
+v3.0b5 - 2009 Sept 29 
+
+  + fixed deprecation warnings to raise Exception class for python 2.5
+
+v3.0b4 - 2009 July 3 
+
+  + made upload() and upload_thumbnail() methods more backwards compatible 
+  + changes to find_one(): 
+    + now defaults to no filter_operator
+
+v3.0b3 - 2009 June 24
+
+  + fixed upload() and upload_thumbnail() methods
+  + added download_attchment() method
+  + added schema_* methods for accessing entities and fields
+  + added support for http proxy servers
+  + added __version__ string
+  + removed RECORDS_PER_PAGE global (can just set records_per_page on the Shotgun object after initializing it)
+  + removed api_ver from the constructor, as this class is only designed to work with api v3
