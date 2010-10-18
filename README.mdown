@@ -4,18 +4,26 @@ Shotgun provides a simple Python-based API for accessing Shotgun and integrating
 
 ## New home
 
-This is the new official location for the latest Shotgun Python API. We will no longer be including it in our code tree that is deployed to your servers or posting it for download from our support site. So update your bookmarks!
+[GitHub is the new official location](http://github.com/shotgunsoftware/python-api) for the latest Shotgun Python API. We will no longer be including it in our code tree that is deployed to your servers or posting it for download from our support site. So update your bookmarks!
 
 ## Minimum Requirements
 - Shotgun server v1.8.0 or higher.
-- Python v2.4 or higher.
+- Python v2.4 - v2.6. (We do have plans to eventually support v2.7 and then eventually Python 3)
 
 ## Installing
 To use Shotgun's Python API module, you need to place it in one of the directories specified by the environment variable PYTHONPATH. For more information on PYTHONPATH and using modules in Python, see http://docs.python.org/tutorial/modules.html
 
+## Documentation
+Tutorials and detailed documentation about the Python API are available on the [Shotgun Support website](https://support.shotgunsoftware.com/forums/48807-developer-api-info). 
+Some useful direct links within this section are below:
+
+- [Introduction and Video Tour](https://support.shotgunsoftware.com/entries/38181-api-introduction-video-tour)  
+- [Method Reference](https://support.shotgunsoftware.com/entries/21668-reference-methods)  
+- [Data Type Reference](https://support.shotgunsoftware.com/entries/38362-reference-data-types)  
+- [Filter Syntax Reference](https://support.shotgunsoftware.com/entries/38359-reference-filter-syntax)  
 
 ## Changelog
-v3.0.2 - 2010 May 10
+v3.0.2 - 2010 Aug 27
 
   + add revive() method to revive deleted entities
 
