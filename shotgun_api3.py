@@ -32,7 +32,7 @@
 #   https://support.shotgunsoftware.com/forums/48807-developer-api-info
 # ---------------------------------------------------------------------------------------------
 
-__version__ = "3.0.2"
+__version__ = "3.0.3"
 
 # ---------------------------------------------------------------------------------------------
 # SUMMARY
@@ -58,6 +58,11 @@ Python Shotgun API library.
 # CHANGELOG
 # ---------------------------------------------------------------------------------------------
 """
++v3.0.3 - 2010 Oct 21
+  + add support for local files. injects convenience info into returned hash for local file links
+  + add schema cache support for client API functions. Expires every hour by default (for long-running
+     scripts)
+
 +v3.0.2 - 2010 May 10
   + add revive() method to revive deleted entities
 
