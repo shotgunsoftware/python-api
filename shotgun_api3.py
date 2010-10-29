@@ -650,8 +650,10 @@ class Shotgun:
                 err += "\nThis usually means the server doesn't exist, is down, or we don't have an internet connection."
             raise ShotgunError(err)
         else:
-            if attachment.lstrip().startswith('<!DOCTYPE HTML'):
-                raise ShotgunError("The server generated an error trying to download the Attachment. \nURL: %s\nServer Response: %s" % (url, attachment))
+            if attachment.lstrip().startswith('<!DOCTYPE '):
+                error_string = "\n%s\nThe server generated an error trying to download the Attachment. \nURL: %s\n" \
+                    "Either the file doesn't exist, or it is a local file which isn't downloadable.\n%s\n" % ("="*30, url, "="*30)
+                raise ShotgunError(error_string)
         return attachment
     
     def _get_session_token(self):
