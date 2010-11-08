@@ -17,10 +17,10 @@ To use Shotgun's Python API module, you need to place it in one of the directori
 Tutorials and detailed documentation about the Python API are available on the [Shotgun Support website](https://support.shotgunsoftware.com/forums/48807-developer-api-info). 
 Some useful direct links within this section are below:
 
-* Introduction and Video Tour](https://support.shotgunsoftware.com/entries/38181-api-introduction-video-tour)  
-* [[Reference: Methods]]
-* [[Reference: Data Types]]
-* [[Reference: Filter Syntax]]
+* [Introduction and Video Tour](https://support.shotgunsoftware.com/entries/38181-api-introduction-video-tour)  
+* [Reference: Methods](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Methods)
+* [Reference: Data Types](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Data-Types)
+* [Reference: Filter Syntax](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax)
 
 ## Changelog
 **v3.0.3 - 2010 Nov 7**
