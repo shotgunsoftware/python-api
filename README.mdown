@@ -8,7 +8,7 @@ Shotgun provides a simple Python-based API for accessing Shotgun and integrating
 
 ## Minimum Requirements
 - Shotgun server v1.8.0 or higher.
-- Python v2.4 - v2.6. (We do have plans to eventually support v2.7 and then eventually Python 3)
+- Python v2.4 - v2.7. (We do have plans to eventually support Python 3)
 
 ## Installing
 To use Shotgun's Python API module, you need to place it in one of the directories specified by the environment variable PYTHONPATH. For more information on PYTHONPATH and using modules in Python, see http://docs.python.org/tutorial/modules.html
