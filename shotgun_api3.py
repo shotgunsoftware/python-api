@@ -58,7 +58,7 @@ Python Shotgun API library.
 # CHANGELOG
 # ---------------------------------------------------------------------------------------------
 """
-+v3.0.3 - 2010 Oct 21
++v3.0.3 - 2010 Nov 07
   + add support for local files. Injects convenience info into returned hash for local file links
 
 +v3.0.2 - 2010 May 10
