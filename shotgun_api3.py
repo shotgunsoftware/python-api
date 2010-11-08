@@ -59,9 +59,7 @@ Python Shotgun API library.
 # ---------------------------------------------------------------------------------------------
 """
 +v3.0.3 - 2010 Oct 21
-  + add support for local files. injects convenience info into returned hash for local file links
-  + add schema cache support for client API functions. Expires every hour by default (for long-running
-     scripts)
+  + add support for local files. Injects convenience info into returned hash for local file links
 
 +v3.0.2 - 2010 May 10
   + add revive() method to revive deleted entities
@@ -188,8 +186,6 @@ class Shotgun:
         
         self._api3 = ShotgunCRUD(server_options)
         
-        self.schema_expire = datetime.datetime.now()
-        self.schema = self.schema_read() # automatically resets the schema_expire time
         self.local_path_string = None
         self.platform = self._determine_platform()
         if self.platform:
@@ -204,20 +200,7 @@ class Shotgun:
                 return s
         return None
     
-    def _lookup_url_fields(self, entity_type, fields):
-        url_fields = []
-        for field in set(fields):
-            # check for bubbled fields
-            is_linked_field = re.search("\.(.*)\.(.*)$", field)
-            if is_linked_field:
-                et, f = is_linked_field.group(1), is_linked_field.group(2)
-            else:
-                et, f = entity_type, field
-            if self.schema[et][f]['data_type']['value'] == 'url':
-                url_fields.append(field)
-        return url_fields
-    
-    def _inject_field_values(self, records, is_batch=False):
+    def _inject_field_values(self, records):
         """
         Inject additional information into server results for convenience before returning
         records back to the client. Currently this includes:
@@ -229,45 +212,25 @@ class Shotgun:
         if len(records) == 0:
             return records
         
-        # check if we need to proceed with iteration if this isn't a batch result
-        if not is_batch:
-            entity_type = records[0]['type']
-            fields = records[0].keys()
-            fields.remove('type')
-            url_fields = self._lookup_url_fields(entity_type, fields)
-            if ( len(url_fields) == 0 or not self.platform ) and ( 'image' not in set(fields) ):
-                return records
-        
         for i,r in enumerate(records):
             # skip results that aren't entity dictionaries
             if type(r) is not dict:
                 continue
             
-            # since results from batch() can be anything, need to look up each record
-            if is_batch:
-                entity_type = r['type']
-                fields = r.keys()
-                fields.remove('type')
-                url_fields = self._lookup_url_fields(entity_type, fields)
-            
-            if ( len(url_fields) > 0 and self.platform ) or ( 'image' in set(fields) ):
-                for fk in url_fields:
-                    if fk in r and r[fk] and 'link_type' in r[fk] and \
-                    r[fk]['link_type'] == 'local' and self.platform:
-                        records[i][fk]['local_path'] = r[fk][self.local_path_string]
-                        records[i][fk]['url'] = "file://%s" % (r[fk]['local_path'])
-            if 'image' in r and r['image']:
-                records[i]['image'] = self._get_thumb_url(entity_type,r['id'])
+            # iterate over each item and check each field for possible injection
+            for k, v in r.items():
+                # check for thumbnail
+                if k == 'image' and v:
+                    records[i]['image'] = self._get_thumb_url(r['type'], r['id'])
+                
+                if type(v) == dict and 'link_type' in v and v['link_type'] == 'local' \
+                    and self.platform and self.local_path_string in r[k]:
+                    # from pprint import pprint
+                    # pprint(r)
+                    records[i][k]['local_path'] = r[k][self.local_path_string]
+                    records[i][k]['url'] = "file://%s" % (r[k]['local_path'])
+        
         return records
-    
-    # check the schema cache for long running scripts and reload if it has expired
-    def check_schema_cache(fn):
-        def f(self, *args, **kwargs):
-            if self.schema_expire < datetime.datetime.now():
-                self.schema = self.schema_read()
-                self.schema_expire = datetime.datetime.now() + datetime.timedelta(minutes=self.schema_expire_mins)
-            return fn(self, *args, **kwargs)
-        return f
     
     def _get_thumb_url(self, entity_type, entity_id):
         """
@@ -293,8 +256,6 @@ class Shotgun:
     
     def schema_read(self):
         resp = self._api3.schema_read()
-        self.schema = resp["results"]
-        self.schema_expire = datetime.datetime.now() + datetime.timedelta(minutes=self.schema_expire_mins)
         return resp["results"]
     
     def schema_field_read(self, entity_type, field_name=None):
@@ -343,7 +304,6 @@ class Shotgun:
         resp = self._api3.schema_entity_read()
         return resp["results"]
     
-    @check_schema_cache
     def find(self, entity_type, filters, fields=None, order=None, filter_operator=None, limit=0, retired_only=False):
         """
         Find entities of entity_type matching the given filters.
@@ -438,7 +398,6 @@ class Shotgun:
         if missing:
             raise ShotgunError("%s missing required key: %s. Value was: %s." % (message, ", ".join(missing), data))
     
-    @check_schema_cache
     def batch(self, requests):
         if type(requests) != type([]):
             raise ShotgunError("batch() expects a list.  Instead was sent a %s"%type(requests))
@@ -492,11 +451,10 @@ class Shotgun:
                 raise ShotgunError("Invalid request_type for batch")
         
         resp = self._api3.batch(reqs)
-        records = self._inject_field_values(resp["results"], True)
+        records = self._inject_field_values(resp["results"])
         
         return records
     
-    @check_schema_cache
     def create(self, entity_type, data, return_fields=None):
         """
         Create a new entity of entity_type type.
@@ -519,7 +477,6 @@ class Shotgun:
         records = self._inject_field_values([resp["results"]])
         return records
     
-    @check_schema_cache
     def update(self, entity_type, entity_id, data):
         """
         Update an entity given the entity_type, and entity_id
@@ -535,7 +492,6 @@ class Shotgun:
         records = self._inject_field_values([resp["results"]])
         return records
     
-    @check_schema_cache
     def delete(self, entity_type, entity_id):
         """
         Retire an entity given the entity_type, and entity_id
@@ -543,7 +499,6 @@ class Shotgun:
         resp = self._api3.delete( {"type":entity_type, "id":entity_id} )
         return resp["results"]
     
-    @check_schema_cache
     def revive(self, entity_type, entity_id):
         """
         Revive an entity given the entity_type, and entity_id
@@ -551,7 +506,6 @@ class Shotgun:
         resp = self._api3.revive( {"type":entity_type, "id":entity_id} )
         return resp["results"]
     
-    @check_schema_cache
     def upload(self, entity_type, entity_id, path, field_name=None, display_name=None, tag_list=None):
         """
         Upload a file as an attachment/thumbnail to the entity_type and entity_id
@@ -614,7 +568,6 @@ class Shotgun:
             id = int(str(result).split(":")[1].split("\n")[0])
         return id
     
-    @check_schema_cache
     def upload_thumbnail(self, entity_type, entity_id, path, **kwargs):
         """
         Convenience function for thumbnail uploads.
@@ -622,7 +575,6 @@ class Shotgun:
         result = self.upload(entity_type, entity_id, path, field_name="thumb_image", **kwargs)
         return result
     
-    @check_schema_cache
     def download_attachment(self, entity_id):
         """
         Gets session authentication and returns binary content of Attachment data
