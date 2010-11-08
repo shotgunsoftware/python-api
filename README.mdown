@@ -17,58 +17,58 @@ To use Shotgun's Python API module, you need to place it in one of the directori
 Tutorials and detailed documentation about the Python API are available on the [Shotgun Support website](https://support.shotgunsoftware.com/forums/48807-developer-api-info). 
 Some useful direct links within this section are below:
 
-- [Introduction and Video Tour](https://support.shotgunsoftware.com/entries/38181-api-introduction-video-tour)  
-- [Method Reference](https://support.shotgunsoftware.com/entries/21668-reference-methods)  
-- [Data Type Reference](https://support.shotgunsoftware.com/entries/38362-reference-data-types)  
-- [Filter Syntax Reference](https://support.shotgunsoftware.com/entries/38359-reference-filter-syntax)  
+* Introduction and Video Tour](https://support.shotgunsoftware.com/entries/38181-api-introduction-video-tour)  
+* [[Reference: Methods]]
+* [[Reference: Data Types]]
+* [[Reference: Filter Syntax]]
 
 ## Changelog
-v3.0.3 - 2010 Nov 7
+**v3.0.3 - 2010 Nov 7**
 
   + add support for local files. Injects convenience info into returned hash for local file links
 
-v3.0.2 - 2010 Aug 27
+**v3.0.2 - 2010 Aug 27**
 
   + add revive() method to revive deleted entities
 
-v3.0.1 - 2010 May 10
+**v3.0.1 - 2010 May 10**
 
   + find(): default sorting to ascending, if not set (instead of requiring ascending/descending)
   + upload() and upload_thumbnail(): pass auth info through
 
-v3.0 - 2010 May 5 
+**v3.0 - 2010 May 5** 
 
   + non-beta! 
   + add batch() method to do multiple create, update, and delete requests in one 
       request to the server (requires Shotgun server to be v1.13.0 or higher)
 
-v3.0b8 - 2010 February 19 
+**v3.0b8 - 2010 February 19** 
 
   + fix python gotcha about using lists / dictionaries as defaults. 
       See: http://www.ferg.org/projects/python_gotchas.html#contents_item_6 
   + add schema_read method
 
-v3.0b7 - 2009 November 30 
+**v3.0b7 - 2009 November 30** 
 
   + add additional retries for connection errors and a catch for broken pipe exceptions
 
-v3.0b6 - 2009 October 20 
+**v3.0b6 - 2009 October 20** 
 
   + add support for HTTP/1.1 keepalive, which greatly improves performance for multiple requests 
   + add more helpful error if server entered is not http or https 
   + add support assigning tags to file uploads (for Shotgun version >= 1.10.6)
 
-v3.0b5 - 2009 Sept 29 
+**v3.0b5 - 2009 Sept 29** 
 
   + fixed deprecation warnings to raise Exception class for python 2.5
 
-v3.0b4 - 2009 July 3 
+**v3.0b4 - 2009 July 3** 
 
   + made upload() and upload_thumbnail() methods more backwards compatible 
   + changes to find_one(): 
     + now defaults to no filter_operator
 
-v3.0b3 - 2009 June 24
+**v3.0b3 - 2009 June 24**
 
   + fixed upload() and upload_thumbnail() methods
   + added download_attchment() method
