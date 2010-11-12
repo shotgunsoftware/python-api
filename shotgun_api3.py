@@ -225,8 +225,6 @@ class Shotgun:
                 
                 if type(v) == dict and 'link_type' in v and v['link_type'] == 'local' \
                     and self.platform and self.local_path_string in r[k]:
-                    # from pprint import pprint
-                    # pprint(r)
                     records[i][k]['local_path'] = r[k][self.local_path_string]
                     records[i][k]['url'] = "file://%s" % (r[k]['local_path'])
         
@@ -664,8 +662,6 @@ class ShotgunCRUD:
                 eval('%s.write(e.faultString)' % self.__err_stream)
                 eval('%s.write("\\n" + "-"*80 + "\\n")' % self.__err_stream)
             raise
-
-
 
 # Based on http://code.activestate.com/recipes/146306/
 class FormPostHandler(urllib2.BaseHandler):
@@ -2000,7 +1996,6 @@ class Transport:
     
     def single_request(self, host, handler, request_body, verbose=0):
         # issue XML-RPC request
-        
         h = self.make_connection(host)
         if verbose:
             h.set_debuglevel(1)
@@ -2214,21 +2209,38 @@ class SafeTransport(Transport):
             self._connection = host, HTTPS(chost, None, **(x509 or {}))
             return self._connection[1]
 
-# From example here, modified for keepalive changes:  http://docs.python.org/library/xmlrpclib.html
+# From example here, modified for keepalive changes:  http://docs.python.org/library/xmlrpxlib.html
 class ProxiedTransport(Transport):
+    """Handles an HTTP transaction via proxy server to an XML-RPC server.
+       Can also handle authentication. However, cannot handle an SSL
+       connection via proxy server"""
     
     def set_proxy(self, proxy):
         self.proxy = proxy
     
     def make_connection(self, host):
         self.realhost = host
-        host = self.proxy
+        proxy_host = self.proxy
+        proxy_user_pass = None
+        if '@' in proxy_host:
+            user_pass, proxy_host = proxy_host.split('@', 1)
+            if ':' in user_pass:
+                user, password = user_pass.split(':', 1)
+                proxy_user_pass = base64.encodestring('%s:%s' % (urllib.unquote(user),
+                                                urllib.unquote(password))).strip()
+            if not proxy_user_pass:
+                self._extra_headers += [('User-agent', self.user_agent)]
+            else:
+                self._extra_headers += [('User-agent', self.user_agent),
+                                        ('Proxy-authorization', 'Basic ' + proxy_user_pass) ]
         #return an existing connection if possible.  This allows
         #HTTP/1.1 keep-alive.
         if self._connection and host == self._connection[0]:
             return self._connection[1]
         # create a HTTP connection object from a host descriptor
-        chost, self._extra_headers, x509 = self.get_host_info(host)
+        chost, extra_headers, x509 = self.get_host_info(proxy_host)
+        if extra_headers:
+            self._extra_headers += extra_headers
         #store the host argument along with the connection object
         self._connection = host, httplib.HTTPConnection(chost)
         return self._connection[1]
