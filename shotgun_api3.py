@@ -58,8 +58,9 @@ Python Shotgun API library.
 # CHANGELOG
 # ---------------------------------------------------------------------------------------------
 """
-+v3.0.3 - 2010 Nov 07
++v3.0.3 - 2010 Nov 12
   + add support for local files. Injects convenience info into returned hash for local file links
+  + add support for authentication through http proxy server
 
 +v3.0.2 - 2010 May 10
   + add revive() method to revive deleted entities
