@@ -32,7 +32,7 @@
 #   https://support.shotgunsoftware.com/forums/48807-developer-api-info
 # ---------------------------------------------------------------------------------------------
 
-__version__ = "3.0.3"
+__version__ = "3.0.X"
 
 # ---------------------------------------------------------------------------------------------
 # SUMMARY
@@ -58,6 +58,9 @@ Python Shotgun API library.
 # CHANGELOG
 # ---------------------------------------------------------------------------------------------
 """
++v3.0.X - 2010 Nov 18
+  + add support for "session_uuid" parameter for communicating with a web browser session.
+
 +v3.0.3 - 2010 Nov 12
   + add support for local files. Injects convenience info into returned hash for local file links
   + add support for authentication through http proxy server
@@ -252,6 +255,18 @@ class Shotgun:
                 break
         # if it's an error, message is printed on second line
         raise ValueError, "%s:%s " % (entity_type,entity_id)+f.read().strip()
+    
+    def set_session_uuid(self, session_uuid):
+        server_options = {
+            'server_url': self.api_url,
+            'script_name': self.script_name,
+            'script_key': self.api_key,
+            'http_proxy' : self.http_proxy,
+            'convert_datetimes_to_utc': self.convert_datetimes_to_utc,
+            'session_uuid': session_uuid
+        }
+
+        self._api3 = ShotgunCRUD(server_options) 
     
     def schema_read(self):
         resp = self._api3.schema_read()
@@ -630,6 +645,10 @@ class ShotgunCRUD:
     def __init__(self, options):
         self.__sg_url = options['server_url']
         self.__auth_args = {'script_name': options['script_name'], 'script_key': options['script_key']}
+        
+        if 'session_uuid' in options:
+            self.__auth_args['session_uuid'] = options['session_uuid']
+        
         if 'convert_datetimes_to_utc' in options:
             convert_datetimes_to_utc = options['convert_datetimes_to_utc']
         else:
