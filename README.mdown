@@ -23,6 +23,11 @@ Some useful direct links within this section are below:
 * [Reference: Filter Syntax](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax)
 
 ## Changelog
+**v3.0.4 - 2010 Nov 22**
+
+  + fix for issue where create() method was returning list type instead of dictionary
+  + support new style classes (thanks to Alex Schworer https://github.com/schworer)
+
 **v3.0.3 - 2010 Nov 12**
 
   + add support for local files. Injects convenience info into returned hash for local file links

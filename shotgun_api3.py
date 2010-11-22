@@ -32,7 +32,7 @@
 #   https://support.shotgunsoftware.com/forums/48807-developer-api-info
 # ---------------------------------------------------------------------------------------------
 
-__version__ = "3.0.3"
+__version__ = "3.0.4"
 
 # ---------------------------------------------------------------------------------------------
 # SUMMARY
@@ -58,6 +58,10 @@ Python Shotgun API library.
 # CHANGELOG
 # ---------------------------------------------------------------------------------------------
 """
++v3.0.4 - 2010 Nov 22
+  + fix for issue where create() method was returning list type instead of dictionary
+  + support new style classes (thanks to Alex Schworer https://github.com/schworer)
+
 +v3.0.3 - 2010 Nov 12
   + add support for local files. Injects convenience info into returned hash for local file links
   + add support for authentication through http proxy server
@@ -153,7 +157,7 @@ from urlparse import urlparse
 # ---------------------------------------------------------------------------------------------
 class ShotgunError(Exception): pass
 
-class Shotgun:
+class Shotgun(object):
     # Used to split up requests into batches of records_per_page when doing requests.  this helps speed tremendously
     # when getting lots of results back.  doesn't affect the interface of the api at all (you always get the full set
     # of results back as one array) but just how the client class communicates with the server.
@@ -473,8 +477,8 @@ class Shotgun:
             args["fields"].append( {"field_name":f,"value":v} )
         
         resp = self._api3.create(args)
-        records = self._inject_field_values([resp["results"]])
-        return records
+        record = self._inject_field_values([resp["results"]])[0]
+        return record
     
     def update(self, entity_type, entity_id, data):
         """
@@ -626,7 +630,7 @@ class Shotgun:
     def entity_types(self):
         raise ShotgunError("Deprecated: use schema_entity_read() instead")
 
-class ShotgunCRUD:
+class ShotgunCRUD(object):
     def __init__(self, options):
         self.__sg_url = options['server_url']
         self.__auth_args = {'script_name': options['script_name'], 'script_key': options['script_key']}
@@ -735,7 +739,7 @@ else:
     DSTOFFSET = STDOFFSET
 DSTDIFF = DSTOFFSET - STDOFFSET
 
-class SgTimezone:
+class SgTimezone(object):
     
     def __init__(self):
         self.utc = self.UTC()
