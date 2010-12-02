@@ -32,7 +32,7 @@
 #   https://support.shotgunsoftware.com/forums/48807-developer-api-info
 # ---------------------------------------------------------------------------------------------
 
-__version__ = "3.0.4"
+__version__ = "3.0.5 Dev"
 
 # ---------------------------------------------------------------------------------------------
 # SUMMARY
@@ -58,6 +58,10 @@ Python Shotgun API library.
 # CHANGELOG
 # ---------------------------------------------------------------------------------------------
 """
++v3.0.5 Dev - 2010 Dec 01
+  + officially remove support for old api3_preview controller
+  + find(): allow requesting a specific page of results instead of returning them all at once
+
 +v3.0.4 - 2010 Nov 22
   + fix for issue where create() method was returning list type instead of dictionary
   + support new style classes (thanks to Alex Schworer https://github.com/schworer)
@@ -175,7 +179,7 @@ class Shotgun(object):
                                                            # http://blah.com/asd => http://blah.com
         self.script_name = script_name
         self.api_key = api_key
-        self.api_ver = 'api3_preview' # keep using api3_preview to be compatible with older servers
+        self.api_ver = 'api3'
         self.api_url = "%s/%s/" % (self.base_url, self.api_ver)
         self.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.sid = None # only load this if needed
@@ -307,15 +311,15 @@ class Shotgun(object):
         resp = self._api3.schema_entity_read()
         return resp["results"]
     
-    def find(self, entity_type, filters, fields=None, order=None, filter_operator=None, limit=0, retired_only=False):
+    def find(self, entity_type, filters, fields=None, order=None, filter_operator=None, limit=0, retired_only=False, page=0):
         """
         Find entities of entity_type matching the given filters.
-        
+
         The columns returned for each entity match the 'fields'
         parameter provided, or just the id if nothing is specified.
-        
+
         Limit constrains the total results to its value.
-        
+
         Returns an array of dict entities sorted by the optional
         'order' parameter.
         """
@@ -323,27 +327,27 @@ class Shotgun(object):
             fields = ['id']
         if order == None:
             order = []
-        
+
         if type(filters) == type([]):
             new_filters = {}
             if not filter_operator or filter_operator == "all":
                 new_filters["logical_operator"] = "and"
             else:
                 new_filters["logical_operator"] = "or"
-            
+
             new_filters["conditions"] = []
             for f in filters:
                 new_filters["conditions"].append( {"path":f[0],"relation":f[1],"values":f[2:]} )
-            
+
             filters = new_filters
         elif filter_operator:
             raise ShotgunError("Deprecated: Use of filter_operator for find() is not valid any more.  See the documention on find()")
-        
+
         if retired_only:
             return_only = 'retired'
         else:
             return_only = 'active'
-        
+
         req = {
             "type": entity_type,
             "return_fields": fields,
@@ -351,7 +355,7 @@ class Shotgun(object):
             "return_only" : return_only,
             "paging": {"entities_per_page": self.records_per_page, "current_page": 1}
         }
-        
+
         if order:
            req['sorts'] = []
            for sort in order:
@@ -361,29 +365,41 @@ class Shotgun(object):
                if not sort.has_key('direction'):
                    sort['direction'] = 'asc'
                req['sorts'].append({'field_name': sort['field_name'],'direction' : sort['direction']})
-        
-        if (limit and limit > 0 and limit < self.records_per_page):
+
+        if type(limit) != int or limit <= 0:
+           raise ValueError("find() 'limit' parameter must be a positive integer")
+        elif (limit and limit > 0 and limit < self.records_per_page):
             req["paging"]["entities_per_page"] = limit
-        
+
         records = []
-        done = False
-        while not done:
+
+        # if page is specified, then only return the page of records requested
+        if type(page) != int or page < 0:
+            raise ValueError("find() 'page' parameter must be a positive integer")
+        elif page != 0:
+            req["paging"]["current_page"] = page
             resp = self._api3.read(req)
             results = resp["results"]["entities"]
-            if results:
-                records.extend(results)
-                if ( len(records) >= limit and limit > 0 ):
-                    records = records[:limit]
-                    done = True
-                elif len(records) == resp["results"]["paging_info"]["entity_count"]:
-                    done = True
+            records.extend(results)
+        else:
+            done = False
+            while not done:
+                resp = self._api3.read(req)
+                results = resp["results"]["entities"]
+                if results:
+                    records.extend(results)
+                    if ( len(records) >= limit and limit > 0 ):
+                        records = records[:limit]
+                        done = True
+                    elif len(records) == resp["results"]["paging_info"]["entity_count"]:
+                        done = True
+                    else:
+                        req['paging']['current_page'] += 1
                 else:
-                    req['paging']['current_page'] += 1
-            else:
-                done = True
-        
+                    done = True
+
         records = self._inject_field_values(records)
-        
+
         return records
     
     def find_one(self, entity_type, filters, fields=None, order=None, filter_operator=None, retired_only=False):
