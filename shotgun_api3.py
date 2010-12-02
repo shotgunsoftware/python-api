@@ -366,7 +366,7 @@ class Shotgun(object):
                    sort['direction'] = 'asc'
                req['sorts'].append({'field_name': sort['field_name'],'direction' : sort['direction']})
 
-        if type(limit) != int or limit <= 0:
+        if type(limit) != int or limit < 0:
            raise ValueError("find() 'limit' parameter must be a positive integer")
         elif (limit and limit > 0 and limit < self.records_per_page):
             req["paging"]["entities_per_page"] = limit
