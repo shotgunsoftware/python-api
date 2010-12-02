@@ -7,7 +7,7 @@ Shotgun provides a simple Python-based API for accessing Shotgun and integrating
 [GitHub is the new official location](http://github.com/shotgunsoftware/python-api) for the latest Shotgun Python API. We will no longer be including it in our code tree that is deployed to your servers or posting it for download from our support site. So update your bookmarks!
 
 ## Minimum Requirements
-- Shotgun server v1.8.0 or higher.
+- Shotgun server v1.8.0 or higher. Note that some API features are only available in later Shotgun server versions.
 - Python v2.4 - v2.7. (We do have plans to eventually support Python 3)
 
 ## Installing
@@ -23,6 +23,11 @@ Some useful direct links within this section are below:
 * [Reference: Filter Syntax](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax)
 
 ## Changelog
+**v3.0.5 - 2010 Dec 1**
+ 
+  + officially remove support for old api3_preview controller
+  + find(): allow requesting a specific page of results instead of returning them all at once
+ 
 **v3.0.4 - 2010 Nov 22**
 
   + fix for issue where create() method was returning list type instead of dictionary
