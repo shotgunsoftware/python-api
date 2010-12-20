@@ -32,7 +32,7 @@
 #   https://support.shotgunsoftware.com/forums/48807-developer-api-info
 # ---------------------------------------------------------------------------------------------
 
-__version__ = "3.0.5 Dev"
+__version__ = "3.0.5"
 
 # ---------------------------------------------------------------------------------------------
 # SUMMARY
@@ -58,7 +58,7 @@ Python Shotgun API library.
 # CHANGELOG
 # ---------------------------------------------------------------------------------------------
 """
-+v3.0.5 Dev - 2010 Dec 01
++v3.0.5 - 2010 Dec 20
   + officially remove support for old api3_preview controller
   + find(): allow requesting a specific page of results instead of returning them all at once
 
