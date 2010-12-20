@@ -61,10 +61,7 @@ Python Shotgun API library.
 +v3.0.5 - 2010 Dec 20
   + officially remove support for old api3_preview controller
   + find(): allow requesting a specific page of results instead of returning them all at once
-
-+v3.0.4 - 2010 Nov 22
-  + fix for issue where create() method was returning list type instead of dictionary
-  + support new style classes (thanks to Alex Schworer https://github.com/schworer)
+  + add support for "session_uuid" parameter for communicating with a web browser session.
 
 +v3.0.3 - 2010 Nov 12
   + add support for local files. Injects convenience info into returned hash for local file links
@@ -261,6 +258,18 @@ class Shotgun(object):
         # if it's an error, message is printed on second line
         raise ValueError, "%s:%s " % (entity_type,entity_id)+f.read().strip()
     
+    def set_session_uuid(self, session_uuid):
+        server_options = {
+            'server_url': self.api_url,
+            'script_name': self.script_name,
+            'script_key': self.api_key,
+            'http_proxy' : self.http_proxy,
+            'convert_datetimes_to_utc': self.convert_datetimes_to_utc,
+            'session_uuid': session_uuid
+        }
+        
+        self._api3 = ShotgunCRUD(server_options)
+    
     def schema_read(self):
         resp = self._api3.schema_read()
         return resp["results"]
@@ -314,12 +323,12 @@ class Shotgun(object):
     def find(self, entity_type, filters, fields=None, order=None, filter_operator=None, limit=0, retired_only=False, page=0):
         """
         Find entities of entity_type matching the given filters.
-
+        
         The columns returned for each entity match the 'fields'
         parameter provided, or just the id if nothing is specified.
-
+        
         Limit constrains the total results to its value.
-
+        
         Returns an array of dict entities sorted by the optional
         'order' parameter.
         """
@@ -327,27 +336,27 @@ class Shotgun(object):
             fields = ['id']
         if order == None:
             order = []
-
+        
         if type(filters) == type([]):
             new_filters = {}
             if not filter_operator or filter_operator == "all":
                 new_filters["logical_operator"] = "and"
             else:
                 new_filters["logical_operator"] = "or"
-
+            
             new_filters["conditions"] = []
             for f in filters:
                 new_filters["conditions"].append( {"path":f[0],"relation":f[1],"values":f[2:]} )
-
+            
             filters = new_filters
         elif filter_operator:
             raise ShotgunError("Deprecated: Use of filter_operator for find() is not valid any more.  See the documention on find()")
-
+        
         if retired_only:
             return_only = 'retired'
         else:
             return_only = 'active'
-
+        
         req = {
             "type": entity_type,
             "return_fields": fields,
@@ -355,7 +364,7 @@ class Shotgun(object):
             "return_only" : return_only,
             "paging": {"entities_per_page": self.records_per_page, "current_page": 1}
         }
-
+        
         if order:
            req['sorts'] = []
            for sort in order:
@@ -365,14 +374,14 @@ class Shotgun(object):
                if not sort.has_key('direction'):
                    sort['direction'] = 'asc'
                req['sorts'].append({'field_name': sort['field_name'],'direction' : sort['direction']})
-
+        
         if type(limit) != int or limit < 0:
            raise ValueError("find() 'limit' parameter must be a positive integer")
         elif (limit and limit > 0 and limit < self.records_per_page):
             req["paging"]["entities_per_page"] = limit
-
+        
         records = []
-
+        
         # if page is specified, then only return the page of records requested
         if type(page) != int or page < 0:
             raise ValueError("find() 'page' parameter must be a positive integer")
@@ -397,9 +406,9 @@ class Shotgun(object):
                         req['paging']['current_page'] += 1
                 else:
                     done = True
-
+        
         records = self._inject_field_values(records)
-
+        
         return records
     
     def find_one(self, entity_type, filters, fields=None, order=None, filter_operator=None, retired_only=False):
@@ -650,6 +659,10 @@ class ShotgunCRUD(object):
     def __init__(self, options):
         self.__sg_url = options['server_url']
         self.__auth_args = {'script_name': options['script_name'], 'script_key': options['script_key']}
+        
+        if 'session_uuid' in options:
+            self.__auth_args['session_uuid'] = options['session_uuid']
+        
         if 'convert_datetimes_to_utc' in options:
             convert_datetimes_to_utc = options['convert_datetimes_to_utc']
         else:
