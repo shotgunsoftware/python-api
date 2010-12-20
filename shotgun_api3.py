@@ -1999,8 +1999,8 @@ class Transport:
         for i in range(10):
             try:
                 return self.single_request(host, handler, request_body, verbose)
-            except socket.error, (err_num, msg):
-                if i >= 10 or err_num not in (errno.ECONNRESET, errno.ECONNABORTED, errno.EPIPE):
+            except socket.error, e:
+                if i >= 10 or e.errno not in (errno.ECONNRESET, errno.ECONNABORTED, errno.EPIPE):
                     raise
             except httplib.BadStatusLine: #close after we sent request
                 if i >= 10:
