@@ -27,6 +27,7 @@ Some useful direct links within this section are below:
  
   + officially remove support for old api3_preview controller
   + find(): allow requesting a specific page of results instead of returning them all at once
+  + add support for "session_uuid" parameter for communicating with a web browser session.
  
 **v3.0.4 - 2010 Nov 22**
 
