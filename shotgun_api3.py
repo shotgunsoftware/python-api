@@ -32,7 +32,7 @@
 #   https://support.shotgunsoftware.com/forums/48807-developer-api-info
 # ---------------------------------------------------------------------------------------------
 
-__version__ = "3.0.5"
+__version__ = "3.0.6"
 
 # ---------------------------------------------------------------------------------------------
 # SUMMARY
@@ -58,6 +58,9 @@ Python Shotgun API library.
 # CHANGELOG
 # ---------------------------------------------------------------------------------------------
 """
++v3.0.6 - 2010 Jan 25
+  + optimization: don't request paging_info unless required (and server support is available)
+
 +v3.0.5 - 2010 Dec 20
   + officially remove support for old api3_preview controller
   + find(): allow requesting a specific page of results instead of returning them all at once
@@ -192,10 +195,27 @@ class Shotgun(object):
         
         self._api3 = ShotgunCRUD(server_options)
         
+        self.server_info = self._api3.info()
+        self._determine_features()
+        
         self.local_path_string = None
         self.platform = self._determine_platform()
         if self.platform:
             self.local_path_string = "local_path_%s" % (self.platform)
+    
+    def _determine_features(self):
+        self.supports_paging_info = False
+        
+        if self.server_info.has_key('version'):
+            v = self.server_info['version']
+        else:
+            return
+        
+        if v[0] == 2 and v[1] == 3 and v[2] >= 4:
+            self.supports_paging_info = True
+        elif v[0] >= 2 and v[1] >= 4:
+            self.supports_paging_info = True
+        
     
     def _determine_platform(self):
         s = platform.system().lower()
@@ -365,6 +385,9 @@ class Shotgun(object):
             "paging": {"entities_per_page": self.records_per_page, "current_page": 1}
         }
         
+        if self.supports_paging_info:
+            req["return_paging_info"] = True
+        
         if order:
            req['sorts'] = []
            for sort in order:
@@ -377,8 +400,13 @@ class Shotgun(object):
         
         if type(limit) != int or limit < 0:
            raise ValueError("find() 'limit' parameter must be a positive integer")
-        elif (limit and limit > 0 and limit < self.records_per_page):
+        elif (limit and limit > 0 and limit <= self.records_per_page):
             req["paging"]["entities_per_page"] = limit
+            
+            # If page isn't set and the limit doesn't require pagination, then trigger the
+            # faster code path.
+            if page == 0:
+                page = 1
         
         records = []
         
@@ -386,6 +414,10 @@ class Shotgun(object):
         if type(page) != int or page < 0:
             raise ValueError("find() 'page' parameter must be a positive integer")
         elif page != 0:
+            # No paging_info needed, so optimize it out.
+            if self.supports_paging_info:
+                req["return_paging_info"] = False 
+            
             req["paging"]["current_page"] = page
             resp = self._api3.read(req)
             results = resp["results"]["entities"]
@@ -682,6 +714,14 @@ class ShotgunCRUD(object):
         def callable(*args, **kwargs):
             return self.meta_caller(attr, *args, **kwargs)
         return callable
+    
+    def info(self):
+        try:
+            server_info = self.__sg.info()
+        except:
+            server_info = {}
+        
+        return server_info
     
     def meta_caller(self, attr, *args, **kwargs):
         try:
