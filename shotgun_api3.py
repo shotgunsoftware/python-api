@@ -1489,13 +1489,21 @@ class Marshaller:
         return result
     
     def __dump(self, value, write):
-        for dispatchType, dispatchFunction in self.dispatch.items():
-            if isinstance(value, dispatchType):
-                dispatchFunction(self, value, write)
-                break
-        else:
-            raise TypeError, "cannot marshal %s objects" % type(value)
-    
+        # Try to get the dispatch function directly by looking at the type
+        dispatchFunction = self.dispatch.get(type(value))
+
+        # If the exact type isn't in the dispatch table, identify subtypes
+        if dispatchFunction is None:
+            for dispatchType, dispatchFunction in self.dispatch.items():
+                if isinstance(value, dispatchType):
+                    break
+            else:
+                # The value isn't an instance of any registered types
+                raise TypeError, "cannot marshal %s objects" % type(value)
+
+        # We found a function through type lookup or subtype search
+        dispatchFunction(self, value, write)
+
     def dump_nil (self, value, write):
         if not self.allow_none:
             raise TypeError, "cannot marshal None unless allow_none is enabled"
