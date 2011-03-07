@@ -240,7 +240,7 @@ class Shotgun(object):
         
         for i,r in enumerate(records):
             # skip results that aren't entity dictionaries
-            if type(r) is not dict:
+            if not hasattr(r, '__getitem__') or not hasattr(r, 'items'):
                 continue
             
             # iterate over each item and check each field for possible injection
@@ -249,8 +249,9 @@ class Shotgun(object):
                 if k == 'image' and v:
                     records[i]['image'] = self._get_thumb_url(r['type'], r['id'])
                 
-                if type(v) == dict and 'link_type' in v and v['link_type'] == 'local' \
-                    and self.platform and self.local_path_string in r[k]:
+                if (hasattr(v, '__iter__') and hasattr(v, '__getitem__') and
+                    'link_type' in v and v['link_type'] == 'local' and
+                    self.platform and self.local_path_string in r[k]):
                     records[i][k]['local_path'] = r[k][self.local_path_string]
                     records[i][k]['url'] = "file://%s" % (r[k]['local_path'])
         
@@ -357,7 +358,7 @@ class Shotgun(object):
         if order == None:
             order = []
         
-        if type(filters) == type([]):
+        if hasattr(filters, '__iter__'):
             new_filters = {}
             if not filter_operator or filter_operator == "all":
                 new_filters["logical_operator"] = "and"
@@ -398,7 +399,7 @@ class Shotgun(object):
                    sort['direction'] = 'asc'
                req['sorts'].append({'field_name': sort['field_name'],'direction' : sort['direction']})
         
-        if type(limit) != int or limit < 0:
+        if not isinstance(limit, int) or limit < 0:
            raise ValueError("find() 'limit' parameter must be a positive integer")
         elif (limit and limit > 0 and limit <= self.records_per_page):
             req["paging"]["entities_per_page"] = limit
@@ -411,12 +412,12 @@ class Shotgun(object):
         records = []
         
         # if page is specified, then only return the page of records requested
-        if type(page) != int or page < 0:
+        if not isinstance(page, int) or page < 0:
             raise ValueError("find() 'page' parameter must be a positive integer")
         elif page != 0:
             # No paging_info needed, so optimize it out.
             if self.supports_paging_info:
-                req["return_paging_info"] = False 
+                req["return_paging_info"] = False
             
             req["paging"]["current_page"] = page
             resp = self._api3.read(req)
@@ -459,8 +460,8 @@ class Shotgun(object):
             raise ShotgunError("%s missing required key: %s. Value was: %s." % (message, ", ".join(missing), data))
     
     def batch(self, requests):
-        if type(requests) != type([]):
-            raise ShotgunError("batch() expects a list.  Instead was sent a %s"%type(requests))
+        if not hasattr(requests, '__iter__'):
+            raise ShotgunError("batch() expects an iterable. A %s is not iterable." % type(requests))
         
         reqs = []
         
@@ -1488,12 +1489,12 @@ class Marshaller:
         return result
     
     def __dump(self, value, write):
-        try:
-            f = self.dispatch[type(value)]
-        except KeyError:
-            raise TypeError, "cannot marshal %s objects" % type(value)
+        for dispatchType, dispatchFunction in self.dispatch.items():
+            if isinstance(value, dispatchType):
+                dispatchFunction(self, value, write)
+                break
         else:
-            f(self, value, write)
+            raise TypeError, "cannot marshal %s objects" % type(value)
     
     def dump_nil (self, value, write):
         if not self.allow_none:
@@ -1568,8 +1569,8 @@ class Marshaller:
         write("<value><struct>\n")
         for k, v in value.items():
             write("<member>\n")
-            if type(k) is not StringType:
-                if unicode and type(k) is UnicodeType:
+            if not isinstance(k, StringType):
+                if unicode and isinstance(k, UnicodeType):
                     k = k.encode(self.encoding)
                 else:
                     raise TypeError, "dictionary key must be string"
