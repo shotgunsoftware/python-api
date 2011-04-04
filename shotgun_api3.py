@@ -32,7 +32,8 @@
 #   https://support.shotgunsoftware.com/forums/48807-developer-api-info
 # ---------------------------------------------------------------------------------------------
 
-__version__ = "3.0.6"
+# based on v3.0.6 code
+__version__ = "3.0.x (summaries branch)"
 
 # ---------------------------------------------------------------------------------------------
 # SUMMARY
@@ -58,6 +59,9 @@ Python Shotgun API library.
 # CHANGELOG
 # ---------------------------------------------------------------------------------------------
 """
++v3.0.x (summaries branch) - 2011 Apr 04
+  + beta support for summarize() method for summary and grouping info
+
 +v3.0.6 - 2010 Jan 25
   + optimization: don't request paging_info unless required (and server support is available)
 
@@ -453,6 +457,42 @@ class Shotgun(object):
         else:
             return None
     
+    def summarize(self, entity_type, filters, summary_fields, filter_operator=None, grouping=None):
+        """
+        Return group and summary information for entity_type for summary_fields
+        based on the given filters.
+        """
+        if not isinstance(filters, list):
+            raise ValueError("summarize() 'filters' parameter must be a list")
+            
+        if not isinstance(grouping, list) and grouping != None:
+            raise ValueError("summarize() 'grouping' parameter must be a list or None")
+
+        new_filters = {}
+        if not filter_operator or filter_operator == "all":
+            new_filters["logical_operator"] = "and"
+        else:
+            new_filters["logical_operator"] = "or"
+
+        new_filters["conditions"] = []
+        for f in filters:
+            new_filters["conditions"].append( {"path":f[0],"relation":f[1],"values":f[2:]} )
+
+        filters = new_filters
+
+        req = {
+            "type": entity_type,
+            "summaries": summary_fields,
+            "filters": filters,
+        }
+        if grouping != None:
+            req['grouping'] = grouping
+
+        resp = self._api3.summarize(req)
+        results = resp["results"]
+
+        return results
+
     def _required_keys(self, message, required_keys, data):
         missing = set(required_keys) - set(data.keys())
         if missing:
