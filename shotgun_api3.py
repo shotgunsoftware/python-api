@@ -32,7 +32,7 @@
 #   https://support.shotgunsoftware.com/forums/48807-developer-api-info
 # ---------------------------------------------------------------------------------------------
 
-__version__ = "3.0.6"
+__version__ = "3.0.7"
 
 # ---------------------------------------------------------------------------------------------
 # SUMMARY
@@ -51,14 +51,16 @@ Python Shotgun API library.
  - make file fields an http link to the file
  - add logging functionality
  - add scrubbing to text data sent to server to make sure it is all valid unicode
- - support removing thumbnails / files (can only create or replace them now)
 """
 
 # ---------------------------------------------------------------------------------------------
 # CHANGELOG
 # ---------------------------------------------------------------------------------------------
 """
-+v3.0.6 - 2010 Jan 25
++v3.0.7 - 2011 Apr 04
+  + fix: update() method should return a dict object not a list
+
++v3.0.6 - 2011 Jan 25
   + optimization: don't request paging_info unless required (and server support is available)
 
 +v3.0.5 - 2010 Dec 20
@@ -370,7 +372,7 @@ class Shotgun(object):
             
             filters = new_filters
         elif filter_operator:
-            raise ShotgunError("Deprecated: Use of filter_operator for find() is not valid any more.  See the documention on find()")
+            raise ShotgunError("Deprecated: Use of filter_operator for find() is not valid in this context.  See the documention on find()")
         
         if retired_only:
             return_only = 'retired'
@@ -549,8 +551,8 @@ class Shotgun(object):
             args["fields"].append( {"field_name":f,"value":v} )
         
         resp = self._api3.update(args)
-        records = self._inject_field_values([resp["results"]])
-        return records
+        record = self._inject_field_values([resp["results"]])[0]
+        return record
     
     def delete(self, entity_type, entity_id):
         """
