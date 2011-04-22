@@ -2095,7 +2095,12 @@ class Transport:
             try:
                 return self.single_request(host, handler, request_body, verbose)
             except socket.error, e:
-                if i >= 10 or e.errno not in (errno.ECONNRESET, errno.ECONNABORTED, errno.EPIPE):
+                # not all socket errors have errno attributes. Specifically, if the socket times out
+                # the resulting error is a socket.sslerror which does not.
+                if hasattr(e, 'errno'):
+                    if i >= 10 or e.errno not in (errno.ECONNRESET, errno.ECONNABORTED, errno.EPIPE):
+                        raise
+                else:
                     raise
             except httplib.BadStatusLine: #close after we sent request
                 if i >= 10:
