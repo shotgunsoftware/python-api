@@ -6,7 +6,9 @@ This is an alpha release of a new version of the Python API that uses JSON as a 
 
 Shotgun 2.4 or greater.
 
-'simplejson' for Python versions older than 2.6.
+For Python 2.4 and 2.5, install simplejson 2.0.9: http://pypi.python.org/pypi/simplejson/2.0.9
+
+For Python 2.6 and higher, we will use the built-in json module... but installing the latest simplejson will give the best performance. Currently, that's version 2.1.6: http://pypi.python.org/pypi/simplejson/2.1.6
 
 
 ## Known Issues
