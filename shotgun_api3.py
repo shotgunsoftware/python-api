@@ -1127,15 +1127,7 @@ class Shotgun(object):
                     if _change_tz:
                         return _change_tz(value)
                     return value
-
-                #check for dates, no utz transform
-                if len(value) >= 10 and self._DATE_PATTERN.match(value):
-                    try:
-                        # strptime was not on datetime in python2.4
-                        return datetime.datetime(
-                            *time.strptime(value, "%Y-%m-%d")[:6]).date()
-                    except ValueError:
-                        return value
+            
             return value
 
         return self._visit_data(data, _inbound_visitor)
