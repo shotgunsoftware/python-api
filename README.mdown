@@ -1,3 +1,17 @@
+# Shotgun JSON API - Alpha
+
+This is an alpha release of a new version of the Python API that uses JSON as a transport instead of XML-RPC. The intent is for this to be drop-in compatible with the previous version. If you find any incompatibilities, please contact us through support or on the dev list. 
+
+## New requirements
+
+Requires 'simplejson' for Python versions older than 2.6.
+
+## Known Issues
+
+Does not yet support the new summarize method from the summary_grouping branch.
+
+
+
 # Shotgun Python API
 
 Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools. This is the official API that is maintained by Shotgun Software (support@shotgunsoftware.com)
