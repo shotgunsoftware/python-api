@@ -1117,7 +1117,7 @@ class Shotgun(object):
         
         def _inbound_visitor(value):
             if isinstance(value, basestring):
-                if len(value) >= 19 and self._DATE_TIME_PATTERN.match(value):
+                if len(value) == 20 and self._DATE_TIME_PATTERN.match(value):
                     try:
                         # strptime was not on datetime in python2.4
                         value = datetime.datetime(
