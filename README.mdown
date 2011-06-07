@@ -4,7 +4,10 @@ This is an alpha release of a new version of the Python API that uses JSON as a 
 
 ## New requirements
 
-Requires 'simplejson' for Python versions older than 2.6.
+Shotgun 2.4 or greater.
+
+'simplejson' for Python versions older than 2.6.
+
 
 ## Known Issues
 
