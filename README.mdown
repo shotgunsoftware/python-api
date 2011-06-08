@@ -26,6 +26,7 @@ Shotgun provides a simple Python-based API for accessing Shotgun and integrating
 [GitHub is the new official location](http://github.com/shotgunsoftware/python-api) for the latest Shotgun Python API. We will no longer be including it in our code tree that is deployed to your servers or posting it for download from our support site. So update your bookmarks!
 
 ## Minimum Requirements
+**SEE NEW REQUIREMENTS ABOVE**
 - Shotgun server v1.8.0 or higher. Note that some API features are only available in later Shotgun server versions.
 - Python v2.4 - v2.7. (We do have plans to eventually support Python 3)
 
