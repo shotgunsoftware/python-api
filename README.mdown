@@ -1,4 +1,4 @@
-# Shotgun JSON API - Alpha
+# Shotgun Python JSON API - Alpha
 
 This is an alpha release of a new version of the Python API that uses JSON as a transport instead of XML-RPC. The intent is for this to be drop-in compatible with the previous version. If you find any incompatibilities, please contact us through support or on the dev list. 
 
@@ -26,6 +26,7 @@ Shotgun provides a simple Python-based API for accessing Shotgun and integrating
 [GitHub is the new official location](http://github.com/shotgunsoftware/python-api) for the latest Shotgun Python API. We will no longer be including it in our code tree that is deployed to your servers or posting it for download from our support site. So update your bookmarks!
 
 ## Minimum Requirements
+**SEE NEW REQUIREMENTS ABOVE**  
 - Shotgun server v1.8.0 or higher. Note that some API features are only available in later Shotgun server versions.
 - Python v2.4 - v2.7. (We do have plans to eventually support Python 3)
 
@@ -42,6 +43,9 @@ Some useful direct links within this section are below:
 * [Reference: Filter Syntax](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax)
 
 ## Changelog
+(Note that many of these items may be specific to the XML-RPC version of the API and may not apply to the Python JSON API)  
+  
+
 **v3.0.6 - 2010 Jan 25**
  
   + optimization: don't request paging_info unless required (and server support is available)
