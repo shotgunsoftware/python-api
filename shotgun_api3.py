@@ -27,7 +27,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = "3.1a1"
 
 # needed for httplib2, future imports must be first
 from __future__ import generators
@@ -56,6 +55,10 @@ try:
 except ImportError:
     log.debug("simplejson not found, dropping back to json")
     import json as json 
+
+# ----------------------------------------------------------------------------
+# Version
+__version__ = "3.1a1"
 
 # ----------------------------------------------------------------------------
 # Errors
