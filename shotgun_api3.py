@@ -122,6 +122,7 @@ class ServerCapabilities(object):
             raise ShotgunError("JSON API requires server version 2.4 or "\
                 "higher, server is %s" % (self.version,))
         return 
+
     def _is_paging(self, version):
         """Determines if the server version supports paging.
         
@@ -222,7 +223,6 @@ class Shotgun(object):
         :param http_proxy: Optional, URL for the http proxy server, of the
         form http://proxy.com:8080 
         """
-        
         self.config = _Config()
         self.config.api_key = api_key
         self.config.script_name = script_name
@@ -365,10 +365,7 @@ class Shotgun(object):
             else:
                 new_filters["logical_operator"] = "or"
             
-            new_filters["conditions"] = [
-                {"path" : f[0], "relation" : f[1], "values" : f[2:]}
-                for f in filters
-            ]
+            new_filters["conditions"] = [{"path":f[0], "relation":f[1], "values":f[2:]} for f in filters ]
             
             filters = new_filters
         elif filter_operator:
@@ -435,6 +432,21 @@ class Shotgun(object):
             result = self._call_rpc("read", params)
         
         return self._parse_records(records)
+
+    def summarize(self, entity_type, filters, summary_fields, filter_operator=None, grouping=None):
+        """
+        Return group and summary information for entity_type for summary_fields
+        based on the given filters.
+        """
+        if not isinstance(filters, list):
+            raise ValueError("summarize() 'filters' parameter must be a list")
+            
+        if not isinstance(grouping, list) and grouping != None:
+            raise ValueError("summarize() 'grouping' parameter must be a list or None")
+
+        params = _create_summary_request(entity_type, filters, summary_fields, filter_operator, grouping)
+        records = self._call_rpc('summarize', params)
+        return records
 
     def create(self, entity_type, data, return_fields=None):
         """Create a new entity of the specified entity_type.
@@ -3119,3 +3131,29 @@ class socksocket(socket.socket):
 			_orgsocket.connect(self,(destpair[0],destpair[1]))
 		else:
 			raise GeneralProxyError((4,_generalerrors[4]))
+
+
+
+def _create_summary_request(entity_type, filters, summary_fields, filter_operator, grouping):
+    '''_create_summary_request assembles a request based on input'''
+    new_filters = {}
+    if not filter_operator or filter_operator == "all":
+        new_filters["logical_operator"] = "and"
+    else:
+        new_filters["logical_operator"] = "or"
+
+    new_filters["conditions"] = []
+    for f in filters:
+        new_filters["conditions"].append( {"path":f[0],"relation":f[1],"values":f[2:]} )
+
+    filters = new_filters
+
+    req = {
+        "type": entity_type,
+        "summaries": summary_fields,
+        "filters": filters,
+    }
+    if grouping != None:
+        req['grouping'] = grouping
+
+    return req
