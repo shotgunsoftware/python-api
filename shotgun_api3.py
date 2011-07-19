@@ -154,7 +154,7 @@ class _Config(object):
         """Container for the client configuration."""
         
         self.max_rpc_attempts = 3
-        self.timeout_secs = 3
+        self.timeout_secs = None
         self.api_ver = 'api3'
         self.convert_datetimes_to_utc = True
         self.records_per_page = 500
@@ -2201,6 +2201,7 @@ class HTTPConnectionWithTimeout(httplib.HTTPConnection):
                     # HACK: amorton socks module is included in the file
                     self.sock = socksocket(af, socktype, proto)
                     # HACK: amorton enabled TCP_NODELAY on socket
+                    #TODO why disable nagle?
                     self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
                     self.sock.setproxy(*self.proxy_info.astuple())
                 else:
