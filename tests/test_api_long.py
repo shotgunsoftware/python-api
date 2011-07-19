@@ -3,22 +3,12 @@
 Includes the schema functions and the automated searching for all entity types
 """
 
-import base, dummy_data
+import base
 
-class TestShotgunApiLong(base.TestBase):
+class TestShotgunApiLong(base.LiveTestBase):
     
     def test_automated_find(self):
         """Called find for each entity type and read all fields"""
-        
-        #we just ned to get some response in the mock
-        self._mock_http(
-            {'results': {'entities': [{'id': -1, 'type': 'Mystery'}],
-                 'paging_info': {'current_page': 1,
-                                 'entities_per_page': 500,
-                                 'entity_count': 1,
-                                 'page_count': 1}}}
-        )
-        
         all_entities = self.sg.schema_entity_read().keys()
         direction = "asc"
         filter_operator = "all"
@@ -35,6 +25,7 @@ class TestShotgunApiLong(base.TestBase):
                 continue
                  
             #trying to use some different code paths to the other find test
+            #TODO for our test project, we haven't populated these entities....
             order = [{'field_name': fields.keys()[0], 'direction': direction}]
             if "project" in fields:
                 filters = [['project', 'is', self.project]]
@@ -42,8 +33,8 @@ class TestShotgunApiLong(base.TestBase):
                 filters = []
 
             records = self.sg.find(entity_type, filters, fields=fields.keys(), 
-                order=order, filter_operator=filter_operator, limit=limit, 
-                page=page)
+                                   order=order, filter_operator=filter_operator,
+                                   limit=limit, page=page)
             
             self.assertTrue(isinstance(records, list))
             
@@ -57,48 +48,39 @@ class TestShotgunApiLong(base.TestBase):
                 direction = "desc"
             limit = (limit % 5) + 1
             page = (page % 3) + 1
-        return
         
+
     def test_schema(self):
         """Called schema functions"""
         
-        self._mock_http(dummy_data.schema_entity_read)
         schema = self.sg.schema_entity_read()
         self.assertTrue(schema, dict)
         self.assertTrue(len(schema) > 0)
 
-        self._mock_http(dummy_data.schema_read)
         schema = self.sg.schema_read()
         self.assertTrue(schema, dict)
         self.assertTrue(len(schema) > 0)
         
-        self._mock_http(dummy_data.schema_field_read_version)
         schema = self.sg.schema_field_read("Version")
         self.assertTrue(schema, dict)
         self.assertTrue(len(schema) > 0)
         
-        self._mock_http(dummy_data.schema_field_read_version_user)
         schema = self.sg.schema_field_read("Version", field_name="user")
         self.assertTrue(schema, dict)
         self.assertTrue(len(schema) > 0)
         self.assertTrue("user" in schema)
                 
-        self._mock_http({"results":"sg_monkeys"})
-        properties = {
-            "description" : "How many monkeys were needed"
-        }
+        properties = { "description" : "How many monkeys were needed" }
         new_field_name = self.sg.schema_field_create("Version", "number", 
-            "Monkey Count", properties=properties)
+                                                     "Monkey Count", 
+                                                     properties=properties)
            
-        self._mock_http({"results":True})
-        properties = {
-            "description" : "How many monkeys turned up"
-        }
-        ret_val = self.sg.schema_field_update("Version", new_field_name, 
-            properties)
+        properties = {"description" : "How many monkeys turned up"}
+        ret_val = self.sg.schema_field_update("Version",
+                                               new_field_name, 
+                                               properties)
         self.assertTrue(ret_val)
         
-        self._mock_http({"results":True})
         ret_val = self.sg.schema_field_delete("Version", new_field_name)
         self.assertTrue(ret_val)
         

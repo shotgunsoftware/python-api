@@ -18,7 +18,6 @@ class TestBase(unittest.TestCase):
     Sets up mocking and database test data.'''
     def __init__(self, *args, **kws):
         unittest.TestCase.__init__(self, *args, **kws)
-        self.is_mock        = False
         self.human_user     = None
         self.project        = None
         self.shot           = None
@@ -26,42 +25,50 @@ class TestBase(unittest.TestCase):
         self.version        = None
         self.human_password = None
         self.server_url     = None
+        self.connect        = False
     
 
     def setUp(self):
-        config = SgTestConfig()
-        config.read_config(CONFIG_PATH)
-        self.human_password = config.human_password
-        self.server_url     = config.server_url
-        self.script_name    = config.script_name
-        self.api_key        = config.api_key
-        self.http_proxy     = config.http_proxy
-        self.session_uuid   = config.session_uuid
+        self.config = SgTestConfig()
+        self.config.read_config(CONFIG_PATH)
+        self.human_password = self.config.human_password
+        self.server_url     = self.config.server_url
+        self.script_name    = self.config.script_name
+        self.api_key        = self.config.api_key
+        self.http_proxy     = self.config.http_proxy
+        self.session_uuid   = self.config.session_uuid
 
-        self.sg = api.Shotgun(config.server_url, config.script_name, 
-            config.api_key, http_proxy=config.http_proxy)
 
-        if config.session_uuid:
-            self.sg.set_session_uuid(config.session_uuid)
-            
-        if config.mock:
-            self._setup_mock()
-            self._setup_mock_data(config)
-        else:
-            self._setup_db(config)
+        self.sg = api.Shotgun(self.config.server_url, 
+                              self.config.script_name, 
+                              self.config.api_key, 
+                              http_proxy=self.config.http_proxy,
+                              connect=self.connect)
+
+        if self.config.session_uuid:
+            self.sg.set_session_uuid(self.config.session_uuid)
 
         
     def tearDown(self):
         self.sg = None
-        return
     
+
+class MockTestBase(TestBase):
+    '''Test base for tests mocking server interactions.'''
+    def setUp(self):
+        super(MockTestBase, self).setUp()
+        #TODO see if there is another way to stop sg connecting
+        self._setup_mock()
+        self._setup_mock_data()
+
+
     def _setup_mock(self):
         """Setup mocking on the ShotgunClient to stop it calling a live server
         """
         #Replace the function used to make the final call to the server
         #eaiser than mocking the http connection + response
         self.sg._http_request = mock.Mock(spec=api.Shotgun._http_request,
-            return_value=((200, "OK"), {}, None))
+                                          return_value=((200, "OK"), {}, None))
         
         #also replace the function that is called to get the http connection
         #to avoid calling the server. OK to return a mock as we will not use 
@@ -75,9 +82,8 @@ class TestBase(unittest.TestCase):
         
         #create the server caps directly to say we have the correct version
         self.sg._server_caps = api.ServerCapabilities(self.sg.config.server, 
-            {"version" : [2,4,0]})
-        self.is_mock = True
-        return
+                                                      {"version" : [2,4,0]})
+
         
     def _mock_http(self, data, headers=None, status=None):
         """Setup a mock response from the SG server. 
@@ -92,15 +98,13 @@ class TestBase(unittest.TestCase):
         if not isinstance(data, basestring):
             data = json.dumps(data, ensure_ascii=False, encoding="utf-8")
             
-        resp_headers = {
-            'cache-control': 'no-cache',
-            'connection': 'close',
-            'content-length': (data and str(len(data))) or 0 ,
-            'content-type': 'application/json; charset=utf-8',
-            'date': 'Wed, 13 Apr 2011 04:18:58 GMT',
-            'server': 'Apache/2.2.3 (CentOS)',
-            'status': '200 OK'
-        }
+        resp_headers = { 'cache-control': 'no-cache',
+                         'connection': 'close',
+                         'content-length': (data and str(len(data))) or 0 ,
+                         'content-type': 'application/json; charset=utf-8',
+                         'date': 'Wed, 13 Apr 2011 04:18:58 GMT',
+                         'server': 'Apache/2.2.3 (CentOS)',
+                         'status': '200 OK' }
         if headers:
             resp_headers.update(headers)
         
@@ -110,12 +114,9 @@ class TestBase(unittest.TestCase):
         self._setup_mock()
         self.sg._http_request.return_value = (status, resp_headers, data)
         
-        self.is_mock = True
-        return
-    
+
     def _assert_http_method(self, method, params, check_auth=True):
         """Asserts _http_request is called with the method and params."""
-        
         args, _ = self.sg._http_request.call_args
         arg_body = args[2]
         assert isinstance(arg_body, basestring)
@@ -133,51 +134,82 @@ class TestBase(unittest.TestCase):
             rpc_args = arg_params[len(arg_params)-1]
             self.assertEqual(params, rpc_args)
             
-        return
 
-    def _setup_mock_data(self, config):
-        self.human_user     = { 'id':1, 
-                                'login':config.human_login,
-                                'type':'HumanUser' }
-        self.project        = { 'id':2,
-                                'name':config.project_name,
-                                'type':'Project' }
-        self.shot           = { 'id':3,
-                                'code':config.shot_code,
-                                'type':'Shot' }
-        self.asset          = { 'id':4,
-                                'code':config.asset_code,
-                                'type':'Asset' }
-        self.version        = { 'id':5,
-                                'code':config.version_code,
-                                'type':'Version' }
+    def _setup_mock_data(self):
+        self.human_user = { 'id':1, 
+                            'login':self.config.human_login,
+                            'type':'HumanUser' }
+        self.project    = { 'id':2,
+                            'name':self.config.project_name,
+                            'type':'Project' }
+        self.shot       = { 'id':3,
+                            'code':self.config.shot_code,
+                            'type':'Shot' }
+        self.asset      = { 'id':4,
+                            'code':self.config.asset_code,
+                            'type':'Asset' }
+        self.version    = { 'id':5,
+                            'code':self.config.version_code,
+                            'type':'Version' }
+
+class LiveTestBase(TestBase):
+    '''Test base for tests relying on connection to server.'''
+    def setUp(self):
+        super(LiveTestBase, self).setUp()
+        self._setup_db(self.config)
 
     def _setup_db(self, config):
-        data = {'name':config.project_name}
+        data = {'name':self.config.project_name}
         self.project = _find_or_create_entity(self.sg, 'Project', data)
         
-        data = {'name':config.human_name,
-                'login':config.human_login,
-                'password_proxy':config.human_password}
+        data = {'name':self.config.human_name,
+                'login':self.config.human_login,
+                'password_proxy':self.config.human_password}
         self.human_user = _find_or_create_entity(self.sg, 'HumanUser', data)
 
-        data = {'code':config.asset_code,
+        data = {'code':self.config.asset_code,
                 'project':self.project}
         keys = ['code']
         self.asset = _find_or_create_entity(self.sg, 'Asset', data, keys)
         
         data = {'project':self.project,
-                'code':config.version_code,
+                'code':self.config.version_code,
                 'entity':self.asset,
                 'user':self.human_user}
         keys = ['code','project']
         self.version = _find_or_create_entity(self.sg, 'Version', data, keys)
         
         keys = ['code','project']
-        data = {'code':config.shot_code,
+        data = {'code':self.config.shot_code,
                 'project':self.project}
         self.shot = _find_or_create_entity(self.sg, 'Shot', data, keys)
 
+
+class SgTestConfig(object):
+    '''Reads test config and holds values'''
+    def __init__(self):
+        self.mock           = True
+        self.server_url     = None  
+        self.script_name    = None  
+        self.api_key        = None  
+        self.http_proxy     = None  
+        self.session_uuid   = None  
+        self.project_name   = None  
+        self.human_name     = None  
+        self.human_login    = None  
+        self.human_password = None  
+        self.asset_code     = None  
+        self.version_code   = None  
+        self.shot_code      = None  
+
+
+    def read_config(self, config_path):
+        config_parser = ConfigParser()
+        config_parser.read(config_path)
+        for section in config_parser.sections():
+            for option in config_parser.options(section):
+                value = config_parser.get(section, option)
+                setattr(self, option, value)
 
 
 def _find_or_create_entity(sg, entity_type, data, identifyiers=None):
@@ -197,31 +229,4 @@ def _find_or_create_entity(sg, entity_type, data, identifyiers=None):
     entity = entity or sg.create(entity_type, data, return_fields=fields)
     assert(entity)
     return entity
-
-class SgTestConfig(object):
-    '''Reads test config and holds values'''
-    def __init__(self):
-        self.mock           = True
-        self.server_url     = None  
-        self.script_name    = None  
-        self.api_key        = None  
-        self.http_proxy     = None  
-        self.session_uuid   = None  
-        self.project_name   = None  
-        self.human_name     = None  
-        self.human_login    = None  
-        self.human_password = None  
-        self.asset_code     = None  
-        self.version_code   = None  
-        self.shot_code      = None  
-
-    def read_config(self, config_path):
-        config_parser = ConfigParser()
-        config_parser.read(config_path)
-        for section in config_parser.sections():
-            for option in config_parser.options(section):
-                value = config_parser.get(section, option)
-                setattr(self, option, value)
-        # cast non-sting attributes
-        self.mock = 'True' == str(self.mock)
 
