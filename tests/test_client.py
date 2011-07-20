@@ -13,6 +13,7 @@ import platform
 import sys
 import time
 import unittest
+import httplib2
 
 import mock
 import shotgun_api3 as api
@@ -161,9 +162,9 @@ class TestShotgunClient(base.MockTestBase):
 
     def test_network_retry(self):
         """Network failure is retried"""
-        self.sg._http_request.side_effect = api.HttpLib2Error
+        self.sg._http_request.side_effect = httplib2.HttpLib2Error
         
-        self.assertRaises(api.HttpLib2Error, self.sg.info)
+        self.assertRaises(httplib2.HttpLib2Error, self.sg.info)
         self.assertTrue(
             self.sg.config.max_rpc_attempts ==self.sg._http_request.call_count, 
             "Call is repeated")
