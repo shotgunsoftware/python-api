@@ -13,11 +13,11 @@ import platform
 import sys
 import time
 import unittest
-import httplib2
-
 import mock
-import shotgun_api3 as api
 
+import shotgun_api3.lib.httplib2 as httplib2
+import shotgun_api3 as api
+from shotgun_api3.shotgun import ServerCapabilities
 import base
 
 class TestShotgunClient(base.MockTestBase):
@@ -69,11 +69,11 @@ class TestShotgunClient(base.MockTestBase):
     
     def test_server_version_json(self):
         '''test_server_version_json tests expected versions for json support.'''
-        sc = api.ServerCapabilities("foo", {"version" : (2,4,0)})
+        sc = ServerCapabilities("foo", {"version" : (2,4,0)})
         
         sc.version = (2,3,99)
         self.assertRaises(api.ShotgunError, sc._ensure_json_supported)
-        self.assertRaises(api.ShotgunError, api.ServerCapabilities, "foo", 
+        self.assertRaises(api.ShotgunError, ServerCapabilities, "foo", 
             {"version" : (2,2,0)})
             
         sc.version = (0,0,0)
@@ -110,7 +110,7 @@ class TestShotgunClient(base.MockTestBase):
 
     def test_config(self):
         """Client config can be created"""
-        x = api._Config()
+        x = api.shotgun._Config()
         self.assertTrue(x is not None)
         
     def test_url(self):

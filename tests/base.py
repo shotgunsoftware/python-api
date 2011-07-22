@@ -5,10 +5,12 @@ from ConfigParser import ConfigParser
 try:
     import simplejson as json
 except ImportError:
-    import json as json
+    import json
 
 import mock
+
 import shotgun_api3 as api
+from shotgun_api3.shotgun import ServerCapabilities
 
 CONFIG_PATH = 'tests/config'
 
@@ -73,7 +75,7 @@ class MockTestBase(TestBase):
         #also replace the function that is called to get the http connection
         #to avoid calling the server. OK to return a mock as we will not use 
         #it
-        self.mock_conn = mock.Mock(spec=api.Http)
+        self.mock_conn = mock.Mock(spec=api.lib.httplib2.Http)
         #The Http objects connection property is a dict of connections 
         #it is holding
         self.mock_conn.connections = dict()
@@ -81,8 +83,8 @@ class MockTestBase(TestBase):
         self.sg._get_connection = mock.Mock(return_value=self.mock_conn)
         
         #create the server caps directly to say we have the correct version
-        self.sg._server_caps = api.ServerCapabilities(self.sg.config.server, 
-                                                      {"version" : [2,4,0]})
+        self.sg._server_caps = ServerCapabilities(self.sg.config.server, 
+                                                  {"version" : [2,4,0]})
 
         
     def _mock_http(self, data, headers=None, status=None):
