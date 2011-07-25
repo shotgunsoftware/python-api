@@ -1,31 +1,33 @@
 #!/usr/bin/env python
-# ---------------------------------------------------------------------------------------------
-# Copyright (c) 2009-2011, Shotgun Software Inc
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-#  - Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
-#
-#  - Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-#
-#  - Neither the name of the Shotgun Software Inc nor the names of its
-#    contributors may be used to endorse or promote products derived from this
-#    software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+'''
+ -----------------------------------------------------------------------------
+ Copyright (c) 2009-2011, Shotgun Software Inc
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+
+  - Redistributions of source code must retain the above copyright notice, this
+    list of conditions and the following disclaimer.
+
+  - Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+
+  - Neither the name of the Shotgun Software Inc nor the names of its
+    contributors may be used to endorse or promote products derived from this
+    software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+'''
 
 
 import base64
@@ -47,12 +49,13 @@ import urlparse
 from lib.httplib2 import Http
 from lib.sgtimezone import SgTimezone
 
-log = logging.getLogger("shotgun_api3")
+LOG = logging.getLogger("shotgun_api3")
+SG_TIMEZONE = SgTimezone()
 
 try:
     import simplejson as json
 except ImportError:
-    log.debug("simplejson not found, dropping back to json")
+    LOG.debug("simplejson not found, dropping back to json")
     import json as json 
 
 # ----------------------------------------------------------------------------
@@ -67,16 +70,18 @@ class ShotgunError(Exception):
     pass
 
 class Fault(ShotgunError):
+    """Exception when server side exception detected."""
     pass
     
 # ----------------------------------------------------------------------------
 # API
 
 class ServerCapabilities(object):
+    """Container for the servers capabilities, such as version and paging. 
+    """
     
     def __init__(self, host, meta):
-        """Container for the servers capabilities, such as version and 
-        paging. 
+        """ServerCapabilities.__init__
         
         :param host: Host name for the server excluding protocol.
         
@@ -108,7 +113,7 @@ class ServerCapabilities(object):
         
         :raises ShotgunError: The current server version does not support json
         """
-        if not self.version or self.version < (2,4,0):
+        if not self.version or self.version < (2, 4, 0):
             raise ShotgunError("JSON API requires server version 2.4 or "\
                 "higher, server is %s" % (self.version,))
 
@@ -118,16 +123,15 @@ class ServerCapabilities(object):
                  % (self.host, self.version, self.is_dev)
             
 class ClientCapabilities(object):
+    """Container for the client capabilities.
+        
+    Detects the current client platform and works out the SG field 
+    used for local data paths.
+    """
     
     def __init__(self):
-        """Container for the client capabilities.
-        
-        Detects the current client platform and works out the SG field 
-        used for local data paths.
-        """
-        
         system = platform.system().lower()
-        if system =='darwin':
+        if system == 'darwin':
             self.platform = "mac"
         elif system in ('windows','linux'):
             self.platform = system
@@ -147,10 +151,9 @@ class ClientCapabilities(object):
             self.py_version)
 
 class _Config(object):
+    """Container for the client configuration."""
 
     def __init__(self):
-        """Container for the client configuration."""
-        
         self.max_rpc_attempts = 3
         self.timeout_secs = None
         self.api_ver = 'api3'
@@ -180,8 +183,13 @@ class Shotgun(object):
         "^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])"\
         "(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?)?$")
             
-    def __init__(self, base_url, script_name, api_key, 
-        convert_datetimes_to_utc=True, http_proxy=None, connect=True):
+    def __init__(self,
+                 base_url,
+                 script_name,
+                 api_key, 
+                 convert_datetimes_to_utc=True,
+                 http_proxy=None,
+                 connect=True):
         """Initialises a new instance of the Shotgun client.
         
         :param base_url: http or https url to the shotgun server.
@@ -229,9 +237,8 @@ class Shotgun(object):
             self.config.authorization = "Basic " + auth.strip()
 
         if http_proxy:
-            _, proxy_netloc, _, _, _ = urlparse.urlsplit(http_proxy)
-            self.config.proxy_server, _, proxy_port = proxy_netloc.partition(
-                ":")
+            proxy_netloc = urlparse.urlsplit(http_proxy)[1]
+            self.config.proxy_server, proxy_port = proxy_netloc.split(":", 1)
             self.config.proxy_port = int(proxy_port or 8080)
             
         self.client_caps = ClientCapabilities()
@@ -239,13 +246,14 @@ class Shotgun(object):
         #test to ensure the the server supports the json API
         #call to server will only be made once and will raise error
         if connect:
-            sc = self.server_caps
+            self.server_caps
         
     # ========================================================================
     # API Functions 
     
     @property
     def server_info(self):
+        """Returns server information."""
         return self.server_caps.server_info
         
     @property
@@ -290,7 +298,28 @@ class Shotgun(object):
         filter_operator=None, retired_only=False):
         """Calls the find() method and returns the first result, or None.
         
-        The params are the same as for find().
+        :param entity_type: Required, entity type (string) to find.
+        
+        :param filters: Required, list of filters to apply. 
+        
+        :param fields: Optional list of fields from the matched entities to 
+        return. Defaults to id. 
+        
+        :param order: Optional list of fields to order the results by, list 
+        has the form [{'field_name':'foo','direction':'asc or desc'},]
+        
+        :param filter_operator: Optional operator to apply to the filters, 
+        supported values are 'all' and 'any'. Defaults to 'all'.
+        
+        :param limit: Optional, number of entities to return per page. 
+        Defaults to 0 which returns all entities that match.
+        
+        :param page: Optional, page of results to return. By default all 
+        results are returned. Use together with limit. 
+        
+        :param retired_only: Optional, flag to return only entities that have 
+        been retried. Defaults to False which returns only entities which 
+        have not been retired. 
         """
         
         results = self.find(entity_type, filters, fields, order, 
@@ -332,53 +361,24 @@ class Shotgun(object):
         """
         
         if not isinstance(limit, int) or limit < 0:
-           raise ValueError("limit parameter must be a positive integer")
+            raise ValueError("limit parameter must be a positive integer")
 
         if not isinstance(page, int) or page < 0:
             raise ValueError("page parameter must be a positive integer")
 
         if isinstance(filters, (list, tuple)):
-            new_filters = {}
-            
-            if not filter_operator or filter_operator == "all":
-                new_filters["logical_operator"] = "and"
-            else:
-                new_filters["logical_operator"] = "or"
-            
-            new_filters["conditions"] = [{"path":f[0], "relation":f[1], "values":f[2:]} for f in filters ]
-            
-            filters = new_filters
+            filters = _translate_filters(filters, filter_operator)
         elif filter_operator:
             #TODO:Not sure if this test is correct, replicated from prev api 
             raise ShotgunError("Deprecated: Use of filter_operator for find()"
                 " is not valid any more. See the documentation on find()")
                 
-        params = {
-            "type" : entity_type,
-            "return_fields": fields or ["id"],
-            "filters": filters,
-            "return_only" : (retired_only and 'retired') or "active",
-            "return_paging_info" : True,
-            "paging": {
-                "entities_per_page": self.config.records_per_page, 
-                "current_page": 1
-            }
-        }
+        params = self._construct_read_parameters(entity_type,
+                                                 fields,
+                                                 filters,
+                                                 retired_only,
+                                                 order)
 
-
-        if order:
-            sort_list = []
-            for sort in order:
-                if sort.has_key('column'):
-                    # TODO: warn about deprecation of 'column' param name
-                    sort['field_name'] = sort['column']
-                sort.setdefault("direction", "asc")
-                sort_list.append({
-                    'field_name': sort['field_name'],
-                    'direction' : sort['direction']
-                })
-            params['sorts'] = sort_list
-           
         if limit and limit <= self.config.records_per_page:
             params["paging"]["entities_per_page"] = limit
             # If page isn't set and the limit doesn't require pagination, 
@@ -410,7 +410,43 @@ class Shotgun(object):
         
         return self._parse_records(records)
 
-    def summarize(self, entity_type, filters, summary_fields, filter_operator=None, grouping=None):
+
+
+    def _construct_read_parameters(self,
+                                   entity_type,
+                                   fields,
+                                   filters,
+                                   retired_only,
+                                   order):
+        params = {}
+        params["type"]               = entity_type
+        params["return_fields"]      = fields or ["id"]
+        params["filters"]            = filters
+        params["return_only"]        = (retired_only and 'retired') or "active"
+        params["return_paging_info"] = True
+        params["paging"] = { "entities_per_page": self.config.records_per_page, 
+                             "current_page": 1 }
+
+        if order:
+            sort_list = []
+            for sort in order:
+                if sort.has_key('column'):
+                    # TODO: warn about deprecation of 'column' param name
+                    sort['field_name'] = sort['column']
+                sort.setdefault("direction", "asc")
+                sort_list.append({
+                    'field_name': sort['field_name'],
+                    'direction' : sort['direction']
+                })
+            params['sorts'] = sort_list
+        return params
+           
+    def summarize(self,
+                  entity_type,
+                  filters,
+                  summary_fields,
+                  filter_operator=None,
+                  grouping=None):
         """
         Return group and summary information for entity_type for summary_fields
         based on the given filters.
@@ -419,9 +455,16 @@ class Shotgun(object):
             raise ValueError("summarize() 'filters' parameter must be a list")
             
         if not isinstance(grouping, list) and grouping != None:
-            raise ValueError("summarize() 'grouping' parameter must be a list or None")
+            msg = "summarize() 'grouping' parameter must be a list or None"
+            raise ValueError(msg)
 
-        params = _create_summary_request(entity_type, filters, summary_fields, filter_operator, grouping)
+        filters = _translate_filters(filters, filter_operator)
+        params = {"type": entity_type,
+                  "summaries": summary_fields,
+                  "filters": filters}
+        if grouping != None:
+            params['grouping'] = grouping
+
         records = self._call_rpc('summarize', params)
         return records
 
@@ -531,48 +574,35 @@ class Shotgun(object):
         calls = []
 
         def _required_keys(message, required_keys, data):
-            if set(required_keys) - set(data.keys()):
+            missing = set(required_keys) - set(data.keys())
+            if missing: 
                 raise ShotgunError("%s missing required key: %s. "\
                     "Value was: %s." % (message, ", ".join(missing), data))
 
         for req in requests:
-            _required_keys("Batched request", ['request_type','entity_type'], 
-                req)
+            _required_keys("Batched request", 
+                           ['request_type','entity_type'], 
+                           req)
+            request_params = {'request_type': req['request_type'],
+                              "type" : req["entity_type"]}
 
             if req["request_type"] == "create":
                 _required_keys("Batched create request", ['data'], req)
-
-                calls.append({
-                    "request_type" : "create",
-                    "type" : req["entity_type"],
-                    "fields" : self._dict_to_list(req["data"]), 
-                    "return_fields" : req.get("return_fields") or["id"]
-                })
-                
+                request_params['fields'] = self._dict_to_list(req["data"]) 
+                request_params["return_fields"] = req.get("return_fields") or["id"]
             elif req["request_type"] == "update":
-                _required_keys("Batched update request", ['entity_id','data'],
-                    req)
-
-                calls.append({
-                    "request_type" : "update",
-                    "type" : req["entity_type"],
-                    "id" : req["entity_id"],
-                    "fields" : self._dict_to_list(req["data"]), 
-                })
-
+                _required_keys("Batched update request",
+                               ['entity_id','data'],
+                               req)
+                request_params['id'] = req['entity_id']
+                request_params['fields'] = self._dict_to_list(req["data"]) 
             elif req["request_type"] == "delete":
                 _required_keys("Batched delete request", ['entity_id'], req)
-
-                calls.append({
-                    "request_type" : "delete",
-                    "type" : req["entity_type"],
-                    "id" : req["entity_id"],
-                })
-            
+                request_params['id'] = req['entity_id']
             else:
                 raise ShotgunError("Invalid request_type '%s' for batch" % (
-                    req["request_type"]))
-
+                                   req["request_type"]))
+            calls.append(request_params)
         records = self._call_rpc("batch", calls)
         return self._parse_records(records)
         
@@ -777,13 +807,14 @@ class Shotgun(object):
                     "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
                     path, url, str(result)))
         
+        # TODO: 
         # we changed the result string in the middle of 1.8 to return the id
         # remove once everyone is > 1.8.3
         r = str(result).split(":")
-        id = 0
+        attachment_id = 0
         if len(r) > 1:
-            id = int(str(result).split(":")[1].split("\n")[0])
-        return id
+            attachment_id = int(str(result).split(":")[1].split("\n")[0])
+        return attachment_id
     
     def download_attachment(self, attachment_id):
         """Gets the returns binary content of the specified attachment.
@@ -852,7 +883,7 @@ class Shotgun(object):
             "instead" % entity_type)
     
     def entity_types(self):
-        raise ShotgunError("Deprecated: use schema_entity_read() instead")        
+        raise ShotgunError("Deprecated: use schema_entity_read() instead")     
     # ========================================================================
     # RPC Functions 
 
@@ -862,7 +893,7 @@ class Shotgun(object):
         
         """
         
-        log.debug("Starting rpc call to %s with params %s" % (
+        LOG.debug("Starting rpc call to %s with params %s" % (
             method, params))
             
         params = self._transform_outbound(params)
@@ -876,7 +907,7 @@ class Shotgun(object):
         }
         http_status, resp_headers, body = self._make_call("POST", 
             self.config.api_path, encoded_payload, req_headers)
-        log.info("Completed rpc call to %s" % (method))
+        LOG.info("Completed rpc call to %s" % (method))
                 
         self._parse_http_status(http_status)
         response = self._decode_response(resp_headers, body)
@@ -964,9 +995,9 @@ class Shotgun(object):
         """
         url = urlparse.urlunparse((self.config.scheme, self.config.server, 
             path, None, None, None))
-        log.debug("Request is %s:%s" % (verb, url))
-        log.debug("Request headers are %s" % headers)
-        log.debug("Request body is %s" % body)
+        LOG.debug("Request is %s:%s" % (verb, url))
+        LOG.debug("Request headers are %s" % headers)
+        LOG.debug("Request body is %s" % body)
         
         conn = self._get_connection()
         resp, content = conn.request(url,method=verb, body=body, 
@@ -979,9 +1010,9 @@ class Shotgun(object):
         )
         resp_body = content
         
-        log.debug("Response status is %s %s" % http_status)
-        log.debug("Response headers are %s" % resp_headers)
-        log.debug("Response body is %s" % resp_body)
+        LOG.debug("Response status is %s %s" % http_status)
+        LOG.debug("Response headers are %s" % resp_headers)
+        LOG.debug("Response body is %s" % resp_body)
         
         return (http_status, resp_headers, resp_body)
         
@@ -1063,8 +1094,8 @@ class Shotgun(object):
         if self.config.convert_datetimes_to_utc:
             def _change_tz(value):
                 if value.tzinfo == None:
-                    value = value.replace(tzinfo=sg_timezone.local)
-                return value.astimezone(sg_timezone.utc)
+                    value = value.replace(tzinfo=SG_TIMEZONE.local)
+                return value.astimezone(SG_TIMEZONE.utc)
         else:
             _change_tz = None
 
@@ -1102,11 +1133,11 @@ class Shotgun(object):
         #to the local time, otherwise it will fail to compare to datetimes 
         #that do not have a time zone.
         if self.config.convert_datetimes_to_utc:
-            _change_tz = lambda x: x.replace(tzinfo=sg_timezone.utc)\
-                .astimezone(sg_timezone.local)\
+            _change_tz = lambda x: x.replace(tzinfo=SG_TIMEZONE.utc)\
+                .astimezone(SG_TIMEZONE.local)\
                 .replace(tzinfo=None)
         else:
-             _change_tz = None
+            _change_tz = None
         
         def _inbound_visitor(value):
             if isinstance(value, basestring):
@@ -1216,11 +1247,12 @@ class Shotgun(object):
         # curl "https://foo.com/upload/get_thumbnail_url?entity_type=Version&entity_id=1"
         # 1
         # /files/0000/0000/0012/232/shot_thumb.jpg.jpg 
-
-        url = "/upload/get_thumbnail_url?entity_type=%s&entity_id=%s" % (
-            urllib.quote(entity_type), urllib.quote(str(entity_id)))
+        entity_info = {'e_type':urllib.quote(entity_type),
+                       'e_id':urllib.quote(str(entity_id))}
+        url = ("/upload/get_thumbnail_url?" + 
+                "entity_type=%(e_type)s&entity_id=%(e_id)s" % entity_info)
             
-        _, _, body = self._make_call("GET", url, None, None)
+        body = self._make_call("GET", url, None, None)[2]
         
         code, thumb_url = body.splitlines()
         code = int(code)
@@ -1294,10 +1326,13 @@ class FormPostHandler(urllib2.BaseHandler):
             buffer.write('\r\n\r\n%s\r\n' % value)
         for (key, fd) in files:
             filename = fd.name.split('/')[-1]
-            content_type = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
+            content_type = mimetypes.guess_type(filename)[0]
+            content_type = content_type or 'application/octet-stream'
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
             buffer.write('--%s\r\n' % boundary)
-            buffer.write('Content-Disposition: form-data; name="%s"; filename="%s"\r\n' % (key, filename))
+            c_dis = 'Content-Disposition: form-data; name="%s"; filename="%s"%s'
+            content_disposition = c_dis % (key, filename, '\r\n')
+            buffer.write(content_disposition)
             buffer.write('Content-Type: %s\r\n' % content_type)
             buffer.write('Content-Length: %s\r\n' % file_size)
             fd.seek(0)
@@ -1310,32 +1345,16 @@ class FormPostHandler(urllib2.BaseHandler):
         return self.http_request(request)
 
 
-
-
-sg_timezone = SgTimezone()
-
-
-def _create_summary_request(entity_type, filters, summary_fields, filter_operator, grouping):
-    '''_create_summary_request assembles a request based on input'''
-    #TODO make this part of summary method?
+def _translate_filters(filters, filter_operator):
+    '''_translate_filters translates filters params into data structure
+    expected by rpc call.'''
     new_filters = {}
+        
     if not filter_operator or filter_operator == "all":
         new_filters["logical_operator"] = "and"
     else:
         new_filters["logical_operator"] = "or"
-
-    new_filters["conditions"] = []
-    for f in filters:
-        new_filters["conditions"].append( {"path":f[0],"relation":f[1],"values":f[2:]} )
-
-    filters = new_filters
-
-    req = {
-        "type": entity_type,
-        "summaries": summary_fields,
-        "filters": filters,
-    }
-    if grouping != None:
-        req['grouping'] = grouping
-
-    return req
+    conditions = [{"path":f[0], "relation":f[1], "values":f[2:]} 
+                                                for f in filters]
+    new_filters["conditions"] = conditions
+    return new_filters

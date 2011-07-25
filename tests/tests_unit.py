@@ -25,57 +25,62 @@ class TestShotgunInit(unittest.TestCase):
         self.assertEquals(sg.config.proxy_port, proxy_port)
 
     
-class TestCreateSummaryRequest(unittest.TestCase):
+class TestShotgunSummarize(unittest.TestCase):
     '''Test case for _create_summary_request function and parameter
     validation as it exists in Shotgun.summarize.
 
     Does not require database connection or test data.'''
-
     def setUp(self):
-        server_path = 'http://server_path'
-        script_name = 'script_name'
-        api_key     = 'api_key'
-
-        self.sg = api.Shotgun(server_path, 
-                              script_name, 
-                              api_key, 
+        self.sg = api.Shotgun('http://server_path',
+                              'script_name', 
+                              'api_key', 
                               connect=False)
 
 
     def test_filter_operator_none(self):
         expected_logical_operator = 'and'
         filter_operator = None
-        result = api.shotgun._create_summary_request('',[],None,filter_operator, None) 
+        self._assert_filter_operator(expected_logical_operator, filter_operator)
+
+    def _assert_filter_operator(self, expected_logical_operator, filter_operator):
+        result = self.get_call_rpc_params(None, {'filter_operator':filter_operator})
         actual_logical_operator = result['filters']['logical_operator']
         self.assertEqual(expected_logical_operator, actual_logical_operator)
 
     def test_filter_operator_all(self):
         expected_logical_operator = 'and'
         filter_operator = 'all'
-        result = api.shotgun._create_summary_request('',[],None,filter_operator, None) 
-        actual_logical_operator = result['filters']['logical_operator']
-        self.assertEqual(expected_logical_operator, actual_logical_operator)
+        self._assert_filter_operator(expected_logical_operator, filter_operator)
 
-    def test_filter_operator_none(self):
+    def test_filter_operator_or(self):
         expected_logical_operator = 'or'
         filter_operator = 'or'
-        result = api.shotgun._create_summary_request('',[],None,filter_operator, None) 
-        actual_logical_operator = result['filters']['logical_operator']
-        self.assertEqual(expected_logical_operator, actual_logical_operator)
+        self._assert_filter_operator(expected_logical_operator, filter_operator)
 
     def test_filters(self):
         path = 'path'
         relation = 'relation'
         value = 'value'
-        expected_condition = {'path':path, 'relation':relation, 'value':value}
-        result = api.shotgun._create_summary_request('', [[path, relation, value]], None, None, None) 
+        expected_condition = {'path':path, 'relation':relation, 'values':[value]}
+        args = ['',[[path, relation, value]],None]
+        result = self.get_call_rpc_params(args, {})
         actual_condition = result['filters']['conditions'][0]
+        self.assertEquals(expected_condition, actual_condition)
+        
+    @patch('shotgun_api3.Shotgun._call_rpc')
+    def get_call_rpc_params(self, args, kws, call_rpc):
+        '''Return params sent to _call_rpc from summarize.'''
+        if not args:
+            args = [None, [], None]
+        self.sg.summarize(*args, **kws)
+        return call_rpc.call_args[0][1]
 
     def test_grouping(self):
-        result = api.shotgun._create_summary_request('', [], None, None, None) 
+        result = self.get_call_rpc_params(None, {})
         self.assertFalse(result.has_key('grouping'))
         grouping = ['something']
-        result = api.shotgun._create_summary_request('', [], None, None, grouping) 
+        kws = {'grouping':grouping} 
+        result = self.get_call_rpc_params(None, kws)
         self.assertEqual(grouping, result['grouping'])
 
     def test_filters_type(self):
@@ -85,6 +90,36 @@ class TestCreateSummaryRequest(unittest.TestCase):
     def test_grouping_type(self):
         '''test_grouping_type tests that grouping parameter is a list or None'''
         self.assertRaises(ValueError, self.sg.summarize, '', [], [], grouping='Not a list')
+
+class TestShotgunBatch(unittest.TestCase):
+    def setUp(self):
+        self.sg = api.Shotgun('http://server_path',
+                              'script_name', 
+                              'api_key', 
+                              connect=False)
+
+    def test_missing_required_key(self):
+        req = {}
+        # requires keys request_type and entity_type
+        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        req['entity_type'] = 'Entity'
+        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        req['request_type'] = 'not_real_type'
+        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        # create requires data key
+        req['request_type'] = 'create'
+        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        # update requires entity_id and data
+        req['request_type'] = 'update'
+        req['data'] = {}
+        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        del req['data']
+        req['entity_id'] = 2334
+        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        # delete requires entity_id
+        req['request_type'] = 'delete'
+        del req['entity_id']
+        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
 
 
 class TestServerCapabilities(unittest.TestCase):
@@ -129,9 +164,8 @@ class TestClientCapabilities(unittest.TestCase):
     def test_no_platform(self, mock_platform):
         mock_platform.system.return_value = "unsupported"
         client_caps = api.shotgun.ClientCapabilities()
-        self.assertIsNone(client_caps.platform)
-        self.assertIsNone(client_caps.local_path_field)
-
+        self.assertEquals(client_caps.platform, None)
+        self.assertEquals(client_caps.local_path_field, None)
         
     @patch('shotgun_api3.shotgun.sys')
     def test_py_version(self, mock_sys):
