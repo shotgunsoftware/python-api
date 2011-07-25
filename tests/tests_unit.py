@@ -177,7 +177,8 @@ class TestClientCapabilities(unittest.TestCase):
         client_caps = api.shotgun.ClientCapabilities()
         self.assertEquals(client_caps.py_version, expected_py_version)
         
-
+if __name__ == '__main__':
+    unittest.main()
 
 
 
