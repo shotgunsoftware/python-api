@@ -1,14 +1,5 @@
-# Example server and login information to use for tests. This file should be renamed
-# to config and the appropriate values should be added.
-#
-# The unit tests can either connect to a server or use a mock server connection.
-# When connected to a server they use the entity id's listed below to add, 
-# update and delete values. They also add, update and delete schema fields.    
-# 
-# For more details see the test_client.py file.
-
-[TEST_RUN_OPTIONS]
-mock:True
+# Example server and login information to use for tests which require a live server.
+# This file should be renamed to config and the appropriate values should be added.
 
 [SERVER_INFO]
 

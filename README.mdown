@@ -13,7 +13,6 @@ For Python 2.6 and higher, we will use the built-in json module... but installin
 
 ## Known Issues
 
-Does not yet support the new summarize method from the summary_grouping branch.
 
 
 
@@ -31,7 +30,7 @@ Shotgun provides a simple Python-based API for accessing Shotgun and integrating
 - Python v2.4 - v2.7. (We do have plans to eventually support Python 3)
 
 ## Installing
-To use Shotgun's Python API module, you need to place it in one of the directories specified by the environment variable PYTHONPATH. For more information on PYTHONPATH and using modules in Python, see http://docs.python.org/tutorial/modules.html
+To use Shotgun's Python API module, you need to place the package shotgun_api3 in one of the directories specified by the environment variable PYTHONPATH. For more information on PYTHONPATH and using modules in Python, see http://docs.python.org/tutorial/modules.html
 
 ## Documentation
 Tutorials and detailed documentation about the Python API are available on the [Shotgun Support website](https://support.shotgunsoftware.com/forums/48807-developer-api-info). 
@@ -42,9 +41,22 @@ Some useful direct links within this section are below:
 * [Reference: Data Types](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Data-Types)
 * [Reference: Filter Syntax](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax)
 
+## Tests
+Integration and unit tests are provided.
+- test_client and tests_unit mock server interaction and do not require a shotgun instance to be available.
+- test_api and test_api_long do require a shotgun instance, with a script key available for the tests. These tests rely on a tests/config file, which can be created by renaming example_config and supplying the server and script user values. The tests will set up test data on the server based on the data set forth in the config. This data will be manipulated by the tests, and should not be used for other purposes.
+- To run all of the tests, use the shell script run-tests. This script require nose to be installed.
+
 ## Changelog
 (Note that many of these items may be specific to the XML-RPC version of the API and may not apply to the Python JSON API)  
   
+
+**v3.0.8 - 2011 July 27**
+  
+  + summarize available in json api
+  + refactored single file into package
+  + tests added (Thanks to Aaron Morton https://github.com/amorton)
+  + added ensure_ascii parameter, insuring results are ascii
 
 **v3.0.6 - 2010 Jan 25**
  

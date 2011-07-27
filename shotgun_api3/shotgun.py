@@ -60,7 +60,7 @@ except ImportError:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.1a1"
+__version__ = "3.0.8"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -189,6 +189,7 @@ class Shotgun(object):
                  api_key, 
                  convert_datetimes_to_utc=True,
                  http_proxy=None,
+                 ensure_ascii=True,
                  connect=True):
         """Initialises a new instance of the Shotgun client.
         
@@ -216,7 +217,6 @@ class Shotgun(object):
         self.config.script_name = script_name
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.proxy_info = http_proxy
-        
         self._connection = None
         
         base_url = (base_url or "").lower()
@@ -241,6 +241,9 @@ class Shotgun(object):
             self.config.proxy_server, proxy_port = proxy_netloc.split(":", 1)
             self.config.proxy_port = int(proxy_port or 8080)
             
+        if ensure_ascii:
+            self._json_loads = self._json_loads_ascii
+        
         self.client_caps = ClientCapabilities()
         self._server_caps = None
         #test to ensure the the server supports the json API
@@ -1045,11 +1048,38 @@ class Shotgun(object):
             
         ct = (headers.get("content-type") or "application/json").lower()
         
-        if ct.startswith("application/json") or \
-            ct.startswith("text/javascript"):
-            return json.loads(body)
-            
+        if ct.startswith("application/json") or ct.startswith("text/javascript"):
+            return self._json_loads(body)
         return body
+
+    def _json_loads(self, body):
+        return json.loads(body)
+
+    def _json_loads_ascii(self, body):
+        '''See http://stackoverflow.com/questions/956867'''
+        def _decode_list(lst):
+            newlist = []
+            for i in lst:
+                if isinstance(i, unicode):
+                    i = i.encode('utf-8')
+                elif isinstance(i, list):
+                    i = _decode_list(i)
+                newlist.append(i)
+            return newlist
+
+        def _decode_dict(dct):
+            newdict = {}
+            for k, v in dct.iteritems():
+                if isinstance(k, unicode):
+                    k = k.encode('utf-8')
+                if isinstance(v, unicode):
+                    v = v.encode('utf-8')
+                elif isinstance(v, list):
+                    v = _decode_list(v)
+                newdict[k] = v
+            return newdict
+        return json.loads(body, object_hook=_decode_dict)
+
 
     def _response_errors(self, sg_response):
         """Raises any API errors specified in the response.
@@ -1280,13 +1310,7 @@ class Shotgun(object):
             for k,v in (d or {}).iteritems()
         ]
 
-
-
-
-
-
-
-# ----------------------------------------------------------------------------
+ 
 # Helpers from the previous API, left as is. 
 
 # Based on http://code.activestate.com/recipes/146306/

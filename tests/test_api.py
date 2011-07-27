@@ -14,6 +14,8 @@ import base
 class TestShotgunApi(base.LiveTestBase):
     def setUp(self):
         super(TestShotgunApi, self).setUp()
+        # give note unicode content
+        self.sg.update('Note', self.note['id'], {'content':u'La Pe\xf1a'})
         
     def test_info(self):
         """Called info"""
@@ -173,4 +175,34 @@ class TestShotgunApi(base.LiveTestBase):
         assert(result['groups'][0]['group_value'])
         assert(result['groups'][0]['summaries'])
         assert(result['summaries'])
+
+    def test_ensure_ascii(self):
+        '''test_ensure_ascii tests ensure_unicode flag.'''
+        sg_ascii = api.Shotgun(self.config.server_url, 
+                              self.config.script_name, 
+                              self.config.api_key, 
+                              ensure_ascii=True)
+
+        result = sg_ascii.find_one('Note', [['id','is',self.note['id']]], fields=['content'])
+        self.assertFalse(_has_unicode(result))
+
+
+    def test_ensure_unicode(self):
+        '''test_ensure_unicode tests ensure_unicode flag.'''
+        sg_unicode = api.Shotgun(self.config.server_url, 
+                              self.config.script_name, 
+                              self.config.api_key, 
+                              ensure_ascii=False)
+        result = sg_unicode.find_one('Note', [['id','is',self.note['id']]], fields=['content'])
+        print result
+        self.assertTrue(_has_unicode(result))
+
+def _has_unicode(data):
+    for k, v in data.items():
+        if (isinstance(k, unicode)):
+            return True
+        if (isinstance(v, unicode)):
+            return True
+    return False
+
 

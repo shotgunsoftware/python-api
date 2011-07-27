@@ -186,6 +186,12 @@ class LiveTestBase(TestBase):
                 'project':self.project}
         self.shot = _find_or_create_entity(self.sg, 'Shot', data, keys)
 
+        keys = ['project','user']
+        data = {'project':self.project,
+                'user':self.human_user,
+                'content':'anything'}
+        self.note = _find_or_create_entity(self.sg, 'Note', data, keys)
+
 
 class SgTestConfig(object):
     '''Reads test config and holds values'''
