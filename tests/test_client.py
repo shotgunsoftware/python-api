@@ -296,23 +296,37 @@ class TestShotgunClient(base.MockTestBase):
         j = self.sg._encode_payload(d)
         self.assertTrue(isinstance(j, str))
         
-    def test_decode_response(self):
+    def test_decode_response_ascii(self):
+        self._assert_decode_resonse(True, u"my data \u00E0".encode('utf8'))
+
+    def test_decode_response_unicode(self):
+        self._assert_decode_resonse(False, u"my data \u00E0")
+
+    def _assert_decode_resonse(self, ensure_ascii, data):
         """HTTP Response is decoded as JSON or text"""
         
         headers = {
             "content-type" : "application/json;charset=utf-8"
         }
         d = {
-            "this is " : u"my data \u00E0"
+            "this is " : data
         }
-        j = json.dumps(d, ensure_ascii=False, encoding="utf-8")        
-        self.assertEqual(d, self.sg._decode_response(headers, j))
+        sg = api.Shotgun(self.config.server_url, 
+                         self.config.script_name, 
+                         self.config.api_key, 
+                         http_proxy=self.config.http_proxy,
+                         ensure_ascii = ensure_ascii,
+                         connect=False)
+
+        j = json.dumps(d, ensure_ascii=ensure_ascii, encoding="utf-8")        
+        self.assertEqual(d, sg._decode_response(headers, j))
         
         headers["content-type"] = "text/javascript"
-        self.assertEqual(d, self.sg._decode_response(headers, j))
+        self.assertEqual(d, sg._decode_response(headers, j))
 
         headers["content-type"] = "text/foo"
-        self.assertEqual(j, self.sg._decode_response(headers, j))
+        self.assertEqual(j, sg._decode_response(headers, j))
+ 
         
     def test_parse_records(self):
         """Parse records to replace thumbnail and local paths"""
