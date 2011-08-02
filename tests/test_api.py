@@ -197,7 +197,218 @@ class TestShotgunApi(base.LiveTestBase):
         print result
         self.assertTrue(_has_unicode(result))
 
-def _has_unicode(data):
+
+class TestDataTypes(base.LiveTestBase):
+    '''Test fields representing the different data types mapped on the server side.
+
+     Untested data types:  password, percent, pivot_column, serializable, image, currency
+                           multi_entity, system_task_type, timecode, url, uuid
+    '''
+    def setUp(self):
+        super(TestDataTypes, self).setUp()
+
+    def test_set_checkbox(self):
+        entity = 'HumanUser'
+        entity_id = self.human_user['id']
+        field_name = 'email_notes'
+        pos_values = [False, True]
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
+    
+    def test_set_color(self):
+        entity = 'Task'
+        entity_id = self.task['id']
+        field_name = 'color'
+        pos_values = ['pipeline_step', '222,0,0']
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
+
+    def test_set_date(self):
+        entity = 'Task'
+        entity_id = self.task['id']
+        field_name = 'due_date'
+        pos_values = ['2008-05-08', '2011-05-05']
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
+    def test_set_date_time(self):
+        entity = 'HumanUser'
+        entity_id = self.human_user['id']
+        field_name = 'locked_until'
+        local = api.shotgun.SG_TIMEZONE.local
+        dt_1 = datetime.datetime(2008, 10, 13, 23, 10, tzinfo=local)
+        dt_2 = datetime.datetime(2009, 10, 13, 23, 10, tzinfo=local)
+        pos_values = [dt_1, dt_2]
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
+    def test_set_duration(self):
+        entity = 'Task'
+        entity_id = self.task['id']
+        field_name = 'duration'
+        pos_values = [2100, 1300]
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
+    def test_set_entity(self):
+        entity = 'Task'
+        entity_id = self.task['id']
+        field_name = 'entity'
+        pos_values = [self.asset, self.shot]
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected['id'], actual['id'])
+
+    def test_set_float(self):
+        entity = 'Version'
+        entity_id = self.version['id']
+        field_name = 'sg_movie_aspect_ratio'
+        pos_values = [2.0, 3.0]
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
+
+    def test_set_list(self):
+        entity = 'Note'
+        entity_id = self.note['id']
+        field_name = 'read_by_current_user'
+        pos_values = ['read','unread']
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
+
+    def test_set_number(self):
+        entity = 'Shot'
+        entity_id = self.shot['id']
+        field_name = 'head_in'
+        pos_values = [2300, 1300]
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
+    def test_set_status_list(self):
+        entity = 'Task'
+        entity_id = self.task['id']
+        field_name = 'sg_status_list'
+        pos_values = ['rdy','fin']
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+    
+    def test_set_status_list(self):
+        entity = 'Task'
+        entity_id = self.task['id']
+        field_name = 'sg_status_list'
+        pos_values = ['rdy','fin']
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
+    def test_set_tag_list(self):
+        entity = 'Task'
+        entity_id = self.task['id']
+        field_name = 'tag_list'
+        pos_values = [['a','b'],['c']]
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
+    def test_set_text(self):
+        entity = 'Note'
+        entity_id = self.note['id']
+        field_name = 'content'
+        pos_values = ['this content', 'that content']
+        expected, actual = self.assert_set_field(entity, 
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
+    def assert_set_field(self, entity, entity_id, field_name, pos_values):
+        query_result = self.sg.find_one(entity,
+                                         [['id', 'is', entity_id]],
+                                         [field_name])
+        initial_value = query_result[field_name]
+        new_value = (initial_value == pos_values[0] and pos_values[1]) or pos_values[0]
+        self.sg.update(entity, entity_id, {field_name:new_value})
+        new_values = self.sg.find_one(entity,
+                                     [['id', 'is', entity_id]],
+                                     [field_name])
+        return new_value, new_values[field_name]
+
+class TestUtc(base.LiveTestBase):
+    '''Test utc options'''
+
+    def setUp(self):
+        super(TestUtc, self).setUp()
+        utc = api.shotgun.SG_TIMEZONE.utc
+        self.datetime_utc = datetime.datetime(2008, 10, 13, 23, 10, tzinfo=utc)
+        local = api.shotgun.SG_TIMEZONE.local
+        self.datetime_local = datetime.datetime(2008, 10, 13, 23, 10, tzinfo=local)
+        self.datetime_none = datetime.datetime(2008, 10, 13, 23, 10)
+
+    def test_convert_to_utc(self):
+        sg_utc= api.Shotgun(self.config.server_url, 
+                            self.config.script_name, 
+                            self.config.api_key, 
+                            http_proxy=self.config.http_proxy,
+                            convert_datetimes_to_utc=True)
+        self._assert_expected(sg_utc, self.datetime_none, self.datetime_local)
+        self._assert_expected(sg_utc, self.datetime_local, self.datetime_local)
+
+    def test_no_convert_to_utc(self):
+        sg_no_utc= api.Shotgun(self.config.server_url, 
+                               self.config.script_name, 
+                               self.config.api_key, 
+                               http_proxy=self.config.http_proxy,
+                               convert_datetimes_to_utc=False)
+        self._assert_expected(sg_no_utc, self.datetime_none, self.datetime_none)
+        self._assert_expected(sg_no_utc, self.datetime_utc, self.datetime_none)
+
+    def _assert_expected(self, sg, date_time, expected):
+        entity_name = 'HumanUser'
+        entity_id = self.human_user['id']
+        field_name = 'locked_until'
+        sg.update(entity_name, entity_id, {field_name:date_time})
+        result = sg.find_one(entity_name, [['id','is',entity_id]],[field_name])
+        self.assertEqual(result[field_name], expected)
+
+
+
+def  _has_unicode(data):
     for k, v in data.items():
         if (isinstance(k, unicode)):
             return True

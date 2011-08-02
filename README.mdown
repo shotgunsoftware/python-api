@@ -12,8 +12,7 @@ For Python 2.6 and higher, we will use the built-in json module... but installin
 
 
 ## Known Issues
-
-
+- Some older versions of shotgun 2.4  may not allow the setting of float fields using this api.
 
 
 # Shotgun Python API

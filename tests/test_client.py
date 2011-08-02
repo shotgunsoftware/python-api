@@ -17,7 +17,7 @@ import mock
 
 import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
-from shotgun_api3.shotgun import ServerCapabilities
+from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 import base
 
 class TestShotgunClient(base.MockTestBase):
@@ -231,7 +231,7 @@ class TestShotgunClient(base.MockTestBase):
         timestamp = time.time()
         #microseconds will be last during transforms
         now = datetime.datetime.fromtimestamp(timestamp).replace(
-            microsecond=0)
+            microsecond=0, tzinfo=SG_TIMEZONE.local)
         utc_now = datetime.datetime.utcfromtimestamp(timestamp).replace(
             microsecond=0)
         local = {

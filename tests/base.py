@@ -25,6 +25,8 @@ class TestBase(unittest.TestCase):
         self.shot           = None
         self.asset          = None
         self.version        = None
+        self.note           = None
+        self.task           = None
         self.human_password = None
         self.server_url     = None
         self.connect        = False
@@ -158,6 +160,7 @@ class LiveTestBase(TestBase):
     '''Test base for tests relying on connection to server.'''
     def setUp(self):
         super(LiveTestBase, self).setUp()
+        self.sg_version = self.sg.info()['version'][:3]
         self._setup_db(self.config)
 
     def _setup_db(self, config):
@@ -167,6 +170,10 @@ class LiveTestBase(TestBase):
         data = {'name':self.config.human_name,
                 'login':self.config.human_login,
                 'password_proxy':self.config.human_password}
+        if self.sg_version >= (3, 0, 0):
+            data['locked_until'] = None
+
+
         self.human_user = _find_or_create_entity(self.sg, 'HumanUser', data)
 
         data = {'code':self.config.asset_code,
@@ -192,6 +199,12 @@ class LiveTestBase(TestBase):
                 'content':'anything'}
         self.note = _find_or_create_entity(self.sg, 'Note', data, keys)
 
+        keys = ['project', 'entity', 'content']
+        data = {'project':self.project,
+                'entity':self.asset,
+                'content':self.config.task_content}
+        self.task =  _find_or_create_entity(self.sg, 'Task', data, keys)
+
 
 class SgTestConfig(object):
     '''Reads test config and holds values'''
@@ -209,6 +222,7 @@ class SgTestConfig(object):
         self.asset_code     = None  
         self.version_code   = None  
         self.shot_code      = None  
+        self.task_content   = None
 
 
     def read_config(self, config_path):

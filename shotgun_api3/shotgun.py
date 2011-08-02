@@ -1158,14 +1158,12 @@ class Shotgun(object):
     def _transform_inbound(self, data):
         """Transforms data types or values after they are received from the 
         server."""
-        
         #NOTE: The time zone is removed from the time after it is transformed 
         #to the local time, otherwise it will fail to compare to datetimes 
         #that do not have a time zone.
         if self.config.convert_datetimes_to_utc:
             _change_tz = lambda x: x.replace(tzinfo=SG_TIMEZONE.utc)\
-                .astimezone(SG_TIMEZONE.local)\
-                .replace(tzinfo=None)
+                .astimezone(SG_TIMEZONE.local)
         else:
             _change_tz = None
         
