@@ -57,7 +57,14 @@ try:
     import simplejson as json
 except ImportError:
     LOG.debug("simplejson not found, dropping back to json")
-    import json as json 
+    try:
+        import json as json 
+    except ImportError:
+        LOG.debug("json not found, dropping back to embedded simplejson")
+        lib_path = os.path.join('shotgun_api3','lib')
+        sys.path.append(lib_path)
+        import lib.simplejson as json
+        sys.path.pop()
 
 # ----------------------------------------------------------------------------
 # Version
