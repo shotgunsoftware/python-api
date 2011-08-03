@@ -1,2 +1,2 @@
-from shotgun import Shotgun, ShotgunError, Fault
-
+from shotgun import (Shotgun, ShotgunError, Fault, ProtocolError, ResponseError,
+                     Error)

@@ -1,6 +1,5 @@
 #! /opt/local/bin/python
 import unittest
-from tests import base
 from mock import patch, Mock
 import shotgun_api3 as api
 

@@ -6,9 +6,9 @@ test_api_long for other tests.
 
 import datetime
 import os
+from mock import patch, Mock, MagicMock
 
-import shotgun_api3 as api
-
+import shotgun_api3
 import base
 
 class TestShotgunApi(base.LiveTestBase):
@@ -157,8 +157,8 @@ class TestShotgunApi(base.LiveTestBase):
 
     def test_deprecated_functions(self):
         """Deprecated functions raise errors"""
-        self.assertRaises(api.ShotgunError, self.sg.schema, "foo")
-        self.assertRaises(api.ShotgunError, self.sg.entity_types)
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.schema, "foo")
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.entity_types)
 
 
     def test_simple_summary(self):
@@ -178,7 +178,7 @@ class TestShotgunApi(base.LiveTestBase):
 
     def test_ensure_ascii(self):
         '''test_ensure_ascii tests ensure_unicode flag.'''
-        sg_ascii = api.Shotgun(self.config.server_url, 
+        sg_ascii = shotgun_api3.Shotgun(self.config.server_url, 
                               self.config.script_name, 
                               self.config.api_key, 
                               ensure_ascii=True)
@@ -189,7 +189,7 @@ class TestShotgunApi(base.LiveTestBase):
 
     def test_ensure_unicode(self):
         '''test_ensure_unicode tests ensure_unicode flag.'''
-        sg_unicode = api.Shotgun(self.config.server_url, 
+        sg_unicode = shotgun_api3.Shotgun(self.config.server_url, 
                               self.config.script_name, 
                               self.config.api_key, 
                               ensure_ascii=False)
@@ -246,7 +246,7 @@ class TestDataTypes(base.LiveTestBase):
         entity = 'HumanUser'
         entity_id = self.human_user['id']
         field_name = 'locked_until'
-        local = api.shotgun.SG_TIMEZONE.local
+        local = shotgun_api3.shotgun.SG_TIMEZONE.local
         dt_1 = datetime.datetime(2008, 10, 13, 23, 10, tzinfo=local)
         dt_2 = datetime.datetime(2009, 10, 13, 23, 10, tzinfo=local)
         pos_values = [dt_1, dt_2]
@@ -374,14 +374,14 @@ class TestUtc(base.LiveTestBase):
 
     def setUp(self):
         super(TestUtc, self).setUp()
-        utc = api.shotgun.SG_TIMEZONE.utc
+        utc = shotgun_api3.shotgun.SG_TIMEZONE.utc
         self.datetime_utc = datetime.datetime(2008, 10, 13, 23, 10, tzinfo=utc)
-        local = api.shotgun.SG_TIMEZONE.local
+        local = shotgun_api3.shotgun.SG_TIMEZONE.local
         self.datetime_local = datetime.datetime(2008, 10, 13, 23, 10, tzinfo=local)
         self.datetime_none = datetime.datetime(2008, 10, 13, 23, 10)
 
     def test_convert_to_utc(self):
-        sg_utc= api.Shotgun(self.config.server_url, 
+        sg_utc= shotgun_api3.Shotgun(self.config.server_url, 
                             self.config.script_name, 
                             self.config.api_key, 
                             http_proxy=self.config.http_proxy,
@@ -390,7 +390,7 @@ class TestUtc(base.LiveTestBase):
         self._assert_expected(sg_utc, self.datetime_local, self.datetime_local)
 
     def test_no_convert_to_utc(self):
-        sg_no_utc= api.Shotgun(self.config.server_url, 
+        sg_no_utc= shotgun_api3.Shotgun(self.config.server_url, 
                                self.config.script_name, 
                                self.config.api_key, 
                                http_proxy=self.config.http_proxy,
@@ -406,6 +406,32 @@ class TestUtc(base.LiveTestBase):
         result = sg.find_one(entity_name, [['id','is',entity_id]],[field_name])
         self.assertEqual(result[field_name], expected)
 
+
+class TestErrors(base.TestBase):
+    def test_bad_auth(self):
+        '''test_bad_auth invalid script name or api key raises fault'''
+        server_url = self.config.server_url
+        script_name = 'not_real_script_name'
+        api_key = self.config.api_key
+        sg = shotgun_api3.Shotgun(server_url, script_name, api_key)
+        self.assertRaises(shotgun_api3.Fault, sg.find_one, 'Shot',[])
+
+        script_name = self.config.script_name
+        api_key = 'notrealapikey'
+        sg = shotgun_api3.Shotgun(server_url, script_name, api_key)
+        self.assertRaises(shotgun_api3.Fault, sg.find_one, 'Shot',[])
+
+    @patch('shotgun_api3.shotgun.Http.request')
+    def test_status_not_200(self, mock_request):
+        response = MagicMock(name="response mock", spec=dict)
+        response.status = 300
+        response.reason = 'reason'
+        mock_request.return_value = (response, {})
+        self.assertRaises(shotgun_api3.ProtocolError, self.sg.find_one, 'Shot', [])
+
+#    def test_malformed_response(self):
+#        #TODO ResponseError
+#        pass
 
 
 def  _has_unicode(data):

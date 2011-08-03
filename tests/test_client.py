@@ -175,7 +175,7 @@ class TestShotgunClient(base.MockTestBase):
         self._mock_http( "big old error string", 
                        status=(500, "Internal Server Error"))
                 
-        self.assertRaises(RuntimeError, self.sg.info)
+        self.assertRaises(api.ProtocolError, self.sg.info)
         self.assertEqual(1, 
                         self.sg._http_request.call_count, 
                         "Call is not repeated")

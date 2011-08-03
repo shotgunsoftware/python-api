@@ -48,6 +48,7 @@ import urllib2      # used for image upload
 import urlparse
 from lib.httplib2 import Http
 from lib.sgtimezone import SgTimezone
+from lib.xmlrpclib import Error, ProtocolError, ResponseError
 
 LOG = logging.getLogger("shotgun_api3")
 SG_TIMEZONE = SgTimezone()
@@ -1026,9 +1027,16 @@ class Shotgun(object):
          
         :param status: Tuple of (code, reason).
         """
+        error_code = status[0]
+        reason = status[1]
         
         if status[0] >= 300:
-            raise RuntimeError("HTTP error from server %s %s" % status)
+            msg = "HTTP error from server"
+            raise ProtocolError(self.config.server,
+                                error_code,
+                                reason,
+                                msg)
+
         return
         
     def _decode_response(self, headers, body):
