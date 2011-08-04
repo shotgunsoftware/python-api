@@ -1,6 +1,6 @@
-# Shotgun Python JSON API - Alpha
+# Shotgun Python JSON API - Beta
 
-This is an alpha release of a new version of the Python API that uses JSON as a transport instead of XML-RPC. The intent is for this to be drop-in compatible with the previous version. If you find any incompatibilities, please contact us through support or on the dev list. 
+This is a beta release of a new version of the Python API that uses JSON as a transport instead of XML-RPC. The intent is for this to be drop-in compatible with the previous version. If you find any incompatibilities, please contact us through support or on the dev list. 
 
 ## New requirements
 
@@ -12,8 +12,8 @@ For Python 2.6 and higher, we will use the built-in json module... but installin
 
 
 ## Known Issues
-- Some older versions of shotgun 2.4  may not allow the setting of float fields using this api.
 
+* - In Shotgun 2.4.12 and lower there are bugs getting/setting float fields
 
 # Shotgun Python API
 
@@ -50,12 +50,12 @@ Integration and unit tests are provided.
 (Note that many of these items may be specific to the XML-RPC version of the API and may not apply to the Python JSON API)  
   
 
-**v3.0.8 - 2011 July 27**
+**v3.0.8 Beta - 2011 August 4**
   
   + summarize available in json api
   + refactored single file into package
   + tests added (Thanks to Aaron Morton https://github.com/amorton)
-  + added ensure_ascii parameter, insuring results are ascii
+  + return all strings as ascii for backwards compatibility, added ensure_ascii parameter to enable returning unicode
 
 **v3.0.6 - 2010 Jan 25**
  
