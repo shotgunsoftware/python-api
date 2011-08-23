@@ -22,8 +22,6 @@ import base
 
 class TestShotgunClient(base.MockTestBase):
     '''Test case for shotgun api with server interactions mocked.'''
-    def __init__(self, *args, **kws):
-        super(TestShotgunClient, self).__init__(*args, **kws)
 
     def setUp(self):
         super(TestShotgunClient, self).setUp()
@@ -395,6 +393,28 @@ class TestShotgunClient(base.MockTestBase):
         self.assertRaises(RuntimeError, self.sg._build_thumb_url, 
             "FakeAsset", 456)
 
+class TestShotgunClientInterface(base.MockTestBase):
+    '''Tests expected interface for shotgun module and client'''
+    def test_client_interface(self):
+        expected_attributes = ['base_url',
+                               'config',
+                               'client_caps',
+                               'server_caps']
+        for expected_attribute in expected_attributes: 
+            if not hasattr(self.sg, expected_attribute):
+                assert False, '%s not found on %s' % (expected_attribute,
+                                                      self.sg)
+
+    def test_module_interface(self):
+        import shotgun_api3
+        expected_contents = ['Shotgun', 'ShotgunError', 'Fault',
+                             'ProtocolError', 'ResponseError', 'Error',
+                             'sg_timezone']
+        for expected_content in expected_contents: 
+            if not hasattr(shotgun_api3, expected_content):
+                assert False, '%s not found on module %s' % (expected_content,
+                                                            shotgun_api3)
+        
 
 if __name__ == '__main__':
     unittest.main()
