@@ -227,12 +227,12 @@ class Shotgun(object):
         self.config.proxy_info = http_proxy
         self._connection = None
         
-        base_url = (base_url or "").lower()
+        self.base_url = (base_url or "").lower()
         self.config.scheme, self.config.server, api_base, _, _ = \
-            urlparse.urlsplit(base_url)
+            urlparse.urlsplit(self.base_url)
         if self.config.scheme not in ("http", "https"):
             raise ValueError("base_url must use http or https got '%s'" % 
-                base_url)
+                self.base_url)
         self.config.api_path = urlparse.urljoin(urlparse.urljoin(
             api_base or "/", self.config.api_ver + "/"), "json")
         
