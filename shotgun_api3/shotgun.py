@@ -918,7 +918,7 @@ class Shotgun(object):
         }
         http_status, resp_headers, body = self._make_call("POST", 
             self.config.api_path, encoded_payload, req_headers)
-        LOG.info("Completed rpc call to %s" % (method))
+        LOG.debug("Completed rpc call to %s" % (method))
                 
         self._parse_http_status(http_status)
         response = self._decode_response(resp_headers, body)
