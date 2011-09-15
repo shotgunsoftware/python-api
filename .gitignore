@@ -8,3 +8,4 @@
 *.swp
 *.out
 *.bak
+tests/config
