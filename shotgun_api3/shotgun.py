@@ -38,7 +38,6 @@ import logging
 import mimetools    # used for attachment upload
 import mimetypes    # used for attachment upload
 import os
-import platform
 import re
 import stat         # used for attachment upload
 import sys
@@ -141,11 +140,13 @@ class ClientCapabilities(object):
     """
     
     def __init__(self):
-        system = platform.system().lower()
+        system = sys.platform.lower()
         if system == 'darwin':
             self.platform = "mac"
-        elif system in ('windows','linux'):
-            self.platform = system
+        elif system.startswith('linux'):
+            self.platform = 'linux'
+        elif system == 'win32':
+            self.platform = 'windows'
         else:
             self.platform = None
         

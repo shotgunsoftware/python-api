@@ -145,26 +145,32 @@ class TestClientCapabilities(unittest.TestCase):
         self.assert_platform('Darwin', 'mac')
 
     def test_windows(self):
-        self.assert_platform('Windows','windows')
+        self.assert_platform('win32','windows')
         
     def test_linux(self):
         self.assert_platform('Linux', 'linux')
 
-    @patch('shotgun_api3.shotgun.platform')
-    def assert_platform(self, sys_ret_val, expected, mock_platform):
-        mock_platform.system.return_value = sys_ret_val
-        expected_local_path_field = "local_path_%s" % expected
+    def assert_platform(self, sys_ret_val, expected):
+        platform = api.shotgun.sys.platform
+        try:
+            api.shotgun.sys.platform = sys_ret_val
+            expected_local_path_field = "local_path_%s" % expected
 
-        client_caps = api.shotgun.ClientCapabilities()
-        self.assertEquals(client_caps.platform, expected)
-        self.assertEquals(client_caps.local_path_field, expected_local_path_field)
+            client_caps = api.shotgun.ClientCapabilities()
+            self.assertEquals(client_caps.platform, expected)
+            self.assertEquals(client_caps.local_path_field, expected_local_path_field)
+        finally:
+            api.shotgun.sys.platform = platform
 
-    @patch('shotgun_api3.shotgun.platform')
-    def test_no_platform(self, mock_platform):
-        mock_platform.system.return_value = "unsupported"
-        client_caps = api.shotgun.ClientCapabilities()
-        self.assertEquals(client_caps.platform, None)
-        self.assertEquals(client_caps.local_path_field, None)
+    def test_no_platform(self):
+        platform = api.shotgun.sys.platform
+        try:
+            api.shotgun.sys.platform = "unsupported"
+            client_caps = api.shotgun.ClientCapabilities()
+            self.assertEquals(client_caps.platform, None)
+            self.assertEquals(client_caps.local_path_field, None)
+        finally:
+            api.shotgun.sys.platform = platform
         
     @patch('shotgun_api3.shotgun.sys')
     def test_py_version(self, mock_sys):
