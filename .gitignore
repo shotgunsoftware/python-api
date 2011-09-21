@@ -8,4 +8,7 @@
 *.swp
 *.out
 *.bak
+
+# test related
 tests/config
+.coverage
