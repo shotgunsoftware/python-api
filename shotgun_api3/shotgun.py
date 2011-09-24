@@ -45,7 +45,7 @@ import time
 import urllib
 import urllib2      # used for image upload
 import urlparse
-from lib.httplib2 import Http
+from lib.httplib2 import Http, ProxyInfo, socks
 from lib.sgtimezone import SgTimezone
 from lib.xmlrpclib import Error, ProtocolError, ResponseError
 
@@ -179,7 +179,7 @@ class _Config(object):
         self.server = None
         self.api_path = None
         self.proxy_server = None
-        self.proxy_port = None
+        self.proxy_port = 8080
         self.session_token = None
         self.authorization = None
         
@@ -228,7 +228,6 @@ class Shotgun(object):
         self.config.api_key = api_key
         self.config.script_name = script_name
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
-        self.config.proxy_info = http_proxy
         self._connection = None
         
         self.base_url = (base_url or "").lower()
@@ -249,9 +248,17 @@ class Shotgun(object):
             self.config.authorization = "Basic " + auth.strip()
 
         if http_proxy:
-            proxy_netloc = urlparse.urlsplit(http_proxy)[1]
-            self.config.proxy_server, proxy_port = proxy_netloc.split(":", 1)
-            self.config.proxy_port = int(proxy_port or 8080)
+            proxy_netloc_list = http_proxy.split(":", 1)            
+            self.config.proxy_server = proxy_netloc_list[0]
+            if len(proxy_netloc_list) > 1:
+                try:
+                    self.config.proxy_port = int(proxy_netloc_list[1])
+                except ValueError:
+                    raise ValueError("Invalid http_proxy address '%s'. Valid " \
+                        "format is '123.456.789.012' or '123.456.789.012:3456'"\
+                        ". If no port is specified, a default of %d will be "\
+                        "used." % (http_proxy, self.config.proxy_port))
+
             
         if ensure_ascii:
             self._json_loads = self._json_loads_ascii
@@ -1214,8 +1221,8 @@ class Shotgun(object):
             return self._connection
         
         if self.config.proxy_server:
-            pi = ProxyInfo(PROXY_TYPE_HTTP, self.config.proxy_server, 
-                self.config.proxy_port)
+            pi = ProxyInfo(socks.PROXY_TYPE_HTTP, self.config.proxy_server, 
+                 self.config.proxy_port)
             self._connection = Http(timeout=self.config.timeout_secs, 
                 proxy_info=pi)
         else:
