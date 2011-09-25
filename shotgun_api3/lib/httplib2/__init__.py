@@ -55,7 +55,8 @@ from gettext import gettext as _
 import socket
 
 try:
-    from httplib2 import socks
+    #from httplib2 import socks
+    import socks
 except ImportError:
     socks = None
 
@@ -772,6 +773,8 @@ class HTTPConnectionWithTimeout(httplib.HTTPConnection):
             try:
                 if self.proxy_info and self.proxy_info.isgood():
                     self.sock = socks.socksocket(af, socktype, proto)
+                    # HACK: amorton enabled TCP_NODELAY on socket
+                    self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
                     self.sock.setproxy(*self.proxy_info.astuple())
                 else:
                     self.sock = socket.socket(af, socktype, proto)
@@ -877,6 +880,8 @@ class HTTPSConnectionWithTimeout(httplib.HTTPSConnection):
             try:
                 if self.proxy_info and self.proxy_info.isgood():
                     sock = socks.socksocket(family, socktype, proto)
+                    # HACK: amorton enabled TCP_NODELAY on socket
+                    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
                     sock.setproxy(*self.proxy_info.astuple())
                 else:
                     sock = socket.socket(family, socktype, proto)
