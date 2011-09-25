@@ -180,6 +180,8 @@ class _Config(object):
         self.api_path = None
         self.proxy_server = None
         self.proxy_port = 8080
+        self.proxy_user = None
+        self.proxy_pass = None
         self.session_token = None
         self.authorization = None
         
@@ -247,8 +249,17 @@ class Shotgun(object):
             auth = base64.encodestring(urllib.unquote(auth))
             self.config.authorization = "Basic " + auth.strip()
 
+        # foo:bar@123.456.789.012:3456
         if http_proxy:
-            proxy_netloc_list = http_proxy.split(":", 1)            
+            # check if we're using authentication
+            p = http_proxy.split("@", 1)
+            if len(p) > 1:
+                self.config.proxy_user, self.config.proxy_pass = \
+                    p[0].split(":", 1)
+                proxy_server = p[1]
+            else:
+                proxy_server = http_proxy
+            proxy_netloc_list = proxy_server.split(":", 1)            
             self.config.proxy_server = proxy_netloc_list[0]
             if len(proxy_netloc_list) > 1:
                 try:
@@ -1222,7 +1233,8 @@ class Shotgun(object):
         
         if self.config.proxy_server:
             pi = ProxyInfo(socks.PROXY_TYPE_HTTP, self.config.proxy_server, 
-                 self.config.proxy_port)
+                 self.config.proxy_port, proxy_user=self.config.proxy_user,
+                 proxy_pass=self.config.proxy_pass)
             self._connection = Http(timeout=self.config.timeout_secs, 
                 proxy_info=pi)
         else:
