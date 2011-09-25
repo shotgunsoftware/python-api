@@ -43,13 +43,12 @@ mainly to merge bug fixes found in Sourceforge
 import socket
 import struct
 import sys
-
-if getattr(socket, 'socket', None) is None:
-    raise ImportError('socket.socket missing, proxy support unusable')
+import base64
 
 PROXY_TYPE_SOCKS4 = 1
 PROXY_TYPE_SOCKS5 = 2
 PROXY_TYPE_HTTP = 3
+PROXY_TYPE_HTTP_NO_TUNNEL = 4
 
 _defaultproxy = None
 _orgsocket = socket.socket
@@ -127,6 +126,8 @@ class socksocket(socket.socket):
         self.__proxysockname = None
         self.__proxypeername = None
 
+        self.__httptunnel = True
+
     def __recvall(self, count):
         """__recvall(count) -> data
         Receive EXACTLY the number of bytes requested from the socket.
@@ -138,6 +139,43 @@ class socksocket(socket.socket):
             if not d: raise GeneralProxyError((0, "connection closed unexpectedly"))
             data = data + d
         return data
+
+    def sendall(self, content, *args):
+        """ override socket.socket.sendall method to rewrite the header 
+        for non-tunneling proxies if needed 
+        """
+        if not self.__httptunnel:
+            content = self.__rewriteproxy(content)
+
+        return super(socksocket, self).sendall(content, *args)
+
+    def __rewriteproxy(self, header):
+        """ rewrite HTTP request headers to support non-tunneling proxies 
+        (i.e. thos which do not support the CONNECT method).
+        This only works for HTTP (not HTTPS) since HTTPS requires tunneling.
+        """
+        host, endpt = None, None
+        hdrs = header.split("\r\n")
+        for hdr in hdrs:
+            if hdr.lower().startswith("host:"):
+                host = hdr
+            elif hdr.lower().startswith("get") or hdr.lower().startswith("post"):
+                endpt = hdr
+        if host and endpt: 
+            hdrs.remove(host)
+            hdrs.remove(endpt)
+            host = host.split(" ")[1]
+            endpt = endpt.split(" ")
+            if (self.__proxy[4] != None and self.__proxy[5] != None):
+                hdrs.insert(0, self.__getauthheader())
+            hdrs.insert(0, "Host: %s" % host)
+            hdrs.insert(0, "%s http://%s%s %s" % (endpt[0], host, endpt[1], endpt[2]))
+
+        return "\r\n".join(hdrs)
+
+    def __getauthheader(self):
+        auth = self.__proxy[4] + ":" + self.__proxy[5]
+        return "Proxy-Authorization: Basic " + base64.b64encode(auth)
 
     def setproxy(self, proxytype=None, addr=None, port=None, rdns=True, username=None, password=None):
         """setproxy(proxytype, addr[, port[, rdns[, username[, password]]]])
@@ -326,7 +364,12 @@ class socksocket(socket.socket):
             addr = socket.gethostbyname(destaddr)
         else:
             addr = destaddr
-        self.sendall(("CONNECT " + addr + ":" + str(destport) + " HTTP/1.1\r\n" + "Host: " + destaddr + "\r\n\r\n").encode())
+        headers =  "CONNECT " + addr + ":" + str(destport) + " HTTP/1.1\r\n"
+        headers += "Host: " + destaddr + "\r\n"
+        if (self.__proxy[4] != None and self.__proxy[5] != None):
+                headers += self.__getauthheader() + "\r\n"
+        headers += "\r\n"
+        self.sendall(headers.encode())
         # We read the response until we get the string "\r\n\r\n"
         resp = self.recv(1)
         while resp.find("\r\n\r\n".encode()) == -1:
@@ -379,6 +422,17 @@ class socksocket(socket.socket):
                 portnum = 8080
             _orgsocket.connect(self,(self.__proxy[1], portnum))
             self.__negotiatehttp(destpair[0], destpair[1])
+        elif self.__proxy[0] == PROXY_TYPE_HTTP_NO_TUNNEL:
+            if self.__proxy[2] != None:
+                portnum = self.__proxy[2]
+            else:
+                portnum = 8080
+            _orgsocket.connect(self,(self.__proxy[1],portnum))
+            if destpair[1] == 443:
+                print "WARN: SSL connections (generally on port 443) require the use of tunneling - failing back to PROXY_TYPE_HTTP"
+                self.__negotiatehttp(destpair[0],destpair[1])
+            else:
+                self.__httptunnel = False
         elif self.__proxy[0] == None:
             _orgsocket.connect(self, (destpair[0], destpair[1]))
         else:
