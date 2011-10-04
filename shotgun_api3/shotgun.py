@@ -45,11 +45,14 @@ import time
 import urllib
 import urllib2      # used for image upload
 import urlparse
-from lib.httplib2 import Http
+from lib.httplib2 import Http, ProxyInfo, socks
 from lib.sgtimezone import SgTimezone
 from lib.xmlrpclib import Error, ProtocolError, ResponseError
 
 LOG = logging.getLogger("shotgun_api3")
+LOG.setLevel(logging.ERROR)
+LOG.addHandler(logging.StreamHandler())
+
 SG_TIMEZONE = SgTimezone()
 
 try:
@@ -138,12 +141,13 @@ class ClientCapabilities(object):
     
     def __init__(self):
         system = sys.platform.lower()
-        if system == 'win32':
-            self.platform = 'windows'
-        elif system == 'darwin':
-            self.platform = 'mac'
+
+        if system == 'darwin':
+            self.platform = "mac"
         elif system.startswith('linux'):
-            self.platform = 'linux'  
+            self.platform = 'linux'
+        elif system == 'win32':
+            self.platform = 'windows'
         else:
             self.platform = None
         
@@ -176,7 +180,9 @@ class _Config(object):
         self.server = None
         self.api_path = None
         self.proxy_server = None
-        self.proxy_port = None
+        self.proxy_port = 8080
+        self.proxy_user = None
+        self.proxy_pass = None
         self.session_token = None
         self.authorization = None
         
@@ -225,7 +231,6 @@ class Shotgun(object):
         self.config.api_key = api_key
         self.config.script_name = script_name
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
-        self.config.proxy_info = http_proxy
         self._connection = None
         
         self.base_url = (base_url or "").lower()
@@ -245,10 +250,27 @@ class Shotgun(object):
             auth = base64.encodestring(urllib.unquote(auth))
             self.config.authorization = "Basic " + auth.strip()
 
+        # foo:bar@123.456.789.012:3456
         if http_proxy:
-            proxy_netloc = urlparse.urlsplit(http_proxy)[1]
-            self.config.proxy_server, proxy_port = proxy_netloc.split(":", 1)
-            self.config.proxy_port = int(proxy_port or 8080)
+            # check if we're using authentication
+            p = http_proxy.split("@", 1)
+            if len(p) > 1:
+                self.config.proxy_user, self.config.proxy_pass = \
+                    p[0].split(":", 1)
+                proxy_server = p[1]
+            else:
+                proxy_server = http_proxy
+            proxy_netloc_list = proxy_server.split(":", 1)            
+            self.config.proxy_server = proxy_netloc_list[0]
+            if len(proxy_netloc_list) > 1:
+                try:
+                    self.config.proxy_port = int(proxy_netloc_list[1])
+                except ValueError:
+                    raise ValueError("Invalid http_proxy address '%s'. Valid " \
+                        "format is '123.456.789.012' or '123.456.789.012:3456'"\
+                        ". If no port is specified, a default of %d will be "\
+                        "used." % (http_proxy, self.config.proxy_port))
+
             
         if ensure_ascii:
             self._json_loads = self._json_loads_ascii
@@ -919,7 +941,7 @@ class Shotgun(object):
         }
         http_status, resp_headers, body = self._make_call("POST", 
             self.config.api_path, encoded_payload, req_headers)
-        LOG.info("Completed rpc call to %s" % (method))
+        LOG.debug("Completed rpc call to %s" % (method))
                 
         self._parse_http_status(http_status)
         response = self._decode_response(resp_headers, body)
@@ -1211,8 +1233,9 @@ class Shotgun(object):
             return self._connection
         
         if self.config.proxy_server:
-            pi = ProxyInfo(PROXY_TYPE_HTTP, self.config.proxy_server, 
-                self.config.proxy_port)
+            pi = ProxyInfo(socks.PROXY_TYPE_HTTP, self.config.proxy_server, 
+                 self.config.proxy_port, proxy_user=self.config.proxy_user,
+                 proxy_pass=self.config.proxy_pass)
             self._connection = Http(timeout=self.config.timeout_secs, 
                 proxy_info=pi)
         else:

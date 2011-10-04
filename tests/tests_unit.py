@@ -5,24 +5,105 @@ import shotgun_api3 as api
 
 class TestShotgunInit(unittest.TestCase):
     '''Test case for Shotgun.__init__'''
+    def setUp(self):
+        self.server_path = 'http://server_path'
+        self.script_name = 'script_name'
+        self.api_key     = 'api_key'
 
-    def test_http_proxy(self):
-        '''test_http_proxy tests setting of http proxy attributes.'''
-        server_path = 'http://server_path'
-        script_name = 'script_name'
-        api_key     = 'api_key'
-        proxy_server = 'somedomain.com'
-        proxy_port = 3000
-        http_proxy  = 'https://%s:%s/somepage.html' % (proxy_server, proxy_port)
+    # Proxy Server Tests
+    def test_http_proxy_server(self):
+        proxy_server = "someserver.com"
+        http_proxy = proxy_server
+        sg = api.Shotgun(self.server_path, 
+                         self.script_name, 
+                         self.api_key, 
+                         http_proxy=http_proxy,
+                         connect=False)
+        self.assertEquals(sg.config.proxy_server, proxy_server)
+        self.assertEquals(sg.config.proxy_port, 8080)
+        proxy_server = "123.456.789.012"
+        http_proxy = proxy_server
+        sg = api.Shotgun(self.server_path, 
+                         self.script_name, 
+                         self.api_key, 
+                         http_proxy=http_proxy,
+                         connect=False)
+        self.assertEquals(sg.config.proxy_server, proxy_server)
+        self.assertEquals(sg.config.proxy_port, 8080)
 
-        sg = api.Shotgun(server_path, 
-                         script_name, 
-                         api_key, 
+    def test_http_proxy_server_and_port(self):
+        proxy_server = "someserver.com"
+        proxy_port = 1234
+        http_proxy = "%s:%d" % (proxy_server, proxy_port)
+        sg = api.Shotgun(self.server_path, 
+                         self.script_name, 
+                         self.api_key, 
+                         http_proxy=http_proxy,
+                         connect=False)
+        self.assertEquals(sg.config.proxy_server, proxy_server)
+        self.assertEquals(sg.config.proxy_port, proxy_port)
+        proxy_server = "123.456.789.012"
+        proxy_port = 1234
+        http_proxy = "%s:%d" % (proxy_server, proxy_port)
+        sg = api.Shotgun(self.server_path, 
+                         self.script_name, 
+                         self.api_key, 
                          http_proxy=http_proxy,
                          connect=False)
         self.assertEquals(sg.config.proxy_server, proxy_server)
         self.assertEquals(sg.config.proxy_port, proxy_port)
 
+    def test_http_proxy_server_and_port_with_authentication(self):
+        proxy_server = "someserver.com"
+        proxy_port = 1234
+        proxy_user = "user"
+        proxy_pass = "password"
+        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server, 
+                                      proxy_port)
+        sg = api.Shotgun(self.server_path, 
+                         self.script_name, 
+                         self.api_key, 
+                         http_proxy=http_proxy,
+                         connect=False)
+        self.assertEquals(sg.config.proxy_server, proxy_server)
+        self.assertEquals(sg.config.proxy_port, proxy_port)
+        self.assertEquals(sg.config.proxy_user, proxy_user)
+        self.assertEquals(sg.config.proxy_pass, proxy_pass)
+        proxy_server = "123.456.789.012"
+        proxy_port = 1234
+        proxy_user = "user"
+        proxy_pass = "password"
+        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server, 
+                                      proxy_port)
+        sg = api.Shotgun(self.server_path, 
+                         self.script_name, 
+                         self.api_key, 
+                         http_proxy=http_proxy,
+                         connect=False)
+        self.assertEquals(sg.config.proxy_server, proxy_server)
+        self.assertEquals(sg.config.proxy_port, proxy_port)
+        self.assertEquals(sg.config.proxy_user, proxy_user)
+        self.assertEquals(sg.config.proxy_pass, proxy_pass)
+ 
+    def test_malformatted_proxy_info(self):
+        proxy_server = "someserver.com"
+        proxy_port = 1234
+        proxy_user = "user"
+        proxy_pass = "password"
+        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server, 
+                                      proxy_port)
+        conn_info = {
+            'base_url': self.server_path,
+            'script_name': self.script_name,
+            'api_key': self.api_key, 
+            'connect': False,
+        }
+        conn_info['http_proxy'] = 'http://someserver.com'
+        self.assertRaises(ValueError, api.Shotgun, **conn_info)
+        conn_info['http_proxy'] = 'user@someserver.com'
+        self.assertRaises(ValueError, api.Shotgun, **conn_info)
+        conn_info['http_proxy'] = 'someserver.com:1234:5678'
+        self.assertRaises(ValueError, api.Shotgun, **conn_info)
     
 class TestShotgunSummarize(unittest.TestCase):
     '''Test case for _create_summary_request function and parameter
@@ -145,26 +226,32 @@ class TestClientCapabilities(unittest.TestCase):
         self.assert_platform('Darwin', 'mac')
 
     def test_windows(self):
-        self.assert_platform('Windows','windows')
+        self.assert_platform('win32','windows')
         
     def test_linux(self):
         self.assert_platform('Linux', 'linux')
 
-    @patch('shotgun_api3.shotgun.platform')
-    def assert_platform(self, sys_ret_val, expected, mock_platform):
-        mock_platform.system.return_value = sys_ret_val
-        expected_local_path_field = "local_path_%s" % expected
+    def assert_platform(self, sys_ret_val, expected):
+        platform = api.shotgun.sys.platform
+        try:
+            api.shotgun.sys.platform = sys_ret_val
+            expected_local_path_field = "local_path_%s" % expected
 
-        client_caps = api.shotgun.ClientCapabilities()
-        self.assertEquals(client_caps.platform, expected)
-        self.assertEquals(client_caps.local_path_field, expected_local_path_field)
+            client_caps = api.shotgun.ClientCapabilities()
+            self.assertEquals(client_caps.platform, expected)
+            self.assertEquals(client_caps.local_path_field, expected_local_path_field)
+        finally:
+            api.shotgun.sys.platform = platform
 
-    @patch('shotgun_api3.shotgun.platform')
-    def test_no_platform(self, mock_platform):
-        mock_platform.system.return_value = "unsupported"
-        client_caps = api.shotgun.ClientCapabilities()
-        self.assertEquals(client_caps.platform, None)
-        self.assertEquals(client_caps.local_path_field, None)
+    def test_no_platform(self):
+        platform = api.shotgun.sys.platform
+        try:
+            api.shotgun.sys.platform = "unsupported"
+            client_caps = api.shotgun.ClientCapabilities()
+            self.assertEquals(client_caps.platform, None)
+            self.assertEquals(client_caps.local_path_field, None)
+        finally:
+            api.shotgun.sys.platform = platform
         
     @patch('shotgun_api3.shotgun.sys')
     def test_py_version(self, mock_sys):
