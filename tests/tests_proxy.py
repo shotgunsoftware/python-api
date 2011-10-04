@@ -1,7 +1,5 @@
 #! /opt/local/bin/python
-import unittest
 import sys
-from mock import patch, Mock
 import base
 import shotgun_api3 as api
 
@@ -25,7 +23,7 @@ class ServerConnectionTest(base.TestBase):
                                         api.lib.httplib2.ProxyInfo))
         else:
             sys.stderr.write("[NO PROXY] ")
-            self.assertEqual(self.sg._connection.proxy_info, False)
+            self.assertEqual(self.sg._connection.proxy_info, None)
 
 
 
