@@ -409,7 +409,7 @@ class TestShotgunClientInterface(base.MockTestBase):
         import shotgun_api3
         expected_contents = ['Shotgun', 'ShotgunError', 'Fault',
                              'ProtocolError', 'ResponseError', 'Error',
-                             'sg_timezone']
+                             'sg_timezone', '__version__']
         for expected_content in expected_contents: 
             if not hasattr(shotgun_api3, expected_content):
                 assert False, '%s not found on module %s' % (expected_content,
