@@ -50,8 +50,6 @@ from lib.sgtimezone import SgTimezone
 from lib.xmlrpclib import Error, ProtocolError, ResponseError
 
 LOG = logging.getLogger("shotgun_api3")
-LOG.setLevel(logging.ERROR)
-LOG.addHandler(logging.StreamHandler())
 
 SG_TIMEZONE = SgTimezone()
 
