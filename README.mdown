@@ -1,32 +1,20 @@
-# Shotgun Python JSON API - Beta
-
-This is a beta release of a new version of the Python API that uses JSON as a transport instead of XML-RPC. The intent is for this to be drop-in compatible with the previous version. If you find any incompatibilities, please contact us through support or on the dev list. 
-
-## New requirements
-
-Shotgun 2.4 or greater.
-
-For Python 2.4 and 2.5, install simplejson 2.0.9: http://pypi.python.org/pypi/simplejson/2.0.9
-
-For Python 2.6 and higher, we will use the built-in json module... but installing the latest simplejson will give the best performance. Currently, that's version 2.1.6: http://pypi.python.org/pypi/simplejson/2.1.6
-
-
-## Known Issues
-
-* - In Shotgun 2.4.12 and lower there are bugs getting/setting float fields
-
 # Shotgun Python API
 
 Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools. This is the official API that is maintained by Shotgun Software (support@shotgunsoftware.com)
 
-## New home
+## New Home
 
 [GitHub is the new official location](http://github.com/shotgunsoftware/python-api) for the latest Shotgun Python API. We will no longer be including it in our code tree that is deployed to your servers or posting it for download from our support site. So update your bookmarks!
 
 ## Minimum Requirements
-**SEE NEW REQUIREMENTS ABOVE**  
-- Shotgun server v1.8.0 or higher. Note that some API features are only available in later Shotgun server versions.
-- Python v2.4 - v2.7. (We do have plans to eventually support Python 3)
+ 
+* - Shotgun server v2.4.12 or higher. (Earlier builds of 2.4 will work, but have buggy support for float field types)
+* - Python v2.4 - v2.7. (We do have plans to eventually support Python 3)
+
+## High Performance Requirements
+
+* - For Python 2.4 and 2.5, install simplejson 2.0.9: http://pypi.python.org/pypi/simplejson/2.0.9
+* - For Python 2.6 and higher, install simplejson 2.1.6: http://pypi.python.org/pypi/simplejson/2.1.6
 
 ## Installing
 To use Shotgun's Python API module, you need to place the package shotgun_api3 in one of the directories specified by the environment variable PYTHONPATH. For more information on PYTHONPATH and using modules in Python, see http://docs.python.org/tutorial/modules.html
@@ -47,16 +35,19 @@ Integration and unit tests are provided.
 - To run all of the tests, use the shell script run-tests. This script require nose to be installed.
 
 ## Changelog
-(Note that many of these items may be specific to the XML-RPC version of the API and may not apply to the Python JSON API)  
-  
 
-**v3.0.8 Beta - 2011 August 4**
+**v3.0.8 - 2011 Oct 7**
   
-  + summarize available in json api
+  + now uses JSON as a transport rather than XML-RPC. This provides as much as a 40% speed boost.
+  + added the summarize method
   + refactored single file into package
   + tests added (Thanks to Aaron Morton https://github.com/amorton)
   + return all strings as ascii for backwards compatibility, added ensure_ascii parameter to enable returning unicode
 
+**v3.0.7 - 2011 Apr 04**
+
+  + fix: update() method should return a dict object not a list
+    
 **v3.0.6 - 2010 Jan 25**
  
   + optimization: don't request paging_info unless required (and server support is available)
