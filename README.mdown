@@ -8,13 +8,13 @@ Shotgun provides a simple Python-based API for accessing Shotgun and integrating
 
 ## Minimum Requirements
  
-* - Shotgun server v2.4.12 or higher. (Earlier builds of 2.4 will work, but have buggy support for float field types)
-* - Python v2.4 - v2.7. (We do have plans to eventually support Python 3)
+* Shotgun server v2.4.12 or higher. (Earlier builds of 2.4 will work, but have buggy support for float field types)
+* Python v2.4 - v2.7. (We do have plans to eventually support Python 3)
 
 ## High Performance Requirements
 
-* - For Python 2.4 and 2.5, install simplejson 2.0.9: http://pypi.python.org/pypi/simplejson/2.0.9
-* - For Python 2.6 and higher, install simplejson 2.1.6: http://pypi.python.org/pypi/simplejson/2.1.6
+* For Python 2.4 and 2.5, install simplejson 2.0.9: http://pypi.python.org/pypi/simplejson/2.0.9
+* For Python 2.6 and higher, install simplejson 2.1.6: http://pypi.python.org/pypi/simplejson/2.1.6
 
 ## Installing
 To use Shotgun's Python API module, you need to place the package shotgun_api3 in one of the directories specified by the environment variable PYTHONPATH. For more information on PYTHONPATH and using modules in Python, see http://docs.python.org/tutorial/modules.html
