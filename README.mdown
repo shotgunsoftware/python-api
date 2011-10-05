@@ -38,7 +38,7 @@ Integration and unit tests are provided.
 
 **v3.0.8 - 2011 Oct 7**
   
-  + now uses JSON as a transport rather than XML-RPC. This provides as much as a 40% speed boost.
+  + now uses JSON as a transport rather than XML-RPC. This provides as much as a 40% speed boost
   + added the summarize method
   + refactored single file into package
   + tests added (Thanks to Aaron Morton https://github.com/amorton)
