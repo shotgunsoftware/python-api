@@ -66,6 +66,13 @@ except ImportError:
         import lib.simplejson as json
         sys.path.pop()
 
+try:
+    import ssl
+    NO_SSL_VALIDATION = False
+except ImportError:
+    LOG.debug("ssl not found, disabling certificate validation")
+    NO_SSL_VALIDATION = True
+
 # ----------------------------------------------------------------------------
 # Version
 __version__ = "3.0.8"
@@ -183,6 +190,7 @@ class _Config(object):
         self.proxy_pass = None
         self.session_token = None
         self.authorization = None
+        self.no_ssl_validation = False
         
 class Shotgun(object):
     """Shotgun Client Connection"""
@@ -229,6 +237,7 @@ class Shotgun(object):
         self.config.api_key = api_key
         self.config.script_name = script_name
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
+        self.config.no_ssl_validation = NO_SSL_VALIDATION
         self._connection = None
         
         self.base_url = (base_url or "").lower()
@@ -1235,9 +1244,10 @@ class Shotgun(object):
                  self.config.proxy_port, proxy_user=self.config.proxy_user,
                  proxy_pass=self.config.proxy_pass)
             self._connection = Http(timeout=self.config.timeout_secs, 
-                proxy_info=pi)
+                proxy_info=pi, disable_ssl_certificate_validation=self.config.no_ssl_validation)
         else:
-            self._connection = Http(timeout=self.config.timeout_secs)
+            self._connection = Http(timeout=self.config.timeout_secs, 
+                disable_ssl_certificate_validation=self.config.no_ssl_validation)
         
         return self._connection
 
