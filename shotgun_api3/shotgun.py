@@ -45,9 +45,9 @@ import time
 import urllib
 import urllib2      # used for image upload
 import urlparse
-from lib.httplib2 import Http, ProxyInfo, socks
-from lib.sgtimezone import SgTimezone
-from lib.xmlrpclib import Error, ProtocolError, ResponseError
+from shotgun_api3.lib.httplib2 import Http, ProxyInfo, socks
+from shotgun_api3.lib.sgtimezone import SgTimezone
+from shotgun_api3.lib.xmlrpclib import Error, ProtocolError, ResponseError
 
 LOG = logging.getLogger("shotgun_api3")
 
@@ -64,7 +64,7 @@ except ImportError:
         dir_path =  os.path.dirname(__file__)
         lib_path = os.path.join(dir_path, 'lib')
         sys.path.append(lib_path)
-        import lib.simplejson as json
+        import shotgun_api3.lib.simplejson as json
         sys.path.pop()
 
 try:
