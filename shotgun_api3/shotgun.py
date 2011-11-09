@@ -875,7 +875,7 @@ class Shotgun(object):
         cookie_handler = urllib2.HTTPCookieProcessor(cj)
         urllib2.install_opener(urllib2.build_opener(cookie_handler))
         url = urlparse.urlunparse((self.config.scheme, self.config.server, 
-            "/file_serve/%s" % urllib.quote(str(attachment_id)), 
+            "/file_serve/attachment/%s" % urllib.quote(str(attachment_id)), 
             None, None, None))
         
         try:
