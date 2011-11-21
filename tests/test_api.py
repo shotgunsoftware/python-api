@@ -118,6 +118,10 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual("Version", version["type"])
         self.assertEqual(self.version['id'], version["id"])
         
+    def test_last_accessed(self):
+        page = self.sg.find('Page', [], fields=['last_accessed'], limit=1)
+        self.assertEqual("Page", page[0]['type'])
+        self.assertEqual(datetime.datetime, type(page[0]['last_accessed']))
 
     def test_get_session_token(self):
         """Got session UUID"""
