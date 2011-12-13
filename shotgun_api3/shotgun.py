@@ -229,8 +229,8 @@ class Shotgun(object):
         If False the client should use UTC date time values.
         Default is True.
         
-        :param http_proxy: Optional, URL for the http proxy server, of the
-        form http://proxy.com:8080 
+        :param http_proxy: Optional, URL for the http proxy server, on the
+        form [username:pass@]proxy.com[:8080] 
 
         :param connect: If True, connect to the server. Only used for testing.
         """
