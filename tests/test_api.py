@@ -201,6 +201,62 @@ class TestShotgunApi(base.LiveTestBase):
         print result
         self.assertTrue(_has_unicode(result))
 
+    def test_work_schedule(self):
+        '''test_work_schedule tests WorkDayRules api'''
+        self.maxDiff = None
+
+        start_date = '2012-01-01'
+        start_date_obj = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = '2012-01-07'
+        end_date_obj = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+
+        project = self.sg.find_one('Project', [])
+        user = self.sg.find_one('HumanUser', [['projects', 'is', project]])
+        
+        work_schedule = self.sg.work_schedule_read(start_date, end_date, project, user)
+        resp = self.sg.work_schedule_read(start_date_obj, end_date_obj, project, user)
+        self.assertEqual(work_schedule, resp)
+
+        
+        resp = self.sg.work_schedule_update('2012-01-02', False, 'Studio Holiday')
+        expected = {
+            'date': '2012-01-02',
+            'description': 'Studio Holiday',
+            'project': None,
+            'user': None,
+            'working': False
+        }
+        self.assertEqual(expected, resp)
+        resp = self.sg.work_schedule_read(start_date, end_date, project, user)
+        work_schedule['2012-01-02'] = {"reason": "STUDIO_EXCEPTION", "working": False, "description": "Studio Holiday"}
+        self.assertEqual(work_schedule, resp)
+
+        resp = self.sg.work_schedule_update('2012-01-03', False, 'Project Holiday', project)
+        expected = {
+            'date': '2012-01-03',
+            'description': 'Project Holiday',
+            'project': {'id': 4, 'name': 'Demo Project', 'type': 'Project'},
+            'user': None,
+            'working': False
+        }
+        self.assertEqual(expected, resp)
+        resp = self.sg.work_schedule_read(start_date, end_date, project, user)
+        work_schedule['2012-01-03'] = {"reason": "PROJECT_EXCEPTION", "working": False, "description": "Project Holiday"}
+        self.assertEqual(work_schedule, resp)
+
+        jan4 = datetime.datetime(2012, 1, 4)
+        resp = self.sg.work_schedule_update(jan4, False, 'Artist Holiday',  user=user)
+        expected = {'date': '2012-01-04',
+            'description': 'Artist Holiday',
+            'project': None,
+            'user': {'id': 12, 'name': 'Artist 8', 'type': 'HumanUser'},
+            'working': False
+        }
+        self.assertEqual(expected, resp)
+        resp = self.sg.work_schedule_read(start_date, end_date, project, user)
+        work_schedule['2012-01-04'] = {"reason": "USER_EXCEPTION", "working": False, "description": "Artist Holiday"}
+        self.assertEqual(work_schedule, resp)
+    #end def test_work_schedule_read
 
 class TestDataTypes(base.LiveTestBase):
     '''Test fields representing the different data types mapped on the server side.

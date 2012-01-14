@@ -647,6 +647,72 @@ class Shotgun(object):
             calls.append(request_params)
         records = self._call_rpc("batch", calls)
         return self._parse_records(records)
+
+    def work_schedule_read(self, start_date, end_date, project=None, user=None):
+        """Get the work day rules for a given date range. 
+
+        reasons: 
+            STUDIO_WORK_WEEK
+            STUDIO_EXCEPTION
+            PROJECT_WORK_WEEK
+            PROJECT_EXCEPTION
+            USER_WORK_WEEK
+            USER_EXCEPTION
+
+
+        :param start_date: Start date of date range.
+        :type start_date: str (YYYY-MM-DD) or datetime
+        :param end_date: End date of date range.
+        :type end_date: str (YYYY-MM-DD) or datetime
+        :param dict project: Project entity to query WorkDayRules for. (optional)
+        :param dict user: User entity to query WorkDayRules for. (optional)
+        """
+
+        if isinstance(start_date, datetime.datetime):
+            start_date = start_date.strftime('%Y-%m-%d')
+        # end if
+
+        if isinstance(end_date, datetime.datetime):
+            end_date = end_date.strftime('%Y-%m-%d')
+        # end if
+
+        params = dict(
+            start_date = start_date,
+            end_date = end_date,
+            project = project,
+            user = user
+        )
+
+        return self._call_rpc('work_schedule_read', params)
+    # end def work_schedule_read
+
+    def work_schedule_update(self, date, working, description=None, project=None, user=None, recalculate_field=None):
+        """Update the work schedule for a given date. If neither project nor user are passed the studio work schedule will be updated.
+        Project and User can only be used separately.  
+
+        :param date: Date of WorkDayRule to update.
+        :type date: str (YYYY-MM-DD) or datetime
+        :param bool working:
+        :param str description: Reason for time off. (optional)
+        :param dict project: Project entity to assign to. Cannot be used with user. (optional)
+        :param dict user: User entity to assign to. Cannot be used with project. (optional)
+        :param str recalculate_field: Choose the schedule field that will be recalculated on Tasks when they are affected by a change in working schedule. 'due_date' or 'duration', defalut is a Site Preference (optional)
+        """
+        if isinstance(date, datetime.datetime):
+            date = date.strftime('%Y-%m-%d')
+        # end if
+
+        params = dict(
+            date = date,
+            working = working,
+            description = description,
+            project = project,
+            user = user,
+            recalculate_field = recalculate_field
+        )
+
+        return self._call_rpc('work_schedule_update', params)
+    # end def work_schedule_update
         
     def schema_entity_read(self):
         """Gets all active entities defined in the schema. 
