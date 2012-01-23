@@ -668,6 +668,11 @@ class Shotgun(object):
         :param dict user: User entity to query WorkDayRules for. (optional)
         """
 
+        if not self.server_caps.version or self.server_caps.version < (3, 2, 0):
+            raise ShotgunError("Work schedule support requires server version 3.2 or "\
+                "higher, server is %s" % (self.server_caps.version,))
+        # end if 
+
         if isinstance(start_date, datetime.datetime):
             start_date = start_date.strftime('%Y-%m-%d')
         # end if
@@ -696,8 +701,14 @@ class Shotgun(object):
         :param str description: Reason for time off. (optional)
         :param dict project: Project entity to assign to. Cannot be used with user. (optional)
         :param dict user: User entity to assign to. Cannot be used with project. (optional)
-        :param str recalculate_field: Choose the schedule field that will be recalculated on Tasks when they are affected by a change in working schedule. 'due_date' or 'duration', defalut is a Site Preference (optional)
+        :param str recalculate_field: Choose the schedule field that will be recalculated on Tasks when they are affected by a change in working schedule. 'due_date' or 'duration', default is a Site Preference (optional)
         """
+
+        if not self.server_caps.version or self.server_caps.version < (3, 2, 0):
+            raise ShotgunError("Work schedule support requires server version 3.2 or "\
+                "higher, server is %s" % (self.server_caps.version,))
+        # end if 
+
         if isinstance(date, datetime.datetime):
             date = date.strftime('%Y-%m-%d')
         # end if
@@ -847,7 +858,7 @@ class Shotgun(object):
         """Convenience function for uploading thumbnails, see upload.
         """
         if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
-            raise ShotgunError("Filmstrip thumbnal support requires server version 3.1 or "\
+            raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
                 "higher, server is %s" % (self.server_caps.version,))
 
         return self.upload(entity_type, entity_id, path, 
