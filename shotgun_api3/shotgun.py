@@ -661,9 +661,9 @@ class Shotgun(object):
 
 
         :param start_date: Start date of date range.
-        :type start_date: str (YYYY-MM-DD) or datetime
+        :type start_date: str (YYYY-MM-DD)
         :param end_date: End date of date range.
-        :type end_date: str (YYYY-MM-DD) or datetime
+        :type end_date: str (YYYY-MM-DD)
         :param dict project: Project entity to query WorkDayRules for. (optional)
         :param dict user: User entity to query WorkDayRules for. (optional)
         """
@@ -673,12 +673,8 @@ class Shotgun(object):
                 "higher, server is %s" % (self.server_caps.version,))
         # end if 
 
-        if isinstance(start_date, datetime.datetime):
-            start_date = start_date.strftime('%Y-%m-%d')
-        # end if
-
-        if isinstance(end_date, datetime.datetime):
-            end_date = end_date.strftime('%Y-%m-%d')
+        if not isinstance(start_date, str) or not isinstance(end_date, str):
+            raise ShotgunError("The start_date and end_date arguments must be strings in YYYY-MM-DD format")
         # end if
 
         params = dict(
@@ -696,7 +692,7 @@ class Shotgun(object):
         Project and User can only be used separately.  
 
         :param date: Date of WorkDayRule to update.
-        :type date: str (YYYY-MM-DD) or datetime
+        :type date: str (YYYY-MM-DD)
         :param bool working:
         :param str description: Reason for time off. (optional)
         :param dict project: Project entity to assign to. Cannot be used with user. (optional)
@@ -709,8 +705,8 @@ class Shotgun(object):
                 "higher, server is %s" % (self.server_caps.version,))
         # end if 
 
-        if isinstance(date, datetime.datetime):
-            date = date.strftime('%Y-%m-%d')
+        if not isinstance(date, str):
+            raise ShotgunError("The date argument must be string in YYYY-MM-DD format")
         # end if
 
         params = dict(

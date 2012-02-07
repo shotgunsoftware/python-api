@@ -214,7 +214,10 @@ class TestShotgunApi(base.LiveTestBase):
         user = self.sg.find_one('HumanUser', [['projects', 'is', project]])
         
         work_schedule = self.sg.work_schedule_read(start_date, end_date, project, user)
-        resp = self.sg.work_schedule_read(start_date_obj, end_date_obj, project, user)
+
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.work_schedule_read, start_date_obj, end_date_obj, project, user)
+
+        resp = self.sg.work_schedule_read(start_date, end_date, project, user)
         self.assertEqual(work_schedule, resp)
 
         
@@ -245,7 +248,10 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(work_schedule, resp)
 
         jan4 = datetime.datetime(2012, 1, 4)
-        resp = self.sg.work_schedule_update(jan4, False, 'Artist Holiday',  user=user)
+
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.work_schedule_update, jan4, False, 'Artist Holiday',  user=user)
+
+        resp = self.sg.work_schedule_update("2012-01-04", False, 'Artist Holiday',  user=user)
         expected = {'date': '2012-01-04',
             'description': 'Artist Holiday',
             'project': None,
