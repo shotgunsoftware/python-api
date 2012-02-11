@@ -6,6 +6,7 @@ test_api_long for other tests.
 
 import datetime
 import os
+import re
 from mock import patch, Mock, MagicMock
 
 import shotgun_api3
@@ -158,6 +159,71 @@ class TestShotgunApi(base.LiveTestBase):
         orig_file = open(path, "rb").read()
         self.assertEqual(orig_file, attach_file)
 
+    def test_thumbnail_url(self):
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir,"sg_logo.jpg")))
+
+        attach_id = self.sg.upload_thumbnail("Version", 
+            self.version['id'], path)
+
+        attach_id2 = self.sg.upload_thumbnail("Project", 
+            self.version['project']['id'], path)
+
+        response = self.sg.find(
+            'Version', 
+            [['id', 'is', self.version['id']]],
+            fields=['id', 'code', 'image']
+        )
+
+        if self.sg.server_caps.version and \
+           self.sg.server_caps.version >= (3, 3, 0) and \
+           (self.sg.server_caps.host.startswith('0.0.0.0') or \
+            self.sg.server_caps.host.startswith('127.0.0.1')):
+                server_address = re.sub('^0.0.0.0|127.0.0.1', 'localhost', self.sg.server_caps.host)
+        else:
+            server_address = self.sg.server_caps.host
+        # end if
+
+        expected = [
+            {
+                'image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (server_address, attach_id), 
+                'code': 'Sg unittest version', 
+                'type': 'Version', 
+                'id': self.version['id']
+            }
+        ]
+        self.assertEqual(expected, response)
+
+        response_version_with_project = self.sg.find(
+            'Version', 
+            [['id', 'is', self.version['id']]],
+            fields=['id', 'code', 'image', 'project.Project.image']
+        )
+
+        if self.sg.server_caps.version and self.sg.server_caps.version >= (3, 3, 0):
+            expected_version_with_project = [
+                {
+                    'image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (server_address, attach_id), 
+                    'code': 'Sg unittest version', 
+                    'type': 'Version', 
+                    'id': self.version['id'],
+                    'project.Project.image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (server_address, attach_id2)
+                }
+            ]
+        else:
+            expected_version_with_project = [
+                {
+                    'image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (server_address, attach_id), 
+                    'code': 'Sg unittest version', 
+                    'type': 'Version', 
+                    'id': self.version['id'],
+                    'project.Project.image': attach_id2
+                }
+            ]
+        # end if
+        self.assertEqual(expected_version_with_project, response_version_with_project)
+    # end def test_thumbnail_url
 
     def test_deprecated_functions(self):
         """Deprecated functions raise errors"""
