@@ -36,6 +36,13 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.9_beta1 - 2012 Feb 23**
+  
+  + added support for access to WorkDayRules (requires Shotgun server >= v3.2.0)
+  + added support for filmstrip thumbnails (requires Shotgun server >= v3.1.0)
+  + fixed download_attachment() pointing to incorrect url
+  + fixed some issues with module import paths
+
 **v3.0.8 - 2011 Oct 7**
   
   + now uses JSON as a transport rather than XML-RPC. This provides as much as a 40% speed boost
