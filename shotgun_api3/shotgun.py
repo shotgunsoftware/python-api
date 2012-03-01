@@ -912,7 +912,10 @@ class Shotgun(object):
             if field_name is not None:
                 params["field_name"] = field_name
             params["display_name"] = display_name
-            params["tag_list"] = tag_list
+            # None gets converted to a string and added as a tag...
+            if tag_list:
+                params["tag_list"] = tag_list
+            # end if
             params["file"] = open(path, "rb")
         
         # Create opener with extended form post support
