@@ -524,19 +524,20 @@ class Shotgun(object):
         :returns: dict of the requested fields.
         """
         
-        uploadImage = False
-        if 'image' in data:
-            # If we don't make a copy of 'data', it will have been changed on return
-            data = copy.deepcopy(data)
-            uploadImage = data['image']
-            del data['image']
+        data = copy.deepcopy(data)
 
-        uploadFilmstripImage = False
+        upload_image = None
+        if 'image' in data:
+            upload_image = data.pop('image')
+        # end if
+
+        upload_filmstrip_image = None
         if 'filmstrip_image' in data:
-            # If we don't make a copy of 'data', it will have been changed on return
-            data = copy.deepcopy(data)
-            uploadFilmstripImage = data['filmstrip_image']
-            del data['filmstrip_image']
+            if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
+                raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
+                    "higher, server is %s" % (self.server_caps.version,))
+            upload_filmstrip_image = data.pop('filmstrip_image')
+        # end if
 
         params = {
             "type" : entity_type,
@@ -547,14 +548,16 @@ class Shotgun(object):
         record = self._call_rpc("create", params, first=True)
         result = self._parse_records(record)[0]
 
-        if uploadImage:
-            self.upload_thumbnail(entity_type, result['id'], uploadImage)
+        if upload_image:
+            self.upload_thumbnail(entity_type, result['id'], upload_image)
+        # end if
 
-        if uploadFilmstripImage:
-            self.upload_filmstrip_thumbnail(entity_type, result['id'], uploadFilmstripImage)
+        if upload_filmstrip_image:
+            self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
+        # end if
         
         return result
-                    
+    # end def create    
         
     def update(self, entity_type, entity_id, data):
         """Updates the specified entity with the supplied data.
@@ -569,19 +572,20 @@ class Shotgun(object):
         id added.
         """
         
-        uploadImage = False
+        data = copy.deepcopy(data)
+
+        upload_image = None
         if 'image' in data:
-            # If we don't make a copy of 'data', it will have been changed on return
-            data = copy.deepcopy(data)
-            uploadImage = data['image']
-            del data['image']
+            upload_image = data.pop('image')
+        # end if
         
-        uploadFilmstripImage = False
+        upload_filmstrip_image = None
         if 'filmstrip_image' in data:
-            # If we don't make a copy of 'data', it will have been changed on return
-            data = copy.deepcopy(data)
-            uploadFilmstripImage = data['filmstrip_image']
-            del data['filmstrip_image']
+            if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
+                raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
+                    "higher, server is %s" % (self.server_caps.version,))
+            upload_filmstrip_image = data.pop('filmstrip_image')
+        # end if
 
         if data:
             params = {
@@ -594,14 +598,18 @@ class Shotgun(object):
             result = self._parse_records(record)[0]
         else:
             result = {'id': entity_id, 'type': entity_type}
+        # end if
 
-        if uploadImage:
-            self.upload_thumbnail(entity_type, entity_id, uploadImage)
+        if upload_image:
+            self.upload_thumbnail(entity_type, entity_id, upload_image)
+        # end if
         
-        if uploadFilmstripImage:
-            self.upload_filmstrip_thumbnail(entity_type, result['id'], uploadFilmstripImage)
+        if upload_filmstrip_image:
+            self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
+        # end if
         
         return result
+    # end if
 
     def delete(self, entity_type, entity_id):
         """Retire the specified entity. 
