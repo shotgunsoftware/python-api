@@ -429,6 +429,10 @@ class Shotgun(object):
             if page == 0:
                 page = 1
         
+        if self.server_caps.version and self.server_caps.version >= (3, 3, 0):
+            params['api_return_image_urls'] = True
+        # end if
+
         # if page is specified, then only return the page of records requested
         if page != 0:
             # No paging_info needed, so optimize it out.
@@ -1437,9 +1441,11 @@ class Shotgun(object):
             for k, v in rec.iteritems():
                 if not v:
                     continue
-                    
-                # check for thumbnail
-                if k == 'image':
+
+                # check for thumbnail for older version (<3.3.0) of shotgun
+                if k == 'image' and \
+                   self.server_caps.version and \
+                   self.server_caps.version < (3, 3, 0):
                     rec['image'] = self._build_thumb_url(rec['type'], 
                         rec['id'])
                     continue
