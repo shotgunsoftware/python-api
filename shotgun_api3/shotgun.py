@@ -46,9 +46,17 @@ import time
 import urllib
 import urllib2      # used for image upload
 import urlparse
-from shotgun_api3.lib.httplib2 import Http, ProxyInfo, socks
-from shotgun_api3.lib.sgtimezone import SgTimezone
-from shotgun_api3.lib.xmlrpclib import Error, ProtocolError, ResponseError
+
+# use relative import for versions >=2.5 and package import for python versions <2.5 
+if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 5):
+    from .lib.httplib2 import Http, ProxyInfo, socks
+    from .lib.sgtimezone import SgTimezone
+    from .lib.xmlrpclib import Error, ProtocolError, ResponseError
+else:
+    from shotgun_api3.lib.httplib2 import Http, ProxyInfo, socks
+    from shotgun_api3.lib.sgtimezone import SgTimezone
+    from shotgun_api3.lib.xmlrpclib import Error, ProtocolError, ResponseError
+# end if
 
 LOG = logging.getLogger("shotgun_api3")
 
