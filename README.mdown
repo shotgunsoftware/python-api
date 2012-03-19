@@ -36,7 +36,14 @@ Integration and unit tests are provided.
 
 ## Changelog
 
-**v3.0.9_beta1 - 2012 Feb 23**
+**v3.0.9.beta2 - 2012 Mar 19**
+  
+  + use relative imports for included libraries when using Python v2.5 or later
+  + replace sideband request for 'image' (thumbnail) field with native support (requires Shotgun server >= v3.3.0. Request will still work on older versions but fallback to slow sideband method)
+  + allow setting image and filmstrip_thumbnail in data dict on create() and update() (thanks to Hugh Macdonald https://github.com/HughMacdonald) 
+  + fixed bug causing Attachment.tag_list to be set to "None" (str) for uploads
+
+**v3.0.9.beta1 - 2012 Feb 23**
   
   + added support for access to WorkDayRules (requires Shotgun server >= v3.2.0)
   + added support for filmstrip thumbnails (requires Shotgun server >= v3.1.0)
