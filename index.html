@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>python-api by shotgunsoftware</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>python-api</h1>
+        <p>Shotgun Python API</p>
+        <p class="view"><a href="https://github.com/shotgunsoftware/python-api">View the Project on GitHub <small>shotgunsoftware/python-api</small></a></p>
+        <ul>
+          <li><a href="https://github.com/shotgunsoftware/python-api/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/shotgunsoftware/python-api/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/shotgunsoftware/python-api">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p><img src="http://shotgunsoftware.com/images/sg_logo_grey_144.png" alt="shotgun"></p>
+
+<h1>Python API</h1>
+
+<p>Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools. This is the official API that is maintained by Shotgun Software (support@shotgunsoftware.com)</p>
+
+<h2>Minimum Requirements</h2>
+
+<ul>
+<li>Shotgun server v2.4.12 or higher. (Earlier builds of 2.4 will work, but have buggy support for float field types)</li>
+<li>Python v2.4 - v2.7. (We do have plans to eventually support Python 3)</li>
+</ul><h2>High Performance Requirements</h2>
+
+<ul>
+<li>For Python 2.4 and 2.5, install simplejson 2.0.9: <a href="http://pypi.python.org/pypi/simplejson/2.0.9">http://pypi.python.org/pypi/simplejson/2.0.9</a></li>
+<li>For Python 2.6 and higher, install simplejson 2.1.6: <a href="http://pypi.python.org/pypi/simplejson/2.1.6">http://pypi.python.org/pypi/simplejson/2.1.6</a></li>
+</ul><h2>Installing</h2>
+
+<p>To use Shotgun's Python API module, you need to place the package shotgun_api3 in one of the directories specified by the environment variable PYTHONPATH. For more information on PYTHONPATH and using modules in Python, see <a href="http://docs.python.org/tutorial/modules.html">http://docs.python.org/tutorial/modules.html</a></p>
+
+<h2>Documentation</h2>
+
+<p>Tutorials and detailed documentation about the Python API are available on the <a href="https://github.com/shotgunsoftware/python-api/wiki">Python API Wiki</a>. There is also some additional related documentation on the <a href="https://support.shotgunsoftware.com/forums/48807-developer-api-info">Shotgun Support Website</a>.
+Some useful direct links in each are below:</p>
+
+<ul>
+<li>
+<a href="https://support.shotgunsoftware.com/entries/38181-api-introduction-video-tour">Introduction and Video Tour</a><br>
+</li>
+<li><a href="https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Methods">Reference: Methods</a></li>
+<li><a href="https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Data-Types">Reference: Data Types</a></li>
+<li><a href="https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax">Reference: Filter Syntax</a></li>
+</ul><h2>Tests</h2>
+
+<p>Integration and unit tests are provided.
+- test_client and tests_unit mock server interaction and do not require a shotgun instance to be available.
+- test_api and test_api_long do require a shotgun instance, with a script key available for the tests. These tests rely on a tests/config file, which can be created by renaming example_config and supplying the server and script user values. The tests will set up test data on the server based on the data set forth in the config. This data will be manipulated by the tests, and should not be used for other purposes.
+- To run all of the tests, use the shell script run-tests. This script require nose to be installed.</p>
+
+<h2>Changelog</h2>
+
+<p>The latest changes can be seen in the latest <a href="https://github.com/shotgunsoftware/python-api/blob/master/README.mdown">README file</a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/shotgunsoftware">shotgunsoftware</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
