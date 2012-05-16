@@ -59,6 +59,7 @@ else:
 # end if
 
 LOG = logging.getLogger("shotgun_api3")
+LOG.setLevel(logging.WARN)
 
 SG_TIMEZONE = SgTimezone()
 
