@@ -1051,7 +1051,7 @@ class Shotgun(object):
                 err += "\nWe failed with error code - %s." % e.code
             elif hasattr(e, 'reason'):
                 err += "\nThe error object has the following 'reason' "\
-                    "attribute :", e.reason
+                    "attribute : %s" % e.reason
                 err += "\nThis usually means the server doesn't exist, is "\
                     "down, or we don't have an internet connection."
             raise ShotgunError(err)
