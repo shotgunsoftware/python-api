@@ -1025,7 +1025,7 @@ class Shotgun(object):
         
         :returns: binary data as a string
         """
-
+        # Cookie for auth
         sid = self._get_session_token()
         cj = cookielib.LWPCookieJar()
         c = cookielib.Cookie('0', '_session_id', sid, None, False,
@@ -1033,7 +1033,18 @@ class Shotgun(object):
             None, None, {})
         cj.set_cookie(c)
         cookie_handler = urllib2.HTTPCookieProcessor(cj)
-        urllib2.install_opener(urllib2.build_opener(cookie_handler))
+
+        #TODO add proxy support
+        if self.config.proxy_server:
+            proxy_info = {"host":self.config.proxy_server,
+                          "port":self.config.proxy_port}
+            proxy_addr = "http://%(host)s:%(port)d" % proxy_info
+            proxy_support = urllib2.ProxyHandler({"http" : proxy_addr})
+                                              
+            urllib2.install_opener(urllib2.build_opener(proxy_support, cookie_handler))
+        else:
+            urllib2.install_opener(urllib2.build_opener(cookie_handler))
+
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
             "/file_serve/attachment/%s" % urllib.quote(str(attachment_id)),
             None, None, None))
