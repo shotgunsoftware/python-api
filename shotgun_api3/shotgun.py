@@ -1039,7 +1039,7 @@ class Shotgun(object):
             proxy_info = {"host":self.config.proxy_server,
                           "port":self.config.proxy_port}
             proxy_addr = "http://%(host)s:%(port)d" % proxy_info
-            proxy_support = urllib2.ProxyHandler({"http" : proxy_addr})
+            proxy_support = urllib2.ProxyHandler({self.config.scheme : proxy_addr})
                                               
             urllib2.install_opener(urllib2.build_opener(proxy_support, cookie_handler))
         else:
