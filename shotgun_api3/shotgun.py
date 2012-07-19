@@ -991,7 +991,7 @@ class Shotgun(object):
             params["file"] = open(path, "rb")
 
         # Create opener with extended form post support
-        opener = urllib2.build_opener(FormPostHandler)
+        opener = self._build_opener(FormPostHandler)
 
         # Perform the request
         try:
@@ -1033,17 +1033,8 @@ class Shotgun(object):
             None, None, {})
         cj.set_cookie(c)
         cookie_handler = urllib2.HTTPCookieProcessor(cj)
-
-        #TODO add proxy support
-        if self.config.proxy_server:
-            proxy_info = {"host":self.config.proxy_server,
-                          "port":self.config.proxy_port}
-            proxy_addr = "http://%(host)s:%(port)d" % proxy_info
-            proxy_support = urllib2.ProxyHandler({self.config.scheme : proxy_addr})
-                                              
-            urllib2.install_opener(urllib2.build_opener(proxy_support, cookie_handler))
-        else:
-            urllib2.install_opener(urllib2.build_opener(cookie_handler))
+        opener = self._build_opener(cookie_handler)
+        urllib2.install_opener(opener)
 
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
             "/file_serve/attachment/%s" % urllib.quote(str(attachment_id)),
@@ -1114,6 +1105,19 @@ class Shotgun(object):
 
         self.config.session_token = session_token
         return self.config.session_token
+
+    def _build_opener(self, handler):
+        """Build urllib2 opener with appropriate proxy handler."""
+        if self.config.proxy_server:
+            proxy_info = {"host":self.config.proxy_server,
+                          "port":self.config.proxy_port}
+            proxy_addr = "http://%(host)s:%(port)d" % proxy_info
+            proxy_support = urllib2.ProxyHandler({self.config.scheme : proxy_addr})
+                                              
+            opener = urllib2.build_opener(proxy_support, handler)
+        else:
+            opener = urllib2.build_opener(handler)
+        return opener
 
     # Deprecated methods from old wrapper
     def schema(self, entity_type):
