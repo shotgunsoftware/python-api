@@ -1109,11 +1109,12 @@ class Shotgun(object):
     def _build_opener(self, handler):
         """Build urllib2 opener with appropriate proxy handler."""
         if self.config.proxy_server:
-            proxy_info = {"host": self.config.proxy_server,
-                          "port": self.config.proxy_port,
-                          "user": self.config.proxy_user,
-                          "pass": self.config.proxy_pass}
-            proxy_addr = "http://%(host)s:%(port)d" % proxy_info
+            # handle proxy auth
+            if self.config.proxy_user and self.config.proxy_pass:
+                auth_string = "%s:%s@" % (self.config.proxy_user, self.config.proxy_pass)
+            else: 
+                auth_string = ""
+            proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
             proxy_support = urllib2.ProxyHandler({self.config.scheme : proxy_addr})
                                               
             opener = urllib2.build_opener(proxy_support, handler)
