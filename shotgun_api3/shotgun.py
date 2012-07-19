@@ -122,7 +122,10 @@ class ServerCapabilities(object):
         #Store version as triple and check dev flag
         self.version = meta.get("version", None)
         if not self.version:
-            raise ShotgunError("Server version not specified")
+            raise ShotgunError("The Shotgun Server didn't respond with a version number. " 
+                               "This may be because you are running an older version of "
+                               "Shotgun against a more recent version of the Shotgun API. "
+                               "For more information, please contact the Shotgun Support.")
 
         if len(self.version) > 3 and self.version[3] == "Dev":
             self.is_dev = True
