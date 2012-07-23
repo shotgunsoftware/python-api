@@ -47,15 +47,11 @@ import urllib
 import urllib2      # used for image upload
 import urlparse
 
-# use relative import for versions >=2.5 and package import for python versions <2.5 
+# use relative import for versions >=2.5 and package import for python versions <2.5
 if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 5):
-    from .lib.httplib2 import Http, ProxyInfo, socks
-    from .lib.sgtimezone import SgTimezone
-    from .lib.xmlrpclib import Error, ProtocolError, ResponseError
+    from sg_25 import *
 else:
-    from shotgun_api3.lib.httplib2 import Http, ProxyInfo, socks
-    from shotgun_api3.lib.sgtimezone import SgTimezone
-    from shotgun_api3.lib.xmlrpclib import Error, ProtocolError, ResponseError
+    from sg_24 import *
 # end if
 
 LOG = logging.getLogger("shotgun_api3")
@@ -103,16 +99,16 @@ class Fault(ShotgunError):
 # API
 
 class ServerCapabilities(object):
-    """Container for the servers capabilities, such as version and paging. 
+    """Container for the servers capabilities, such as version and paging.
     """
 
     def __init__(self, host, meta):
         """ServerCapabilities.__init__
-        
+
         :param host: Host name for the server excluding protocol.
-        
-        :param meta: dict of meta data for the server returned from the 
-        info api method. 
+
+        :param meta: dict of meta data for the server returned from the
+        info api method.
         """
         #Server host name
         self.host = host
@@ -134,9 +130,9 @@ class ServerCapabilities(object):
 
 
     def _ensure_json_supported(self):
-        """Checks the server version supports the JSON api, raises an 
+        """Checks the server version supports the JSON api, raises an
         exception if it does not.
-        
+
         :raises ShotgunError: The current server version does not support json
         """
         if not self.version or self.version < (2, 4, 0):
@@ -150,8 +146,8 @@ class ServerCapabilities(object):
 
 class ClientCapabilities(object):
     """Container for the client capabilities.
-        
-    Detects the current client platform and works out the SG field 
+
+    Detects the current client platform and works out the SG field
     used for local data paths.
     """
 
@@ -208,7 +204,7 @@ class _Config(object):
 class Shotgun(object):
     """Shotgun Client Connection"""
 
-    # reg ex from 
+    # reg ex from
     # http://underground.infovark.com/2008/07/22/iso-date-validation-regex/
     # Note a length check is done before checking the reg ex
     _DATE_PATTERN = re.compile(
@@ -226,23 +222,23 @@ class Shotgun(object):
                  ensure_ascii=True,
                  connect=True):
         """Initialises a new instance of the Shotgun client.
-        
+
         :param base_url: http or https url to the shotgun server.
-        
-        :param script_name: name of the client script, used to authenticate 
+
+        :param script_name: name of the client script, used to authenticate
         to the server.
-        
-        :param api_key: key assigned to the client script, used to 
+
+        :param api_key: key assigned to the client script, used to
         authenticate to the server.
-        
-        :param convert_datetimes_to_utc: If True date time values are 
-        converted from local time to UTC time before been sent to the server. 
-        Datetimes received from the server are converted back to local time. 
+
+        :param convert_datetimes_to_utc: If True date time values are
+        converted from local time to UTC time before been sent to the server.
+        Datetimes received from the server are converted back to local time.
         If False the client should use UTC date time values.
         Default is True.
-        
+
         :param http_proxy: Optional, URL for the http proxy server, on the
-        form [username:pass@]proxy.com[:8080] 
+        form [username:pass@]proxy.com[:8080]
 
         :param connect: If True, connect to the server. Only used for testing.
         """
@@ -262,8 +258,8 @@ class Shotgun(object):
         self.config.api_path = urlparse.urljoin(urlparse.urljoin(
             api_base or "/", self.config.api_ver + "/"), "json")
 
-        # if the service contains user information strip it out 
-        # copied from the xmlrpclib which turned the user:password into 
+        # if the service contains user information strip it out
+        # copied from the xmlrpclib which turned the user:password into
         # and auth header
         auth, self.config.server = urllib.splituser(self.config.server)
         if auth:
@@ -303,7 +299,7 @@ class Shotgun(object):
             self.server_caps
 
     # ========================================================================
-    # API Functions 
+    # API Functions
 
     @property
     def server_info(self):
@@ -313,7 +309,7 @@ class Shotgun(object):
     @property
     def server_caps(self):
         """
-        :returns: ServerCapabilities that describe the server the client is 
+        :returns: ServerCapabilities that describe the server the client is
         connected to.
         """
         if not self._server_caps or (
@@ -323,11 +319,11 @@ class Shotgun(object):
         return self._server_caps
 
     def connect(self):
-        """Forces the client to connect to the server if it is not already 
+        """Forces the client to connect to the server if it is not already
         connected.
-        
-        NOTE: The client will automatically connect to the server. Only 
-        call this function if you wish to confirm the client can connect. 
+
+        NOTE: The client will automatically connect to the server. Only
+        call this function if you wish to confirm the client can connect.
         """
         self._get_connection()
         self.info()
@@ -335,7 +331,7 @@ class Shotgun(object):
 
     def close(self):
         """Closes the current connection to the server.
-        
+
         If the client needs to connect again it will do so automatically.
         """
         self._close_connection()
@@ -343,7 +339,7 @@ class Shotgun(object):
 
     def info(self):
         """Calls the Info function on the Shotgun API to get the server meta.
-        
+
         :returns: dict of the server meta data.
         """
         return self._call_rpc("info", None, include_script_name=False)
@@ -351,29 +347,29 @@ class Shotgun(object):
     def find_one(self, entity_type, filters, fields=None, order=None,
         filter_operator=None, retired_only=False):
         """Calls the find() method and returns the first result, or None.
-        
+
         :param entity_type: Required, entity type (string) to find.
-        
-        :param filters: Required, list of filters to apply. 
-        
-        :param fields: Optional list of fields from the matched entities to 
-        return. Defaults to id. 
-        
-        :param order: Optional list of fields to order the results by, list 
+
+        :param filters: Required, list of filters to apply.
+
+        :param fields: Optional list of fields from the matched entities to
+        return. Defaults to id.
+
+        :param order: Optional list of fields to order the results by, list
         has the form [{'field_name':'foo','direction':'asc or desc'},]
-        
-        :param filter_operator: Optional operator to apply to the filters, 
+
+        :param filter_operator: Optional operator to apply to the filters,
         supported values are 'all' and 'any'. Defaults to 'all'.
-        
-        :param limit: Optional, number of entities to return per page. 
+
+        :param limit: Optional, number of entities to return per page.
         Defaults to 0 which returns all entities that match.
-        
-        :param page: Optional, page of results to return. By default all 
-        results are returned. Use together with limit. 
-        
-        :param retired_only: Optional, flag to return only entities that have 
-        been retried. Defaults to False which returns only entities which 
-        have not been retired. 
+
+        :param page: Optional, page of results to return. By default all
+        results are returned. Use together with limit.
+
+        :param retired_only: Optional, flag to return only entities that have
+        been retried. Defaults to False which returns only entities which
+        have not been retired.
         """
 
         results = self.find(entity_type, filters, fields, order,
@@ -388,30 +384,30 @@ class Shotgun(object):
         """Find entities matching the given filters.
 
         :param entity_type: Required, entity type (string) to find.
-        
-        :param filters: Required, list of filters to apply. 
-        
-        :param fields: Optional list of fields from the matched entities to 
-        return. Defaults to id. 
-        
-        :param order: Optional list of fields to order the results by, list 
+
+        :param filters: Required, list of filters to apply.
+
+        :param fields: Optional list of fields from the matched entities to
+        return. Defaults to id.
+
+        :param order: Optional list of fields to order the results by, list
         has the form [{'field_name':'foo','direction':'asc or desc'},]
-        
-        :param filter_operator: Optional operator to apply to the filters, 
+
+        :param filter_operator: Optional operator to apply to the filters,
         supported values are 'all' and 'any'. Defaults to 'all'.
-        
-        :param limit: Optional, number of entities to return per page. 
+
+        :param limit: Optional, number of entities to return per page.
         Defaults to 0 which returns all entities that match.
-        
-        :param page: Optional, page of results to return. By default all 
-        results are returned. Use together with limit. 
-        
-        :param retired_only: Optional, flag to return only entities that have 
-        been retried. Defaults to False which returns only entities which 
-        have not been retired. 
-        
+
+        :param page: Optional, page of results to return. By default all
+        results are returned. Use together with limit.
+
+        :param retired_only: Optional, flag to return only entities that have
+        been retried. Defaults to False which returns only entities which
+        have not been retired.
+
         :returns: list of the dicts for each entity with the requested fields,
-        and their id and type. 
+        and their id and type.
         """
 
         if not isinstance(limit, int) or limit < 0:
@@ -423,7 +419,7 @@ class Shotgun(object):
         if isinstance(filters, (list, tuple)):
             filters = _translate_filters(filters, filter_operator)
         elif filter_operator:
-            #TODO:Not sure if this test is correct, replicated from prev api 
+            #TODO:Not sure if this test is correct, replicated from prev api
             raise ShotgunError("Deprecated: Use of filter_operator for find()"
                 " is not valid any more. See the documentation on find()")
 
@@ -435,7 +431,7 @@ class Shotgun(object):
 
         if limit and limit <= self.config.records_per_page:
             params["paging"]["entities_per_page"] = limit
-            # If page isn't set and the limit doesn't require pagination, 
+            # If page isn't set and the limit doesn't require pagination,
             # then trigger the faster code path.
             if page == 0:
                 page = 1
@@ -528,14 +524,14 @@ class Shotgun(object):
 
     def create(self, entity_type, data, return_fields=None):
         """Create a new entity of the specified entity_type.
-        
+
         :param entity_type: Required, entity type (string) to create.
-        
-        :param data: Required, dict fields to set on the new entity. 
-        
-        :param return_fields: Optional list of fields from the new entity 
+
+        :param data: Required, dict fields to set on the new entity.
+
+        :param return_fields: Optional list of fields from the new entity
         to return. Defaults to 'id' field.
-        
+
         :returns: dict of the requested fields.
         """
 
@@ -572,18 +568,18 @@ class Shotgun(object):
         # end if
 
         return result
-    # end def create    
+    # end def create
 
     def update(self, entity_type, entity_id, data):
         """Updates the specified entity with the supplied data.
-        
+
         :param entity_type: Required, entity type (string) to update.
 
         :param entity_id: Required, id of the entity to update.
-        
-        :param data: Required, dict fields to update on the entity. 
-        
-        :returns: dict of the fields updated, with the entity_type and 
+
+        :param data: Required, dict fields to update on the entity.
+
+        :returns: dict of the fields updated, with the entity_type and
         id added.
         """
 
@@ -627,15 +623,15 @@ class Shotgun(object):
     # end if
 
     def delete(self, entity_type, entity_id):
-        """Retire the specified entity. 
-        
-        The entity can be brought back to life using the revive function. 
+        """Retire the specified entity.
+
+        The entity can be brought back to life using the revive function.
 
         :param entity_type: Required, entity type (string) to delete.
 
         :param entity_id: Required, id of the entity to delete.
 
-        :returns: True if the entity was deleted, False otherwise e.g. if the 
+        :returns: True if the entity was deleted, False otherwise e.g. if the
         entity has previously been deleted.
         """
 
@@ -647,13 +643,13 @@ class Shotgun(object):
         return self._call_rpc("delete", params)
 
     def revive(self, entity_type, entity_id):
-        """Revive an entity that has previously been deleted. 
-        
+        """Revive an entity that has previously been deleted.
+
         :param entity_type: Required, entity type (string) to revive.
 
         :param entity_id: Required, id of the entity to revive.
 
-        :returns: True if the entity was revived, False otherwise e.g. if the 
+        :returns: True if the entity was revived, False otherwise e.g. if the
         entity has previously been revived (or was not deleted).
         """
 
@@ -665,20 +661,20 @@ class Shotgun(object):
         return self._call_rpc("revive", params)
 
     def batch(self, requests):
-        """Make a batch request  of several create, update and delete calls. 
+        """Make a batch request  of several create, update and delete calls.
 
-        All requests are performed within a transaction, so either all will 
+        All requests are performed within a transaction, so either all will
         complete or none will.
-        
-        :param requests: A list of dict's of the form which have a 
+
+        :param requests: A list of dict's of the form which have a
             request_type key and also specifies:
             - create: entity_type, data dict of fields to set
             - update: entity_type, entity_id, data dict of fields to set
             - delete: entity_type and entity_id
-        
-        :returns: A list of values for each operation, create and update 
-        requests return a dict of the fields updated. Delete requests 
-        return True if the entity was deleted.  
+
+        :returns: A list of values for each operation, create and update
+        requests return a dict of the fields updated. Delete requests
+        return True if the entity was deleted.
         """
 
         if not isinstance(requests, list):
@@ -721,9 +717,9 @@ class Shotgun(object):
         return self._parse_records(records)
 
     def work_schedule_read(self, start_date, end_date, project=None, user=None):
-        """Get the work day rules for a given date range. 
+        """Get the work day rules for a given date range.
 
-        reasons: 
+        reasons:
             STUDIO_WORK_WEEK
             STUDIO_EXCEPTION
             PROJECT_WORK_WEEK
@@ -743,7 +739,7 @@ class Shotgun(object):
         if not self.server_caps.version or self.server_caps.version < (3, 2, 0):
             raise ShotgunError("Work schedule support requires server version 3.2 or "\
                 "higher, server is %s" % (self.server_caps.version,))
-        # end if 
+        # end if
 
         if not isinstance(start_date, str) or not isinstance(end_date, str):
             raise ShotgunError("The start_date and end_date arguments must be strings in YYYY-MM-DD format")
@@ -761,7 +757,7 @@ class Shotgun(object):
 
     def work_schedule_update(self, date, working, description=None, project=None, user=None, recalculate_field=None):
         """Update the work schedule for a given date. If neither project nor user are passed the studio work schedule will be updated.
-        Project and User can only be used separately.  
+        Project and User can only be used separately.
 
         :param date: Date of WorkDayRule to update.
         :type date: str (YYYY-MM-DD)
@@ -775,7 +771,7 @@ class Shotgun(object):
         if not self.server_caps.version or self.server_caps.version < (3, 2, 0):
             raise ShotgunError("Work schedule support requires server version 3.2 or "\
                 "higher, server is %s" % (self.server_caps.version,))
-        # end if 
+        # end if
 
         if not isinstance(date, str):
             raise ShotgunError("The date argument must be string in YYYY-MM-DD format")
@@ -794,33 +790,33 @@ class Shotgun(object):
     # end def work_schedule_update
 
     def schema_entity_read(self):
-        """Gets all active entities defined in the schema. 
-        
-        :returns: dict of Entity Type to dict containing the display name. 
+        """Gets all active entities defined in the schema.
+
+        :returns: dict of Entity Type to dict containing the display name.
         """
 
         return self._call_rpc("schema_entity_read", None)
 
     def schema_read(self):
         """Gets the schema for all fields in all entities.
-        
+
         :returns: nested dicts
         """
 
         return self._call_rpc("schema_read", None)
 
     def schema_field_read(self, entity_type, field_name=None):
-        """Gets all schema for fields in the specified entity_type or one 
+        """Gets all schema for fields in the specified entity_type or one
         field.
-        
-        :param entity_type: Required, entity type (string) to get the schema 
+
+        :param entity_type: Required, entity type (string) to get the schema
         for.
-        
-        :param field_name: Optional, name of the field to get the schema 
-        definition for. If not supplied all fields for the entity type are 
+
+        :param field_name: Optional, name of the field to get the schema
+        definition for. If not supplied all fields for the entity type are
         returned.
-        
-        :returns: dict of field name to nested dicts which describe the field 
+
+        :returns: dict of field name to nested dicts which describe the field
         """
 
         params = {
@@ -833,17 +829,17 @@ class Shotgun(object):
 
     def schema_field_create(self, entity_type, data_type, display_name,
         properties=None):
-        """Creates a field for the specified entity type. 
-        
+        """Creates a field for the specified entity type.
+
         :param entity_type: Required, entity type (string) to add the field to
-        
-        :param data_type: Required, Shotgun data type for the new field. 
-        
+
+        :param data_type: Required, Shotgun data type for the new field.
+
         :param display_name: Required, display name for the new field.
-        
-        :param properties: Optional, dict of properties for the new field. 
-        
-        :returns: The Shotgun name (string) for the new field, this is 
+
+        :param properties: Optional, dict of properties for the new field.
+
+        :returns: The Shotgun name (string) for the new field, this is
         different to the display_name passed in.
         """
 
@@ -860,15 +856,15 @@ class Shotgun(object):
         return self._call_rpc("schema_field_create", params)
 
     def schema_field_update(self, entity_type, field_name, properties):
-        """Updates the specified field definition with the supplied 
+        """Updates the specified field definition with the supplied
         properties.
-        
+
         :param entity_type: Required, entity type (string) to add the field to
 
-        :param field_name: Required, Shotgun name of the field to update. 
-        
+        :param field_name: Required, Shotgun name of the field to update.
+
         :param properties: Required, dict of updated properties for the field.
-        
+
         :returns: True if the field was updated, False otherwise.
         """
 
@@ -886,13 +882,13 @@ class Shotgun(object):
     def schema_field_delete(self, entity_type, field_name):
         """Deletes the specified field definition from the entity_type.
 
-        :param entity_type: Required, entity type (string) to delete the field 
+        :param entity_type: Required, entity type (string) to delete the field
         from.
 
-        :param field_name: Required, Shotgun name of the field to delete. 
-        
+        :param field_name: Required, Shotgun name of the field to delete.
+
         :param properties: Required, dict of updated properties for the field.
-        
+
         :returns: True if the field was updated, False otherwise.
         """
 
@@ -904,12 +900,12 @@ class Shotgun(object):
         return self._call_rpc("schema_field_delete", params)
 
     def set_session_uuid(self, session_uuid):
-        """Sets the browser session_uuid for this API session. 
-        
-        Once set events generated by this API session will include the 
-        session_uuid in their EventLogEntries. 
-        
-        :param session_uuid: Session UUID to set. 
+        """Sets the browser session_uuid for this API session.
+
+        Once set events generated by this API session will include the
+        session_uuid in their EventLogEntries.
+
+        :param session_uuid: Session UUID to set.
         """
 
         self.config.session_uuid = session_uuid
@@ -934,24 +930,24 @@ class Shotgun(object):
 
     def upload(self, entity_type, entity_id, path, field_name=None,
         display_name=None, tag_list=None):
-        """Upload a file as an attachment/thumbnail to the specified 
+        """Upload a file as an attachment/thumbnail to the specified
         entity_type and entity_id.
-        
+
         :param entity_type: Required, entity type (string) to revive.
 
         :param entity_id: Required, id of the entity to revive.
-        
+
         :param path: path to file on disk
-        
-        :param field_name: the field on the entity to upload to 
+
+        :param field_name: the field on the entity to upload to
             (ignored if thumbnail)
-            
-        :param display_name: the display name to use for the file in the ui 
+
+        :param display_name: the display name to use for the file in the ui
             (ignored if thumbnail)
-            
+
         :param tag_list: comma-separated string of tags to assign to the file
-        
-        :returns: Id of the new attachment. 
+
+        :returns: Id of the new attachment.
         """
         path = os.path.abspath(os.path.expanduser(path or ""))
         if not os.path.isfile(path):
@@ -1009,7 +1005,7 @@ class Shotgun(object):
                     "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
                     path, url, str(result)))
 
-        # TODO: 
+        # TODO:
         # we changed the result string in the middle of 1.8 to return the id
         # remove once everyone is > 1.8.3
         r = str(result).split(":")
@@ -1020,9 +1016,9 @@ class Shotgun(object):
 
     def download_attachment(self, attachment_id):
         """Gets the returns binary content of the specified attachment.
-        
-        :param attachment_id: id of the attachment to get. 
-        
+
+        :param attachment_id: id of the attachment to get.
+
         :returns: binary data as a string
         """
 
@@ -1063,7 +1059,7 @@ class Shotgun(object):
                     "which isn't downloadable.\n%s\n" % ("="*30, url, "="*30)
                 raise ShotgunError(error_string)
         return attachment
-    
+
     def authenticate_human_user(self, user_login, user_password):
         '''Authenticate Shotgun HumanUser. HumanUser must be an active account.
         @param user_login: Login name of Shotgun HumanUser
@@ -1088,7 +1084,7 @@ class Shotgun(object):
             # Set back to default
             self.config.user_login = None
             self.config.user_password = None
-    
+
     def _get_session_token(self):
         """Hack to authenticate in order to download protected content
         like Attachments
@@ -1112,12 +1108,12 @@ class Shotgun(object):
     def entity_types(self):
         raise ShotgunError("Deprecated: use schema_entity_read() instead")
     # ========================================================================
-    # RPC Functions 
+    # RPC Functions
 
     def _call_rpc(self, method, params, include_script_name=True, first=False):
-        """Calls the specified method on the Shotgun Server sending the 
-        supplied payload. 
-        
+        """Calls the specified method on the Shotgun Server sending the
+        supplied payload.
+
         """
 
         LOG.debug("Starting rpc call to %s with params %s" % (
@@ -1151,7 +1147,7 @@ class Shotgun(object):
 
     def _build_payload(self, method, params, include_script_name=True):
         """Builds the payload to be send to the rpc endpoint.
-        
+
         """
         if not method:
             raise ValueError("method is empty")
@@ -1192,10 +1188,10 @@ class Shotgun(object):
 
     def _encode_payload(self, payload):
         """Encodes the payload to a string to be passed to the rpc endpoint.
-        
-        The payload is json encoded as a unicode string if the content 
-        requires it. The unicode string is then encoded as 'utf-8' as it must 
-        be in a single byte encoding to go over the wire.  
+
+        The payload is json encoded as a unicode string if the content
+        requires it. The unicode string is then encoded as 'utf-8' as it must
+        be in a single byte encoding to go over the wire.
         """
 
         wire = json.dumps(payload, ensure_ascii=False)
@@ -1256,10 +1252,10 @@ class Shotgun(object):
         return (http_status, resp_headers, resp_body)
 
     def _parse_http_status(self, status):
-        """Parse the status returned from the http request. 
-        
+        """Parse the status returned from the http request.
+
         :raises: RuntimeError if the http status is non success.
-         
+
         :param status: Tuple of (code, reason).
         """
         error_code = status[0]
@@ -1275,15 +1271,15 @@ class Shotgun(object):
         return
 
     def _decode_response(self, headers, body):
-        """Decodes the response from the server from the wire format to 
+        """Decodes the response from the server from the wire format to
         a python data structure.
-        
-        :param headers: Headers from the server. 
-        
+
+        :param headers: Headers from the server.
+
         :param body: Raw response body from the server.
-        
-        :returns: If the content-type starts with application/json or 
-        text/javascript the body is json decoded. Otherwise the raw body is 
+
+        :returns: If the content-type starts with application/json or
+        text/javascript the body is json decoded. Otherwise the raw body is
         returned.
         """
         if not body:
@@ -1326,7 +1322,7 @@ class Shotgun(object):
 
     def _response_errors(self, sg_response):
         """Raises any API errors specified in the response.
-        
+
         :raises ShotgunError: If the server response contains an exception.
         """
 
@@ -1357,9 +1353,9 @@ class Shotgun(object):
         return visitor(data)
 
     def _transform_outbound(self, data):
-        """Transforms data types or values before they are sent by the 
+        """Transforms data types or values before they are sent by the
         client.
-        
+
         - changes timezones
         - converts dates and times to strings
         """
@@ -1383,7 +1379,7 @@ class Shotgun(object):
                 return value.strftime("%Y-%m-%dT%H:%M:%SZ")
 
             if isinstance(value, datetime.date):
-                #existing code did not tz transform dates. 
+                #existing code did not tz transform dates.
                 return value.strftime("%Y-%m-%d")
 
             if isinstance(value, datetime.time):
@@ -1399,10 +1395,10 @@ class Shotgun(object):
         return self._visit_data(data, _outbound_visitor)
 
     def _transform_inbound(self, data):
-        """Transforms data types or values after they are received from the 
+        """Transforms data types or values after they are received from the
         server."""
-        #NOTE: The time zone is removed from the time after it is transformed 
-        #to the local time, otherwise it will fail to compare to datetimes 
+        #NOTE: The time zone is removed from the time after it is transformed
+        #to the local time, otherwise it will fail to compare to datetimes
         #that do not have a time zone.
         if self.config.convert_datetimes_to_utc:
             _change_tz = lambda x: x.replace(tzinfo=SG_TIMEZONE.utc)\
@@ -1431,8 +1427,8 @@ class Shotgun(object):
     # Connection Functions
 
     def _get_connection(self):
-        """Returns the current connection or creates a new connection to the 
-        current server. 
+        """Returns the current connection or creates a new connection to the
+        current server.
         """
         if self._connection is not None:
             return self._connection
@@ -1468,10 +1464,10 @@ class Shotgun(object):
     def _parse_records(self, records):
         """Parses 'records' returned from the api to insert thumbnail urls
         or local file paths.
-        
+
         :param records: List of records (dicts) to process or a single record.
-        
-        :returns: A list of the records processed. 
+
+        :returns: A list of the records processed.
         """
 
         if not records:
@@ -1509,19 +1505,19 @@ class Shotgun(object):
     def _build_thumb_url(self, entity_type, entity_id):
         """Returns the URL for the thumbnail of an entity given the
         entity type and the entity id.
-        
-        Note: This makes a call to the server for every thumbnail. 
-        
-        :param entity_type: Entity type the id is for. 
-        
-        :param entity_id: id of the entity to get the thumbnail for. 
-        
+
+        Note: This makes a call to the server for every thumbnail.
+
+        :param entity_type: Entity type the id is for.
+
+        :param entity_id: id of the entity to get the thumbnail for.
+
         :returns: Fully qualified url to the thumbnail.
         """
         # Example response from the end point
         # curl "https://foo.com/upload/get_thumbnail_url?entity_type=Version&entity_id=1"
         # 1
-        # /files/0000/0000/0012/232/shot_thumb.jpg.jpg 
+        # /files/0000/0000/0012/232/shot_thumb.jpg.jpg
         entity_info = {'e_type':urllib.quote(entity_type),
                        'e_id':urllib.quote(str(entity_id))}
         url = ("/upload/get_thumbnail_url?" +
@@ -1544,9 +1540,9 @@ class Shotgun(object):
         raise RuntimeError("Unknown code %s %s" % (code, thumb_url))
 
     def _dict_to_list(self, d, key_name="field_name", value_name="value"):
-        """Utility function to convert a dict into a list dicts using the 
-        key_name and value_name keys. 
-        
+        """Utility function to convert a dict into a list dicts using the
+        key_name and value_name keys.
+
         e.g. d {'foo' : 'bar'} changed to [{'field_name':'foo, 'value':'bar'}]
         """
 
@@ -1556,7 +1552,7 @@ class Shotgun(object):
         ]
 
 
-# Helpers from the previous API, left as is. 
+# Helpers from the previous API, left as is.
 
 # Based on http://code.activestate.com/recipes/146306/
 class FormPostHandler(urllib2.BaseHandler):
