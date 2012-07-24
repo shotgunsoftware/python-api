@@ -1,4 +1,4 @@
-"""Tests agains the client software that do not involve calling the 
+"""Tests against the client software that do not involve calling the 
 CRUD functions. These tests always use a mock http connection so not not 
 need a live server to run against."""
 
@@ -223,6 +223,16 @@ class TestShotgunClient(base.MockTestBase):
         self._assert_http_method("list-first", a)
         expected = "rpc response with list result, first item"
         self.assertEqual(d["results"][0], rv, expected )
+
+        # Test unicode mixed with utf-8 as reported in Ticket #17959
+        d = { "results" : ["foo", "bar"] }
+        a = { "utf_str": "\xe2\x88\x9a", "unicode_str": "\xe2\x88\x9a".decode("utf-8") }
+        self._mock_http(d)
+        rv = self.sg._call_rpc("list", a)
+        expected = "rpc response with list result"
+        self.assertEqual(d["results"], rv, expected )
+        
+
         
     def test_transform_data(self):
         """Outbound data is transformed"""
