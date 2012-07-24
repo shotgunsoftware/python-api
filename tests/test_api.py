@@ -174,7 +174,8 @@ class TestShotgunApi(base.LiveTestBase):
         size = os.stat(path).st_size
 
         # test thumbnail upload
-        data = {'image': path, 'name': 'Test Version'}
+        data = {'image': path, 'code': 'Test Version',
+                'project': self.project}
         new_version = self.sg.create("Version", data, return_fields=['image'])
         self.assertTrue(new_version is not None)
         self.assertTrue(new_version.get('image') is not None)
@@ -183,12 +184,13 @@ class TestShotgunApi(base.LiveTestBase):
             self.sg.download_attachment(new_version.get('image_id'))
         self.assertTrue(attach_file is not None)
         self.assertEqual(size, len(attach_file))
-        orig_file.open(path, "rb").read()
+        orig_file = open(path, "rb").read()
         self.assertEqual(orig_file, attach_file)
 
         # test filmstrip image upload
-        data = {'filmstrip_image': path, 'name': 'Test Version'}
-        new_version = self.sg.create("Version", data, return_fields=['image'])
+        data = {'filmstrip_image': path, 'code': 'Test Version',
+                'project': self.project}
+        new_version = self.sg.create("Version", data, return_fields=['filmstrip_image'])
         self.assertTrue(new_version is not None)
         self.assertTrue(new_version.get('filmstrip_image') is not None)
         self.assertTrue(new_version.get('filmstrip_image_id') is not None)
@@ -196,13 +198,6 @@ class TestShotgunApi(base.LiveTestBase):
             self.sg.download_attachment(new_version.get('filmstrip_image_id'))
         self.assertTrue(attach_file is not None)
         self.assertEqual(size, len(attach_file))
-        orig_file.open(path, "rb").read()
-        self.assertEqual(orig_file, attach_file)
-            
-        attach_file = self.sg.download_attachment(attach_id)
-        self.assertTrue(attach_file is not None)
-        self.assertEqual(size, len(attach_file))
-        
         orig_file = open(path, "rb").read()
         self.assertEqual(orig_file, attach_file)
     # end test_create_upload
@@ -248,7 +243,6 @@ class TestShotgunApi(base.LiveTestBase):
             }
         ]
 
-        print expected, response
         self.assertEqual(expected, response)
 
         response_version_with_project = self.sg.find(
@@ -320,7 +314,6 @@ class TestShotgunApi(base.LiveTestBase):
                               self.config.api_key, 
                               ensure_ascii=False)
         result = sg_unicode.find_one('Note', [['id','is',self.note['id']]], fields=['content'])
-        print result
         self.assertTrue(_has_unicode(result))
 
     def test_work_schedule(self):
