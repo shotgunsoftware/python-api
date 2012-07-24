@@ -118,7 +118,10 @@ class ServerCapabilities(object):
         #Store version as triple and check dev flag
         self.version = meta.get("version", None)
         if not self.version:
-            raise ShotgunError("Server version not specified")
+            raise ShotgunError("The Shotgun Server didn't respond with a version number. " 
+                               "This may be because you are running an older version of "
+                               "Shotgun against a more recent version of the Shotgun API. "
+                               "For more information, please contact the Shotgun Support.")
 
         if len(self.version) > 3 and self.version[3] == "Dev":
             self.is_dev = True
@@ -987,7 +990,7 @@ class Shotgun(object):
             params["file"] = open(path, "rb")
 
         # Create opener with extended form post support
-        opener = urllib2.build_opener(FormPostHandler)
+        opener = self._build_opener(FormPostHandler)
 
         # Perform the request
         try:
@@ -1021,7 +1024,7 @@ class Shotgun(object):
 
         :returns: binary data as a string
         """
-
+        # Cookie for auth
         sid = self._get_session_token()
         cj = cookielib.LWPCookieJar()
         c = cookielib.Cookie('0', '_session_id', sid, None, False,
@@ -1029,7 +1032,9 @@ class Shotgun(object):
             None, None, {})
         cj.set_cookie(c)
         cookie_handler = urllib2.HTTPCookieProcessor(cj)
-        urllib2.install_opener(urllib2.build_opener(cookie_handler))
+        opener = self._build_opener(cookie_handler)
+        urllib2.install_opener(opener)
+
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
             "/file_serve/attachment/%s" % urllib.quote(str(attachment_id)),
             None, None, None))
@@ -1100,6 +1105,22 @@ class Shotgun(object):
 
         self.config.session_token = session_token
         return self.config.session_token
+
+    def _build_opener(self, handler):
+        """Build urllib2 opener with appropriate proxy handler."""
+        if self.config.proxy_server:
+            # handle proxy auth
+            if self.config.proxy_user and self.config.proxy_pass:
+                auth_string = "%s:%s@" % (self.config.proxy_user, self.config.proxy_pass)
+            else: 
+                auth_string = ""
+            proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
+            proxy_support = urllib2.ProxyHandler({self.config.scheme : proxy_addr})
+                                              
+            opener = urllib2.build_opener(proxy_support, handler)
+        else:
+            opener = urllib2.build_opener(handler)
+        return opener
 
     # Deprecated methods from old wrapper
     def schema(self, entity_type):
