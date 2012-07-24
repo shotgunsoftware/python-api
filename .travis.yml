@@ -1,0 +1,14 @@
+language: python
+python:
+  - "2.4"
+  - "2.5"
+  - "2.6"
+  - "2.7"
+# command to install dependencies
+install:
+  - pip install nose --use-mirrors
+# command to run tests
+script: nosetests tests.tests_unit tests.test_client
+branches:
+    only:
+        - relative_import_test
