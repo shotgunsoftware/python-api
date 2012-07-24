@@ -52,7 +52,6 @@ if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1
     from sg_25 import *
 else:
     from sg_24 import *
-# end if
 
 LOG = logging.getLogger("shotgun_api3")
 LOG.setLevel(logging.WARN)
@@ -441,7 +440,6 @@ class Shotgun(object):
 
         if self.server_caps.version and self.server_caps.version >= (3, 3, 0):
             params['api_return_image_urls'] = True
-        # end if
 
         # if page is specified, then only return the page of records requested
         if page != 0:
@@ -543,7 +541,6 @@ class Shotgun(object):
         upload_image = None
         if 'image' in data:
             upload_image = data.pop('image')
-        # end if
 
         upload_filmstrip_image = None
         if 'filmstrip_image' in data:
@@ -551,7 +548,6 @@ class Shotgun(object):
                 raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
                     "higher, server is %s" % (self.server_caps.version,))
             upload_filmstrip_image = data.pop('filmstrip_image')
-        # end if
 
         params = {
             "type" : entity_type,
@@ -564,14 +560,11 @@ class Shotgun(object):
 
         if upload_image:
             self.upload_thumbnail(entity_type, result['id'], upload_image)
-        # end if
 
         if upload_filmstrip_image:
             self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
-        # end if
 
         return result
-    # end def create
 
     def update(self, entity_type, entity_id, data):
         """Updates the specified entity with the supplied data.
@@ -591,7 +584,6 @@ class Shotgun(object):
         upload_image = None
         if 'image' in data:
             upload_image = data.pop('image')
-        # end if
 
         upload_filmstrip_image = None
         if 'filmstrip_image' in data:
@@ -599,7 +591,6 @@ class Shotgun(object):
                 raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
                     "higher, server is %s" % (self.server_caps.version,))
             upload_filmstrip_image = data.pop('filmstrip_image')
-        # end if
 
         if data:
             params = {
@@ -612,18 +603,14 @@ class Shotgun(object):
             result = self._parse_records(record)[0]
         else:
             result = {'id': entity_id, 'type': entity_type}
-        # end if
 
         if upload_image:
             self.upload_thumbnail(entity_type, entity_id, upload_image)
-        # end if
 
         if upload_filmstrip_image:
             self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
-        # end if
 
         return result
-    # end if
 
     def delete(self, entity_type, entity_id):
         """Retire the specified entity.
@@ -742,11 +729,9 @@ class Shotgun(object):
         if not self.server_caps.version or self.server_caps.version < (3, 2, 0):
             raise ShotgunError("Work schedule support requires server version 3.2 or "\
                 "higher, server is %s" % (self.server_caps.version,))
-        # end if
 
         if not isinstance(start_date, str) or not isinstance(end_date, str):
             raise ShotgunError("The start_date and end_date arguments must be strings in YYYY-MM-DD format")
-        # end if
 
         params = dict(
             start_date=start_date,
@@ -756,7 +741,6 @@ class Shotgun(object):
         )
 
         return self._call_rpc('work_schedule_read', params)
-    # end def work_schedule_read
 
     def work_schedule_update(self, date, working, description=None, project=None, user=None, recalculate_field=None):
         """Update the work schedule for a given date. If neither project nor user are passed the studio work schedule will be updated.
@@ -774,11 +758,9 @@ class Shotgun(object):
         if not self.server_caps.version or self.server_caps.version < (3, 2, 0):
             raise ShotgunError("Work schedule support requires server version 3.2 or "\
                 "higher, server is %s" % (self.server_caps.version,))
-        # end if
 
         if not isinstance(date, str):
             raise ShotgunError("The date argument must be string in YYYY-MM-DD format")
-        # end if
 
         params = dict(
             date=date,
@@ -790,7 +772,6 @@ class Shotgun(object):
         )
 
         return self._call_rpc('work_schedule_update', params)
-    # end def work_schedule_update
 
     def schema_entity_read(self):
         """Gets all active entities defined in the schema.
@@ -986,7 +967,7 @@ class Shotgun(object):
             # None gets converted to a string and added as a tag...
             if tag_list:
                 params["tag_list"] = tag_list
-            # end if
+
             params["file"] = open(path, "rb")
 
         # Create opener with extended form post support
