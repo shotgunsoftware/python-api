@@ -11,4 +11,5 @@ install:
 script: nosetests tests.tests_unit tests.test_client
 branches:
     only:
+        - master
         - relative_import_test
