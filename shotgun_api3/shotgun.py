@@ -1076,14 +1076,15 @@ class Shotgun(object):
                 return data
             else:
                 None
-
-        except Fault:
-            pass
-
-        finally:
             # Set back to default
             self.config.user_login = None
             self.config.user_password = None
+
+        except Fault:
+            # Set back to default
+            self.config.user_login = None
+            self.config.user_password = None
+
 
     def _get_session_token(self):
         """Hack to authenticate in order to download protected content
