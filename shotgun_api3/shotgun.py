@@ -118,7 +118,7 @@ class ServerCapabilities(object):
         #Store version as triple and check dev flag
         self.version = meta.get("version", None)
         if not self.version:
-            raise ShotgunError("The Shotgun Server didn't respond with a version number. " 
+            raise ShotgunError("The Shotgun Server didn't respond with a version number. "
                                "This may be because you are running an older version of "
                                "Shotgun against a more recent version of the Shotgun API. "
                                "For more information, please contact the Shotgun Support.")
@@ -1081,14 +1081,20 @@ class Shotgun(object):
                 return data
             else:
                 None
-            # Set back to default
+            # Set back to default - There finally and except cannot be used together in python2.4
             self.config.user_login = None
             self.config.user_password = None
-
         except Fault:
-            # Set back to default
+            # Set back to default - There finally and except cannot be used together in python2.4
             self.config.user_login = None
             self.config.user_password = None
+        except:
+            # Set back to default - There finally and except cannot be used together in python2.4
+            self.config.user_login = None
+            self.config.user_password = None
+            raise
+
+
 
 
     def _get_session_token(self):
@@ -1112,11 +1118,11 @@ class Shotgun(object):
             # handle proxy auth
             if self.config.proxy_user and self.config.proxy_pass:
                 auth_string = "%s:%s@" % (self.config.proxy_user, self.config.proxy_pass)
-            else: 
+            else:
                 auth_string = ""
             proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
             proxy_support = urllib2.ProxyHandler({self.config.scheme : proxy_addr})
-                                              
+
             opener = urllib2.build_opener(proxy_support, handler)
         else:
             opener = urllib2.build_opener(handler)
