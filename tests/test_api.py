@@ -159,7 +159,61 @@ class TestShotgunApi(base.LiveTestBase):
         orig_file = open(path, "rb").read()
         self.assertEqual(orig_file, attach_file)
 
+    def test_create_upload(self):
+        """Upload a thumbnail via the create method"""
+        #upload / download only works against a live server becuase it does 
+        #not use the standard http interface
+        if 'localhost' in self.server_url:
+            print "upload via create tests skipped for localhost"
+            return
+        # end if
+        
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir,"sg_logo.jpg")))
+        size = os.stat(path).st_size
+
+        # test thumbnail upload
+        data = {'image': path, 'name': 'Test Version'}
+        new_version = self.sg.create("Version", data, return_fields=['image'])
+        self.assertTrue(new_version is not None)
+        self.assertTrue(new_version.get('image') is not None)
+        self.assertTrue(new_version.get('image_id') is not None)
+        attach_file =\
+            self.sg.download_attachment(new_version.get('image_id'))
+        self.assertTrue(attach_file is not None)
+        self.assertEqual(size, len(attach_file))
+        orig_file.open(path, "rb").read()
+        self.assertEqual(orig_file, attach_file)
+
+        # test filmstrip image upload
+        data = {'filmstrip_image': path, 'name': 'Test Version'}
+        new_version = self.sg.create("Version", data, return_fields=['image'])
+        self.assertTrue(new_version is not None)
+        self.assertTrue(new_version.get('filmstrip_image') is not None)
+        self.assertTrue(new_version.get('filmstrip_image_id') is not None)
+        attach_file =\
+            self.sg.download_attachment(new_version.get('filmstrip_image_id'))
+        self.assertTrue(attach_file is not None)
+        self.assertEqual(size, len(attach_file))
+        orig_file.open(path, "rb").read()
+        self.assertEqual(orig_file, attach_file)
+            
+        attach_file = self.sg.download_attachment(attach_id)
+        self.assertTrue(attach_file is not None)
+        self.assertEqual(size, len(attach_file))
+        
+        orig_file = open(path, "rb").read()
+        self.assertEqual(orig_file, attach_file)
+    # end test_create_upload
+
     def test_thumbnail_url(self):
+        #upload / download only works against a live server becuase it does 
+        #not use the standard http interface
+        if 'localhost' in self.server_url:
+            print "upload / down tests skipped for localhost"
+            return
+
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
             os.path.join(this_dir,"sg_logo.jpg")))
@@ -193,6 +247,8 @@ class TestShotgunApi(base.LiveTestBase):
                 'id': self.version['id']
             }
         ]
+
+        print expected, response
         self.assertEqual(expected, response)
 
         response_version_with_project = self.sg.find(
