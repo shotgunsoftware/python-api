@@ -1,6 +1,5 @@
 language: python
 python:
-  - "2.4"
   - "2.5"
   - "2.6"
   - "2.7"
@@ -8,7 +7,10 @@ python:
 install:
   - pip install nose --use-mirrors
 # command to run tests
+before_script:
+    - cp ./tests/example_config ./tests/config
 script: nosetests tests.tests_unit tests.test_client
 branches:
     only:
+        - master
         - relative_import_test
