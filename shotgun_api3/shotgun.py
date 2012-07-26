@@ -1450,6 +1450,10 @@ class Shotgun(object):
                     value = _change_tz(value)
                 return value.strftime("%Y-%m-%dT%H:%M:%SZ")
 
+            if isinstance(value, str):
+                # Convert strings to unicode
+                return value.decode("utf-8")
+
             return value
 
         return self._visit_data(data, _outbound_visitor)
