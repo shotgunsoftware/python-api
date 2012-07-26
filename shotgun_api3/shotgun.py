@@ -549,20 +549,44 @@ class Shotgun(object):
                     "higher, server is %s" % (self.server_caps.version,))
             upload_filmstrip_image = data.pop('filmstrip_image')
 
+        temp_return_fields = [item for item in return_fields]
+        if upload_image and "image" in temp_return_fields:
+            temp_return_fields.remove("image")
+        # end if
+
+        if upload_filmstrip_image and "filmstrip_image" in temp_return_fields:
+            temp_return_fields.remove("filmstrip_image")
+        # end if
+
         params = {
             "type" : entity_type,
             "fields" : self._dict_to_list(data),
-            "return_fields" : return_fields or ["id"]
+            "return_fields" : temp_return_fields or ["id"]
         }
 
         record = self._call_rpc("create", params, first=True)
         result = self._parse_records(record)[0]
 
         if upload_image:
-            self.upload_thumbnail(entity_type, result['id'], upload_image)
+            image_id = self.upload_thumbnail(entity_type, result['id'],
+                                             upload_image)
+            result['image_id'] = image_id
+        # end if
+
+        if "image" in return_fields:
+            image = self.find_one(entity_type, [['id', 'is', result.get('id')]],
+                                  fields=['image'])
+            result['image'] = image.get('image')
 
         if upload_filmstrip_image:
-            self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
+            filmstrip_id = self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
+            result['filmstrip_image_id'] = filmstrip_id
+
+        if "filmstrip_image" in return_fields:
+            filmstrip = self.find_one(entity_type,
+                                      [['id', 'is', result.get('id')]],
+                                      fields=['filmstrip_image'])
+            result['filmstrip_image'] = filmstrip.get('filmstrip_image')
 
         return result
 
@@ -605,10 +629,20 @@ class Shotgun(object):
             result = {'id': entity_id, 'type': entity_type}
 
         if upload_image:
-            self.upload_thumbnail(entity_type, entity_id, upload_image)
+            image_id = self.upload_thumbnail(entity_type, entity_id,
+                                             upload_image)
+            result['image_id'] = image_id
+            image = self.find_one(entity_type, [['id', 'is', result.get('id')]],
+                                  fields=['image'])
+            result['image'] = image.get('image')
 
         if upload_filmstrip_image:
-            self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
+            filmstrip_id = self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
+            result['filmstrip_image_id'] = filmstrip_id
+            filmsrip = self.find_one(entity_type,
+                                     [['id', 'is', result.get('id')]],
+                                     fields=['filmstrip_image'])
+            result['filmstrip_image'] = filmstrip.get('filmstrip_image')
 
         return result
 
@@ -1017,7 +1051,7 @@ class Shotgun(object):
         urllib2.install_opener(opener)
 
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
-            "/file_serve/attachment/%s" % urllib.quote(str(attachment_id)),
+            "/file_serve/%s" % urllib.quote(str(attachment_id)),
             None, None, None))
 
         try:
