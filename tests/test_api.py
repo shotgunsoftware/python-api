@@ -132,7 +132,7 @@ class TestShotgunApi(base.LiveTestBase):
 
 
     def test_upload_download(self):
-        """Upload and download a thumbnail"""
+        """Upload and download an attachment """
         #upload / download only works against a live server becuase it does
         #not use the standard http interface
         if 'localhost' in self.server_url:
@@ -144,12 +144,8 @@ class TestShotgunApi(base.LiveTestBase):
             os.path.join(this_dir,"sg_logo.jpg")))
         size = os.stat(path).st_size
 
-        attach_id = self.sg.upload_thumbnail("Version",
-            self.version['id'], path,
-            tag_list="monkeys, everywhere, send, help")
-
-        attach_id = self.sg.upload_thumbnail("Version",
-            self.version['id'], path,
+        attach_id = self.sg.upload("Ticket",
+            self.ticket['id'], path, 'attachments',
             tag_list="monkeys, everywhere, send, help")
 
         attach_file = self.sg.download_attachment(attach_id)

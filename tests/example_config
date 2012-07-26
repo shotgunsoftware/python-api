@@ -9,8 +9,8 @@ server_url     : http://0.0.0.0:3000
 # script name as key as listed in admin panel for your server
 script_name    : test script name
 api_key        : test script api key
-http_proxy     : 
-session_uuid   : 
+http_proxy     :
+session_uuid   :
 
 [TEST_DATA]
 project_name   : SG unittest project
@@ -23,3 +23,4 @@ asset_code     : Sg unittest asset
 version_code   : Sg unittest version
 shot_code      : Sg unittest shot
 task_content   : Sg unittest task
+ticket_title    : Sg unittest ticket
