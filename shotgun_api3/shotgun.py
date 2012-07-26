@@ -639,7 +639,7 @@ class Shotgun(object):
         if upload_filmstrip_image:
             filmstrip_id = self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
             result['filmstrip_image_id'] = filmstrip_id
-            filmsrip = self.find_one(entity_type,
+            filmstrip = self.find_one(entity_type,
                                      [['id', 'is', result.get('id')]],
                                      fields=['filmstrip_image'])
             result['filmstrip_image'] = filmstrip.get('filmstrip_image')
@@ -1051,7 +1051,7 @@ class Shotgun(object):
         urllib2.install_opener(opener)
 
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
-            "/file_serve/%s" % urllib.quote(str(attachment_id)),
+            "/file_serve/attachment/%s" % urllib.quote(str(attachment_id)),
             None, None, None))
 
         try:
