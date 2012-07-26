@@ -7,7 +7,7 @@ Shotgun provides a simple Python-based API for accessing Shotgun and integrating
 [GitHub is the new official location](http://github.com/shotgunsoftware/python-api) for the latest Shotgun Python API. We will no longer be including it in our code tree that is deployed to your servers or posting it for download from our support site. So update your bookmarks!
 
 ## Minimum Requirements
- 
+
 * Shotgun server v2.4.12 or higher. (Earlier builds of 2.4 will work, but have buggy support for float field types)
 * Python v2.4 - v2.7. (We do have plans to eventually support Python 3)
 
@@ -23,7 +23,7 @@ To use Shotgun's Python API module, you need to place the package shotgun_api3 i
 Tutorials and detailed documentation about the Python API are available on the [Python API Wiki](https://github.com/shotgunsoftware/python-api/wiki). There is also some additional related documentation on the [Shotgun Support Website](https://support.shotgunsoftware.com/forums/48807-developer-api-info).
 Some useful direct links in each are below:
 
-* [Introduction and Video Tour](https://support.shotgunsoftware.com/entries/38181-api-introduction-video-tour)  
+* [Introduction and Video Tour](https://support.shotgunsoftware.com/entries/38181-api-introduction-video-tour)
 * [Reference: Methods](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Methods)
 * [Reference: Data Types](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Data-Types)
 * [Reference: Filter Syntax](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax)
@@ -37,21 +37,21 @@ Integration and unit tests are provided.
 ## Changelog
 
 **v3.0.9.beta2 - 2012 Mar 19**
-  
+
   + use relative imports for included libraries when using Python v2.5 or later
   + replace sideband request for 'image' (thumbnail) field with native support (requires Shotgun server >= v3.3.0. Request will still work on older versions but fallback to slow sideband method)
-  + allow setting image and filmstrip_thumbnail in data dict on create() and update() (thanks to Hugh Macdonald https://github.com/HughMacdonald) 
+  + allow setting image and filmstrip_thumbnail in data dict on create() and update() (thanks to Hugh Macdonald https://github.com/HughMacdonald)
   + fixed bug causing Attachment.tag_list to be set to "None" (str) for uploads
 
 **v3.0.9.beta1 - 2012 Feb 23**
-  
+
   + added support for access to WorkDayRules (requires Shotgun server >= v3.2.0)
   + added support for filmstrip thumbnails (requires Shotgun server >= v3.1.0)
   + fixed download_attachment() pointing to incorrect url
   + fixed some issues with module import paths
 
 **v3.0.8 - 2011 Oct 7**
-  
+
   + now uses JSON as a transport rather than XML-RPC. This provides as much as a 40% speed boost
   + added the summarize method
   + refactored single file into package
@@ -61,17 +61,17 @@ Integration and unit tests are provided.
 **v3.0.7 - 2011 Apr 04**
 
   + fix: update() method should return a dict object not a list
-    
+
 **v3.0.6 - 2010 Jan 25**
- 
+
   + optimization: don't request paging_info unless required (and server support is available)
 
 **v3.0.5 - 2010 Dec 20**
- 
+
   + officially remove support for old api3_preview controller
   + find(): allow requesting a specific page of results instead of returning them all at once
   + add support for "session_uuid" parameter for communicating with a web browser session.
- 
+
 **v3.0.4 - 2010 Nov 22**
 
   + fix for issue where create() method was returning list type instead of dictionary
@@ -91,36 +91,36 @@ Integration and unit tests are provided.
   + find(): default sorting to ascending, if not set (instead of requiring ascending/descending)
   + upload() and upload_thumbnail(): pass auth info through
 
-**v3.0 - 2010 May 5** 
+**v3.0 - 2010 May 5**
 
-  + non-beta! 
-  + add batch() method to do multiple create, update, and delete requests in one 
+  + non-beta!
+  + add batch() method to do multiple create, update, and delete requests in one
       request to the server (requires Shotgun server to be v1.13.0 or higher)
 
-**v3.0b8 - 2010 February 19** 
+**v3.0b8 - 2010 February 19**
 
-  + fix python gotcha about using lists / dictionaries as defaults. 
-      See: http://www.ferg.org/projects/python_gotchas.html#contents_item_6 
+  + fix python gotcha about using lists / dictionaries as defaults.
+      See: http://www.ferg.org/projects/python_gotchas.html#contents_item_6
   + add schema_read method
 
-**v3.0b7 - 2009 November 30** 
+**v3.0b7 - 2009 November 30**
 
   + add additional retries for connection errors and a catch for broken pipe exceptions
 
-**v3.0b6 - 2009 October 20** 
+**v3.0b6 - 2009 October 20**
 
-  + add support for HTTP/1.1 keepalive, which greatly improves performance for multiple requests 
-  + add more helpful error if server entered is not http or https 
+  + add support for HTTP/1.1 keepalive, which greatly improves performance for multiple requests
+  + add more helpful error if server entered is not http or https
   + add support assigning tags to file uploads (for Shotgun version >= 1.10.6)
 
-**v3.0b5 - 2009 Sept 29** 
+**v3.0b5 - 2009 Sept 29**
 
   + fixed deprecation warnings to raise Exception class for python 2.5
 
-**v3.0b4 - 2009 July 3** 
+**v3.0b4 - 2009 July 3**
 
-  + made upload() and upload_thumbnail() methods more backwards compatible 
-  + changes to find_one(): 
+  + made upload() and upload_thumbnail() methods more backwards compatible
+  + changes to find_one():
     + now defaults to no filter_operator
 
 **v3.0b3 - 2009 June 24**
@@ -132,3 +132,7 @@ Integration and unit tests are provided.
   + added __version__ string
   + removed RECORDS_PER_PAGE global (can just set records_per_page on the Shotgun object after initializing it)
   + removed api_ver from the constructor, as this class is only designed to work with api v3
+
+
+  ## Build Status
+  [![Build Status](https://secure.travis-ci.org/shotgunsoftware/python-api.png?branch=master)](http://travis-ci.org/shotgunsoftware/python-api)
