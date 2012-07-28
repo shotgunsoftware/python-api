@@ -28,8 +28,12 @@ Some useful direct links in each are below:
 * [Reference: Data Types](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Data-Types)
 * [Reference: Filter Syntax](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax)
 
-## Tests
-Integration and unit tests are provided.
+## Tests 
+
+Integration and unit tests are provided. 
+
+[![Build Status](https://secure.travis-ci.org/shotgunsoftware/python-api.png?branch=master)](http://travis-ci.org/shotgunsoftware/python-api)
+
 - test_client and tests_unit mock server interaction and do not require a shotgun instance to be available.
 - test_api and test_api_long do require a shotgun instance, with a script key available for the tests. These tests rely on a tests/config file, which can be created by renaming example_config and supplying the server and script user values. The tests will set up test data on the server based on the data set forth in the config. This data will be manipulated by the tests, and should not be used for other purposes.
 - To run all of the tests, use the shell script run-tests. This script require nose to be installed.
@@ -134,5 +138,3 @@ Integration and unit tests are provided.
   + removed api_ver from the constructor, as this class is only designed to work with api v3
 
 
-  ## Build Status
-  [![Build Status](https://secure.travis-ci.org/shotgunsoftware/python-api.png?branch=master)](http://travis-ci.org/shotgunsoftware/python-api)
