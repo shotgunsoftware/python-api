@@ -10,6 +10,3 @@ before_script:
     - cp ./tests/example_config ./tests/config
 # command to run tests
 script: nosetests tests.tests_unit tests.test_client
-branches:
-    only:
-        - master
