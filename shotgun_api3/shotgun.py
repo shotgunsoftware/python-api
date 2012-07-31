@@ -538,6 +538,9 @@ class Shotgun(object):
 
         data = copy.deepcopy(data)
 
+        if not return_fields:
+            return_fields = ["id"]
+
         upload_image = None
         if 'image' in data:
             upload_image = data.pop('image')
@@ -549,7 +552,7 @@ class Shotgun(object):
                     "higher, server is %s" % (self.server_caps.version,))
             upload_filmstrip_image = data.pop('filmstrip_image')
 
-        temp_return_fields = [item for item in return_fields]
+        temp_return_fields = copy.deepcopy(return_fields)
         if upload_image and "image" in temp_return_fields:
             temp_return_fields.remove("image")
         # end if
@@ -561,7 +564,7 @@ class Shotgun(object):
         params = {
             "type" : entity_type,
             "fields" : self._dict_to_list(data),
-            "return_fields" : temp_return_fields or ["id"]
+            "return_fields" : temp_return_fields
         }
 
         record = self._call_rpc("create", params, first=True)
