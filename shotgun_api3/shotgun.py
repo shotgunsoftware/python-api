@@ -1026,13 +1026,7 @@ class Shotgun(object):
                     "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
                     path, url, str(result)))
 
-        # TODO:
-        # we changed the result string in the middle of 1.8 to return the id
-        # remove once everyone is > 1.8.3
-        r = str(result).split(":")
-        attachment_id = 0
-        if len(r) > 1:
-            attachment_id = int(str(result).split(":")[1].split("\n")[0])
+        attachment_id = int(str(result).split(":")[1].split("\n")[0])
         return attachment_id
 
     def download_attachment(self, attachment_id):
