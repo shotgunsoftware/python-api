@@ -931,8 +931,89 @@ class Shotgun(object):
 
         self.config.session_uuid = session_uuid
         return
+        
+    def share_thumbnail(self, entities, thumbnail_path=None, source_entity=None, 
+        filmstrip_thumbnail=False, **kwargs):
+        if not self.server_caps.version or self.server_caps.version < (4, 0, 0):
+            raise ShotgunError("Thumbnail sharing support requires server "\
+                "version 4.0 or higher, server is %s" % (self.server_caps.version,))
+        
+        if not isinstance(entities, list) or len(entities) == 0:
+            raise ShotgunError("'entities' parameter must be a list of entity "\
+                "hashes and may not be empty")
 
+        for e in entities:
+            if not isinstance(e, dict) or 'id' not in e or 'type' not in e:
+                raise ShotgunError("'entities' parameter must be a list of "\
+                    "entity hashes with at least 'type' and 'id' keys.\nInvalid "\
+                    "entity: %s" % e)
 
+        if (not thumbnail_path and not source_entity) or \
+            (thumbnail_path and source_entity):
+            raise ShotgunError("You must supply either thumbnail_path OR "\
+                "source_entity.")
+
+        # upload thumbnail
+        if thumbnail_path:
+            source_entity = entities.pop(0)
+            if filmstrip_thumbnail:
+                thumb_id = self.upload_filmstrip_thumbnail(source_entity['type'], 
+                    source_entity['id'], thumbnail_path, **kwargs)
+            else:
+                thumb_id = self.upload_thumbnail(source_entity['type'], 
+                    source_entity['id'], thumbnail_path, **kwargs)
+        else:
+            if not isinstance(source_entity, dict) or 'id' not in source_entity \
+                or 'type' not in source_entity:
+                raise ShotgunError("'source_entity' parameter must be a dict "\
+                    "with at least 'type' and 'id' keys.\nGot: %s (%s)" \
+                    % (source_entity, type(source_entity)))
+
+        # only 1 entity in list and we already uploaded the thumbnail to it
+        if len(entities) == 0:
+            return thumb_id
+
+        # update entities with source_entity thumbnail
+        entities_str = []
+        for e in entities:
+            entities_str.append("%s_%s" % (e['type'], e['id']))
+        # format for post request 
+        if filmstrip_thumbnail:
+            filmstrip_thumbnail = 1
+        params = {
+            "entities" : ','.join(entities_str),
+            "source_entity": "%s_%s" % (source_entity['type'], source_entity['id']),
+            "filmstrip_thumbnail" : filmstrip_thumbnail,
+            "script_name" : self.config.script_name,
+            "script_key" : self.config.api_key,
+        }
+        if self.config.session_uuid:
+            params["session_uuid"] = self.config.session_uuid
+
+        # Create opener with extended form post support
+        opener = self._build_opener(FormPostHandler)
+        url = urlparse.urlunparse((self.config.scheme, self.config.server,
+            "/upload/share_thumbnail", None, None, None))
+
+        # Perform the request
+        try:
+            resp = opener.open(url, params)
+            result = resp.read()
+            # response heaers are in str(resp.info()).splitlines()
+        except urllib2.HTTPError, e:
+            if e.code == 500:
+                raise ShotgunError("Server encountered an internal error. "
+                    "\n%s\n(%s)\n%s\n\n" % (url, params, e))
+            else:
+                raise ShotgunError("Unanticipated error occurred %s" % (e))
+        else: 
+            if not str(result).startswith("1"):
+                raise ShotgunError("Unable to share thumbnail: %s" % result)
+            else:
+                attachment_id = int(str(result).split(":")[1].split("\n")[0])
+                
+        return attachment_id
+    
     def upload_thumbnail(self, entity_type, entity_id, path, **kwargs):
         """Convenience function for uploading thumbnails, see upload.
         """
