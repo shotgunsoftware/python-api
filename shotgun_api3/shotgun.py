@@ -1170,9 +1170,14 @@ class Shotgun(object):
         }
         http_status, resp_headers, body = self._make_call("POST",
             self.config.api_path, encoded_payload, req_headers)
-        LOG.debug("Completed rpc call to %s" % (method))
+        LOG.debug("Completed rpc call to %s" % (method))                
+        try:
+            self._parse_http_status(http_status)
+        except ProtocolError, e:
+            if e.errcode == 503:
+                e.reason = "Shotgun is currently down for maintenance. Please try again later."
+            raise
 
-        self._parse_http_status(http_status)
         response = self._decode_response(resp_headers, body)
         self._response_errors(response)
         response = self._transform_inbound(response)
@@ -1303,6 +1308,8 @@ class Shotgun(object):
 
         if status[0] >= 300:
             msg = "HTTP error from server"
+            if status[0] == 503:
+                reason = "Shotgun is currently down for maintenance. Please try again later."
             raise ProtocolError(self.config.server,
                                 error_code,
                                 reason,
