@@ -1255,8 +1255,10 @@ class Shotgun(object):
         try:
             self._parse_http_status(http_status)
         except ProtocolError, e:
-            if e.errcode == 503:
-                e.reason = "Shotgun is currently down for maintenance. Please try again later."
+            e.headers = resp_headers
+            # 403 is returned with custom error page when api access is blocked
+            if e.errcode == 403:
+                e.errmsg += ": %s" % body
             raise
 
         response = self._decode_response(resp_headers, body)
@@ -1385,16 +1387,16 @@ class Shotgun(object):
         :param status: Tuple of (code, reason).
         """
         error_code = status[0]
-        reason = status[1]
+        errmsg = status[1]
 
         if status[0] >= 300:
-            msg = "HTTP error from server"
+            headers = "HTTP error from server"
             if status[0] == 503:
-                reason = "Shotgun is currently down for maintenance. Please try again later."
+                errmsg = "Shotgun is currently down for maintenance. Please try again later."
             raise ProtocolError(self.config.server,
                                 error_code,
-                                reason,
-                                msg)
+                                errmsg,
+                                headers)
 
         return
 
