@@ -122,6 +122,12 @@ class TestShotgunApi(base.LiveTestBase):
     def test_find_in(self):
         """Test use of 'in' relation with find."""
         # id
+        # old comma seperated format
+        filters = [['id', 'in', self.project['id'], 99999]]
+        projects = self.sg.find('Project', filters)
+        self.assertTrue(any(r['id'] == self.project['id'] for r in projects))
+
+        # new list format
         filters = [['id', 'in', [self.project['id'], 99999]]]
         projects = self.sg.find('Project', filters)
         self.assertTrue(any(r['id'] == self.project['id'] for r in projects))
