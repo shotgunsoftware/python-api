@@ -66,6 +66,11 @@ class TestShotgunApi(base.LiveTestBase):
         result = self.sg.batch(requests)[0]
         self.assertEqual(True, result)
 
+    def test_empty_batch(self):
+        """Empty list sent to .batch()"""
+        result = self.sg.batch([])
+        self.assertEqual([], result)
+
     def test_create_update_delete(self):
         """Called create, update, delete, revive"""
         data = {

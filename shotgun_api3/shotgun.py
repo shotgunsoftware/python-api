@@ -708,6 +708,11 @@ class Shotgun(object):
             raise ShotgunError("batch() expects a list.  Instead was sent "\
                 "a %s" % type(requests))
 
+        # If we have no requests, just return an empty list immediately.
+        # Nothing to process means nothing to get results of.
+        if len(requests) == 0:
+            return []
+
         calls = []
 
         def _required_keys(message, required_keys, data):
