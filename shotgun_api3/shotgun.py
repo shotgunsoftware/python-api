@@ -713,6 +713,11 @@ class Shotgun(object):
             raise ShotgunError("batch() expects a list.  Instead was sent "\
                 "a %s" % type(requests))
 
+        # If we have no requests, just return an empty list immediately.
+        # Nothing to process means nothing to get results of.
+        if len(requests) == 0:
+            return []
+
         calls = []
 
         def _required_keys(message, required_keys, data):
@@ -1758,7 +1763,16 @@ def _translate_filters(filters, filter_operator):
         new_filters["logical_operator"] = "and"
     else:
         new_filters["logical_operator"] = "or"
-    conditions = [{"path":f[0], "relation":f[1], "values":f[2:]}
-                                                for f in filters]
+
+    conditions = []
+    for sg_filter in filters:
+        condition = {"path": sg_filter[0], "relation": sg_filter[1]}
+        values = sg_filter[2:]
+        if len(values) == 1 and isinstance(values[0], (list, tuple)):
+            values = values[0]
+
+        condition["values"] = values
+        conditions.append(condition)
+
     new_filters["conditions"] = conditions
     return new_filters
