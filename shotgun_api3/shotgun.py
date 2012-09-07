@@ -113,14 +113,19 @@ class ServerCapabilities(object):
         self.host = host
         self.server_info = meta
 
-        #Version from server is major.minor.rev or major.minor.rev."Dev"
-        #Store version as triple and check dev flag
-        self.version = meta.get("version", None)
+        # Version from server is major.minor.rev or major.minor.rev."Dev"
+        # Store version as triple and check dev flag
+        try:
+            self.version = meta.get("version", None)
+        except AttributeError:
+            self.version = None
         if not self.version:
             raise ShotgunError("The Shotgun Server didn't respond with a version number. "
-                               "This may be because you are running an older version of "
-                               "Shotgun against a more recent version of the Shotgun API. "
-                               "For more information, please contact the Shotgun Support.")
+                               "This version of the API requires Shotgun server version "
+                               "v2.4.12 or higher. For older versions of Shotgun, use "
+                               "v3.0.7 of the API. For more information, see "
+                               "https://github.com/shotgunsoftware/python-api/wiki or "
+                               "contact Shotgun Support.")
 
         if len(self.version) > 3 and self.version[3] == "Dev":
             self.is_dev = True
