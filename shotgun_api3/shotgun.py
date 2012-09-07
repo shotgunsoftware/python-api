@@ -609,7 +609,7 @@ class Shotgun(object):
         data = copy.deepcopy(data)
 
         upload_image = None
-        if 'image' in data:
+        if 'image' in data and data['image'] is not None:
             upload_image = data.pop('image')
 
         upload_filmstrip_image = None
