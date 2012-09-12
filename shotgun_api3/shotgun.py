@@ -536,8 +536,6 @@ class Shotgun(object):
         :returns: dict of the requested fields.
         """
 
-        data = copy.deepcopy(data)
-
         if not return_fields:
             return_fields = ["id"]
 
@@ -552,19 +550,10 @@ class Shotgun(object):
                     "higher, server is %s" % (self.server_caps.version,))
             upload_filmstrip_image = data.pop('filmstrip_image')
 
-        temp_return_fields = copy.deepcopy(return_fields)
-        if upload_image and "image" in temp_return_fields:
-            temp_return_fields.remove("image")
-        # end if
-
-        if upload_filmstrip_image and "filmstrip_image" in temp_return_fields:
-            temp_return_fields.remove("filmstrip_image")
-        # end if
-
         params = {
             "type" : entity_type,
             "fields" : self._dict_to_list(data),
-            "return_fields" : temp_return_fields
+            "return_fields" : return_fields
         }
 
         record = self._call_rpc("create", params, first=True)
@@ -606,8 +595,6 @@ class Shotgun(object):
         id added.
         """
 
-        data = copy.deepcopy(data)
-
         upload_image = None
         if 'image' in data and data['image'] is not None:
             upload_image = data.pop('image')
@@ -625,7 +612,6 @@ class Shotgun(object):
                 "id" : entity_id,
                 "fields" : self._dict_to_list(data)
             }
-
             record = self._call_rpc("update", params)
             result = self._parse_records(record)[0]
         else:
