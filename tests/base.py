@@ -53,6 +53,14 @@ class TestBase(unittest.TestCase):
         if self.config.session_uuid:
             self.sg.set_session_uuid(self.config.session_uuid)
 
+        if self.sg.server_caps.version and \
+           self.sg.server_caps.version >= (3, 3, 0) and \
+           (self.sg.server_caps.host.startswith('0.0.0.0') or \
+            self.sg.server_caps.host.startswith('127.0.0.1')):
+                self.server_address = re.sub('^0.0.0.0|127.0.0.1', 'localhost', self.sg.server_caps.host)
+        else:
+            self.server_address = self.sg.server_caps.host
+
 
     def tearDown(self):
         self.sg = None
