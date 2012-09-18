@@ -323,6 +323,12 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(response_version_thumbnail.get('image'), 
                          response_asset_thumbnail.get('image'))
 
+        # raise errors when missing required params or providing conflicting ones
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.share_thumbnail,
+                          [self.shot, self.asset], path, self.version)
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.share_thumbnail,
+                          [self.shot, self.asset])
+
     def test_deprecated_functions(self):
         """Deprecated functions raise errors"""
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.schema, "foo")
