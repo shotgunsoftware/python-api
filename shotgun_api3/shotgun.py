@@ -708,6 +708,11 @@ class Shotgun(object):
             raise ShotgunError("batch() expects a list.  Instead was sent "\
                 "a %s" % type(requests))
 
+        # If we have no requests, just return an empty list immediately.
+        # Nothing to process means nothing to get results of.
+        if len(requests) == 0:
+            return []
+
         calls = []
 
         def _required_keys(message, required_keys, data):
@@ -1107,13 +1112,7 @@ class Shotgun(object):
                     "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
                     path, url, str(result)))
 
-        # TODO:
-        # we changed the result string in the middle of 1.8 to return the id
-        # remove once everyone is > 1.8.3
-        r = str(result).split(":")
-        attachment_id = 0
-        if len(r) > 1:
-            attachment_id = int(str(result).split(":")[1].split("\n")[0])
+        attachment_id = int(str(result).split(":")[1].split("\n")[0])
         return attachment_id
 
     def download_attachment(self, attachment_id):
@@ -1257,9 +1256,16 @@ class Shotgun(object):
         }
         http_status, resp_headers, body = self._make_call("POST",
             self.config.api_path, encoded_payload, req_headers)
-        LOG.debug("Completed rpc call to %s" % (method))
+        LOG.debug("Completed rpc call to %s" % (method))                
+        try:
+            self._parse_http_status(http_status)
+        except ProtocolError, e:
+            e.headers = resp_headers
+            # 403 is returned with custom error page when api access is blocked
+            if e.errcode == 403:
+                e.errmsg += ": %s" % body
+            raise
 
-        self._parse_http_status(http_status)
         response = self._decode_response(resp_headers, body)
         self._response_errors(response)
         response = self._transform_inbound(response)
@@ -1386,14 +1392,16 @@ class Shotgun(object):
         :param status: Tuple of (code, reason).
         """
         error_code = status[0]
-        reason = status[1]
+        errmsg = status[1]
 
         if status[0] >= 300:
-            msg = "HTTP error from server"
+            headers = "HTTP error from server"
+            if status[0] == 503:
+                errmsg = "Shotgun is currently down for maintenance. Please try again later."
             raise ProtocolError(self.config.server,
                                 error_code,
-                                reason,
-                                msg)
+                                errmsg,
+                                headers)
 
         return
 
@@ -1750,7 +1758,16 @@ def _translate_filters(filters, filter_operator):
         new_filters["logical_operator"] = "and"
     else:
         new_filters["logical_operator"] = "or"
-    conditions = [{"path":f[0], "relation":f[1], "values":f[2:]}
-                                                for f in filters]
+
+    conditions = []
+    for sg_filter in filters:
+        condition = {"path": sg_filter[0], "relation": sg_filter[1]}
+        values = sg_filter[2:]
+        if len(values) == 1 and isinstance(values[0], (list, tuple)):
+            values = values[0]
+
+        condition["values"] = values
+        conditions.append(condition)
+
     new_filters["conditions"] = conditions
     return new_filters

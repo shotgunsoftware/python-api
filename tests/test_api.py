@@ -66,6 +66,11 @@ class TestShotgunApi(base.LiveTestBase):
         result = self.sg.batch(requests)[0]
         self.assertEqual(True, result)
 
+    def test_empty_batch(self):
+        """Empty list sent to .batch()"""
+        result = self.sg.batch([])
+        self.assertEqual([], result)
+
     def test_create_update_delete(self):
         """Called create, update, delete, revive"""
         data = {
@@ -118,6 +123,27 @@ class TestShotgunApi(base.LiveTestBase):
         version = self.sg.find_one("Version", filters, fields=fields)
         self.assertEqual("Version", version["type"])
         self.assertEqual(self.version['id'], version["id"])
+
+    def test_find_in(self):
+        """Test use of 'in' relation with find."""
+        # id
+        # old comma seperated format
+        filters = [['id', 'in', self.project['id'], 99999]]
+        projects = self.sg.find('Project', filters)
+        self.assertTrue(any(r['id'] == self.project['id'] for r in projects))
+
+        # new list format
+        filters = [['id', 'in', [self.project['id'], 99999]]]
+        projects = self.sg.find('Project', filters)
+        self.assertTrue(any(r['id'] == self.project['id'] for r in projects))
+
+        # text field
+        filters = [['name', 'in', [self.project['name'], 'fake project name']]]
+        projects = self.sg.find('Project', filters)
+        project = projects[0]
+        self.assertEqual(self.project['id'], project['id'])
+
+
 
     def test_last_accessed(self):
         page = self.sg.find('Page', [], fields=['last_accessed'], limit=1)
