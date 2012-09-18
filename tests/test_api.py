@@ -204,7 +204,6 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertTrue(isinstance(new_version.get('id'), int))
         self.assertEqual(new_version.get('type'), 'Version')
         self.assertEqual(new_version.get('project'), self.project)
-        self.assertTrue(isinstance(new_version.get('image_id'), int))
         self.assertTrue(new_version.get('image') is not None)
         self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}/232/sg_logo.jpg.jpg" % (self.server_address), new_version.get('image')) )
 
@@ -217,9 +216,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertTrue(isinstance(new_version.get('id'), int))
         self.assertEqual(new_version.get('type'), 'Version')
         self.assertEqual(new_version.get('project'), self.project)
-        self.assertTrue(isinstance(new_version.get('filmstrip_image_id'), int))
         self.assertTrue(new_version.get('filmstrip_image') is not None)
-        # http://trunk.shotgun.vm/files/0000/0000/0170/sg_logo.jpg
         self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}/sg_logo.jpg" % (self.server_address), new_version.get('filmstrip_image')) )
     # end test_upload_thumbnail_in_create
 

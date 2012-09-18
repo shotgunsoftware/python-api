@@ -536,6 +536,7 @@ class Shotgun(object):
         :returns: dict of the requested fields.
         """
 
+        data = data.copy()
         if not return_fields:
             return_fields = ["id"]
 
@@ -562,22 +563,15 @@ class Shotgun(object):
         if upload_image:
             image_id = self.upload_thumbnail(entity_type, result['id'],
                                              upload_image)
-            result['image_id'] = image_id
-        # end if
-
-        if "image" in return_fields:
             image = self.find_one(entity_type, [['id', 'is', result.get('id')]],
                                   fields=['image'])
             result['image'] = image.get('image')
 
         if upload_filmstrip_image:
             filmstrip_id = self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
-            result['filmstrip_image_id'] = filmstrip_id
-
-        if "filmstrip_image" in return_fields:
             filmstrip = self.find_one(entity_type,
-                                      [['id', 'is', result.get('id')]],
-                                      fields=['filmstrip_image'])
+                                     [['id', 'is', result.get('id')]],
+                                     fields=['filmstrip_image'])
             result['filmstrip_image'] = filmstrip.get('filmstrip_image')
 
         return result
@@ -595,10 +589,10 @@ class Shotgun(object):
         id added.
         """
 
+        data = data.copy()
         upload_image = None
         if 'image' in data and data['image'] is not None:
             upload_image = data.pop('image')
-
         upload_filmstrip_image = None
         if 'filmstrip_image' in data:
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
@@ -620,14 +614,12 @@ class Shotgun(object):
         if upload_image:
             image_id = self.upload_thumbnail(entity_type, entity_id,
                                              upload_image)
-            result['image_id'] = image_id
             image = self.find_one(entity_type, [['id', 'is', result.get('id')]],
                                   fields=['image'])
             result['image'] = image.get('image')
 
         if upload_filmstrip_image:
             filmstrip_id = self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
-            result['filmstrip_image_id'] = filmstrip_id
             filmstrip = self.find_one(entity_type,
                                      [['id', 'is', result.get('id')]],
                                      fields=['filmstrip_image'])
