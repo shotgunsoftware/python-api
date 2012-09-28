@@ -43,6 +43,7 @@ import copy
 import stat         # used for attachment upload
 import sys
 import time
+import types
 import urllib
 import urllib2      # used for image upload
 import urlparse
@@ -1582,8 +1583,12 @@ class Shotgun(object):
     # Utility
 
     def _parse_records(self, records):
-        """Parses 'records' returned from the api to insert thumbnail urls
-        or local file paths.
+        """Parses 'records' returned from the api to do local modifications:
+
+        - Insert thumbnail urls
+        - Insert local file paths.
+        - Revert &lt; html entities that may be the result of input sanitization
+          mechanisms back to a litteral < character.
 
         :param records: List of records (dicts) to process or a single record.
 
@@ -1605,6 +1610,10 @@ class Shotgun(object):
             for k, v in rec.iteritems():
                 if not v:
                     continue
+
+                # Check for html entities in strings
+                if isinstance(v, types.StringTypes):
+                    rec[k] = rec[k].replace('&lt;', '<')
 
                 # check for thumbnail for older version (<3.3.0) of shotgun
                 if k == 'image' and \
