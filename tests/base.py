@@ -30,6 +30,7 @@ class TestBase(unittest.TestCase):
         self.ticket         = None
         self.human_password = None
         self.server_url     = None
+        self.server_address = None
         self.connect        = False
 
 
@@ -166,6 +167,13 @@ class LiveTestBase(TestBase):
         super(LiveTestBase, self).setUp()
         self.sg_version = self.sg.info()['version'][:3]
         self._setup_db(self.config)
+        if self.sg.server_caps.version and \
+           self.sg.server_caps.version >= (3, 3, 0) and \
+           (self.sg.server_caps.host.startswith('0.0.0.0') or \
+            self.sg.server_caps.host.startswith('127.0.0.1')):
+                self.server_address = re.sub('^0.0.0.0|127.0.0.1', 'localhost', self.sg.server_caps.host)
+        else:
+            self.server_address = self.sg.server_caps.host
 
     def _setup_db(self, config):
         data = {'name':self.config.project_name}
