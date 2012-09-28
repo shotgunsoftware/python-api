@@ -295,6 +295,66 @@ class TestShotgunApi(base.LiveTestBase):
             ]
         self.assertEqual(expected_version_with_project, response_version_with_project)
 
+    def test_share_thumbnail(self):
+        """share thumbnail between two entities"""
+        # upload / download only works against a live server because it does 
+        # not use the standard http interface
+        if 'localhost' in self.server_url:
+            print "upload / down tests skipped for localhost"
+            return
+
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir,"sg_logo.jpg")))
+
+        # upload thumbnail to first entity and share it with the rest
+        thumbnail_id = self.sg.share_thumbnail(
+            [self.version, self.shot],
+            thumbnail_path=path)
+        response_version_thumbnail = self.sg.find_one(
+            'Version',
+            [['id', 'is', self.version['id']]],
+            fields=['id', 'code', 'image']
+        )
+        response_shot_thumbnail = self.sg.find_one(
+            'Shot',
+            [['id', 'is', self.shot['id']]],
+            fields=['id', 'code', 'image']
+        )
+        self.assertEqual(response_shot_thumbnail.get('image'), 
+                         response_version_thumbnail.get('image'))
+
+        # share thumbnail from source entity with entities
+        source_thumbnail_id = self.sg.upload_thumbnail("Version",
+            self.version['id'], path)
+        thumbnail_id = self.sg.share_thumbnail(
+            [self.asset, self.shot],
+            source_entity=self.version)
+        response_version_thumbnail = self.sg.find_one(
+            'Version',
+            [['id', 'is', self.version['id']]],
+            fields=['id', 'code', 'image']
+        )
+        response_shot_thumbnail = self.sg.find_one(
+            'Shot',
+            [['id', 'is', self.shot['id']]],
+            fields=['id', 'code', 'image']
+        )
+        response_asset_thumbnail = self.sg.find_one(
+            'Asset',
+            [['id', 'is', self.asset['id']]],
+            fields=['id', 'code', 'image']
+        )
+        self.assertEqual(response_version_thumbnail.get('image'), 
+                         response_shot_thumbnail.get('image'))
+        self.assertEqual(response_version_thumbnail.get('image'), 
+                         response_asset_thumbnail.get('image'))
+
+        # raise errors when missing required params or providing conflicting ones
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.share_thumbnail,
+                          [self.shot, self.asset], path, self.version)
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.share_thumbnail,
+                          [self.shot, self.asset])
 
     def test_deprecated_functions(self):
         """Deprecated functions raise errors"""
