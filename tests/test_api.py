@@ -617,6 +617,17 @@ class TestDataTypes(base.LiveTestBase):
                                                  pos_values)
         self.assertEqual(expected, actual)
 
+    def test_set_text_html_entity(self):
+        entity = 'Note'
+        entity_id = self.note['id']
+        field_name = 'content'
+        pos_values = ['<', '<']
+        expected, actual = self.assert_set_field(entity,
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
     def assert_set_field(self, entity, entity_id, field_name, pos_values):
         query_result = self.sg.find_one(entity,
                                          [['id', 'is', entity_id]],
