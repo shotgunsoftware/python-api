@@ -8,6 +8,7 @@ import datetime
 import os
 import re
 from mock import patch, Mock, MagicMock
+import unittest
 
 import shotgun_api3
 import base
@@ -130,12 +131,22 @@ class TestShotgunApi(base.LiveTestBase):
         # old comma seperated format
         filters = [['id', 'in', self.project['id'], 99999]]
         projects = self.sg.find('Project', filters)
-        self.assertTrue(any(r['id'] == self.project['id'] for r in projects))
+        # can't use 'any' in py 2.4
+        match = False
+        for project in projects:
+            if project['id'] == self.project['id']:
+                match = True
+        self.assertTrue(match)
 
         # new list format
         filters = [['id', 'in', [self.project['id'], 99999]]]
         projects = self.sg.find('Project', filters)
-        self.assertTrue(any(r['id'] == self.project['id'] for r in projects))
+        # can't use 'any' in py 2.4
+        match = False
+        for project in projects:
+            if project['id'] == self.project['id']:
+                match = True
+        self.assertTrue(match)
 
         # text field
         filters = [['name', 'in', [self.project['name'], 'fake project name']]]
@@ -714,3 +725,5 @@ def  _has_unicode(data):
     return False
 
 
+if __name__ == '__main__':
+    unittest.main()
