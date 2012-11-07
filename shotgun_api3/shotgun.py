@@ -43,6 +43,7 @@ import copy
 import stat         # used for attachment upload
 import sys
 import time
+import types
 import urllib
 import urllib2      # used for image upload
 import urlparse
@@ -102,12 +103,15 @@ class ServerCapabilities(object):
 
         #Version from server is major.minor.rev or major.minor.rev."Dev"
         #Store version as triple and check dev flag
-        self.version = meta.get("version", None)
+        try:
+            self.version = meta.get("version", None)
+        except AttributeError:
+            self.version = None
         if not self.version:
             raise ShotgunError("The Shotgun Server didn't respond with a version number. "
                                "This may be because you are running an older version of "
                                "Shotgun against a more recent version of the Shotgun API. "
-                               "For more information, please contact the Shotgun Support.")
+                               "For more information, please contact Shotgun Support.")
 
         if len(self.version) > 3 and self.version[3] == "Dev":
             self.is_dev = True
@@ -523,8 +527,7 @@ class Shotgun(object):
         :returns: dict of the requested fields.
         """
 
-        data = copy.deepcopy(data)
-
+        data = data.copy()
         if not return_fields:
             return_fields = ["id"]
 
@@ -539,19 +542,10 @@ class Shotgun(object):
                     "higher, server is %s" % (self.server_caps.version,))
             upload_filmstrip_image = data.pop('filmstrip_image')
 
-        temp_return_fields = copy.deepcopy(return_fields)
-        if upload_image and "image" in temp_return_fields:
-            temp_return_fields.remove("image")
-        # end if
-
-        if upload_filmstrip_image and "filmstrip_image" in temp_return_fields:
-            temp_return_fields.remove("filmstrip_image")
-        # end if
-
         params = {
             "type" : entity_type,
             "fields" : self._dict_to_list(data),
-            "return_fields" : temp_return_fields
+            "return_fields" : return_fields
         }
 
         record = self._call_rpc("create", params, first=True)
@@ -560,22 +554,15 @@ class Shotgun(object):
         if upload_image:
             image_id = self.upload_thumbnail(entity_type, result['id'],
                                              upload_image)
-            result['image_id'] = image_id
-        # end if
-
-        if "image" in return_fields:
             image = self.find_one(entity_type, [['id', 'is', result.get('id')]],
                                   fields=['image'])
             result['image'] = image.get('image')
 
         if upload_filmstrip_image:
             filmstrip_id = self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
-            result['filmstrip_image_id'] = filmstrip_id
-
-        if "filmstrip_image" in return_fields:
             filmstrip = self.find_one(entity_type,
-                                      [['id', 'is', result.get('id')]],
-                                      fields=['filmstrip_image'])
+                                     [['id', 'is', result.get('id')]],
+                                     fields=['filmstrip_image'])
             result['filmstrip_image'] = filmstrip.get('filmstrip_image')
 
         return result
@@ -593,12 +580,10 @@ class Shotgun(object):
         id added.
         """
 
-        data = copy.deepcopy(data)
-
+        data = data.copy()
         upload_image = None
-        if 'image' in data:
+        if 'image' in data and data['image'] is not None:
             upload_image = data.pop('image')
-
         upload_filmstrip_image = None
         if 'filmstrip_image' in data:
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
@@ -612,7 +597,6 @@ class Shotgun(object):
                 "id" : entity_id,
                 "fields" : self._dict_to_list(data)
             }
-
             record = self._call_rpc("update", params)
             result = self._parse_records(record)[0]
         else:
@@ -621,14 +605,12 @@ class Shotgun(object):
         if upload_image:
             image_id = self.upload_thumbnail(entity_type, entity_id,
                                              upload_image)
-            result['image_id'] = image_id
             image = self.find_one(entity_type, [['id', 'is', result.get('id')]],
                                   fields=['image'])
             result['image'] = image.get('image')
 
         if upload_filmstrip_image:
             filmstrip_id = self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
-            result['filmstrip_image_id'] = filmstrip_id
             filmstrip = self.find_one(entity_type,
                                      [['id', 'is', result.get('id')]],
                                      fields=['filmstrip_image'])
@@ -1588,8 +1570,12 @@ class Shotgun(object):
     # Utility
 
     def _parse_records(self, records):
-        """Parses 'records' returned from the api to insert thumbnail urls
-        or local file paths.
+        """Parses 'records' returned from the api to do local modifications:
+
+        - Insert thumbnail urls
+        - Insert local file paths.
+        - Revert &lt; html entities that may be the result of input sanitization
+          mechanisms back to a litteral < character.
 
         :param records: List of records (dicts) to process or a single record.
 
@@ -1611,6 +1597,10 @@ class Shotgun(object):
             for k, v in rec.iteritems():
                 if not v:
                     continue
+
+                # Check for html entities in strings
+                if isinstance(v, types.StringTypes):
+                    rec[k] = rec[k].replace('&lt;', '<')
 
                 # check for thumbnail for older version (<3.3.0) of shotgun
                 if k == 'image' and \

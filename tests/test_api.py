@@ -159,8 +159,8 @@ class TestShotgunApi(base.LiveTestBase):
 
     def test_upload_download(self):
         """Upload and download an attachment """
-        #upload / download only works against a live server becuase it does
-        #not use the standard http interface
+        # upload / download only works against a live server because it does
+        # not use the standard http interface
         if 'localhost' in self.server_url:
             print "upload / down tests skipped for localhost"
             return
@@ -181,10 +181,10 @@ class TestShotgunApi(base.LiveTestBase):
         orig_file = open(path, "rb").read()
         self.assertEqual(orig_file, attach_file)
 
-    def test_create_upload(self):
+    def test_upload_thumbnail_in_create(self):
         """Upload a thumbnail via the create method"""
-        #upload / download only works against a live server becuase it does 
-        #not use the standard http interface
+        # upload / download only works against a live server because it does 
+        # not use the standard http interface
         if 'localhost' in self.server_url:
             print "upload via create tests skipped for localhost"
             return
@@ -200,32 +200,63 @@ class TestShotgunApi(base.LiveTestBase):
                 'project': self.project}
         new_version = self.sg.create("Version", data, return_fields=['image'])
         self.assertTrue(new_version is not None)
+        self.assertTrue(isinstance(new_version, dict))
+        self.assertTrue(isinstance(new_version.get('id'), int))
+        self.assertEqual(new_version.get('type'), 'Version')
+        self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('image') is not None)
-        self.assertTrue(new_version.get('image_id') is not None)
-        attach_file =\
-            self.sg.download_attachment(new_version.get('image_id'))
-        self.assertTrue(attach_file is not None)
-        self.assertEqual(size, len(attach_file))
-        orig_file = open(path, "rb").read()
-        self.assertEqual(orig_file, attach_file)
+        self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}/232/sg_logo.jpg.jpg" % (self.server_address), new_version.get('image')) )
 
         # test filmstrip image upload
         data = {'filmstrip_image': path, 'code': 'Test Version',
                 'project': self.project}
         new_version = self.sg.create("Version", data, return_fields=['filmstrip_image'])
         self.assertTrue(new_version is not None)
+        self.assertTrue(isinstance(new_version, dict))
+        self.assertTrue(isinstance(new_version.get('id'), int))
+        self.assertEqual(new_version.get('type'), 'Version')
+        self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('filmstrip_image') is not None)
-        self.assertTrue(new_version.get('filmstrip_image_id') is not None)
-        attach_file =\
-            self.sg.download_attachment(new_version.get('filmstrip_image_id'))
-        self.assertTrue(attach_file is not None)
-        self.assertEqual(size, len(attach_file))
-        orig_file = open(path, "rb").read()
-        self.assertEqual(orig_file, attach_file)
-    # end test_create_upload
+        self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}/sg_logo.jpg" % (self.server_address), new_version.get('filmstrip_image')) )
+    # end test_upload_thumbnail_in_create
 
-    def test_thumbnail_url(self):
-        #upload / download only works against a live server becuase it does 
+    def test_upload_thumbnail(self):
+        # simple upload thumbnail test. 
+        # upload / download only works against a live server because it does
+        # not use the standard http interface
+        if 'localhost' in self.server_url:
+            print "upload / down tests skipped for localhost"
+            return
+
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir,"sg_logo.jpg")))
+        size = os.stat(path).st_size
+
+        # upload thumbnail
+        thumb_id = self.sg.upload_thumbnail("Version",
+            self.version['id'], path)
+        self.assertTrue(isinstance(thumb_id, int))
+
+        # check result on version
+        version_with_thumbnail = self.sg.find_one('Version',
+            [['id', 'is', self.version['id']]],
+            fields=['image'])
+        expected_version_with_thumbnail = {
+            'image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (self.server_address, thumb_id),
+            'type': 'Version',
+            'id': self.version['id']
+        }
+        self.assertEqual(expected_version_with_thumbnail, version_with_thumbnail)
+
+        # clear thumbnail
+        response_clear_thumbnail = self.sg.update("Version",
+            self.version['id'], {'image':None})
+        expected_clear_thumbnail = {'id': self.version['id'], 'image': None, 'type': 'Version'}
+        self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
+
+    def test_linked_thumbnail_url(self):
+        #upload / download only works against a live server because it does 
         #not use the standard http interface
         if 'localhost' in self.server_url:
             print "upload / down tests skipped for localhost"
@@ -235,64 +266,95 @@ class TestShotgunApi(base.LiveTestBase):
         path = os.path.abspath(os.path.expanduser(
             os.path.join(this_dir,"sg_logo.jpg")))
 
-        attach_id = self.sg.upload_thumbnail("Version",
-            self.version['id'], path)
-
-        attach_id2 = self.sg.upload_thumbnail("Project",
+        thumb_id = self.sg.upload_thumbnail("Project",
             self.version['project']['id'], path)
-
-        response = self.sg.find(
-            'Version',
-            [['id', 'is', self.version['id']]],
-            fields=['id', 'code', 'image']
-        )
-
-        if self.sg.server_caps.version and \
-           self.sg.server_caps.version >= (3, 3, 0) and \
-           (self.sg.server_caps.host.startswith('0.0.0.0') or \
-            self.sg.server_caps.host.startswith('127.0.0.1')):
-                server_address = re.sub('^0.0.0.0|127.0.0.1', 'localhost', self.sg.server_caps.host)
-        else:
-            server_address = self.sg.server_caps.host
-
-        expected = [
-            {
-                'image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (server_address, attach_id),
-                'code': 'Sg unittest version',
-                'type': 'Version',
-                'id': self.version['id']
-            }
-        ]
-
-        self.assertEqual(expected, response)
 
         response_version_with_project = self.sg.find(
             'Version',
             [['id', 'is', self.version['id']]],
-            fields=['id', 'code', 'image', 'project.Project.image']
+            fields=['id', 'code', 'project.Project.image']
         )
 
         if self.sg.server_caps.version and self.sg.server_caps.version >= (3, 3, 0):
             expected_version_with_project = [
                 {
-                    'image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (server_address, attach_id),
                     'code': 'Sg unittest version',
                     'type': 'Version',
                     'id': self.version['id'],
-                    'project.Project.image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (server_address, attach_id2)
+                    'project.Project.image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (self.server_address, thumb_id)
                 }
             ]
         else:
             expected_version_with_project = [
                 {
-                    'image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (server_address, attach_id),
                     'code': 'Sg unittest version',
                     'type': 'Version',
                     'id': self.version['id'],
-                    'project.Project.image': attach_id2
+                    'project.Project.image': thumb_id
                 }
             ]
         self.assertEqual(expected_version_with_project, response_version_with_project)
+
+    def test_share_thumbnail(self):
+        """share thumbnail between two entities"""
+        # upload / download only works against a live server because it does 
+        # not use the standard http interface
+        if 'localhost' in self.server_url:
+            print "upload / down tests skipped for localhost"
+            return
+
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir,"sg_logo.jpg")))
+
+        # upload thumbnail to first entity and share it with the rest
+        thumbnail_id = self.sg.share_thumbnail(
+            [self.version, self.shot],
+            thumbnail_path=path)
+        response_version_thumbnail = self.sg.find_one(
+            'Version',
+            [['id', 'is', self.version['id']]],
+            fields=['id', 'code', 'image']
+        )
+        response_shot_thumbnail = self.sg.find_one(
+            'Shot',
+            [['id', 'is', self.shot['id']]],
+            fields=['id', 'code', 'image']
+        )
+        self.assertEqual(response_shot_thumbnail.get('image'), 
+                         response_version_thumbnail.get('image'))
+
+        # share thumbnail from source entity with entities
+        source_thumbnail_id = self.sg.upload_thumbnail("Version",
+            self.version['id'], path)
+        thumbnail_id = self.sg.share_thumbnail(
+            [self.asset, self.shot],
+            source_entity=self.version)
+        response_version_thumbnail = self.sg.find_one(
+            'Version',
+            [['id', 'is', self.version['id']]],
+            fields=['id', 'code', 'image']
+        )
+        response_shot_thumbnail = self.sg.find_one(
+            'Shot',
+            [['id', 'is', self.shot['id']]],
+            fields=['id', 'code', 'image']
+        )
+        response_asset_thumbnail = self.sg.find_one(
+            'Asset',
+            [['id', 'is', self.asset['id']]],
+            fields=['id', 'code', 'image']
+        )
+        self.assertEqual(response_version_thumbnail.get('image'), 
+                         response_shot_thumbnail.get('image'))
+        self.assertEqual(response_version_thumbnail.get('image'), 
+                         response_asset_thumbnail.get('image'))
+
+        # raise errors when missing required params or providing conflicting ones
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.share_thumbnail,
+                          [self.shot, self.asset], path, self.version)
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.share_thumbnail,
+                          [self.shot, self.asset])
 
     def test_deprecated_functions(self):
         """Deprecated functions raise errors"""
@@ -549,6 +611,17 @@ class TestDataTypes(base.LiveTestBase):
         entity_id = self.note['id']
         field_name = 'content'
         pos_values = ['this content', 'that content']
+        expected, actual = self.assert_set_field(entity,
+                                                 entity_id,
+                                                 field_name,
+                                                 pos_values)
+        self.assertEqual(expected, actual)
+
+    def test_set_text_html_entity(self):
+        entity = 'Note'
+        entity_id = self.note['id']
+        field_name = 'content'
+        pos_values = ['<', '<']
         expected, actual = self.assert_set_field(entity,
                                                  entity_id,
                                                  field_name,
