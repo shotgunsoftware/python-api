@@ -25,5 +25,7 @@ setup(
     url='https://github.com/shotgunsoftware/python-api',
     license=license,
     packages=find_packages(exclude=('tests',)),
-    script_args=script_args
+    script_args=script_args,
+    include_package_data=True,
+    package_data={'': [ 'cacerts.txt']},
 )
