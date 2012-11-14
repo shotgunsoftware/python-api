@@ -643,6 +643,467 @@ class TestUtc(base.LiveTestBase):
 class TestFind(base.LiveTestBase):
     def setUp(self):
         super(TestFind, self).setUp()
+        # We will need the created_at field for the shot
+        fields = self.shot.keys()[:]
+        fields.append('created_at')
+        self.shot = self.sg.find_one('Shot', [['id', 'is', self.shot['id']]], fields)
+        # We will need the uuid field for our LocalStorage
+        fields = self.local_storage.keys()[:]
+        fields.append('uuid')
+        self.local_storage = self.sg.find_one('LocalStorage', [['id', 'is', self.local_storage['id']]], fields)
+
+    def test_find(self):
+        """Called find, find_one for known entities"""
+        filters = []
+        filters.append(['project','is', self.project])
+        filters.append(['id','is', self.version['id']])
+
+        fields = ['id']
+
+        versions = self.sg.find("Version", filters, fields=fields)
+
+        self.assertTrue(isinstance(versions, list))
+        version = versions[0]
+        self.assertEqual("Version", version["type"])
+        self.assertEqual(self.version['id'], version["id"])
+
+        version = self.sg.find_one("Version", filters, fields=fields)
+        self.assertEqual("Version", version["type"])
+        self.assertEqual(self.version['id'], version["id"])
+
+    def _id_in_result(self, entity_type, filters, expected_id):
+        """
+        Checks that a given id matches that of entities returned 
+        for particular filters.
+        """
+        results = self.sg.find(entity_type, filters)
+        # can't use 'any' in python 2.4
+        for result in results:
+            if result['id'] == expected_id:
+                return True
+        return False
+
+    #TODO test all applicable data types for 'in'
+        #'currency' => [BigDecimal, Float, NilClass],
+        #'image' => [Hash, NilClass],
+        #'percent' => [Bignum, Fixnum, NilClass],
+        #'serializable' => [Hash, Array, NilClass],          
+        #'system_task_type' => [String, NilClass],
+        #'timecode' => [Bignum, Fixnum, NilClass],
+        #'footage' => [Bignum, Fixnum, NilClass, String, Float, BigDecimal],
+        #'url' => [Hash, NilClass],
+
+        #'uuid' => [String],
+
+    def test_in_relation_comma_id(self):
+        """
+        Test that 'in' relation using commas (old format) works with ids.
+        """
+        filters = [['id', 'in', self.project['id'], 99999]]
+        result = self._id_in_result('Project', filters, self.project['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_id(self):
+        """
+        Test that 'in' relation using list (new format) works with ids.
+        """
+        filters = [['id', 'in', [self.project['id'], 99999]]]
+        result = self._id_in_result('Project', filters, self.project['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_id(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with ids.
+        """
+        filters = [['id', 'not_in', self.project['id'], 99999]]
+        result = self._id_in_result('Project', filters, self.project['id'])
+        self.assertFalse(result)
+
+    def test_in_relation_comma_text(self):
+        """
+        Test that 'in' relation using commas (old format) works with text fields.
+        """
+        filters = [['name', 'in', self.project['name'], 'fake project name']]
+        result = self._id_in_result('Project', filters, self.project['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_text(self):
+        """
+        Test that 'in' relation using list (new format) works with text fields.
+        """
+        filters = [['name', 'in', [self.project['name'], 'fake project name']]]
+        result = self._id_in_result('Project', filters, self.project['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_text(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with ids.
+        """
+        filters = [['name', 'not_in', [self.project['name'], 'fake project name']]]
+        result = self._id_in_result('Project', filters, self.project['id'])
+        self.assertFalse(result)
+
+    def test_in_relation_comma_color(self):
+        """
+        Test that 'in' relation using commas (old format) works with color fields.
+        """
+        filters = [['color', 'in', self.task['color'], 'Green'],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_color(self):
+        """
+        Test that 'in' relation using list (new format) works with color fields.
+        """
+        filters = [['color', 'in', [self.task['color'], 'Green']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_color(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with color fields.
+        """
+        filters = [['color', 'not_in', [self.task['color'], 'Green']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertFalse(result)
+
+    def test_in_relation_comma_date(self):
+        """
+        Test that 'in' relation using commas (old format) works with date fields.
+        """
+        filters = [['due_date', 'in', self.task['due_date'], '2012-11-25'],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_date(self):
+        """
+        Test that 'in' relation using list (new format) works with date fields.
+        """
+        filters = [['due_date', 'in', [self.task['due_date'], '2012-11-25']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_date(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with date fields.
+        """
+        filters = [['due_date', 'not_in', [self.task['due_date'], '2012-11-25']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertFalse(result)
+
+
+    def test_in_relation_comma_date_time(self):
+        """
+        Test that 'in' relation using commas (old format) works with date_time fields.
+        """
+        filters = [['created_at', 'in', self.shot['created_at'], '2012-11-25'],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Shot', filters, self.shot['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_date_time(self):
+        """
+        Test that 'in' relation using list (new format) works with date_time fields.
+        """
+        filters = [['created_at', 'in', [self.shot['created_at'], '2012-11-25']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Shot', filters, self.shot['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_date_time(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with date_time fields.
+        """
+        filters = [['created_at', 'not_in', [self.shot['created_at'], '2012-11-25']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Shot', filters, self.shot['id'])
+        self.assertFalse(result)
+
+    def test_in_relation_comma_duration(self):
+        """
+        Test that 'in' relation using commas (old format) works with duration fields.
+        """
+        filters = [['duration', 'in', self.task['duration']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_duration(self):
+        """
+        Test that 'in' relation using list (new format) works with duration fields.
+        """
+        filters = [['duration', 'in', [self.task['duration'],]],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_duration(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with duration fields.
+        """
+        filters = [['duration', 'not_in', [self.task['duration'],]],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertFalse(result)
+
+    def test_in_relation_comma_entity(self):
+        """
+        Test that 'in' relation using commas (old format) works with entity fields.
+        """
+        filters = [['entity', 'in', self.task['entity'], self.asset],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_entity(self):
+        """
+        Test that 'in' relation using list (new format) works with entity fields.
+        """
+        filters = [['entity', 'in', [self.task['entity'], self.asset]],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_entity(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with entity fields.
+        """
+        filters = [['entity', 'not_in', [self.task['entity'], self.asset]],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertFalse(result)
+
+    def test_in_relation_comma_entity_type(self):
+        """
+        Test that 'in' relation using commas (old format) works with entity_type fields.
+        """
+        filters = [['entity_type', 'in', self.step['entity_type'], 'something else'],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Step', filters, self.step['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_entity_type(self):
+        """
+        Test that 'in' relation using list (new format) works with entity_type fields.
+        """
+        filters = [['entity_type', 'in', [self.step['entity_type'], 'something else']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Step', filters, self.step['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_entity_type(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with entity_type fields.
+        """
+        filters = [['entity_type', 'not_in', [self.step['entity_type'], 'something else']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Step', filters, self.step['id'])
+        self.assertFalse(result)
+
+    def test_in_relation_comma_float(self):
+        """
+        Test that 'in' relation using commas (old format) works with float fields.
+        """
+        filters = [['sg_frames_aspect_ratio', 'in', self.version['sg_frames_aspect_ratio'], 'something else'],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Version', filters, self.version['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_float(self):
+        """
+        Test that 'in' relation using list (new format) works with float fields.
+        """
+        filters = [['sg_frames_aspect_ratio', 'in', [self.version['sg_frames_aspect_ratio'], 'something else']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Version', filters, self.version['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_float(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with float fields.
+        """
+        filters = [['sg_frames_aspect_ratio', 'not_in', [self.version['sg_frames_aspect_ratio'], 'something else']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Version', filters, self.version['id'])
+        self.assertFalse(result)
+
+    def test_in_relation_comma_list(self):
+        """
+        Test that 'in' relation using commas (old format) works with list fields.
+        """
+        filters = [['sg_priority', 'in', self.ticket['sg_priority'], '1'],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Ticket', filters, self.ticket['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_list(self):
+        """
+        Test that 'in' relation using list (new format) works with list fields.
+        """
+        filters = [['sg_priority', 'in', [self.ticket['sg_priority'], '1']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Ticket', filters, self.ticket['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_list(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with list fields.
+        """
+        filters = [['sg_priority', 'not_in', [self.ticket['sg_priority'], '1']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Ticket', filters, self.ticket['id'])
+        self.assertFalse(result)
+
+    def test_in_relation_comma_multi_entity(self):
+        """
+        Test that 'in' relation using commas (old format) works with multi_entity fields.
+        """
+        filters = [['task_assignees', 'in', self.human_user, ],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_multi_entity(self):
+        """
+        Test that 'in' relation using list (new format) works with multi_entity fields.
+        """
+        filters = [['task_assignees', 'in', [self.human_user, ]],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_multi_entity(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with multi_entity fields.
+        """
+        filters = [['task_assignees', 'not_in', [self.human_user, ]],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertFalse(result)
+
+    def test_in_relation_comma_number(self):
+        """
+        Test that 'in' relation using commas (old format) works with number fields.
+        """
+        filters = [['frame_count', 'in', self.version['frame_count'], 1],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Version', filters, self.version['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_number(self):
+        """
+        Test that 'in' relation using list (new format) works with number fields.
+        """
+        filters = [['frame_count', 'in', [self.version['frame_count'], 1]],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Version', filters, self.version['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_number(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with number fields.
+        """
+        filters = [['frame_count', 'not_in', [self.version['frame_count'], 1]],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Version', filters, self.version['id'])
+        self.assertFalse(result)
+
+
+    def test_in_relation_comma_status_list(self):
+        """
+        Test that 'in' relation using commas (old format) works with status_list fields.
+        """
+        filters = [['sg_status_list', 'in', self.task['sg_status_list'], 'fin'],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_status_list(self):
+        """
+        Test that 'in' relation using list (new format) works with status_list fields.
+        """
+        filters = [['sg_status_list', 'in', [self.task['sg_status_list'], 'fin']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_status_list(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with status_list fields.
+        """
+        filters = [['sg_status_list', 'not_in', [self.task['sg_status_list'], 'fin']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Task', filters, self.task['id'])
+        self.assertFalse(result)
+
+    def test_in_relation_comma_uuid(self):
+        """
+        Test that 'in' relation using commas (old format) works with uuid fields.
+        """
+        filters = [['uuid', 'in', self.local_storage['uuid'], 'fin'],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('LocalStorage', filters, self.local_storage['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_uuid(self):
+        """
+        Test that 'in' relation using list (new format) works with uuid fields.
+        """
+        filters = [['uuid', 'in', [self.local_storage['uuid'], 'fin']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('LocalStorage', filters, self.local_storage['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_uuid(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with uuid fields.
+        """
+        filters = [['uuid', 'not_in', [self.local_storage['uuid'], 'fin']],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('LocalStorage', filters, self.local_storage['id'])
+        self.assertFalse(result)
 
     def test_find(self):
         """Called find, find_one for known entities"""
