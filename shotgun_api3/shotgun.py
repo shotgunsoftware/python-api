@@ -42,6 +42,7 @@ import re
 import copy
 import stat         # used for attachment upload
 import sys
+import threading
 import time
 import types
 import urllib
@@ -240,7 +241,7 @@ class Shotgun(object):
         self.config.script_name = script_name
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
-        self._connection = None
+        self._thread_locals = threading.local()
 
         self.base_url = (base_url or "").lower()
         self.config.scheme, self.config.server, api_base, _, _ = \
@@ -323,7 +324,7 @@ class Shotgun(object):
         return
 
     def close(self):
-        """Closes the current connection to the server.
+        """Closes the current connection to the server for the current thread.
 
         If the client needs to connect again it will do so automatically.
         """
@@ -1533,10 +1534,21 @@ class Shotgun(object):
 
     # ========================================================================
     # Connection Functions
-
+    
+    def _get_connection(self):
+        return getattr(self._thread_locals, 'connection', None)
+    
+    def _set_connection(self, conn):
+        self._thread_locals.connection = conn
+    
+    _connection = property(_get_connection, _set_connection)
+    del _get_connection, _set_connection
+    
     def _get_connection(self):
         """Returns the current connection or creates a new connection to the
         current server.
+        
+        One connection is created per thread so they will not block each other.
         """
         if self._connection is not None:
             return self._connection
