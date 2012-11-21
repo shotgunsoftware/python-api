@@ -173,8 +173,11 @@ class SSLSocket(socket):
                     self.__class__)
             while True:
                 try:
-                    
-                    v = self._sslobj.write(data)
+                    if isinstance(data, str):
+                        v = self._sslobj.write(data)
+                    else:
+                        for x in data.yieldData():   
+                            v = self._sslobj.write(x)
                 except SSLError, x:
                     if x.args[0] == SSL_ERROR_WANT_READ:
                         return 0
@@ -200,11 +203,18 @@ class SSLSocket(socket):
                 raise ValueError(
                     "non-zero flags not allowed in calls to sendall() on %s" %
                     self.__class__)
+            
+            print "LEN DATA"
             amount = len(data)
-            count = 0
-            while (count < amount):
-                v = self.send(data[count:])
-                count += v
+            print amount
+            print "LEN DATA"
+            if isinstance(data, str):
+                count = 0
+                while (count < amount):
+                    v = self.send(data[count:])
+                    count += v
+            else:
+                self.send(data)
             return amount
         else:
             return socket.sendall(self, data, flags)
