@@ -32,7 +32,7 @@
 
 import base64
 import cookielib    # used for attachment upload
-import cStringIO    # used for attachment upload
+import StringIO    # used for attachment upload
 import datetime
 import logging
 import mimetools    # used for attachment upload
@@ -47,6 +47,7 @@ import types
 import urllib
 import urllib2      # used for image upload
 import urlparse
+import mmap
 
 # use relative import for versions >=2.5 and package import for python versions <2.5
 if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 5):
@@ -1667,7 +1668,50 @@ class Shotgun(object):
             for k, v in (d or {}).iteritems()
         ]
 
-
+class LargeData(object):
+    
+    def __len__(self):
+        #print 'calc length:'
+        l =  len(self.prefix) + len(self.postfix) + self.data.size()
+        #print l
+        return l
+    
+    def yieldData(self):
+        yield self.prefix
+        x = 0
+        self.data.seek(x)
+        # read amount 1MB     x 1   = 1MB Chunks 
+        read_amount = 1048576 * 1
+        while x < self.data.size():
+            x += read_amount
+            print x
+            yield self.data.read(read_amount)
+        yield self.postfix
+    
+    def __getitem__(self, key):
+        print key 
+        print type(key) 
+        return      
+        
+    def __init__(self):
+        
+        self.prefix = ""
+        self.data = None
+        self.postfix = ""
+        self.changed = True
+        
+    
+    def writep(self, value):
+        self.prefix += value
+        self.changed = True
+    
+    def writepost(self, value):
+        self.postfix += value
+        self.changed = True
+    
+    def setData(self, data):
+        self.data = data
+        self.changed = True
 # Helpers from the previous API, left as is.
 
 # Based on http://code.activestate.com/recipes/146306/
@@ -1691,6 +1735,7 @@ class FormPostHandler(urllib2.BaseHandler):
                 data = urllib.urlencode(params, True) # sequencing on
             else:
                 boundary, data = self.encode(params, files)
+                print type(data)
                 content_type = 'multipart/form-data; boundary=%s' % boundary
                 request.add_unredirected_header('Content-Type', content_type)
             request.add_data(data)
@@ -1700,26 +1745,35 @@ class FormPostHandler(urllib2.BaseHandler):
         if boundary is None:
             boundary = mimetools.choose_boundary()
         if buffer is None:
-            buffer = cStringIO.StringIO()
+            buffer = LargeData()
         for (key, value) in params:
-            buffer.write('--%s\r\n' % boundary)
-            buffer.write('Content-Disposition: form-data; name="%s"' % key)
-            buffer.write('\r\n\r\n%s\r\n' % value)
+            buffer.writep('--%s\r\n' % boundary)
+            buffer.writep('Content-Disposition: form-data; name="%s"' % key)
+            buffer.writep('\r\n\r\n%s\r\n' % value)
         for (key, fd) in files:
             filename = fd.name.split('/')[-1]
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or 'application/octet-stream'
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-            buffer.write('--%s\r\n' % boundary)
+            buffer.writep('--%s\r\n' % boundary)
             c_dis = 'Content-Disposition: form-data; name="%s"; filename="%s"%s'
             content_disposition = c_dis % (key, filename, '\r\n')
-            buffer.write(content_disposition)
-            buffer.write('Content-Type: %s\r\n' % content_type)
-            buffer.write('Content-Length: %s\r\n' % file_size)
-            fd.seek(0)
-            buffer.write('\r\n%s\r\n' % fd.read())
-        buffer.write('--%s--\r\n\r\n' % boundary)
-        buffer = buffer.getvalue()
+            buffer.writep(content_disposition)
+            buffer.writep('Content-Type: %s\r\n' % content_type)
+            buffer.writep('Content-Length: %s\r\n' % file_size)
+           
+            buffer.writep('\r\n')
+            
+            memory_mapped = mmap.mmap(fd.fileno(), 0, prot=mmap.PROT_READ)
+            buffer.setData(memory_mapped)
+#           
+#                
+#            print "encoded"
+            buffer.writepost('\r\n')
+            
+            
+        buffer.writepost('--%s--\r\n\r\n' % boundary)
+        #buffer = buffer.getvalue()
         return boundary, buffer
 
     def https_request(self, request):
