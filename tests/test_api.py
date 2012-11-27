@@ -62,7 +62,16 @@ class TestShotgunApi(base.LiveTestBase):
         requests = [{ "request_type" : "delete",
                       "entity_type"  : "Shot",
                       "entity_id"    : new_shot_id
-                    }]
+                    },
+                    {
+                        "request_type" : "update",
+                        "entity_type" : "Shot",
+                        "entity_id" : self.shot['id'],
+                        "data" : {
+                            "code" : self.shot['code']
+                            }
+                    }
+                    ]
 
         result = self.sg.batch(requests)[0]
         self.assertEqual(True, result)
@@ -194,13 +203,13 @@ class TestShotgunApi(base.LiveTestBase):
 
     def test_upload_thumbnail_in_create(self):
         """Upload a thumbnail via the create method"""
-        # upload / download only works against a live server because it does 
+        # upload / download only works against a live server because it does
         # not use the standard http interface
         if 'localhost' in self.server_url:
             print "upload via create tests skipped for localhost"
             return
         # end if
-        
+
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
             os.path.join(this_dir,"sg_logo.jpg")))
@@ -232,7 +241,7 @@ class TestShotgunApi(base.LiveTestBase):
     # end test_upload_thumbnail_in_create
 
     def test_upload_thumbnail(self):
-        # simple upload thumbnail test. 
+        # simple upload thumbnail test.
         # upload / download only works against a live server because it does
         # not use the standard http interface
         if 'localhost' in self.server_url:
@@ -267,7 +276,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
 
     def test_linked_thumbnail_url(self):
-        #upload / download only works against a live server because it does 
+        #upload / download only works against a live server because it does
         #not use the standard http interface
         if 'localhost' in self.server_url:
             print "upload / down tests skipped for localhost"
@@ -308,7 +317,7 @@ class TestShotgunApi(base.LiveTestBase):
 
     def test_share_thumbnail(self):
         """share thumbnail between two entities"""
-        # upload / download only works against a live server because it does 
+        # upload / download only works against a live server because it does
         # not use the standard http interface
         if 'localhost' in self.server_url:
             print "upload / down tests skipped for localhost"
@@ -332,7 +341,7 @@ class TestShotgunApi(base.LiveTestBase):
             [['id', 'is', self.shot['id']]],
             fields=['id', 'code', 'image']
         )
-        self.assertEqual(response_shot_thumbnail.get('image'), 
+        self.assertEqual(response_shot_thumbnail.get('image'),
                          response_version_thumbnail.get('image'))
 
         # share thumbnail from source entity with entities
@@ -356,9 +365,9 @@ class TestShotgunApi(base.LiveTestBase):
             [['id', 'is', self.asset['id']]],
             fields=['id', 'code', 'image']
         )
-        self.assertEqual(response_version_thumbnail.get('image'), 
+        self.assertEqual(response_version_thumbnail.get('image'),
                          response_shot_thumbnail.get('image'))
-        self.assertEqual(response_version_thumbnail.get('image'), 
+        self.assertEqual(response_version_thumbnail.get('image'),
                          response_asset_thumbnail.get('image'))
 
         # raise errors when missing required params or providing conflicting ones
@@ -375,18 +384,71 @@ class TestShotgunApi(base.LiveTestBase):
 
     def test_simple_summary(self):
         '''test_simple_summary tests simple query using summarize.'''
-        summeries = [{'field': 'id', 'type': 'count'}]
+        summaries = [{'field': 'id', 'type': 'count'}]
         grouping = [{'direction': 'asc', 'field': 'id', 'type': 'exact'}]
         filters = [['project', 'is', self.project]]
         result = self.sg.summarize('Shot',
                                    filters=filters,
-                                   summary_fields=summeries,
+                                   summary_fields=summaries,
                                    grouping=grouping)
         assert(result['groups'])
         assert(result['groups'][0]['group_name'])
         assert(result['groups'][0]['group_value'])
         assert(result['groups'][0]['summaries'])
         assert(result['summaries'])
+
+    def test_summary_values(self):
+        ''''''
+        shot_data = {
+            'sg_status_list': 'ip',
+            'sg_cut_duration': 100,
+            'project': self.project
+        }
+        shots = []
+        shots.append(self.sg.create('Shot', dict(shot_data.items() +
+                                    {'code': 'shot 1'}.items())))
+        shots.append(self.sg.create('Shot', dict(shot_data.items() +
+                                    {'code': 'shot 2'}.items())))
+        shots.append(self.sg.create('Shot', dict(shot_data.items() +
+                                    {'code': 'shot 3',
+                                     'sg_status_list': 'fin'}.items())))
+        summaries = [{'field': 'id', 'type': 'count'},
+                     {'field': 'sg_cut_duration', 'type': 'sum'}]
+        grouping = [{'direction': 'asc', 'field': 'sg_status_list', 'type': 'exact'}]
+        filters = [['project', 'is', self.project]]
+        result = self.sg.summarize('Shot',
+                                   filters=filters,
+                                   summary_fields=summaries,
+                                   grouping=grouping)
+        count = {'id': 4, 'sg_cut_duration': 300}
+        groups =[
+                {
+                    'group_name': 'fin',
+                    'group_value': 'fin',
+                    'summaries': {'id': 1, 'sg_cut_duration': 100}
+                },
+                 {
+                    'group_name': 'ip',
+                    'group_value': 'ip',
+                    'summaries': {'id': 2, 'sg_cut_duration': 200}
+                },
+                {
+                    'group_name': 'wtg',
+                    'group_value': 'wtg',
+                    'summaries': {'id': 1, 'sg_cut_duration': 0}
+                }
+                ]
+        # clean up
+        batch_data = []
+        for s in shots:
+            batch_data.append({"request_type": "delete",
+                               "entity_type": "Shot",
+                               "entity_id": s['id']
+                              })
+        self.sg.batch(batch_data)
+
+        self.assertEqual(result['summaries'], count)
+        self.assertEqual(result['groups'], groups)
 
     def test_ensure_ascii(self):
         '''test_ensure_ascii tests ensure_unicode flag.'''
