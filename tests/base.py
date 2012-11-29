@@ -210,6 +210,11 @@ class LiveTestBase(TestBase):
                 'user':self.human_user,
                 'content':'anything'}
         self.note = _find_or_create_entity(self.sg, 'Note', data, keys)
+        
+        keys = ['code', 'entity_type']
+        data = {'code': 'wrapper test step',
+                'entity_type': 'Shot'}
+        self.step = _find_or_create_entity(self.sg, 'Step', data, keys)
 
         keys = ['project', 'entity', 'content']
         data = {'project':self.project,
