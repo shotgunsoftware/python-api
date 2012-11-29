@@ -803,36 +803,7 @@ class TestFind(base.LiveTestBase):
         result = self._id_in_result('Task', filters, self.task['id'])
         self.assertFalse(result)
 
-
-#    def test_in_relation_comma_date_time(self):
-#        """
-#        Test that 'in' relation using commas (old format) works with date_time fields.
-#        """
-#        filters = [['created_at', 'in', self.shot['created_at'], datetime.datetime(2002, 12, 13)],
-#                   ['project', 'is', self.project]]
-#
-#        result = self._id_in_result('Shot', filters, self.shot['id'])
-#        self.assertTrue(result)
-#
-#    def test_in_relation_list_date_time(self):
-#        """
-#        Test that 'in' relation using list (new format) works with date_time fields.
-#        """
-#        filters = [['created_at', 'in', [self.shot['created_at'], datetime.datetime(2012, 12, 13)]],
-#                   ['project', 'is', self.project]]
-#
-#        result = self._id_in_result('Shot', filters, self.shot['id'])
-#        self.assertTrue(result)
-#
-#    def test_not_in_relation_date_time(self):
-#        """
-#        Test that 'not_in' relation using commas (old format) works with date_time fields.
-#        """
-#        filters = [['created_at', 'not_in', [self.shot['created_at'], '2012-11-25']],
-#                   ['project', 'is', self.project]]
-#
-#        result = self._id_in_result('Shot', filters, self.shot['id'])
-#        self.assertFalse(result)
+    #TODO add datetime test for in and not_in
 
     def test_in_relation_comma_duration(self):
         """
