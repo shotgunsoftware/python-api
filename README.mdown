@@ -53,6 +53,7 @@ Integration and unit tests are provided.
   + added: share_thumbnail() method to share the same thumbnail record and media between entities
   + added: proxy handling to methods that transfer binary data (ie. upload, upload_thumbnail, etc.)
   + updated: default logging level to WARN
+  + updated: documentation for summarize() method, previously released but without documentation
   + fixed: unicode strings not always being encoded correctly
   + fixed: create() generates error when return_fields is None
   + fixed: clearing thumbnail by setting 'image' value to None not working as expected
