@@ -210,17 +210,41 @@ class LiveTestBase(TestBase):
                 'user':self.human_user,
                 'content':'anything'}
         self.note = _find_or_create_entity(self.sg, 'Note', data, keys)
+        
+        keys = ['code', 'entity_type']
+        data = {'code': 'wrapper test step',
+                'entity_type': 'Shot'}
+        self.step = _find_or_create_entity(self.sg, 'Step', data, keys)
 
         keys = ['project', 'entity', 'content']
         data = {'project':self.project,
                 'entity':self.asset,
-                'content':self.config.task_content}
+                'content':self.config.task_content,
+                'color':'Black',
+                'due_date':'1968-10-13',
+                'task_assignees': [self.human_user],
+                'sg_status_list': 'ip'}
         self.task =  _find_or_create_entity(self.sg, 'Task', data, keys)
 
         data = {'project':self.project,
-                'title':self.config.ticket_title}
-        keys = ['title','project']
+                'title':self.config.ticket_title,
+                'sg_priority': '3'}
+        keys = ['title','project', 'sg_priority']
         self.ticket = _find_or_create_entity(self.sg, 'Ticket', data, keys)
+
+        keys = ['project', 'sg_frames_aspect_ratio', 'frame_count']
+        data = {'project':self.project,
+                'sg_frames_aspect_ratio': 13.3,
+                'frame_count': 33}
+        self.version = _find_or_create_entity(self.sg, 'Version', data, keys)
+
+        keys = ['code']
+        data = {'code':'api wrapper test storage',
+                'mac_path':'nowhere',
+                'windows_path':'nowhere',
+                'linux_path':'nowhere'}
+
+        self.local_storage = _find_or_create_entity(self.sg, 'LocalStorage', data, keys)
 
 
 class SgTestConfig(object):
