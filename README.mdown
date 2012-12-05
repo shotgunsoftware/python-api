@@ -48,6 +48,19 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.9 - 2012 Dec 05**
+
+  + added: share_thumbnail() method to share the same thumbnail record and media between entities
+  + added: proxy handling to methods that transfer binary data (ie. upload, upload_thumbnail, etc.)
+  + updated: default logging level to WARN
+  + fixed: unicode strings not always being encoded correctly
+  + fixed: create() generates error when return_fields is None
+  + fixed: clearing thumbnail by setting 'image' value to None not working as expected
+  + fixed: some html entities being returned sanitized via API.
+  + improved: simplejson fallback now uses relative imports to match other bundled packages
+  + improved: various error messages are now clearer and more informative
+  + installation is now pip compatible
+
 **v3.0.9.beta2 - 2012 Mar 19**
 
   + use relative imports for included libraries when using Python v2.5 or later
