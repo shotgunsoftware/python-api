@@ -69,7 +69,7 @@ except ImportError:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.0.9.beta2"
+__version__ = "3.0.9"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -905,13 +905,13 @@ class Shotgun(object):
 
         self.config.session_uuid = session_uuid
         return
-        
-    def share_thumbnail(self, entities, thumbnail_path=None, source_entity=None, 
+
+    def share_thumbnail(self, entities, thumbnail_path=None, source_entity=None,
         filmstrip_thumbnail=False, **kwargs):
         if not self.server_caps.version or self.server_caps.version < (4, 0, 0):
             raise ShotgunError("Thumbnail sharing support requires server "\
                 "version 4.0 or higher, server is %s" % (self.server_caps.version,))
-        
+
         if not isinstance(entities, list) or len(entities) == 0:
             raise ShotgunError("'entities' parameter must be a list of entity "\
                 "hashes and may not be empty")
@@ -931,10 +931,10 @@ class Shotgun(object):
         if thumbnail_path:
             source_entity = entities.pop(0)
             if filmstrip_thumbnail:
-                thumb_id = self.upload_filmstrip_thumbnail(source_entity['type'], 
+                thumb_id = self.upload_filmstrip_thumbnail(source_entity['type'],
                     source_entity['id'], thumbnail_path, **kwargs)
             else:
-                thumb_id = self.upload_thumbnail(source_entity['type'], 
+                thumb_id = self.upload_thumbnail(source_entity['type'],
                     source_entity['id'], thumbnail_path, **kwargs)
         else:
             if not isinstance(source_entity, dict) or 'id' not in source_entity \
@@ -951,7 +951,7 @@ class Shotgun(object):
         entities_str = []
         for e in entities:
             entities_str.append("%s_%s" % (e['type'], e['id']))
-        # format for post request 
+        # format for post request
         if filmstrip_thumbnail:
             filmstrip_thumbnail = 1
         params = {
@@ -980,14 +980,14 @@ class Shotgun(object):
                     "\n%s\n(%s)\n%s\n\n" % (url, params, e))
             else:
                 raise ShotgunError("Unanticipated error occurred %s" % (e))
-        else: 
+        else:
             if not str(result).startswith("1"):
                 raise ShotgunError("Unable to share thumbnail: %s" % result)
             else:
                 attachment_id = int(str(result).split(":")[1].split("\n")[0])
-                
+
         return attachment_id
-    
+
     def upload_thumbnail(self, entity_type, entity_id, path, **kwargs):
         """Convenience function for uploading thumbnails, see upload.
         """
@@ -1225,7 +1225,7 @@ class Shotgun(object):
         }
         http_status, resp_headers, body = self._make_call("POST",
             self.config.api_path, encoded_payload, req_headers)
-        LOG.debug("Completed rpc call to %s" % (method))                
+        LOG.debug("Completed rpc call to %s" % (method))
         try:
             self._parse_http_status(http_status)
         except ProtocolError, e:
