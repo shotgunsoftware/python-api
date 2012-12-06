@@ -197,7 +197,9 @@ class LiveTestBase(TestBase):
         data = {'project':self.project,
                 'code':self.config.version_code,
                 'entity':self.asset,
-                'user':self.human_user}
+                'user':self.human_user,
+                'sg_frames_aspect_ratio': 13.3,
+                'frame_count': 33}
         keys = ['code','project']
         self.version = _find_or_create_entity(self.sg, 'Version', data, keys)
 
@@ -211,7 +213,7 @@ class LiveTestBase(TestBase):
                 'user':self.human_user,
                 'content':'anything'}
         self.note = _find_or_create_entity(self.sg, 'Note', data, keys)
-        
+
         keys = ['code', 'entity_type']
         data = {'code': 'wrapper test step',
                 'entity_type': 'Shot'}
@@ -232,12 +234,6 @@ class LiveTestBase(TestBase):
                 'sg_priority': '3'}
         keys = ['title','project', 'sg_priority']
         self.ticket = _find_or_create_entity(self.sg, 'Ticket', data, keys)
-
-        keys = ['project', 'sg_frames_aspect_ratio', 'frame_count']
-        data = {'project':self.project,
-                'sg_frames_aspect_ratio': 13.3,
-                'frame_count': 33}
-        self.version = _find_or_create_entity(self.sg, 'Version', data, keys)
 
         keys = ['code']
         data = {'code':'api wrapper test storage',
