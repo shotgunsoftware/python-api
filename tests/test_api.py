@@ -177,6 +177,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('image') is not None)
         self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}/232/sg_logo.jpg.jpg" % (self.server_address), new_version.get('image')) )
+        self.sg.delete("Version", new_version['id'])
 
         # test filmstrip image upload
         data = {'filmstrip_image': path, 'code': 'Test Version',
@@ -189,6 +190,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('filmstrip_image') is not None)
         self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}/sg_logo.jpg" % (self.server_address), new_version.get('filmstrip_image')) )
+        self.sg.delete("Version", new_version['id'])
     # end test_upload_thumbnail_in_create
 
     def test_upload_thumbnail(self):
@@ -735,7 +737,7 @@ class TestFind(base.LiveTestBase):
 
     def _id_in_result(self, entity_type, filters, expected_id):
         """
-        Checks that a given id matches that of entities returned 
+        Checks that a given id matches that of entities returned
         for particular filters.
         """
         results = self.sg.find(entity_type, filters)
@@ -749,7 +751,7 @@ class TestFind(base.LiveTestBase):
         #'currency' => [BigDecimal, Float, NilClass],
         #'image' => [Hash, NilClass],
         #'percent' => [Bignum, Fixnum, NilClass],
-        #'serializable' => [Hash, Array, NilClass],          
+        #'serializable' => [Hash, Array, NilClass],
         #'system_task_type' => [String, NilClass],
         #'timecode' => [Bignum, Fixnum, NilClass],
         #'footage' => [Bignum, Fixnum, NilClass, String, Float, BigDecimal],
