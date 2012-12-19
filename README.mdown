@@ -20,19 +20,19 @@ Shotgun provides a simple Python-based API for accessing Shotgun and integrating
 To use Shotgun's Python API module, you need to place the package shotgun_api3 in one of the directories specified by the environment variable PYTHONPATH. For more information on PYTHONPATH and using modules in Python, see http://docs.python.org/tutorial/modules.html
 
 ### Installing with `pip`
+ 
+#### Master 
+If you wish to install the current master, use the following command (Note that master contains the latest revisions and is largely considered "stable" but it is not an official packaged release. If you want the latest packaged release, use the latest tag number):  
+`pip install git+git://github.com/shotgunsoftware/python-api.git`
 
 #### Specific Versions 
 To install a specific version of the package with `pip` (recommended), run the following command 
 (This example installs the v3.0.9 tag. Replace the version tag with the one you want):  
-`pip install -e git://github.com/shotgunsoftware/python-api.git@v3.0.9#egg=shotgun_api3`
- 
-#### Master 
-If you wish to install the current master, use the following command (Note that we try and keep master stable but it may contain issues. Tags are the current stable versions of the API):  
-`pip install -e git://github.com/shotgunsoftware/python-api.git#egg=shotgun_api3`
+`pip install git+git://github.com/shotgunsoftware/python-api.git@v3.0.9`
 
 #### requirements.txt
-If you're using pip with `requirements.txt`, add the following line:
-`-e git://github.com/shotgunsoftware/python-api.git#egg=shotgun_api3`
+If you're using pip with `requirements.txt`, add the following line:  
+`git+git://github.com/shotgunsoftware/python-api.git`
 
 
 ## Documentation
