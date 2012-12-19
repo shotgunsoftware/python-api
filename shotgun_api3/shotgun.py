@@ -984,7 +984,11 @@ class Shotgun(object):
             if not str(result).startswith("1"):
                 raise ShotgunError("Unable to share thumbnail: %s" % result)
             else:
-                attachment_id = int(str(result).split(":")[1].split("\n")[0])
+                # clearing thumbnail returns no attachment_id
+                try:
+                    attachment_id = int(str(result).split(":")[1].split("\n")[0])
+                except ValueError:
+                    attachment_id = None
 
         return attachment_id
 
