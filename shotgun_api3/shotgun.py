@@ -47,6 +47,7 @@ import types
 import urllib
 import urllib2      # used for image upload
 import urlparse
+import shutil       # used for attachment download
 
 # use relative import for versions >=2.5 and package import for python versions <2.5
 if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 5):
@@ -996,7 +997,7 @@ class Shotgun(object):
         try:
             resp = opener.open(url, params)
             result = resp.read()
-            # response heaers are in str(resp.info()).splitlines()
+            # response headers are in str(resp.info()).splitlines()
         except urllib2.HTTPError, e:
             if e.code == 500:
                 raise ShotgunError("Server encountered an internal error. "
@@ -1111,14 +1112,64 @@ class Shotgun(object):
         attachment_id = int(str(result).split(":")[1].split("\n")[0])
         return attachment_id
 
-    def download_attachment(self, attachment_id):
-        """Gets the returns binary content of the specified attachment.
+    def download_attachment(self, attachment_id, file_path=None):
+        """Download the file associated with the Shotgun Attachment
 
-        :param attachment_id: id of the attachment to get.
+        :param attachment_id: (int) id of the Shotgun Attachment entity to
+        download.
 
-        :returns: binary data as a string
+        :param file_path: (str) Optional. If provided, write the data directly
+        to local disk using the file_path. This avoids loading all of the data 
+        in memory and saves the file locally which is probably what is desired
+        anyway. 
+
+        :returns: (str) If file_path is None, returns data of the Attachment 
+        file as a string. If file_path is provided, returns file_path.
         """
-        # Cookie for auth
+        if file_path:
+            fp = open(file_path, 'wb')
+        self.set_up_auth_cookie()
+        url = self.get_attachment_download_url(attachment_id)
+             
+        try:
+            request = urllib2.Request(url)
+            request.add_header('user-agent', "; ".join(self._user_agents))
+            req = urllib2.urlopen(request)
+            if file_path:
+                shutil.copyfileobj(req, fp)
+            else:
+                attachment = req.read()
+
+        # raised when Attachment id doesn't exist or is a local file
+        # todo: what happens when s3 url is invalid?
+        except urllib2.URLError, e:
+            if file_path:
+                fp.close()
+            err = "Failed to open %s" % url
+            err += "\n%s" % e
+            if hasattr(e, 'code'):
+                if e.code == 400:
+                    err += "\nAttachment with id %d may not exist or is a "\
+                           "local file." % attachment_id
+                else:
+                    err += "\nHTTP Status: %s" % e.code
+            # what cases set this and do we need to show it?
+            if hasattr(e, 'reason'):
+                err += "\n%s" % e.reason
+            raise ShotgunError(err)
+
+        # NOTE: On older (< v5.1.0)Shotgun versions, non-downloadable files 
+        # don't raise exceptions, they cause a server error which returns a 
+        # 200 with the page content.
+        else:
+            if file_path:
+                return file_path
+            else:
+                return attachment
+
+    def set_up_auth_cookie(self):
+        """Sets up urllib2 with a cookie for authentication.
+        """
         sid = self._get_session_token()
         cj = cookielib.LWPCookieJar()
         c = cookielib.Cookie('0', '_session_id', sid, None, False,
@@ -1129,35 +1180,16 @@ class Shotgun(object):
         opener = self._build_opener(cookie_handler)
         urllib2.install_opener(opener)
 
+    def get_attachment_download_url(self, attachment_id):
+        """Given an Attachment id, returns the URL for downloading that
+        Attachment.
+
+        returns: (str) the download URL for Attachment
+        """
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
             "/file_serve/attachment/%s" % urllib.quote(str(attachment_id)),
             None, None, None))
-
-        try:
-            request = urllib2.Request(url)
-            request.add_header('User-agent',
-                "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; "\
-                "rv:1.9.0.7) Gecko/2009021906 Firefox/3.0.7")
-            attachment = urllib2.urlopen(request).read()
-
-        except IOError, e:
-            err = "Failed to open %s" % url
-            if hasattr(e, 'code'):
-                err += "\nWe failed with error code - %s." % e.code
-            elif hasattr(e, 'reason'):
-                err += "\nThe error object has the following 'reason' "\
-                    "attribute : %s" % e.reason
-                err += "\nThis usually means the server doesn't exist, is "\
-                    "down, or we don't have an internet connection."
-            raise ShotgunError(err)
-        else:
-            if attachment.lstrip().startswith('<!DOCTYPE '):
-                error_string = "\n%s\nThe server generated an error trying "\
-                    "to download the Attachment. \nURL: %s\n"\
-                    "Either the file doesn't exist, or it is a local file "\
-                    "which isn't downloadable.\n%s\n" % ("="*30, url, "="*30)
-                raise ShotgunError(error_string)
-        return attachment
+        return url
 
     def authenticate_human_user(self, user_login, user_password):
         '''Authenticate Shotgun HumanUser. HumanUser must be an active account.
