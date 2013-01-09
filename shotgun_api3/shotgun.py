@@ -47,6 +47,7 @@ import types
 import urllib
 import urllib2      # used for image upload
 import urlparse
+import shutil       # used for attachment download
 
 # use relative import for versions >=2.5 and package import for python versions <2.5
 if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 5):
@@ -1095,21 +1096,9 @@ class Shotgun(object):
 
         :returns: binary data as a string
         """
-        # Cookie for auth
-        sid = self._get_session_token()
-        cj = cookielib.LWPCookieJar()
-        c = cookielib.Cookie('0', '_session_id', sid, None, False,
-            self.config.server, False, False, "/", True, False, None, True,
-            None, None, {})
-        cj.set_cookie(c)
-        cookie_handler = urllib2.HTTPCookieProcessor(cj)
-        opener = self._build_opener(cookie_handler)
-        urllib2.install_opener(opener)
-
-        url = urlparse.urlunparse((self.config.scheme, self.config.server,
-            "/file_serve/attachment/%s" % urllib.quote(str(attachment_id)),
-            None, None, None))
-
+        self.set_up_auth_cookie()
+        url = self.get_attachment_download_url(attachment_id)
+        
         try:
             request = urllib2.Request(url)
             request.add_header('User-agent',
@@ -1135,6 +1124,88 @@ class Shotgun(object):
                     "which isn't downloadable.\n%s\n" % ("="*30, url, "="*30)
                 raise ShotgunError(error_string)
         return attachment
+
+    def download_attachment_to_file(self, attachment_id, file_path):
+        """Saves the binary content of the specified attachment to the 
+        specified file path.  If the file already exists, it will be
+        overwritten.
+
+        :param attachment_id: id of the attachment to get.
+        :param file_path: path of the file to download to.
+        """
+        self.set_up_auth_cookie()
+        url = self.get_attachment_download_url(attachment_id)
+
+        fp = open(file_path, 'wb')
+
+        try:
+            request = urllib2.Request(url)
+            request.add_header('User-agent',
+                "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; "\
+                "rv:1.9.0.7) Gecko/2009021906 Firefox/3.0.7")
+
+            req = urllib2.urlopen(request)
+
+            shutil.copyfileobj(req, fp)
+            
+        except IOError, e:
+            fp.close()
+            
+            err = "Failed to open %s" % url
+            if hasattr(e, 'code'):
+                err += "\nWe failed with error code - %s." % e.code
+            elif hasattr(e, 'reason'):
+                err += "\nThe error object has the following 'reason' "\
+                    "attribute : %s" % e.reason
+                err += "\nThis usually means the server doesn't exist, is "\
+                    "down, we don't have an internet connection, or "\
+                    "there was a problem while writing to the file."
+            raise ShotgunError(err)
+        else:
+            fp.close()
+
+            attach_fp = open(file_path, 'r')
+
+            try:
+                FILE_READ_BYTES = 32
+                file_start_contents = attach_fp.read(FILE_READ_BYTES)
+                
+                if file_start_contents.lstrip().startswith('<!DOCTYPE '):
+                    error_string = "\n%s\nThe server generated an error trying "\
+                        "to download the Attachment. \nURL: %s\n"\
+                        "Either the file doesn't exist, or it is a local file "\
+                        "which isn't downloadable.\n%s\n" % ("="*30, url, "="*30)
+                    raise ShotgunError(error_string)
+            except:
+                attach_fp.close()
+                raise
+
+            attach_fp.close()
+            
+
+    def set_up_auth_cookie(self):
+        """Sets up urllib2 with a cookie for authentication.
+        """
+        sid = self._get_session_token()
+        cj = cookielib.LWPCookieJar()
+        c = cookielib.Cookie('0', '_session_id', sid, None, False,
+            self.config.server, False, False, "/", True, False, None, True,
+            None, None, {})
+        cj.set_cookie(c)
+        cookie_handler = urllib2.HTTPCookieProcessor(cj)
+        opener = self._build_opener(cookie_handler)
+        urllib2.install_opener(opener)
+
+    def get_attachment_download_url(self, attachment_id):
+        """Given an attachment ID, returns the URL for downloading that
+        attachment.
+
+        returns: a string containing the URL
+        """
+        url = urlparse.urlunparse((self.config.scheme, self.config.server,
+            "/file_serve/attachment/%s" % urllib.quote(str(attachment_id)),
+            None, None, None))
+        return url
 
     def authenticate_human_user(self, user_login, user_password):
         '''Authenticate Shotgun HumanUser. HumanUser must be an active account.
