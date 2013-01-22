@@ -497,14 +497,14 @@ class Shotgun(object):
         Return group and summary information for entity_type for summary_fields
         based on the given filters.
         """
-        if not isinstance(filters, list):
-            raise ValueError("summarize() 'filters' parameter must be a list")
 
         if not isinstance(grouping, list) and grouping != None:
             msg = "summarize() 'grouping' parameter must be a list or None"
             raise ValueError(msg)
 
-        filters = _translate_filters(filters, filter_operator)
+        if isinstance(filters, (list, tuple)):
+            filters = _translate_filters(filters, filter_operator)
+
         params = {"type": entity_type,
                   "summaries": summary_fields,
                   "filters": filters}
