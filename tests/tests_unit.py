@@ -163,10 +163,6 @@ class TestShotgunSummarize(unittest.TestCase):
         result = self.get_call_rpc_params(None, kws)
         self.assertEqual(grouping, result['grouping'])
 
-    def test_filters_type(self):
-        '''test_filters_type tests that filters parameter is a list'''
-        self.assertRaises(ValueError, self.sg.summarize, '', 'not a list', 'bad meta')
-
     def test_grouping_type(self):
         '''test_grouping_type tests that grouping parameter is a list or None'''
         self.assertRaises(ValueError, self.sg.summarize, '', [], [], grouping='Not a list')
