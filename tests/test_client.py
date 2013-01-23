@@ -153,6 +153,31 @@ class TestShotgunClient(base.MockTestBase):
         expected = "Basic " + base64.encodestring(login_password).strip()
         self.assertEqual(expected, headers.get("Authorization"))
 
+    def test_user_agent(self):
+        """User-Agent passed to server"""
+        # test default user agent
+        self.sg.info()
+        args, _ = self.sg._http_request.call_args
+        (_, _, _, headers) = args
+        expected = "shotgun-json (%s)" % api.__version__
+        self.assertEqual(expected, headers.get("user-agent"))
+
+        # test adding to user agent
+        self.sg.add_user_agent("test-agent")
+        self.sg.info()
+        args, _ = self.sg._http_request.call_args
+        (_, _, _, headers) = args
+        expected = "shotgun-json (%s); test-agent" % api.__version__
+        self.assertEqual(expected, headers.get("user-agent"))
+
+        # test resetting user agent
+        self.sg.reset_user_agent()
+        self.sg.info()
+        args, _ = self.sg._http_request.call_args
+        (_, _, _, headers) = args
+        expected = "shotgun-json (%s)" % api.__version__
+        self.assertEqual(expected, headers.get("user-agent"))
+
     def test_connect_close(self):
         """Connection is closed and opened."""
         #The mock created an existing mock connection,

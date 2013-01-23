@@ -251,6 +251,8 @@ class Shotgun(object):
         self.config.api_path = urlparse.urljoin(urlparse.urljoin(
             api_base or "/", self.config.api_ver + "/"), "json")
 
+        self.reset_user_agent()
+
         # if the service contains user information strip it out
         # copied from the xmlrpclib which turned the user:password into
         # and auth header
@@ -894,6 +896,21 @@ class Shotgun(object):
 
         return self._call_rpc("schema_field_delete", params)
 
+    def add_user_agent(self, agent):
+        """Add agent to the user-agent header
+
+        Append agent to the string passed in as the user-agent to be logged
+        in events for this API session.
+
+        :param agent: Required, string to append to user-agent.
+        """
+        self._user_agents.append(agent)
+
+    def reset_user_agent(self):
+        """Reset user agent to the default
+        """
+        self._user_agents = ["shotgun-json (%s)" % __version__]
+
     def set_session_uuid(self, session_uuid):
         """Sets the browser session_uuid for this API session.
 
@@ -1311,7 +1328,7 @@ class Shotgun(object):
 
         attempt = 0
         req_headers = {
-            "user-agent" : "shotgun-json",
+            "user-agent": "; ".join(self._user_agents),
         }
         if self.config.authorization:
             req_headers["Authorization"] = self.config.authorization
