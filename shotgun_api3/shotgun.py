@@ -1750,21 +1750,14 @@ class FormPostHandler(urllib2.BaseHandler):
 def _translate_filters(filters, filter_operator):
     '''_translate_filters translates filters params into data structure
     expected by rpc call.'''
-    from pprint import pprint
-    pprint(filters)
-    pprint(filter_operator)
-    
     wrapped_filters = {
         "filter_operator": "all",
         "filters": filters
     }
-    
+
     if filter_operator != None:
         wrapped_filters["filter_operator"] = filter_operator
 
-    
-    pprint(wrapped_filters)
-    
     return _translate_filters_dict(wrapped_filters)
 
 def _translate_filters_dict(filter):
