@@ -56,6 +56,13 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.10 - 2013 Jan 25**
+
+  + added: add_user_agent() and reset_user_agent methods to allow client code to add strings to track.
+  + added: Changed default user-agent to include api version. 
+  + updated: advanced summarize filter support.
+  + fixed: #19830 share_thumbnail() errors when source has no thumbnail.
+
 **v3.0.9 - 2012 Dec 05**
 
   + added: share_thumbnail() method to share the same thumbnail record and media between entities
