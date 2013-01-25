@@ -433,7 +433,7 @@ class TestShotgunApi(base.LiveTestBase):
         end_date_obj = datetime.datetime(2012, 1, 7)
 
         project = self.sg.find_one('Project', [])
-        user = self.sg.find_one('HumanUser', [['projects', 'is', project]])
+        user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
 
         work_schedule = self.sg.work_schedule_read(start_date, end_date, project, user)
 
@@ -476,7 +476,7 @@ class TestShotgunApi(base.LiveTestBase):
         expected = {'date': '2012-01-04',
             'description': 'Artist Holiday',
             'project': None,
-            'user': {'id': 12, 'name': 'Artist 8', 'type': 'HumanUser'},
+            'user': user,
             'working': False
         }
         self.assertEqual(expected, resp)
