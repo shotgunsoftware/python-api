@@ -351,7 +351,31 @@ class TestFilters(unittest.TestCase):
         
         result = api.shotgun._translate_filters(filters, "all")
         self.assertEquals(result, expected)
+    
+    def test_invalid(self):
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, [], "bogus")
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, ["bogus"], "all")
         
+        filters = [{
+            "filter_operator": "bogus",
+            "filters": []
+        }]
+        
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
+        
+        filters = [{
+            "filters": []
+        }]
+        
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
+        
+        filters = [{
+            "filter_operator": "all",
+            "filters": { "bogus": "bogus" }
+        }]
+        
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
+
 if __name__ == '__main__':
     unittest.main()
 

@@ -1760,18 +1760,21 @@ def _translate_filters(filters, filter_operator):
 
     return _translate_filters_dict(wrapped_filters)
 
-def _translate_filters_dict(filter):
+def _translate_filters_dict(sg_filter):
     new_filters = {}
-    filter_operator = filter.get("filter_operator")
+    filter_operator = sg_filter.get("filter_operator")
     
     if filter_operator == "all" or filter_operator == "and":
         new_filters["logical_operator"] = "and"
     elif filter_operator == "any" or filter_operator == "or":
         new_filters["logical_operator"] = "or"
     else:
-        raise ShotgunError("Invalid filter_operator for filter " % filter)
+        raise ShotgunError("Invalid filter_operator %s" % filter_operator)
 
-    new_filters["conditions"] = _translate_filters_list(filter["filters"])
+    if not isinstance(sg_filter["filters"], (list,tuple)):
+        raise ShotgunError("Invalid filters, expected a list or a tuple, got %s" % sg_filter["filters"])
+        
+    new_filters["conditions"] = _translate_filters_list(sg_filter["filters"])
     
     return new_filters
     
@@ -1783,6 +1786,8 @@ def _translate_filters_list(filters):
             conditions.append(_translate_filters_simple(sg_filter))
         elif isinstance(sg_filter, dict):
             conditions.append(_translate_filters_dict(sg_filter))
+        else:
+            raise ShotgunError("Invalid filters, expected a list, tuple or dict, got %s" % sg_filter)
     
     return conditions
 
