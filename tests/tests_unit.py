@@ -259,6 +259,123 @@ class TestClientCapabilities(unittest.TestCase):
         client_caps = api.shotgun.ClientCapabilities()
         self.assertEquals(client_caps.py_version, expected_py_version)
         
+class TestFilters(unittest.TestCase):
+    def test_empty(self):
+        expected = {
+            "logical_operator": "and",
+            "conditions": []
+        }
+        
+        result = api.shotgun._translate_filters([], None)
+        self.assertEquals(result, expected)
+    
+    def test_simple(self):
+        filters = [
+            ["code", "is", "test"],
+            ["sg_status_list", "is", "ip"]
+        ]
+
+        expected = {
+            "logical_operator": "or",
+            "conditions": [
+                { "path": "code", "relation": "is", "values": ["test"] },
+                { "path": "sg_status_list", "relation": "is", "values": ["ip"] }
+            ]
+        }
+        
+        result = api.shotgun._translate_filters(filters, "any")
+        self.assertEquals(result, expected)
+    
+    # Test both styles of passing arrays
+    def test_arrays(self):
+        expected = {
+            "logical_operator": "and",
+            "conditions": [
+                { "path": "code", "relation": "in", "values": ["test1", "test2", "test3"] }
+            ]
+        }
+        
+        filters = [
+            ["code", "in", "test1", "test2", "test3"]
+        ]
+        
+        result = api.shotgun._translate_filters(filters, "all")
+        self.assertEquals(result, expected)
+        
+        filters = [
+            ["code", "in", ["test1", "test2", "test3"]]
+        ]
+        
+        result = api.shotgun._translate_filters(filters, "all")
+        self.assertEquals(result, expected)
+
+    def test_nested(self):
+        filters = [
+            ["code", "in", "test"],
+            {
+                "filter_operator": "any",
+                "filters": [
+                    ["sg_status_list", "is", "ip"],
+                    ["sg_status_list", "is", "fin"],
+                    {
+                        "filter_operator": "all",
+                        "filters": [
+                            ["sg_status_list", "is", "hld"],
+                            ["assets", "is", { "type": "Asset", "id": 9 }]
+                        ]
+                    }
+                ]
+            }
+        ]
+        
+        expected = {
+            "logical_operator": "and",
+            "conditions": [
+                { "path": "code", "relation": "in", "values": ["test"] },
+                {
+                    "logical_operator": "or",
+                    "conditions": [
+                        { "path": "sg_status_list", "relation": "is", "values": ["ip"] },
+                        { "path": "sg_status_list", "relation": "is", "values": ["fin"] },
+                        {
+                            "logical_operator": "and",
+                            "conditions": [
+                                { "path": "sg_status_list", "relation": "is", "values": ["hld"] },
+                                { "path": "assets", "relation": "is", "values": [ { "type": "Asset", "id": 9 } ] },
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+        
+        result = api.shotgun._translate_filters(filters, "all")
+        self.assertEquals(result, expected)
+    
+    def test_invalid(self):
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, [], "bogus")
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, ["bogus"], "all")
+        
+        filters = [{
+            "filter_operator": "bogus",
+            "filters": []
+        }]
+        
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
+        
+        filters = [{
+            "filters": []
+        }]
+        
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
+        
+        filters = [{
+            "filter_operator": "all",
+            "filters": { "bogus": "bogus" }
+        }]
+        
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
+
 if __name__ == '__main__':
     unittest.main()
 

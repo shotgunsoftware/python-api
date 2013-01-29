@@ -1750,22 +1750,56 @@ class FormPostHandler(urllib2.BaseHandler):
 def _translate_filters(filters, filter_operator):
     '''_translate_filters translates filters params into data structure
     expected by rpc call.'''
+    wrapped_filters = {
+        "filter_operator": filter_operator or "all",
+        "filters": filters
+    }
+
+    return _translate_filters_dict(wrapped_filters)
+
+def _translate_filters_dict(sg_filter):
     new_filters = {}
-
-    if not filter_operator or filter_operator == "all":
+    filter_operator = sg_filter.get("filter_operator")
+    
+    if filter_operator == "all" or filter_operator == "and":
         new_filters["logical_operator"] = "and"
-    else:
+    elif filter_operator == "any" or filter_operator == "or":
         new_filters["logical_operator"] = "or"
+    else:
+        raise ShotgunError("Invalid filter_operator %s" % filter_operator)
 
-    conditions = []
-    for sg_filter in filters:
-        condition = {"path": sg_filter[0], "relation": sg_filter[1]}
-        values = sg_filter[2:]
-        if len(values) == 1 and isinstance(values[0], (list, tuple)):
-            values = values[0]
-
-        condition["values"] = values
-        conditions.append(condition)
-
-    new_filters["conditions"] = conditions
+    if not isinstance(sg_filter["filters"], (list,tuple)):
+        raise ShotgunError("Invalid filters, expected a list or a tuple, got %s" % sg_filter["filters"])
+        
+    new_filters["conditions"] = _translate_filters_list(sg_filter["filters"])
+    
     return new_filters
+    
+def _translate_filters_list(filters):
+    conditions = []
+    
+    for sg_filter in filters:
+        if isinstance(sg_filter, (list,tuple)):
+            conditions.append(_translate_filters_simple(sg_filter))
+        elif isinstance(sg_filter, dict):
+            conditions.append(_translate_filters_dict(sg_filter))
+        else:
+            raise ShotgunError("Invalid filters, expected a list, tuple or dict, got %s" % sg_filter)
+    
+    return conditions
+
+def _translate_filters_simple(sg_filter):
+    condition = {
+        "path": sg_filter[0],
+        "relation": sg_filter[1]
+    }
+    
+    values = sg_filter[2:]
+    if len(values) == 1 and isinstance(values[0], (list, tuple)):
+        values = values[0]
+
+    condition["values"] = values
+
+    return condition
+
+     
