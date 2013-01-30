@@ -56,6 +56,10 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.11 - 2013 Jan 31**
+
+  + added: nested filter syntax, see https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax
+
 **v3.0.10 - 2013 Jan 25**
 
   + added: add_user_agent() and reset_user_agent methods to allow client code to add strings to track.
