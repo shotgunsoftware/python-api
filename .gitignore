@@ -12,3 +12,8 @@
 # test related
 tests/config
 .coverage
+
+# setup related
+build
+dist
+shotgun_api3.egg-info
