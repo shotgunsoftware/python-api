@@ -28,4 +28,5 @@ setup(
     script_args=script_args,
     include_package_data=True,
     package_data={'': [ 'cacerts.txt']},
+    zip_safe=False,
 )
