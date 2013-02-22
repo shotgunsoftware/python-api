@@ -56,6 +56,11 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.12 - **
+
+  + added: #18171 New ca_caert argument to the Shotgun() constructor to specify the certificates to use in SSL validation
+  + added: setup.py doesn't compress the installed .egg file which makes the cacerts.txt file accessible
+
 **v3.0.11 - 2013 Jan 31**
 
   + added: nested filter syntax, see https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax
