@@ -213,7 +213,8 @@ class Shotgun(object):
                  convert_datetimes_to_utc=True,
                  http_proxy=None,
                  ensure_ascii=True,
-                 connect=True):
+                 connect=True,
+				 ca_certs=None):
         """Initialises a new instance of the Shotgun client.
 
         :param base_url: http or https url to the shotgun server.
@@ -234,13 +235,18 @@ class Shotgun(object):
         form [username:pass@]proxy.com[:8080]
 
         :param connect: If True, connect to the server. Only used for testing.
+		
+		:param ca_certs: The path to the SSL certificate file. Useful for users
+		who would like to package their application into an executable.
         """
+
         self.config = _Config()
         self.config.api_key = api_key
         self.config.script_name = script_name
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
         self._connection = None
+        self.__ca_certs = ca_certs
 
         self.base_url = (base_url or "").lower()
         self.config.scheme, self.config.server, api_base, _, _ = \
@@ -1566,10 +1572,10 @@ class Shotgun(object):
             pi = ProxyInfo(socks.PROXY_TYPE_HTTP, self.config.proxy_server,
                  self.config.proxy_port, proxy_user=self.config.proxy_user,
                  proxy_pass=self.config.proxy_pass)
-            self._connection = Http(timeout=self.config.timeout_secs,
+            self._connection = Http(timeout=self.config.timeout_secs, ca_certs=self.__ca_certs,
                 proxy_info=pi, disable_ssl_certificate_validation=self.config.no_ssl_validation)
         else:
-            self._connection = Http(timeout=self.config.timeout_secs,
+            self._connection = Http(timeout=self.config.timeout_secs, ca_certs=self.__ca_certs,
                 disable_ssl_certificate_validation=self.config.no_ssl_validation)
 
         return self._connection
