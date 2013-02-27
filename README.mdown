@@ -58,7 +58,7 @@ Integration and unit tests are provided.
 
 **v3.0.12 - TBD**
 
-  + added: #18171 New ca_cert argument to the Shotgun() constructor to specify the certificates to use in SSL validation
+  + added: #18171 New ca_certs argument to the Shotgun() constructor to specify the certificates to use in SSL validation
   + added: setup.py doesn't compress the installed .egg file which makes the cacerts.txt file accessible
 
 **v3.0.11 - 2013 Jan 31**
