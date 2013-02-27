@@ -488,7 +488,7 @@ class TestDataTypes(base.LiveTestBase):
     '''Test fields representing the different data types mapped on the server side.
 
      Untested data types:  password, percent, pivot_column, serializable, image, currency
-                           multi_entity, system_task_type, timecode, url, uuid
+                           multi_entity, system_task_type, timecode, url, uuid, url_template
     '''
     def setUp(self):
         super(TestDataTypes, self).setUp()
@@ -1195,7 +1195,11 @@ class TestFind(base.LiveTestBase):
         project = projects[0]
         self.assertEqual(self.project['id'], project['id'])
 
-
+    def test_unspported_filters(self):
+        self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'Shot', [['image', 'is_not', [None]]])
+        self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'HumanUser', [['password_proxy', 'is_not', [None]]])
+        self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'EventLogEntry', [['meta', 'is_not', [None]]])
+        self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'Revision', [['meta', 'attachment', [None]]])
 
 
 class TestErrors(base.TestBase):
