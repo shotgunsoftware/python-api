@@ -60,6 +60,7 @@ Integration and unit tests are provided.
 
   + added: #18171 New ca_certs argument to the Shotgun() constructor to specify the certificates to use in SSL validation
   + added: setup.py doesn't compress the installed .egg file which makes the cacerts.txt file accessible
+  + fixed: #20856 authenticate_human_user login was sticky and would be used for permissions and logging
 
 **v3.0.11 - 2013 Jan 31**
 
