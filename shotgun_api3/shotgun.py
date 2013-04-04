@@ -1171,13 +1171,10 @@ class Shotgun(object):
 
         try:
             data = self.find_one('HumanUser', [['sg_status_list', 'is', 'act'], ['login', 'is', user_login]], ['id', 'login'], '', 'all')
-            if data:
-                return data
-            else:
-                None
             # Set back to default - There finally and except cannot be used together in python2.4
             self.config.user_login = None
             self.config.user_password = None
+            return data
         except Fault:
             # Set back to default - There finally and except cannot be used together in python2.4
             self.config.user_login = None
