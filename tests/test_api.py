@@ -1229,8 +1229,8 @@ class TestFind(base.LiveTestBase):
         project = projects[0]
         self.assertEqual(self.project['id'], project['id'])
 
-    def test_unspported_filters(self):
-        self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'Shot', [['image', 'is_not', [None]]])
+    def test_unsupported_filters(self):
+        self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'Shot', [['image', 'is_not', [ {"type": "Thumbnail", "id": 9 }]]])
         self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'HumanUser', [['password_proxy', 'is_not', [None]]])
         self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'EventLogEntry', [['meta', 'is_not', [None]]])
         self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'Revision', [['meta', 'attachment', [None]]])
