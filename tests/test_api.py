@@ -168,7 +168,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('image') is not None)
         if self.sg.server_caps.version and self.sg.server_caps.version >= (5, 0, 0):
-            self.assertTrue( re.match("http:\/\/%s\/files_api\/0000\/0000\/\d{4}/sg_logo_t.jpg" % (self.server_address), new_version.get('image')) )
+            self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}/sg_logo_t.jpg" % (self.server_address), new_version.get('image')) )
         else:
             self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}\/232\/sg_logo.jpg.jpg" % (self.server_address), new_version.get('image')) )
         self.sg.delete("Version", new_version['id'])
@@ -184,7 +184,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('filmstrip_image') is not None)
         if self.sg.server_caps.version and self.sg.server_caps.version >= (5, 0, 0):
-            self.assertTrue( re.match("http:\/\/%s\/files_api\/0000\/0000\/\d{4}/sg_logo.jpg" % (self.server_address), new_version.get('filmstrip_image')) )
+            self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}/sg_logo.jpg" % (self.server_address), new_version.get('filmstrip_image')) )
         else:
             self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}/sg_logo.jpg" % (self.server_address), new_version.get('filmstrip_image')) )
         self.sg.delete("Version", new_version['id'])
@@ -209,7 +209,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         if self.sg.server_caps.version and self.sg.server_caps.version >= (5, 0, 0):
             expected_version_with_thumbnail = {
-                'image': 'http://%s/files_api/0000/0000/%04d/sg_logo_t.jpg' % (self.server_address, thumb_id),
+                'image': 'http://%s/files/0000/0000/%04d/sg_logo_t.jpg' % (self.server_address, thumb_id),
                 'type': 'Version',
                 'id': self.version['id']
             }
@@ -246,7 +246,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         if self.sg.server_caps.version and self.sg.server_caps.version >= (5, 0, 0):
             expected_task_with_thumbnail = {
-                'image': 'http://%s/files_api/0000/0000/%04d/sg_logo_t.jpg' % (self.server_address, thumb_id),
+                'image': 'http://%s/files/0000/0000/%04d/sg_logo_t.jpg' % (self.server_address, thumb_id),
                 'type': 'Task',
                 'id': self.task['id']
             }
@@ -285,7 +285,7 @@ class TestShotgunApi(base.LiveTestBase):
                     'code': 'Sg unittest version',
                     'type': 'Version',
                     'id': self.version['id'],
-                    'project.Project.image': 'http://%s/files_api/0000/0000/%04d/sg_logo_t.jpg' % (self.server_address, thumb_id)
+                    'project.Project.image': 'http://%s/files/0000/0000/%04d/sg_logo_t.jpg' % (self.server_address, thumb_id)
                 }
             ]
         elif self.sg.server_caps.version and self.sg.server_caps.version >= (3, 3, 0):
