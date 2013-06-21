@@ -1116,25 +1116,59 @@ class Shotgun(object):
         attachment_id = int(str(result).split(":")[1].split("\n")[0])
         return attachment_id
 
-    def download_attachment(self, attachment_id, file_path=None):
-        """Download the file associated with the Shotgun Attachment
+    def download_attachment(self, attachment=False, file_path=None, 
+                            attachment_id=None):
+        """Downloads the file associated with a Shotgun Attachment.
 
-        :param attachment_id: (int) id of the Shotgun Attachment entity to
-        download.
+        NOTE: On older (< v5.1.0) Shotgun versions, non-downloadable files 
+        on Shotgun don't raise exceptions, they cause a server error which 
+        returns a 200 with the page content.
+
+        :param attachment: (mixed) Usually a dict representing an Attachment.
+        The dict should have a 'url' key that specifies the download url. 
+        Optionally, the dict can be a standard entity hash format with 'id' and
+        'type' keys as long as 'type'=='Attachment'. This is only supported for
+        backwards compatibility (#22150).
+        If an int value is passed in, the Attachment with the matching id will
+        be downloaded from the Shotgun server.
 
         :param file_path: (str) Optional. If provided, write the data directly
         to local disk using the file_path. This avoids loading all of the data 
         in memory and saves the file locally which is probably what is desired
         anyway. 
 
+        :param attachment_id: (int) Optional. Deprecated in favor of passing in 
+        Attachment hash to attachment param. This attachment_id exists only for
+        backwards compatibility for scripts specifying the parameter with
+        keywords.
+
         :returns: (str) If file_path is None, returns data of the Attachment 
         file as a string. If file_path is provided, returns file_path.
         """
+        # backwards compatibility when passed via keyword argument 
+        if attachment is False:
+            if type(attachment_id) == int:
+                attachment = attachment_id
+            else:
+                raise TypeError("Missing parameter 'attachment'. Expected a "\
+                                "dict, int, NoneType value or"\
+                                "an int for parameter attachment_id")
+        # write to disk
         if file_path:
-            fp = open(file_path, 'wb')
-        self.set_up_auth_cookie()
-        url = self.get_attachment_download_url(attachment_id)
-             
+            try:
+                fp = open(file_path, 'wb')
+            except IOError, e:
+                raise IOError("Unable to write Attachment to disk using "\
+                              "file_path. %s" % e) 
+
+        url = self.get_attachment_download_url(attachment)
+        if url is None:
+            return None
+
+        # We only need to set the auth cookie for downloads from Shotgun server
+        if self.config.server in url:
+            self.set_up_auth_cookie()
+   
         try:
             request = urllib2.Request(url)
             request.add_header('user-agent', "; ".join(self._user_agents))
@@ -1143,28 +1177,16 @@ class Shotgun(object):
                 shutil.copyfileobj(req, fp)
             else:
                 attachment = req.read()
-
-        # raised when Attachment id doesn't exist or is a local file
-        # todo: what happens when s3 url is invalid?
+        # 400 [sg] Attachment id doesn't exist or is a local file
+        # 403 [s3] link is invalid
         except urllib2.URLError, e:
             if file_path:
                 fp.close()
-            err = "Failed to open %s" % url
-            err += "\n%s" % e
+            err = "Failed to open %s\n%s" % (url, e)
             if hasattr(e, 'code'):
                 if e.code == 400:
-                    err += "\nAttachment with id %d may not exist or is a "\
-                           "local file." % attachment_id
-                else:
-                    err += "\nHTTP Status: %s" % e.code
-            # what cases set this and do we need to show it?
-            if hasattr(e, 'reason'):
-                err += "\n%s" % e.reason
-            raise ShotgunError(err)
-
-        # NOTE: On older (< v5.1.0)Shotgun versions, non-downloadable files 
-        # don't raise exceptions, they cause a server error which returns a 
-        # 200 with the page content.
+                    err += "\nAttachment may not exist or is a local file?"
+            raise ShotgunFileDownloadError(err)
         else:
             if file_path:
                 return file_path
@@ -1172,7 +1194,8 @@ class Shotgun(object):
                 return attachment
 
     def set_up_auth_cookie(self):
-        """Sets up urllib2 with a cookie for authentication.
+        """Sets up urllib2 with a cookie for authentication on the Shotgun 
+        instance.
         """
         sid = self._get_session_token()
         cj = cookielib.LWPCookieJar()
@@ -1184,15 +1207,45 @@ class Shotgun(object):
         opener = self._build_opener(cookie_handler)
         urllib2.install_opener(opener)
 
-    def get_attachment_download_url(self, attachment_id):
-        """Given an Attachment id, returns the URL for downloading that
-        Attachment.
+    def get_attachment_download_url(self, attachment):
+        """Returns the URL for downloading provided Attachment.
 
-        returns: (str) the download URL for Attachment
+        :param attachment: (mixed) If type is an int, construct url to download
+        Attachment with id from Shotgun. 
+        If type is a dict, and a url key is present, use that url. 
+        If type is a dict, and url key is not present, check if we have
+        an id and type keys and the type is 'Attachment' in which case we 
+        construct url to download Attachment with id from Shotgun as if just
+        the id has been passed in. 
+
+        :todo: Support for a standard entity hash should be removed: #22150
+
+        :returns: (str) the download URL for the Attachment or None if None was
+        passed to attachment param. This avoids raising an error when results
+        from a find() are passed off to a download_attachment() call.
         """
-        url = urlparse.urlunparse((self.config.scheme, self.config.server,
-            "/file_serve/attachment/%s" % urllib.quote(str(attachment_id)),
-            None, None, None))
+        attachment_id = None
+        if isinstance(attachment, int):
+            attachment_id = attachment
+        elif isinstance(attachment, dict):
+            try:
+                url = attachment['url']
+            except KeyError:
+                if ('id' in attachment and 'type' in attachment and 
+                    attachment['type'] == 'Attachment'):
+                    attachment_id = attachment['id']
+                else:
+                    raise ValueError("Missing 'url' key in Attachment dict")
+        elif attachment is None:
+            url = None
+        else:
+            raise TypeError("Unable to determine download url. Expected "\
+                "dict, int, or NoneType. Instead got %s" % type(attachment))
+
+        if attachment_id: 
+            url = urlparse.urlunparse((self.config.scheme, self.config.server,
+                "/file_serve/attachment/%s" % urllib.quote(str(attachment_id)),
+                None, None, None))
         return url
 
     def authenticate_human_user(self, user_login, user_password):
