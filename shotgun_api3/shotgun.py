@@ -79,6 +79,10 @@ class ShotgunError(Exception):
     """Base for all Shotgun API Errors"""
     pass
 
+class ShotgunFileDownloadError(ShotgunError):
+    """Exception for file download-related errors"""
+    pass
+
 class Fault(ShotgunError):
     """Exception when server side exception detected."""
     pass
