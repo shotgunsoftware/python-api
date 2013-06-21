@@ -127,7 +127,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertTrue(rv)
 
     def test_upload_download(self):
-        """Upload and download an attachment """
+        """Upload and download an attachment tests"""
         # upload / download only works against a live server because it does
         # not use the standard http interface
         if 'localhost' in self.server_url:
@@ -143,12 +143,66 @@ class TestShotgunApi(base.LiveTestBase):
             self.ticket['id'], path, 'attachments',
             tag_list="monkeys, everywhere, send, help")
 
+        # test download with attachment_id
         attach_file = self.sg.download_attachment(attach_id)
         self.assertTrue(attach_file is not None)
         self.assertEqual(size, len(attach_file))
-
         orig_file = open(path, "rb").read()
         self.assertEqual(orig_file, attach_file)
+
+        # test download with attachment_id as keyword
+        attach_file = self.sg.download_attachment(attachment_id=attach_id)
+        self.assertTrue(attach_file is not None)
+        self.assertEqual(size, len(attach_file))
+        orig_file = open(path, "rb").read()
+        self.assertEqual(orig_file, attach_file)
+
+        # test download with attachment_id (write to disk)
+        file_path = "%s/sg_logo_download.jpg" % os.path.dirname(os.path.realpath(__file__))
+        result = self.sg.download_attachment(attach_id, file_path=file_path)
+        self.assertEqual(result, file_path)
+        fp = open(file_path)
+        attach_file = fp.read()
+        fp.close()
+        self.assertEqual(size, len(attach_file))
+        self.assertEqual(orig_file, attach_file)
+
+        # test download with attachment hash
+        ticket = self.sg.find_one('Ticket', [['id', 'is', self.ticket['id']]],
+                                  ['attachments'])
+        attach_file = self.sg.download_attachment(ticket['attachments'][0])
+        self.assertTrue(attach_file is not None)
+        self.assertEqual(size, len(attach_file))
+        self.assertEqual(orig_file, attach_file)
+
+        # test download with attachment hash (write to disk)
+        result = self.sg.download_attachment(ticket['attachments'][0],
+                                             file_path=file_path)
+        self.assertEqual(result, file_path)
+        fp = open(file_path)
+        attach_file = fp.read()
+        fp.close()
+        self.assertTrue(attach_file is not None)
+        self.assertEqual(size, len(attach_file))
+        self.assertEqual(orig_file, attach_file)
+
+        # test invalid requests
+        INVALID_S3_URL = "https://sg-media-usor-01.s3.amazonaws.com/ada3de3ee3873875e1dd44f2eb0882c75ae36a4a/cd31346421dbeef781e0e480f259a3d36652d7f2/IMG_0465.MOV?AWSAccessKeyId=AKIAIQGOBSVN3FSQ5QFA&Expires=1371789959&Signature=SLbzv7DuVlZ8XAoOSQQAiGpF3u8%3D"
+        self.assertRaises(shotgun_api3.ShotgunFileDownloadError, 
+                            self.sg.download_attachment,
+                            {"url": INVALID_S3_URL})
+        INVALID_ATTACHMENT_ID = 99999999
+        self.assertRaises(shotgun_api3.ShotgunFileDownloadError, 
+                            self.sg.download_attachment,
+                            INVALID_ATTACHMENT_ID)
+        self.assertRaises(TypeError, self.sg.download_attachment,
+                            "/path/to/some/file.jpg")
+        self.assertRaises(ValueError, self.sg.download_attachment,
+                            {"id":123, "type":"Shot"})
+        self.assertRaises(TypeError, self.sg.download_attachment)
+
+        # cleanup
+        os.remove(file_path)
 
     def test_upload_thumbnail_in_create(self):
         """Upload a thumbnail via the create method"""
