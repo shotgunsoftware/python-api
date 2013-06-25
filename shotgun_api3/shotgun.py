@@ -1188,10 +1188,11 @@ class Shotgun(object):
                     err += "\nAttachment may not exist or is a local file?"
                 elif e.code == 403:
                     # Only parse the body if it is an Amazon S3 url. 
-                    if url.find('s3.amazonaws.com') != -1:
+                    if url.find('s3.amazonaws.com') != -1 \
+                        and e.headers['content-type'] == 'application/xml':
                         body = e.readlines()
-                        if body and len(body) > 1:
-                            xml = body[1]
+                        if body:
+                            xml = ''.join(body)
                             # Once python 2.4 support is not needed we can think about using elementtree.
                             # The doc is pretty small so this shouldn't be an issue.
                             match = re.search('<Message>(.*)</Message>', xml)
