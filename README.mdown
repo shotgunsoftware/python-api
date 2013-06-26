@@ -56,6 +56,12 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.14 - 2013 Jun 26**
+
+  + added: additional tests for thumbnails
+  + added: support for downloading from s3 in download_attachment(). Accepts an Attachment entity dict as a parameter (is still backwards compatible with passing in an Attachment id). 
+  + added: optional file_path parameter to download_attachment() to write data directly to disk instead of loading into memory. (thanks to Adam Goforth https://github.com/aag)
+
 **v3.0.13 - 2013 Apr 11**
 
   + fixed: #20856 authenticate_human_user login was sticky and would be used for permissions and logging
