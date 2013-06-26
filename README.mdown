@@ -56,6 +56,8 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.15 Dev - TBD**
+
 **v3.0.14 - 2013 Jun 26**
 
   + added: additional tests for thumbnails
