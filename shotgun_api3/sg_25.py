@@ -2,7 +2,7 @@ import sys
 import os
 import logging
 
-from .lib.httplib2 import Http, ProxyInfo, socks
+from .lib.httplib2 import Http, HttpLib2Error, ProxyInfo, socks
 from .lib.sgtimezone import SgTimezone
 from .lib.xmlrpclib import Error, ProtocolError, ResponseError
 

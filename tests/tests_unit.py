@@ -104,7 +104,38 @@ class TestShotgunInit(unittest.TestCase):
         self.assertRaises(ValueError, api.Shotgun, **conn_info)
         conn_info['http_proxy'] = 'someserver.com:1234:5678'
         self.assertRaises(ValueError, api.Shotgun, **conn_info)
-    
+
+
+class TestNetworkAttempts(unittest.TestCase):
+    """Test multiple attempts on network issues."""
+    def setUp(self):
+        self.attempt = 0
+        self.server_url = 'https://this_does_not_exist.shotgunstudio.com'
+        self.script_name = 'script_name'
+        self.script_key = 'script_key'
+        self.network_attempts = 10
+        self.network_attempt_interval = 1
+        self.network_attempt_callback = self._err_callback
+
+    def _err_callback(self, attempt, err):
+        self.assertEqual(attempt, self.attempt+1)
+        self.attempt += 1
+        self.assertEqual(err.errcode, 404)
+
+    def test_network_attempts(self):
+        self.attempt = 0
+        conn_info = {
+            'base_url': self.server_url,
+            'script_name': self.script_name,
+            'api_key': self.script_key,
+            'network_attempts': self.network_attempts,
+            'network_attempt_interval': self.network_attempt_interval,
+            'network_attempt_callback': self.network_attempt_callback
+        }
+        self.assertRaises(api.ProtocolError, api.Shotgun, **conn_info)
+        self.assertEqual(self.attempt, 10)
+
+
 class TestShotgunSummarize(unittest.TestCase):
     '''Test case for _create_summary_request function and parameter
     validation as it exists in Shotgun.summarize.

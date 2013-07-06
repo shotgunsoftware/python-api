@@ -41,6 +41,7 @@ import os
 import re
 import copy
 import stat         # used for attachment upload
+import socket
 import sys
 import time
 import types
@@ -59,6 +60,10 @@ LOG = logging.getLogger("shotgun_api3")
 LOG.setLevel(logging.WARN)
 
 SG_TIMEZONE = SgTimezone()
+
+# This is about 292.4 billion years at 1 second attempt interval time.
+# Not quite infinite but I think we're good.
+INFINITE_NETWORK_ATTEMPTS = sys.maxint
 
 
 try:
@@ -178,6 +183,9 @@ class _Config(object):
 
     def __init__(self):
         self.max_rpc_attempts = 3
+        self.network_attempts = 1
+        self.network_attempt_interval = 5
+        self.network_attempt_callback = None
         self.timeout_secs = None
         self.api_ver = 'api3'
         self.convert_datetimes_to_utc = True
@@ -219,7 +227,10 @@ class Shotgun(object):
                  http_proxy=None,
                  ensure_ascii=True,
                  connect=True,
-				 ca_certs=None):
+				 ca_certs=None,
+                 network_attempts=1,
+                 network_attempt_interval=5,
+                 network_attempt_callback=None):
         """Initialises a new instance of the Shotgun client.
 
         :param base_url: http or https url to the shotgun server.
@@ -243,6 +254,19 @@ class Shotgun(object):
 		
 		:param ca_certs: The path to the SSL certificate file. Useful for users
 		who would like to package their application into an executable.
+
+        :param network_attempts: How many times sould a connection or request be
+        attempted? Anything below the default 1 makes little sense. You can also
+        use shotgun_api3.INFINITE_NETWORK_ATTEMPTS to retry indefinitely.
+
+        :param network_attempt_interval: Integer specifying at what interval or
+        speed a network connection or call should be retried because of network
+        issues. The interval is specified in seconds.
+
+        :param network_attempt_callback: A function that can be called each time
+        a network call fails. This function takes two arguments: an integer
+        which is the number of attempts so far and the error that caused the
+        attempt to fail.
         """
 
         self.config = _Config()
@@ -250,6 +274,9 @@ class Shotgun(object):
         self.config.script_name = script_name
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
+        self.config.network_attempts = network_attempts
+        self.config.network_attempt_interval = network_attempt_interval
+        self.config.network_attempt_callback = network_attempt_callback
         self._connection = None
         self.__ca_certs = ca_certs
 
@@ -1348,17 +1375,35 @@ class Shotgun(object):
             "content-type" : "application/json; charset=utf-8",
             "connection" : "keep-alive"
         }
-        http_status, resp_headers, body = self._make_call("POST",
-            self.config.api_path, encoded_payload, req_headers)
-        LOG.debug("Completed rpc call to %s" % (method))
-        try:
-            self._parse_http_status(http_status)
-        except ProtocolError, e:
-            e.headers = resp_headers
-            # 403 is returned with custom error page when api access is blocked
-            if e.errcode == 403:
-                e.errmsg += ": %s" % body
-            raise
+
+        attempt = 0
+        while (attempt < self.config.network_attempts):
+            attempt += 1
+
+            try:
+                http_status, resp_headers, body = self._make_call("POST",
+                    self.config.api_path, encoded_payload, req_headers)
+                LOG.debug("Completed rpc call to %s" % (method))
+
+                self._parse_http_status(http_status)
+            except (Error, HttpLib2Error, socket.error), err:
+                if self.config.network_attempt_callback:
+                    self.config.network_attempt_callback(attempt, err)
+
+                if isinstance(err, ProtocolError):
+                    err.headers = resp_headers
+                    # 403 is returned with custom error page when api access is blocked
+                    if err.errcode == 403:
+                        err.errmsg += ": %s" % body
+
+                if attempt == self.config.network_attempts:
+                    raise
+
+                time.sleep(self.config.network_attempt_interval)
+                continue
+
+            # No error was thrown so we can break out of the network attempt loop
+            break
 
         response = self._decode_response(resp_headers, body)
         self._response_errors(response)
