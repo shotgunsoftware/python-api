@@ -9,6 +9,7 @@ import os
 import re
 from mock import patch, Mock, MagicMock
 import unittest
+import urllib
 
 import shotgun_api3
 import base
@@ -221,10 +222,11 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version.get('type'), 'Version')
         self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('image') is not None)
-        if self.sg.server_caps.version and self.sg.server_caps.version >= (5, 0, 0):
-            self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}/sg_logo_t.jpg" % (self.server_address), new_version.get('image')) )
-        else:
-            self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}\/232\/sg_logo.jpg.jpg" % (self.server_address), new_version.get('image')) )
+
+        thumb_resp = urllib.urlopen(new_version.get('image'))
+        self.assertEqual(thumb_resp.code, 200)
+        self.assertEqual(thumb_resp.headers['content-type'], 'image/jpeg')
+
         self.sg.delete("Version", new_version['id'])
 
         # test filmstrip image upload
@@ -237,10 +239,11 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version.get('type'), 'Version')
         self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('filmstrip_image') is not None)
-        if self.sg.server_caps.version and self.sg.server_caps.version >= (5, 0, 0):
-            self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}/sg_logo.jpg" % (self.server_address), new_version.get('filmstrip_image')) )
-        else:
-            self.assertTrue( re.match("http:\/\/%s\/files\/0000\/0000\/\d{4}/sg_logo.jpg" % (self.server_address), new_version.get('filmstrip_image')) )
+
+        filmstrip_thumb_resp = urllib.urlopen(new_version.get('filmstrip_image'))
+        self.assertEqual(filmstrip_thumb_resp.code, 200)
+        self.assertEqual(filmstrip_thumb_resp.headers['content-type'], 'image/jpeg')
+
         self.sg.delete("Version", new_version['id'])
     # end test_upload_thumbnail_in_create
 
@@ -261,19 +264,12 @@ class TestShotgunApi(base.LiveTestBase):
             [['id', 'is', self.version['id']]],
             fields=['image'])
 
-        if self.sg.server_caps.version and self.sg.server_caps.version >= (5, 0, 0):
-            expected_version_with_thumbnail = {
-                'image': 'http://%s/files/0000/0000/%04d/sg_logo_t.jpg' % (self.server_address, thumb_id),
-                'type': 'Version',
-                'id': self.version['id']
-            }
-        else:
-            expected_version_with_thumbnail = {
-                'image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (self.server_address, thumb_id),
-                'type': 'Version',
-                'id': self.version['id']
-            }
-        self.assertEqual(expected_version_with_thumbnail, version_with_thumbnail)
+        self.assertEqual(version_with_thumbnail.get('type'), 'Version')
+        self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
+
+        thumb_resp = urllib.urlopen(version_with_thumbnail.get('image'))
+        self.assertEqual(thumb_resp.code, 200)
+        self.assertEqual(thumb_resp.headers['content-type'], 'image/jpeg')
 
         # clear thumbnail
         response_clear_thumbnail = self.sg.update("Version",
@@ -298,19 +294,12 @@ class TestShotgunApi(base.LiveTestBase):
             [['id', 'is', self.task['id']]],
             fields=['image'])
 
-        if self.sg.server_caps.version and self.sg.server_caps.version >= (5, 0, 0):
-            expected_task_with_thumbnail = {
-                'image': 'http://%s/files/0000/0000/%04d/sg_logo_t.jpg' % (self.server_address, thumb_id),
-                'type': 'Task',
-                'id': self.task['id']
-            }
-        else:
-            expected_task_with_thumbnail = {
-                'image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (self.server_address, thumb_id),
-                'type': 'Task',
-                'id': self.task['id']
-            }
-        self.assertEqual(expected_task_with_thumbnail, task_with_thumbnail)
+        self.assertEqual(task_with_thumbnail.get('type'), 'Task')
+        self.assertEqual(task_with_thumbnail.get('id'), self.task['id'])
+
+        thumb_resp = urllib.urlopen(task_with_thumbnail.get('image'))
+        self.assertEqual(thumb_resp.code, 200)
+        self.assertEqual(thumb_resp.headers['content-type'], 'image/jpeg')
 
         # clear thumbnail
         response_clear_thumbnail = self.sg.update("Version",
@@ -332,25 +321,16 @@ class TestShotgunApi(base.LiveTestBase):
             fields=['id', 'code', 'project.Project.image']
         )
 
-        if self.sg.server_caps.version and self.sg.server_caps.version >= (5, 0, 0):
-            print "5.0.0"
-            expected_version_with_project = [
-                {
-                    'code': 'Sg unittest version',
-                    'type': 'Version',
-                    'id': self.version['id'],
-                    'project.Project.image': 'http://%s/files/0000/0000/%04d/sg_logo_t.jpg' % (self.server_address, thumb_id)
-                }
-            ]
-        elif self.sg.server_caps.version and self.sg.server_caps.version >= (3, 3, 0):
-            expected_version_with_project = [
-                {
-                    'code': 'Sg unittest version',
-                    'type': 'Version',
-                    'id': self.version['id'],
-                    'project.Project.image': 'http://%s/files/0000/0000/%04d/232/sg_logo.jpg.jpg' % (self.server_address, thumb_id)
-                }
-            ]
+        if self.sg.server_caps.version and self.sg.server_caps.version >= (3, 3, 0):
+
+            self.assertEqual(response_version_with_project[0].get('type'), 'Version')
+            self.assertEqual(response_version_with_project[0].get('id'), self.version['id'])
+            self.assertEqual(response_version_with_project[0].get('code'), 'Sg unittest version')
+
+            thumb_resp = urllib.urlopen(response_version_with_project[0].get('project.Project.image'))
+            self.assertEqual(thumb_resp.code, 200)
+            self.assertEqual(thumb_resp.headers['content-type'], 'image/jpeg')
+
         else:
             expected_version_with_project = [
                 {
@@ -360,7 +340,7 @@ class TestShotgunApi(base.LiveTestBase):
                     'project.Project.image': thumb_id
                 }
             ]
-        self.assertEqual(expected_version_with_project, response_version_with_project)
+            self.assertEqual(expected_version_with_project, response_version_with_project)
 
     def test_share_thumbnail(self):
         """share thumbnail between two entities"""
