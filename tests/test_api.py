@@ -10,6 +10,7 @@ import re
 from mock import patch, Mock, MagicMock
 import unittest
 import urllib
+import urlparse
 
 import shotgun_api3
 import base
@@ -224,7 +225,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertTrue(new_version.get('image') is not None)
 
         thumb_resp = urllib.urlopen(new_version.get('image'))
-        self.assertEqual(thumb_resp.code, 200)
+        self.assertEqual(thumb_resp.headers['status'], '200 OK')
         self.assertEqual(thumb_resp.headers['content-type'], 'image/jpeg')
 
         self.sg.delete("Version", new_version['id'])
@@ -241,7 +242,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertTrue(new_version.get('filmstrip_image') is not None)
 
         filmstrip_thumb_resp = urllib.urlopen(new_version.get('filmstrip_image'))
-        self.assertEqual(filmstrip_thumb_resp.code, 200)
+        self.assertEqual(filmstrip_thumb_resp.headers['status'], '200 OK')
         self.assertEqual(filmstrip_thumb_resp.headers['content-type'], 'image/jpeg')
 
         self.sg.delete("Version", new_version['id'])
@@ -268,7 +269,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
 
         thumb_resp = urllib.urlopen(version_with_thumbnail.get('image'))
-        self.assertEqual(thumb_resp.code, 200)
+        self.assertEqual(thumb_resp.headers['status'], '200 OK')
         self.assertEqual(thumb_resp.headers['content-type'], 'image/jpeg')
 
         # clear thumbnail
@@ -298,7 +299,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(task_with_thumbnail.get('id'), self.task['id'])
 
         thumb_resp = urllib.urlopen(task_with_thumbnail.get('image'))
-        self.assertEqual(thumb_resp.code, 200)
+        self.assertEqual(thumb_resp.headers['status'], '200 OK')
         self.assertEqual(thumb_resp.headers['content-type'], 'image/jpeg')
 
         # clear thumbnail
@@ -328,7 +329,7 @@ class TestShotgunApi(base.LiveTestBase):
             self.assertEqual(response_version_with_project[0].get('code'), 'Sg unittest version')
 
             thumb_resp = urllib.urlopen(response_version_with_project[0].get('project.Project.image'))
-            self.assertEqual(thumb_resp.code, 200)
+            self.assertEqual(thumb_resp.headers['status'], '200 OK')
             self.assertEqual(thumb_resp.headers['content-type'], 'image/jpeg')
 
         else:
@@ -362,8 +363,10 @@ class TestShotgunApi(base.LiveTestBase):
             [['id', 'is', self.shot['id']]],
             fields=['id', 'code', 'image']
         )
-        self.assertEqual(response_shot_thumbnail.get('image'),
-                         response_version_thumbnail.get('image'))
+
+        shot_url = urlparse.urlparse(response_shot_thumbnail.get('image'))
+        version_url = urlparse.urlparse(response_version_thumbnail.get('image'))
+        self.assertEqual(shot_url.path, version_url.path)
 
         # share thumbnail from source entity with entities
         source_thumbnail_id = self.sg.upload_thumbnail("Version",
