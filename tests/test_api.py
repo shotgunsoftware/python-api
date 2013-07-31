@@ -9,10 +9,11 @@ import os
 import re
 from mock import patch, Mock, MagicMock
 import unittest
-import urllib
 import urlparse
 
 import shotgun_api3
+from shotgun_api3.lib.httplib2 import Http
+
 import base
 
 class TestShotgunApi(base.LiveTestBase):
@@ -224,9 +225,10 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('image') is not None)
 
-        thumb_resp = urllib.urlopen(new_version.get('image'))
-        self.assertEqual(thumb_resp.headers['status'], '200 OK')
-        self.assertEqual(thumb_resp.headers['content-type'], 'image/jpeg')
+        h = Http(".cache")
+        thumb_resp, content = h.request(new_version.get('image'), "GET")
+        self.assertEqual(thumb_resp['status'], '200')
+        self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
 
         self.sg.delete("Version", new_version['id'])
 
@@ -241,9 +243,10 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('filmstrip_image') is not None)
 
-        filmstrip_thumb_resp = urllib.urlopen(new_version.get('filmstrip_image'))
-        self.assertEqual(filmstrip_thumb_resp.headers['status'], '200 OK')
-        self.assertEqual(filmstrip_thumb_resp.headers['content-type'], 'image/jpeg')
+        h = Http(".cache")
+        filmstrip_thumb_resp, content = h.request(new_version.get('filmstrip_image'), "GET")
+        self.assertEqual(filmstrip_thumb_resp['status'], '200')
+        self.assertEqual(filmstrip_thumb_resp['content-type'], 'image/jpeg')
 
         self.sg.delete("Version", new_version['id'])
     # end test_upload_thumbnail_in_create
@@ -268,9 +271,11 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(version_with_thumbnail.get('type'), 'Version')
         self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
 
-        thumb_resp = urllib.urlopen(version_with_thumbnail.get('image'))
-        self.assertEqual(thumb_resp.headers['status'], '200 OK')
-        self.assertEqual(thumb_resp.headers['content-type'], 'image/jpeg')
+
+        h = Http(".cache")
+        thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
+        self.assertEqual(thumb_resp['status'], '200')
+        self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
 
         # clear thumbnail
         response_clear_thumbnail = self.sg.update("Version",
@@ -298,9 +303,10 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(task_with_thumbnail.get('type'), 'Task')
         self.assertEqual(task_with_thumbnail.get('id'), self.task['id'])
 
-        thumb_resp = urllib.urlopen(task_with_thumbnail.get('image'))
-        self.assertEqual(thumb_resp.headers['status'], '200 OK')
-        self.assertEqual(thumb_resp.headers['content-type'], 'image/jpeg')
+        h = Http(".cache")
+        thumb_resp, content = h.request(task_with_thumbnail.get('image'), "GET")
+        self.assertEqual(thumb_resp['status'], '200')
+        self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
 
         # clear thumbnail
         response_clear_thumbnail = self.sg.update("Version",
@@ -328,9 +334,10 @@ class TestShotgunApi(base.LiveTestBase):
             self.assertEqual(response_version_with_project[0].get('id'), self.version['id'])
             self.assertEqual(response_version_with_project[0].get('code'), 'Sg unittest version')
 
-            thumb_resp = urllib.urlopen(response_version_with_project[0].get('project.Project.image'))
-            self.assertEqual(thumb_resp.headers['status'], '200 OK')
-            self.assertEqual(thumb_resp.headers['content-type'], 'image/jpeg')
+            h = Http(".cache")
+            thumb_resp, content = h.request(response_version_with_project[0].get('project.Project.image'), "GET")
+            self.assertEqual(thumb_resp['status'], '200')
+            self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
 
         else:
             expected_version_with_project = [

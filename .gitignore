@@ -12,6 +12,7 @@
 # test related
 tests/config
 .coverage
+.cache
 
 # setup related
 build
