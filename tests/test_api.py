@@ -396,10 +396,13 @@ class TestShotgunApi(base.LiveTestBase):
             [['id', 'is', self.asset['id']]],
             fields=['id', 'code', 'image']
         )
-        self.assertEqual(response_version_thumbnail.get('image'),
-                         response_shot_thumbnail.get('image'))
-        self.assertEqual(response_version_thumbnail.get('image'),
-                         response_asset_thumbnail.get('image'))
+
+        shot_url = urlparse.urlparse(response_shot_thumbnail.get('image'))
+        version_url = urlparse.urlparse(response_version_thumbnail.get('image'))
+        asset_url = urlparse.urlparse(response_asset_thumbnail.get('image'))
+
+        self.assertEqual(version_url.path, shot_url.path)
+        self.assertEqual(version_url.path, asset_url.path)
 
         # raise errors when missing required params or providing conflicting ones
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.share_thumbnail,
