@@ -1266,6 +1266,12 @@ class Shotgun(object):
         @param user_password: Password for Shotgun HumanUser
         @return: Dictionary of HumanUser including ID if authenticated, None is unauthorized.
         '''
+        if not user_login:
+            raise ValueError('Please supply a username to authenticate.')
+
+        if not user_password:
+            raise ValueError('Please supply a password for the user.')
+            
         # Override permissions on Config obj
         self.config.user_login = user_login
         self.config.user_password = user_password
