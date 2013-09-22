@@ -660,8 +660,8 @@ class TestDataTypes(base.LiveTestBase):
     def test_set_list(self):
         entity = 'Note'
         entity_id = self.note['id']
-        field_name = 'read_by_current_user'
-        pos_values = ['read','unread']
+        field_name = 'sg_note_type'
+        pos_values = ['Internal','Client']
         expected, actual = self.assert_set_field(entity,
                                                  entity_id,
                                                  field_name,
