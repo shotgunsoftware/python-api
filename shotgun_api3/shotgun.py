@@ -797,6 +797,46 @@ class Shotgun(object):
 
         return self._call_rpc('work_schedule_update', params)
 
+    def follow(self, user, entity):
+        """Adds the entity to the user's followed entities (or does nothing if the user is already following the entity)
+        
+        :param dict user: User entity to follow the entity
+        :param dict entity: Entity to be followed
+        
+        :returns: dict with 'followed'=true, and dicts for the 'user' and 'entity' that were passed in
+        """
+
+        if not self.server_caps.version or self.server_caps.version < (5, 2, 0):
+            raise ShotgunError("Follow support requires server version 5.2 or "\
+                "higher, server is %s" % (self.server_caps.version,))
+        
+        params = dict(
+            user=user,
+            entity=entity
+        )
+        
+        return self._call_rpc('follow', params)
+
+    def unfollow(self, user, entity):
+        """Removes entity from the user's followed entities (or does nothing if the user is not following the entity)
+        
+        :param dict user: User entity to unfollow the entity
+        :param dict entity: Entity to be unfollowed
+        
+        :returns: dict with 'unfollowed'=true, and dicts for the 'user' and 'entity' that were passed in
+        """
+
+        if not self.server_caps.version or self.server_caps.version < (5, 2, 0):
+            raise ShotgunError("Follow support requires server version 5.2 or "\
+                "higher, server is %s" % (self.server_caps.version,))
+        
+        params = dict(
+            user=user,
+            entity=entity
+        )
+        
+        return self._call_rpc('unfollow', params)
+
     def schema_entity_read(self):
         """Gets all active entities defined in the schema.
 
