@@ -1282,6 +1282,27 @@ class TestFind(base.LiveTestBase):
         self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'EventLogEntry', [['meta', 'is_not', [None]]])
         self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'Revision', [['meta', 'attachment', [None]]])
 
+class TestFollow(base.TestBase):
+    def test_follow(self):
+        '''Test methods to follow/unfollow'''
+        
+        project = self.sg.find_one('Project', [])
+        user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
+        entity = self.sg.find_one('Shot', [['project', 'is', project]], ['name'])
+        
+        result = self.sg.follow(user, entity)
+        assert(result['followed'])
+
+    def test_unfollow(self):
+        '''Test methods to follow/unfollow'''
+        
+        project = self.sg.find_one('Project', [])
+        user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
+        entity = self.sg.find_one('Shot', [['project', 'is', project]], ['name'])
+        
+        result = self.sg.unfollow(user, entity)
+        print( result )
+        assert(result['unfollowed'])
 
 class TestErrors(base.TestBase):
     def test_bad_auth(self):
