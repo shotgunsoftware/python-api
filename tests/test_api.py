@@ -1286,6 +1286,10 @@ class TestFollow(base.TestBase):
     def test_follow(self):
         '''Test follow method'''
         
+        server_info = self.sg.info()
+        if not server_info['version'] or tuple(server_info['version'][:3]) < (5, 2, 0):
+            return
+        
         project = self.sg.find_one('Project', [])
         user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
         entity = self.sg.find_one('Shot', [['project', 'is', project]], ['name'])
@@ -1296,16 +1300,23 @@ class TestFollow(base.TestBase):
     def test_unfollow(self):
         '''Test unfollow method'''
         
+        server_info = self.sg.info()
+        if not server_info['version'] or tuple(server_info['version'][:3]) < (5, 2, 0):
+            return
+        
         project = self.sg.find_one('Project', [])
         user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
         entity = self.sg.find_one('Shot', [['project', 'is', project]], ['name'])
         
         result = self.sg.unfollow(user, entity)
-        print( result )
         assert(result['unfollowed'])
     
     def test_followers(self):
         '''Test followers method'''
+        
+        server_info = self.sg.info()
+        if not server_info['version'] or tuple(server_info['version'][:3]) < (5, 2, 0):
+            return
         
         project = self.sg.find_one('Project', [])
         user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
