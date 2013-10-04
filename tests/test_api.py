@@ -1286,8 +1286,7 @@ class TestFollow(base.TestBase):
     def test_follow(self):
         '''Test follow method'''
         
-        server_info = self.sg.info()
-        if not server_info['version'] or tuple(server_info['version'][:3]) < (5, 2, 0):
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 2, 0):
             return
         
         project = self.sg.find_one('Project', [])
@@ -1300,8 +1299,7 @@ class TestFollow(base.TestBase):
     def test_unfollow(self):
         '''Test unfollow method'''
         
-        server_info = self.sg.info()
-        if not server_info['version'] or tuple(server_info['version'][:3]) < (5, 2, 0):
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 2, 0):
             return
         
         project = self.sg.find_one('Project', [])
@@ -1314,8 +1312,7 @@ class TestFollow(base.TestBase):
     def test_followers(self):
         '''Test followers method'''
         
-        server_info = self.sg.info()
-        if not server_info['version'] or tuple(server_info['version'][:3]) < (5, 2, 0):
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 2, 0):
             return
         
         project = self.sg.find_one('Project', [])
