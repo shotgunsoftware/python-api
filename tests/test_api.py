@@ -1284,7 +1284,7 @@ class TestFind(base.LiveTestBase):
 
 class TestFollow(base.TestBase):
     def test_follow(self):
-        '''Test methods to follow/unfollow'''
+        '''Test follow method'''
         
         project = self.sg.find_one('Project', [])
         user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
@@ -1294,7 +1294,7 @@ class TestFollow(base.TestBase):
         assert(result['followed'])
 
     def test_unfollow(self):
-        '''Test methods to follow/unfollow'''
+        '''Test unfollow method'''
         
         project = self.sg.find_one('Project', [])
         user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
@@ -1303,6 +1303,20 @@ class TestFollow(base.TestBase):
         result = self.sg.unfollow(user, entity)
         print( result )
         assert(result['unfollowed'])
+    
+    def test_followers(self):
+        '''Test followers method'''
+        
+        project = self.sg.find_one('Project', [])
+        user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
+        entity = self.sg.find_one('Shot', [['project', 'is', project]], ['name'])
+        
+        result = self.sg.follow(user, entity)
+        assert(result['followed'])
+        
+        result = self.sg.followers(entity)
+        self.assertEqual( 1, len(result) )
+        self.assertEqual( user['id'], result[0]['id'] )
 
 class TestErrors(base.TestBase):
     def test_bad_auth(self):
