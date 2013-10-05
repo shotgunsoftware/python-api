@@ -837,6 +837,24 @@ class Shotgun(object):
         
         return self._call_rpc('unfollow', params)
 
+    def followers(self, entity):
+        """Gets all followers of the entity.
+        
+        :param dict entity: Find all followers of this entity
+        
+        :returns list of dicts for all the users following the entity
+        """
+
+        if not self.server_caps.version or self.server_caps.version < (5, 2, 0):
+            raise ShotgunError("Follow support requires server version 5.2 or "\
+                "higher, server is %s" % (self.server_caps.version,))
+        
+        params = dict(
+            entity=entity
+        )
+        
+        return self._call_rpc('followers', params)
+
     def schema_entity_read(self):
         """Gets all active entities defined in the schema.
 
