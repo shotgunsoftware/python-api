@@ -1282,18 +1282,18 @@ class TestFind(base.LiveTestBase):
         self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'EventLogEntry', [['meta', 'is_not', [None]]])
         self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'Revision', [['meta', 'attachment', [None]]])
 
-class TestFollow(base.TestBase):
+class TestFollow(base.LiveTestBase):
+    def setUp(self):
+        super(TestFollow, self).setUp()
+        self.sg.update( 'HumanUser', self.human_user['id'], {'projects':[self.project]})
+
     def test_follow(self):
         '''Test follow method'''
         
         if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 2, 0):
             return
-        
-        project = self.sg.find_one('Project', [])
-        user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
-        entity = self.sg.find_one('Shot', [['project', 'is', project]], ['name'])
-        
-        result = self.sg.follow(user, entity)
+
+        result = self.sg.follow(self.human_user, self.shot)
         assert(result['followed'])
 
     def test_unfollow(self):
@@ -1302,11 +1302,7 @@ class TestFollow(base.TestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 2, 0):
             return
         
-        project = self.sg.find_one('Project', [])
-        user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
-        entity = self.sg.find_one('Shot', [['project', 'is', project]], ['name'])
-        
-        result = self.sg.unfollow(user, entity)
+        result = self.sg.unfollow(self.human_user, self.shot)
         assert(result['unfollowed'])
     
     def test_followers(self):
@@ -1315,16 +1311,12 @@ class TestFollow(base.TestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 2, 0):
             return
         
-        project = self.sg.find_one('Project', [])
-        user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
-        entity = self.sg.find_one('Shot', [['project', 'is', project]], ['name'])
-        
-        result = self.sg.follow(user, entity)
+        result = self.sg.follow(self.human_user, self.shot)
         assert(result['followed'])
         
-        result = self.sg.followers(entity)
+        result = self.sg.followers(self.shot)
         self.assertEqual( 1, len(result) )
-        self.assertEqual( user['id'], result[0]['id'] )
+        self.assertEqual( self.human_user['id'], result[0]['id'] )
 
 class TestErrors(base.TestBase):
     def test_bad_auth(self):
