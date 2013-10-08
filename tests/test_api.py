@@ -1290,7 +1290,7 @@ class TestFollow(base.LiveTestBase):
     def test_follow(self):
         '''Test follow method'''
         
-        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 2, 0):
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
             return
 
         result = self.sg.follow(self.human_user, self.shot)
@@ -1299,7 +1299,7 @@ class TestFollow(base.LiveTestBase):
     def test_unfollow(self):
         '''Test unfollow method'''
         
-        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 2, 0):
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
             return
         
         result = self.sg.unfollow(self.human_user, self.shot)
@@ -1308,7 +1308,7 @@ class TestFollow(base.LiveTestBase):
     def test_followers(self):
         '''Test followers method'''
         
-        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 2, 0):
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
             return
         
         result = self.sg.follow(self.human_user, self.shot)

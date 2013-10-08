@@ -806,7 +806,7 @@ class Shotgun(object):
         :returns: dict with 'followed'=true, and dicts for the 'user' and 'entity' that were passed in
         """
 
-        if not self.server_caps.version or self.server_caps.version < (5, 2, 0):
+        if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
             raise ShotgunError("Follow support requires server version 5.2 or "\
                 "higher, server is %s" % (self.server_caps.version,))
         
@@ -826,7 +826,7 @@ class Shotgun(object):
         :returns: dict with 'unfollowed'=true, and dicts for the 'user' and 'entity' that were passed in
         """
 
-        if not self.server_caps.version or self.server_caps.version < (5, 2, 0):
+        if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
             raise ShotgunError("Follow support requires server version 5.2 or "\
                 "higher, server is %s" % (self.server_caps.version,))
         
@@ -845,7 +845,7 @@ class Shotgun(object):
         :returns list of dicts for all the users following the entity
         """
 
-        if not self.server_caps.version or self.server_caps.version < (5, 2, 0):
+        if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
             raise ShotgunError("Follow support requires server version 5.2 or "\
                 "higher, server is %s" % (self.server_caps.version,))
         
