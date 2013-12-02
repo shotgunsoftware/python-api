@@ -10,6 +10,7 @@ Shotgun provides a simple Python-based API for accessing Shotgun and integrating
 
 * Shotgun server v2.4.12 or higher. (Earlier builds of 2.4 will work, but have buggy support for float field types)
 * Python v2.4 - v2.7. (We do have plans to eventually support Python 3)
+* Setuptools
 
 ## High Performance Requirements
 
