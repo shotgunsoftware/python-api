@@ -37,6 +37,8 @@ import datetime
 import logging
 import mimetools    # used for attachment upload
 import mimetypes    # used for attachment upload
+mimetypes.add_type('video/webm','.webm') # webm and mp4 seem to be missing
+mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
 import os
 import re
 import copy
