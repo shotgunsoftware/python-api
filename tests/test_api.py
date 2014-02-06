@@ -1324,12 +1324,28 @@ class TestErrors(base.TestBase):
         server_url = self.config.server_url
         script_name = 'not_real_script_name'
         api_key = self.config.api_key
+        login = self.config.human_login
+        password = self.config.human_password
+
+        # Test various combinations of illegal arguments
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url)
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, None, api_key)
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, script_name, None)
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, script_name, api_key, login=login, password=password)
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, login=login)
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, password=password)
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, script_name, login=login, password=password)
+
+        # Test failed authentications
         sg = shotgun_api3.Shotgun(server_url, script_name, api_key)
         self.assertRaises(shotgun_api3.Fault, sg.find_one, 'Shot',[])
 
         script_name = self.config.script_name
         api_key = 'notrealapikey'
         sg = shotgun_api3.Shotgun(server_url, script_name, api_key)
+        self.assertRaises(shotgun_api3.Fault, sg.find_one, 'Shot',[])
+
+        sg = shotgun_api3.Shotgun(server_url, login=login, password='not a real password')
         self.assertRaises(shotgun_api3.Fault, sg.find_one, 'Shot',[])
 
     @patch('shotgun_api3.shotgun.Http.request')
@@ -1343,6 +1359,59 @@ class TestErrors(base.TestBase):
 #    def test_malformed_response(self):
 #        #TODO ResponseError
 #        pass
+
+
+class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
+    def test_humanuser_find(self):
+        """Called find, find_one for known entities as human user"""
+        filters = []
+        filters.append(['project', 'is', self.project])
+        filters.append(['id', 'is', self.version['id']])
+
+        fields = ['id']
+
+        versions = self.sg.find("Version", filters, fields=fields)
+
+        self.assertTrue(isinstance(versions, list))
+        version = versions[0]
+        self.assertEqual("Version", version["type"])
+        self.assertEqual(self.version['id'], version["id"])
+
+        version = self.sg.find_one("Version", filters, fields=fields)
+        self.assertEqual("Version", version["type"])
+        self.assertEqual(self.version['id'], version["id"])
+
+    def test_humanuser_upload_thumbnail_for_version(self):
+        """simple upload thumbnail for version test as human user."""
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir,"sg_logo.jpg")))
+        size = os.stat(path).st_size
+
+        # upload thumbnail
+        thumb_id = self.sg.upload_thumbnail("Version",
+            self.version['id'], path)
+        self.assertTrue(isinstance(thumb_id, int))
+
+        # check result on version
+        version_with_thumbnail = self.sg.find_one('Version',
+            [['id', 'is', self.version['id']]],
+            fields=['image'])
+
+        self.assertEqual(version_with_thumbnail.get('type'), 'Version')
+        self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
+
+
+        h = Http(".cache")
+        thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
+        self.assertEqual(thumb_resp['status'], '200')
+        self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
+
+        # clear thumbnail
+        response_clear_thumbnail = self.sg.update("Version",
+            self.version['id'], {'image':None})
+        expected_clear_thumbnail = {'id': self.version['id'], 'image': None, 'type': 'Version'}
+        self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
 
 
 def  _has_unicode(data):

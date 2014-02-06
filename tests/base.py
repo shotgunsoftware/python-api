@@ -19,6 +19,7 @@ class TestBase(unittest.TestCase):
     '''Base class for tests.
 
     Sets up mocking and database test data.'''
+
     def __init__(self, *args, **kws):
         unittest.TestCase.__init__(self, *args, **kws)
         self.human_user     = None
@@ -35,9 +36,10 @@ class TestBase(unittest.TestCase):
         self.connect        = False
 
 
-    def setUp(self):
+    def setUp(self, auth_mode='ApiUser'):
         self.config = SgTestConfig()
         self.config.read_config(CONFIG_PATH)
+        self.human_login    = self.config.human_login
         self.human_password = self.config.human_password
         self.server_url     = self.config.server_url
         self.script_name    = self.config.script_name
@@ -45,12 +47,20 @@ class TestBase(unittest.TestCase):
         self.http_proxy     = self.config.http_proxy
         self.session_uuid   = self.config.session_uuid
 
-
-        self.sg = api.Shotgun(self.config.server_url,
-                              self.config.script_name,
-                              self.config.api_key,
-                              http_proxy=self.config.http_proxy,
-                              connect=self.connect)
+        if auth_mode == 'ApiUser':
+            self.sg = api.Shotgun(self.config.server_url,
+                                  self.config.script_name,
+                                  self.config.api_key,
+                                  http_proxy=self.config.http_proxy,
+                                  connect=self.connect)
+        elif auth_mode == 'HumanUser':
+            self.sg = api.Shotgun(self.config.server_url,
+                                  login=self.human_login,
+                                  password=self.human_password,
+                                  http_proxy=self.config.http_proxy,
+                                  connect=self.connect)
+        else:
+            raise ValueError("Unknown value for auth_mode: %s" % auth_mode)
 
         if self.config.session_uuid:
             self.sg.set_session_uuid(self.config.session_uuid)
@@ -164,8 +174,8 @@ class MockTestBase(TestBase):
 
 class LiveTestBase(TestBase):
     '''Test base for tests relying on connection to server.'''
-    def setUp(self):
-        super(LiveTestBase, self).setUp()
+    def setUp(self, auth_mode='ApiUser'):
+        super(LiveTestBase, self).setUp(auth_mode)
         self.sg_version = self.sg.info()['version'][:3]
         self._setup_db(self.config)
         if self.sg.server_caps.version and \
@@ -242,6 +252,15 @@ class LiveTestBase(TestBase):
                 'linux_path':'nowhere'}
 
         self.local_storage = _find_or_create_entity(self.sg, 'LocalStorage', data, keys)
+
+
+class HumanUserAuthLiveTestBase(LiveTestBase):
+    '''
+    Test base for relying on a Shotgun connection authenticate through the
+    configured login/password pair.
+    '''
+    def setUp(self):
+        super(HumanUserAuthLiveTestBase, self).setUp('HumanUser')
 
 
 class SgTestConfig(object):
