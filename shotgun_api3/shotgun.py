@@ -180,6 +180,10 @@ class _Config(object):
 
     def __init__(self):
         self.max_rpc_attempts = 3
+        # From http://docs.python.org/2.6/library/httplib.html:
+        # If the optional timeout parameter is given, blocking operations 
+        # (like connection attempts) will timeout after that many seconds 
+        # (if it is not given, the global default timeout setting is used)
         self.timeout_secs = None
         self.api_ver = 'api3'
         self.convert_datetimes_to_utc = True
