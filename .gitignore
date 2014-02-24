@@ -13,6 +13,7 @@
 tests/config
 .coverage
 .cache
+htmlcov
 
 # setup related
 build
