@@ -1332,8 +1332,8 @@ class TestErrors(base.TestBase):
         self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, None, api_key)
         self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, script_name, None)
         self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, script_name, api_key, login=login, password=password)
-        self.assertRaises(ValueError, shotgun_api3.Shotgun, login=login)
-        self.assertRaises(ValueError, shotgun_api3.Shotgun, password=password)
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, login=login)
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, password=password)
         self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, script_name, login=login, password=password)
 
         # Test failed authentications
