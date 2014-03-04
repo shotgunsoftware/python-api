@@ -85,4 +85,5 @@ class TestShotgunApiLong(base.LiveTestBase):
         ret_val = self.sg.schema_field_delete("Version", new_field_name)
         self.assertTrue(ret_val)
         
-   
+if __name__ == '__main__': 
+    base.unittest.main()
