@@ -373,7 +373,9 @@ class TestShotgunApi(base.LiveTestBase):
 
         shot_url = urlparse.urlparse(response_shot_thumbnail.get('image'))
         version_url = urlparse.urlparse(response_version_thumbnail.get('image'))
-        self.assertEqual(shot_url.path, version_url.path)
+        shot_path = _get_path(shot_url)
+        version_path = _get_path(version_url)
+        self.assertEqual(shot_path, version_path)
 
         # share thumbnail from source entity with entities
         source_thumbnail_id = self.sg.upload_thumbnail("Version",
@@ -401,8 +403,12 @@ class TestShotgunApi(base.LiveTestBase):
         version_url = urlparse.urlparse(response_version_thumbnail.get('image'))
         asset_url = urlparse.urlparse(response_asset_thumbnail.get('image'))
 
-        self.assertEqual(version_url.path, shot_url.path)
-        self.assertEqual(version_url.path, asset_url.path)
+        shot_path = _get_path(shot_url)
+        version_path = _get_path(version_url)
+        asset_path = _get_path(asset_url)
+
+        self.assertEqual(version_path, shot_path)
+        self.assertEqual(version_path, asset_path)
 
         # raise errors when missing required params or providing conflicting ones
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.share_thumbnail,
@@ -1422,6 +1428,14 @@ def  _has_unicode(data):
             return True
     return False
 
+def _get_path(url):
+    # url_parse returns native objects for older python versions (2.4)
+    if isinstance(url, dict):
+        return url.get('path')
+    elif isinstance(url, tuple):
+        return os.path.join(url[:4])
+    else:
+        return url.path
 
 if __name__ == '__main__':
     unittest.main()

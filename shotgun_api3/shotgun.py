@@ -279,7 +279,8 @@ class Shotgun(object):
             if api_key is None:
                 raise ValueError("script_name provided without api_key")
 
-        if all(v is None for v in [script_name, api_key, login, password]):
+        # Can't use 'all' with python 2.4
+        if len([x for x in [script_name, api_key, login, password] if x]) == 0:
             if connect:
                 raise ValueError("must provide either login/password "
                                  "or script_name/api_key")

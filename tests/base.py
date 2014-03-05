@@ -3,14 +3,11 @@ import re
 import unittest
 from ConfigParser import ConfigParser
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
 
 import mock
 
 import shotgun_api3 as api
+from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
 
 CONFIG_PATH = 'tests/config'
