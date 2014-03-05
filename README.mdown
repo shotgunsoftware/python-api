@@ -39,7 +39,7 @@ If you're using pip with `requirements.txt`, add the following line:
 Tutorials and detailed documentation about the Python API are available on the [Python API Wiki](https://github.com/shotgunsoftware/python-api/wiki). There is also some additional related documentation on the [Shotgun Support Website](https://support.shotgunsoftware.com/forums/48807-developer-api-info).
 Some useful direct links in each are below:
 
-* [Introduction and Video Tour](https://support.shotgunsoftware.com/entries/38181-api-introduction-video-tour)
+* [Introduction and Video Tour](https://www.youtube.com/watch?v=QdL5E9XbdJQ)
 * [Reference: Methods](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Methods)
 * [Reference: Data Types](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Data-Types)
 * [Reference: Filter Syntax](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax)
