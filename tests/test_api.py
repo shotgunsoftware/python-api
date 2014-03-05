@@ -161,10 +161,11 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(orig_file, attach_file)
 
         # test download with attachment_id (write to disk)
-        file_path = "%s/sg_logo_download.jpg" % os.path.dirname(os.path.realpath(__file__))
+        file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "sg_logo_download.jpg")
         result = self.sg.download_attachment(attach_id, file_path=file_path)
         self.assertEqual(result, file_path)
-        fp = open(file_path)
+    	# On windows read may not read to end of file unless opened 'rb'
+        fp = open(file_path, 'rb')
         attach_file = fp.read()
         fp.close()
         self.assertEqual(size, len(attach_file))
@@ -182,7 +183,7 @@ class TestShotgunApi(base.LiveTestBase):
         result = self.sg.download_attachment(ticket['attachments'][0],
                                              file_path=file_path)
         self.assertEqual(result, file_path)
-        fp = open(file_path)
+        fp = open(file_path, 'rb')
         attach_file = fp.read()
         fp.close()
         self.assertTrue(attach_file is not None)
