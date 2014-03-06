@@ -56,7 +56,13 @@ Integration and unit tests are provided.
 
 ## Changelog
 
-**v3.0.15 Dev - TBD**
+**v3.0.15 - 2014 March 6**
+   + Fixed bug which allowed a value of None for password parameter in authenticate_human_user
+   + Add  follow, unfollow and followers methods
+   + Added ability to login as human user
+   + Ensure that webm/mp4 mime types are always available
+   + Updated link to video tour in README
+   + Fixes and update to various tests
 
 **v3.0.14 - 2013 Jun 26**
 
