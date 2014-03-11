@@ -1318,8 +1318,9 @@ class Shotgun(object):
     def get_attachment_download_url(self, attachment):
         """Returns the URL for downloading provided Attachment.
 
-        :param attachment: (mixed) If type is an int, construct url to download
-        Attachment with id from Shotgun. 
+        :param attachment: (mixed) If type is a str convert to int. 
+        If type is an int, construct url to download Attachment with id from 
+        Shotgun. 
         If type is a dict, and a url key is present, use that url. 
         If type is a dict, and url key is not present, check if we have
         an id and type keys and the type is 'Attachment' in which case we 
@@ -1335,6 +1336,8 @@ class Shotgun(object):
         attachment_id = None
         if isinstance(attachment, int):
             attachment_id = attachment
+        elif isinstance(attachment, str):
+            attachment_id = int(attachment)
         elif isinstance(attachment, dict):
             try:
                 url = attachment['url']
