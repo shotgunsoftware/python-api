@@ -1368,6 +1368,46 @@ class TestErrors(base.TestBase):
 #        pass
 
 
+class TestScriptUserSudoAuth(base.LiveTestBase):
+    def setUp(self):
+        super(TestScriptUserSudoAuth, self).setUp('ApiUser:Sudo')
+    
+    def test_user_is_creator(self):
+        """
+        Test 'sudo_as_login' option: on create, ensure appropriate user is set in created-by
+        """
+        data = {
+            'project': self.project,
+            'code':'JohnnyApple_Design01_FaceFinal',
+            'description': 'fixed rig per director final notes',
+            'sg_status_list':'na',
+            'entity': self.asset,
+            'user': self.human_user
+        }
+
+        version = self.sg.create("Version", data, return_fields = ["id","created_by"])
+        self.assertTrue(isinstance(version, dict))
+        self.assertTrue("id" in version)
+        self.assertTrue("created_by" in version)
+        self.assertEqual( self.config.human_name, version['created_by']['name'] )
+
+class TestHumanUserSudoAuth(base.TestBase):
+    def setUp(self):
+        super(TestHumanUserSudoAuth, self).setUp('HumanUser:Sudo')
+    
+    def test_human_user_sudo_auth_fails(self):
+        """
+        Test 'sudo_as_login' option for HumanUser.
+        Request fails on server because user has no permission to Sudo.
+        """
+        x = shotgun_api3.Shotgun(self.config.server_url,
+                    login=self.config.human_login,
+                    password=self.config.human_password,
+                    http_proxy=self.config.http_proxy,
+                    sudo_as_login="blah" )
+        self.assertRaisesRegexp(shotgun_api3.Fault, "does not have permission to 'sudo'", x.find_one, 'Shot', [])
+
+
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
     def test_humanuser_find(self):
         """Called find, find_one for known entities as human user"""

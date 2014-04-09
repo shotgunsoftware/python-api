@@ -44,18 +44,24 @@ class TestBase(unittest.TestCase):
         self.http_proxy     = self.config.http_proxy
         self.session_uuid   = self.config.session_uuid
 
-        if auth_mode == 'ApiUser':
+        sudo_as_login = None
+        if auth_mode == 'ApiUser:Sudo' or auth_mode == 'HumanUser:Sudo':
+            sudo_as_login = self.config.human_login
+
+        if auth_mode == 'ApiUser' or auth_mode == 'ApiUser:Sudo':
             self.sg = api.Shotgun(self.config.server_url,
                                   self.config.script_name,
                                   self.config.api_key,
                                   http_proxy=self.config.http_proxy,
-                                  connect=self.connect)
-        elif auth_mode == 'HumanUser':
+                                  connect=self.connect,
+                                  sudo_as_login=sudo_as_login )
+        elif auth_mode == 'HumanUser' or auth_mode == 'HumanUser:Sudo':
             self.sg = api.Shotgun(self.config.server_url,
                                   login=self.human_login,
                                   password=self.human_password,
                                   http_proxy=self.config.http_proxy,
-                                  connect=self.connect)
+                                  connect=self.connect,
+                                  sudo_as_login=sudo_as_login )
         else:
             raise ValueError("Unknown value for auth_mode: %s" % auth_mode)
 
