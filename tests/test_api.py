@@ -1289,6 +1289,40 @@ class TestFind(base.LiveTestBase):
         self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'EventLogEntry', [['meta', 'is_not', [None]]])
         self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'Revision', [['meta', 'attachment', [None]]])
 
+    def test_zero_is_not_none(self):
+        '''Test the zero and None are differentiated using "is_not" filter.
+           Ticket #25127
+        '''
+        # Create a number field if it doesn't already exist
+        num_field = 'sg_api_tests_number_field'
+        if num_field not in self.sg.schema_field_read('Asset').keys():
+            self.sg.schema_field_create('Asset', 'number', num_field.replace('sg_','').replace('_',' '))
+
+        # Set to None
+        self.sg.update( 'Asset', self.asset['id'], { num_field: None })
+
+        # Should be filtered out
+        result = self.sg.find( 'Asset', [['id','is',self.asset['id']],[num_field, 'is_not', None]] ,[num_field] )
+        self.assertEquals([], result)
+
+        # Set it to zero
+        self.sg.update( 'Asset', self.asset['id'], { num_field: 0 })
+
+        # Should not be filtered out
+        result = self.sg.find_one( 'Asset', [['id','is',self.asset['id']],[num_field, 'is_not', None]] ,[num_field] )
+        self.assertIsNotNone(result)
+
+
+        # Set it to some other number
+        self.sg.update( 'Asset', self.asset['id'], { num_field: 1 })
+
+        # Should not be filtered out
+        result = self.sg.find_one( 'Asset', [['id','is',self.asset['id']],[num_field, 'is_not', None]] ,[num_field] )
+        self.assertIsNotNone(result)
+
+
+
+
 class TestFollow(base.LiveTestBase):
     def setUp(self):
         super(TestFollow, self).setUp()
