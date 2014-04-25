@@ -192,6 +192,7 @@ class _Config(object):
         self.script_name = None
         self.user_login = None
         self.user_password = None
+        self.sudo_as_login = None
         # uuid as a string
         self.session_uuid = None
         self.scheme = None
@@ -227,7 +228,8 @@ class Shotgun(object):
                  connect=True,
 				 ca_certs=None,
                  login=None,
-                 password=None):
+                 password=None,
+                 sudo_as_login=None):
         """Initialises a new instance of the Shotgun client.
 
         :param base_url: http or https url to the shotgun server.
@@ -261,6 +263,11 @@ class Shotgun(object):
         :param password: The password for the login to use to authenticate to
         the server. If password is provided, then login must be as well and
         neither script_name nor api_key can be provided.
+        
+        :param sudo_as_login: A user login string for the user whose permissions will
+        be applied to all actions and who will be logged as the user performing
+        all actions. Note that logged events will have an additional extra meta-data parameter 
+        'sudo_actual_user' indicating the script or user that actually authenticated.
         """
 
         # verify authentication arguments
@@ -290,6 +297,7 @@ class Shotgun(object):
         self.config.script_name = script_name
         self.config.user_login = login
         self.config.user_password = password
+        self.config.sudo_as_login = sudo_as_login
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
         self._connection = None
@@ -1498,6 +1506,13 @@ class Shotgun(object):
 
         if self.config.session_uuid:
             auth_params["session_uuid"] = self.config.session_uuid
+
+        # Make sure sudo_as_login is supported by server version
+        if self.config.sudo_as_login:
+            if self.server_caps.version and self.server_caps.version < (5, 3, 12):
+                raise ShotgunError("Option 'sudo_as_login' requires server version 5.3.12 or "\
+                    "higher, server is %s" % (self.server_caps.version,))
+            auth_params["sudo_as_login"] = self.config.sudo_as_login
 
         return auth_params
 
