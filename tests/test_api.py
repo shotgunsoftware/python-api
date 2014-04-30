@@ -1310,7 +1310,7 @@ class TestFind(base.LiveTestBase):
 
         # Should not be filtered out
         result = self.sg.find_one( 'Asset', [['id','is',self.asset['id']],[num_field, 'is_not', None]] ,[num_field] )
-        self.assertIsNotNone(result)
+        self.assertFalse(result == None)
 
 
         # Set it to some other number
@@ -1318,9 +1318,7 @@ class TestFind(base.LiveTestBase):
 
         # Should not be filtered out
         result = self.sg.find_one( 'Asset', [['id','is',self.asset['id']],[num_field, 'is_not', None]] ,[num_field] )
-        self.assertIsNotNone(result)
-
-
+        self.assertFalse(result == None)
 
 
 class TestFollow(base.LiveTestBase):
@@ -1439,7 +1437,16 @@ class TestHumanUserSudoAuth(base.TestBase):
                     password=self.config.human_password,
                     http_proxy=self.config.http_proxy,
                     sudo_as_login="blah" )
-        self.assertRaisesRegexp(shotgun_api3.Fault, "does not have permission to 'sudo'", x.find_one, 'Shot', [])
+        self.assertRaises(shotgun_api3.Fault, x.find_one, 'Shot', [])
+        try :
+            x.find_one('Shot',[])
+        except shotgun_api3.Fault, e:
+            # py24 exceptions don't have message attr
+            if hasattr(e, 'message'):
+                self.assertEquals("The user does not have permission to 'sudo': ", e.message)
+            else:
+                self.assertEquals("The user does not have permission to 'sudo': ", e.args[0])
+
 
 
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
