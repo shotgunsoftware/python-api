@@ -1402,12 +1402,22 @@ class TestErrors(base.TestBase):
 
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
-        super(TestScriptUserSudoAuth, self).setUp('ApiUser:Sudo')
+        super(TestScriptUserSudoAuth, self).setUp('ApiUser')
     
     def test_user_is_creator(self):
         """
         Test 'sudo_as_login' option: on create, ensure appropriate user is set in created-by
         """
+        
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 3, 12):
+            return
+
+        x = shotgun_api3.Shotgun(self.config.server_url,
+                    self.config.script_name,
+                    self.config.api_key,
+                    http_proxy=self.config.http_proxy,
+                    sudo_as_login=self.config.human_login )
+                    
         data = {
             'project': self.project,
             'code':'JohnnyApple_Design01_FaceFinal',
@@ -1417,7 +1427,7 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
             'user': self.human_user
         }
 
-        version = self.sg.create("Version", data, return_fields = ["id","created_by"])
+        version = x.create("Version", data, return_fields = ["id","created_by"])
         self.assertTrue(isinstance(version, dict))
         self.assertTrue("id" in version)
         self.assertTrue("created_by" in version)
@@ -1425,13 +1435,17 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
 
 class TestHumanUserSudoAuth(base.TestBase):
     def setUp(self):
-        super(TestHumanUserSudoAuth, self).setUp('HumanUser:Sudo')
+        super(TestHumanUserSudoAuth, self).setUp('HumanUser')
     
     def test_human_user_sudo_auth_fails(self):
         """
         Test 'sudo_as_login' option for HumanUser.
         Request fails on server because user has no permission to Sudo.
         """
+
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 3, 12):
+            return
+
         x = shotgun_api3.Shotgun(self.config.server_url,
                     login=self.config.human_login,
                     password=self.config.human_password,
