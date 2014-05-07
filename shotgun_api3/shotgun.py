@@ -401,7 +401,7 @@ class Shotgun(object):
         return self._call_rpc("info", None, include_auth_params=False)
 
     def find_one(self, entity_type, filters, fields=None, order=None,
-        filter_operator=None, retired_only=False):
+        filter_operator=None, retired_only=False, include_archived_projects=True):
         """Calls the find() method and returns the first result, or None.
 
         :param entity_type: Required, entity type (string) to find.
@@ -429,14 +429,15 @@ class Shotgun(object):
         """
 
         results = self.find(entity_type, filters, fields, order,
-            filter_operator, 1, retired_only)
+            filter_operator, 1, retired_only, include_archived_projects=include_archived_projects)
 
         if results:
             return results[0]
         return None
 
     def find(self, entity_type, filters, fields=None, order=None,
-        filter_operator=None, limit=0, retired_only=False, page=0):
+            filter_operator=None, limit=0, retired_only=False, page=0,
+            include_archived_projects=True):
         """Find entities matching the given filters.
 
         :param entity_type: Required, entity type (string) to find.
@@ -462,6 +463,9 @@ class Shotgun(object):
         been retried. Defaults to False which returns only entities which
         have not been retired.
 
+        :param include_archived_projects: Optional, flag to include entities
+        whose projects have been archived
+
         :returns: list of the dicts for each entity with the requested fields,
         and their id and type.
         """
@@ -483,7 +487,8 @@ class Shotgun(object):
                                                  fields,
                                                  filters,
                                                  retired_only,
-                                                 order)
+                                                 order,
+                                                 include_archived_projects)
 
         if limit and limit <= self.config.records_per_page:
             params["paging"]["entities_per_page"] = limit
@@ -526,7 +531,8 @@ class Shotgun(object):
                                    fields,
                                    filters,
                                    retired_only,
-                                   order):
+                                   order,
+                                   include_archived_projects):
         params = {}
         params["type"] = entity_type
         params["return_fields"] = fields or ["id"]
@@ -535,6 +541,7 @@ class Shotgun(object):
         params["return_paging_info"] = True
         params["paging"] = { "entities_per_page": self.config.records_per_page,
                              "current_page": 1 }
+        params["include_archived_projects"] = include_archived_projects
 
         if order:
             sort_list = []
@@ -555,7 +562,8 @@ class Shotgun(object):
                   filters,
                   summary_fields,
                   filter_operator=None,
-                  grouping=None):
+                  grouping=None,
+                  include_archived_projects=True):
         """
         Return group and summary information for entity_type for summary_fields
         based on the given filters.
@@ -570,7 +578,8 @@ class Shotgun(object):
 
         params = {"type": entity_type,
                   "summaries": summary_fields,
-                  "filters": filters}
+                  "filters": filters,
+                  "include_archived_projects": include_archived_projects}
         if grouping != None:
             params['grouping'] = grouping
 
