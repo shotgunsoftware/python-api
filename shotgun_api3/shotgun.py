@@ -139,6 +139,14 @@ class ServerCapabilities(object):
             raise ShotgunError("JSON API requires server version 2.4 or "\
                 "higher, server is %s" % (self.version,))
 
+    def ensure_include_archived_projects(self):
+        """Checks the server version support include_archived_projects parameter
+        to find.
+        """
+        if not self.version or self.version < (5, 3, 14):
+            raise ShotgunError("The include_archived_projects flag requires server version 5.3.14 or "\
+                "higher, server is %s" % (self.version,))
+
 
     def __str__(self):
         return "ServerCapabilities: host %s, version %s, is_dev %s"\
@@ -483,6 +491,12 @@ class Shotgun(object):
             raise ShotgunError("Deprecated: Use of filter_operator for find()"
                 " is not valid any more. See the documentation on find()")
 
+        if not include_archived_projects:
+            # This defaults to True on the server (no argument is sent)
+            # So we only need to check the server version if it is False
+            self.server_caps.ensure_include_archived_projects()
+
+
         params = self._construct_read_parameters(entity_type,
                                                  fields,
                                                  filters,
@@ -541,7 +555,10 @@ class Shotgun(object):
         params["return_paging_info"] = True
         params["paging"] = { "entities_per_page": self.config.records_per_page,
                              "current_page": 1 }
-        params["include_archived_projects"] = include_archived_projects
+
+        if include_archived_projects is False:
+            # Defaults to True on the server, so only pass it if it's False
+            params["include_archived_projects"] = False
 
         if order:
             sort_list = []
