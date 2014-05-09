@@ -438,6 +438,21 @@ class TestShotgunApi(base.LiveTestBase):
         assert(result['groups'][0]['summaries'])
         assert(result['summaries'])
 
+    def test_summary_include_archived_projects(self):
+        # archive project
+        self.sg.update('Project', self.project['id'], {'archived':True})
+        # Ticket #25082 ability to hide archived projects in summary
+        summaries = [{'field': 'id', 'type': 'count'}]
+        grouping = [{'direction': 'asc', 'field': 'id', 'type': 'exact'}]
+        filters = [['project', 'is', self.project]]
+        result = self.sg.summarize('Shot',
+                                   filters=filters,
+                                   summary_fields=summaries,
+                                   grouping=grouping,
+                                   include_archived_projects=False)
+        self.assertEqual(result['summaries']['id'],  0)
+        self.sg.update('Project', self.project['id'], {'archived':False})
+
     def test_summary_values(self):
         ''''''
         shot_data = {
@@ -1320,6 +1335,23 @@ class TestFind(base.LiveTestBase):
         result = self.sg.find_one( 'Asset', [['id','is',self.asset['id']],[num_field, 'is_not', None]] ,[num_field] )
         self.assertFalse(result == None)
 
+    def test_include_archived_projects(self):
+        # Ticket #25082
+        result = self.sg.find_one('Shot', [['id','is',self.shot['id']]])
+        self.assertEquals(self.shot['id'], result['id'])
+
+        # archive project 
+        self.sg.update('Project', self.project['id'], {'archived':True})
+
+        # setting defaults to True, so we should get result
+        result = self.sg.find_one('Shot', [['id','is',self.shot['id']]])
+        self.assertEquals(self.shot['id'], result['id'])
+
+        result = self.sg.find_one('Shot', [['id','is',self.shot['id']]], include_archived_projects=False)
+        self.assertEquals(None, result)
+
+        # unarchive project
+        self.sg.update('Project', self.project['id'], {'archived':False})
 
 class TestFollow(base.LiveTestBase):
     def setUp(self):
