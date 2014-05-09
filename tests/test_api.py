@@ -456,6 +456,14 @@ class TestShotgunApi(base.LiveTestBase):
 
     def test_summary_values(self):
         ''''''
+        # try to fix data if not in expected state
+        shots = self.sg.find('Shot',[['project','is',self.project],['code','in',['shot 1','shot 2','shot 3']]])
+        print len(shots)
+        for shot in shots:
+            # These shots should have been deleted,if they still exist it is due to an failure in mid-test
+            self.sg.delete('Shot', shot['id'])
+
+
         shot_data = {
             'sg_status_list': 'ip',
             'sg_cut_duration': 100,
