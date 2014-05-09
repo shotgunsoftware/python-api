@@ -593,10 +593,19 @@ class Shotgun(object):
         if isinstance(filters, (list, tuple)):
             filters = _translate_filters(filters, filter_operator)
 
+        if not include_archived_projects:
+            # This defaults to True on the server (no argument is sent)
+            # So we only need to check the server version if it is False
+            self.server_caps.ensure_include_archived_projects()
+
         params = {"type": entity_type,
                   "summaries": summary_fields,
-                  "filters": filters,
-                  "include_archived_projects": include_archived_projects}
+                  "filters": filters}
+
+        if include_archived_projects is False:
+            # Defaults to True on the server, so only pass it if it's False
+            params["include_archived_projects"] = False
+
         if grouping != None:
             params['grouping'] = grouping
 
