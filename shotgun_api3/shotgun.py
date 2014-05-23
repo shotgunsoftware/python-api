@@ -1440,7 +1440,7 @@ class Shotgun(object):
         Update projects last_accessed_by_current_user field.
         """
         # Find a page from the project
-        page = self.find_one('Page', [['project','is',project]])
+        page = self.find_one('Page', [['project','is',project], ['ui_category','is','project_overview']])
         if not page:
             raise RuntimeError("Unable to find page for project %s" % str(project))
 
