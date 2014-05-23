@@ -56,6 +56,11 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.16 - 2014 May 23**
+    + Add flag to ignore entities from archived projects.
+    + Add support for differentiating between zero and None for number fields.
+    + Add ability to act as a different user.
+
 **v3.0.15 - 2014 March 6**
    + Fixed bug which allowed a value of None for password parameter in authenticate_human_user
    + Add  follow, unfollow and followers methods
