@@ -1435,6 +1435,23 @@ class Shotgun(object):
             raise
 
 
+    def update_project_last_accessed(self, project, user=None):
+        """
+        Update projects last_accessed_by_current_user field.
+        """
+        # Find a page from the project
+        page = self.find_one('Page', [['project','is',project]])
+        if not page:
+            raise RuntimeError("Unable to find page for project %s" % str(project))
+
+        if not user:
+            # Try to use login if present
+            if self.config.user_login:
+                user = self.find_one('HumanUser', [['login', 'is', self.config.user_login]])
+        if not user:
+            raise RuntimeError("No user supplied and unable to determine user from login")
+
+        self.create( 'PageHit', { 'page': page, 'user': user } )
 
 
     def _get_session_token(self):
