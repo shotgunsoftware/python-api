@@ -1561,6 +1561,9 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
 class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
     # Ticket #24681
     def test_logged_in_user(self):
+        if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 17):
+            return
+
         sg = shotgun_api3.Shotgun(self.config.server_url,
                     login=self.config.human_login,
                     password=self.config.human_password,
@@ -1578,6 +1581,9 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
 
 
     def test_pass_in_user(self):
+        if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 17):
+            return
+
         sg = shotgun_api3.Shotgun(self.config.server_url,
                     login=self.config.human_login,
                     password=self.config.human_password,

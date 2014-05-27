@@ -1439,6 +1439,10 @@ class Shotgun(object):
         """
         Update projects last_accessed_by_current_user field.
         """
+        if self.server_caps.version and self.server_caps.version < (5, 3, 17):
+                raise ShotgunError("update_project_last_accessed requires server version 5.3.17 or "\
+                    "higher, server is %s" % (self.server_caps.version,))
+
         # Find a page from the project
         page = self.find_one('Page', [['project','is',project], ['ui_category','is','project_overview']])
         if not page:
