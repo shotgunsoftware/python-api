@@ -1558,6 +1558,43 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
         self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
 
 
+class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
+    # Ticket #24681
+    def test_logged_in_user(self):
+        sg = shotgun_api3.Shotgun(self.config.server_url,
+                    login=self.config.human_login,
+                    password=self.config.human_password,
+                    http_proxy=self.config.http_proxy)
+ 
+        initial = sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
+
+        sg.update_project_last_accessed(self.project)
+
+        current =  sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
+        self.assertNotEqual( initial, current )
+        # it's possible initial is None
+        if initial:
+            assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
+
+
+    def test_pass_in_user(self):
+        sg = shotgun_api3.Shotgun(self.config.server_url,
+                    login=self.config.human_login,
+                    password=self.config.human_password,
+                    http_proxy=self.config.http_proxy)
+ 
+        initial = sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
+
+        # this instance of the api is not logged in as a user
+        self.sg.update_project_last_accessed(self.project, user=self.human_user)
+
+        current =  sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
+        self.assertNotEqual( initial, current )
+        # it's possible initial is None
+        if initial:
+            assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
+
+
 def  _has_unicode(data):
     for k, v in data.items():
         if (isinstance(k, unicode)):
