@@ -8,6 +8,7 @@ import datetime
 import os
 import re
 from mock import patch, Mock, MagicMock
+import time
 import unittest
 import urlparse
 
@@ -1611,6 +1612,7 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
                                    sudo_as_login=self.config.human_login )
 
         initial = sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
+        time.sleep(1)
 
         sg.update_project_last_accessed(self.project)
 
