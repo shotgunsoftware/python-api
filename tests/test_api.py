@@ -1584,10 +1584,10 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
         if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 17):
             return
 
-        sg = shotgun_api3.Shotgun(self.config.server_url,
-                    login=self.config.human_login,
-                    password=self.config.human_password,
-                    http_proxy=self.config.http_proxy)
+        sg = shotgun_api3.Shotgun( self.config.server_url,
+                                   login=self.config.human_login,
+                                   password=self.config.human_password,
+                                   http_proxy=self.config.http_proxy )
  
         initial = sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
 
@@ -1600,6 +1600,25 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
         if initial:
             assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
 
+    def test_sudo_as_user(self):
+        if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 17):
+            return
+
+        sg = shotgun_api3.Shotgun( self.config.server_url,
+                                   self.config.script_name,
+                                   self.config.api_key,
+                                   http_proxy=self.config.http_proxy,
+                                   sudo_as_login=self.config.human_login )
+
+        initial = sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
+
+        sg.update_project_last_accessed(self.project)
+
+        current =  sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
+        self.assertNotEqual( initial, current )
+        # it's possible initial is None
+        if initial:
+            assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
 
 def  _has_unicode(data):
     for k, v in data.items():

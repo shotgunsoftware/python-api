@@ -1438,6 +1438,10 @@ class Shotgun(object):
     def update_project_last_accessed(self, project, user=None):
         """
         Update projects last_accessed_by_current_user field.
+        
+        :param project - a project entity hash
+        :param user - A human user entity hash. Optional if either login or sudo_as are used.
+
         """
         if self.server_caps.version and self.server_caps.version < (5, 3, 17):
                 raise ShotgunError("update_project_last_accessed requires server version 5.3.17 or "\
@@ -1454,11 +1458,14 @@ class Shotgun(object):
             raise RuntimeError("Unable to find page for project %s" % str(project))
 
         if not user:
+            # Try to use sudo as user if present
+            if self.config.sudo_as_login:
+                user = self.find_one('HumanUser', [['login', 'is', self.config.sudo_as_login]])
             # Try to use login if present
             if self.config.user_login:
                 user = self.find_one('HumanUser', [['login', 'is', self.config.user_login]])
         if not user:
-            raise RuntimeError("No user supplied and unable to determine user from login")
+            raise RuntimeError("No user supplied and unable to determine user from login or sudo_as")
 
         self.create( 'PageHit', { 'page': page, 'user': user } )
 
