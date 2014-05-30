@@ -1591,6 +1591,7 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
                                    http_proxy=self.config.http_proxy )
  
         initial = sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
+        time.sleep(1)
 
         # this instance of the api is not logged in as a user
         self.sg.update_project_last_accessed(self.project, user=self.human_user)
