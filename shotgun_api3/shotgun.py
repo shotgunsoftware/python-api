@@ -52,7 +52,9 @@ import urlparse
 import shutil       # used for attachment download
 
 # use relative import for versions >=2.5 and package import for python versions <2.5
-if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 5):
+if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 6):
+    from sg_26 import *
+elif (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 5):
     from sg_25 import *
 else:
     from sg_24 import *
@@ -2024,7 +2026,13 @@ class FormPostHandler(urllib2.BaseHandler):
             buffer.write('\r\n\r\n%s\r\n' % value)
         for (key, fd) in files:
             filename = fd.name.split('/')[-1]
-            content_type = mimetypes.guess_type(filename)[0]
+            try:
+                content_type = mimetypes.guess_type(filename)[0]
+            except UnicodeDecodeError:
+                # Ticket #25579 python bug on windows with unicode
+                # Use patched version of mimetypes
+                content_type = sg_mimetypes.guess_type(filename)[0]
+
             content_type = content_type or 'application/octet-stream'
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
             buffer.write('--%s\r\n' % boundary)
