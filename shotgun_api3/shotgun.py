@@ -36,9 +36,6 @@ import cStringIO    # used for attachment upload
 import datetime
 import logging
 import mimetools    # used for attachment upload
-import mimetypes    # used for attachment upload
-mimetypes.add_type('video/webm','.webm') # webm and mp4 seem to be missing
-mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
 import os
 import re
 import copy
@@ -52,10 +49,16 @@ import urlparse
 import shutil       # used for attachment download
 
 # use relative import for versions >=2.5 and package import for python versions <2.5
-if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 5):
+if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 6):
+    from sg_26 import *
+elif (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 5):
     from sg_25 import *
 else:
     from sg_24 import *
+
+# mimetypes imported in version specific imports
+mimetypes.add_type('video/webm','.webm') # webm and mp4 seem to be missing
+mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
 
 LOG = logging.getLogger("shotgun_api3")
 LOG.setLevel(logging.WARN)
