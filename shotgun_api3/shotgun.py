@@ -36,9 +36,6 @@ import cStringIO    # used for attachment upload
 import datetime
 import logging
 import mimetools    # used for attachment upload
-import mimetypes    # used for attachment upload
-mimetypes.add_type('video/webm','.webm') # webm and mp4 seem to be missing
-mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
 import os
 import re
 import copy
@@ -58,6 +55,10 @@ elif (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info
     from sg_25 import *
 else:
     from sg_24 import *
+
+# mimetypes imported in version specific imports
+mimetypes.add_type('video/webm','.webm') # webm and mp4 seem to be missing
+mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
 
 LOG = logging.getLogger("shotgun_api3")
 LOG.setLevel(logging.WARN)
@@ -2026,13 +2027,7 @@ class FormPostHandler(urllib2.BaseHandler):
             buffer.write('\r\n\r\n%s\r\n' % value)
         for (key, fd) in files:
             filename = fd.name.split('/')[-1]
-            try:
-                content_type = mimetypes.guess_type(filename)[0]
-            except UnicodeDecodeError:
-                # Ticket #25579 python bug on windows with unicode
-                # Use patched version of mimetypes
-                content_type = sg_mimetypes.guess_type(filename)[0]
-
+            content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or 'application/octet-stream'
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
             buffer.write('--%s\r\n' % boundary)
