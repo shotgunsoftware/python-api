@@ -5,7 +5,7 @@ import logging
 from .lib.httplib2 import Http, ProxyInfo, socks
 from .lib.sgtimezone import SgTimezone
 from .lib.xmlrpclib import Error, ProtocolError, ResponseError
-import mimetypes    # used for attachment upload
+
 
 LOG = logging.getLogger("shotgun_api3")
 LOG.setLevel(logging.WARN)
@@ -24,3 +24,12 @@ except ImportError:
         sys.path.append(lib_path)
         from .lib import simplejson as json
         sys.path.pop()
+
+
+import mimetypes    # used for attachment upload
+try:
+    mimetypes.add_type('video/webm','.webm') # try adding to test for unicode error
+except UnicodeDecodeError:
+    # Ticket #25579 python bug on windows with unicode
+    # Use patched version of mimetypes
+    from .lib import mimetypes as mimetypes
