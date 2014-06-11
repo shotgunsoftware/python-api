@@ -5,7 +5,7 @@ import logging
 from .lib.httplib2 import Http, ProxyInfo, socks
 from .lib.sgtimezone import SgTimezone
 from .lib.xmlrpclib import Error, ProtocolError, ResponseError
-import mimetypes as sg_mimetypes
+import mimetypes    # used for attachment upload
 
 LOG = logging.getLogger("shotgun_api3")
 LOG.setLevel(logging.WARN)
