@@ -2,7 +2,7 @@
 import sys
 from setuptools import setup, find_packages
 
-f = open('README')
+f = open('README.md')
 readme = f.read().strip()
 
 f = open('LICENSE')
