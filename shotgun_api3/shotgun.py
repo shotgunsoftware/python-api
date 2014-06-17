@@ -1446,19 +1446,9 @@ class Shotgun(object):
         :param user - A human user entity hash. Optional if either login or sudo_as are used.
 
         """
-        if self.server_caps.version and self.server_caps.version < (5, 3, 17):
-                raise ShotgunError("update_project_last_accessed requires server version 5.3.17 or "\
+        if self.server_caps.version and self.server_caps.version < (5, 3, 20):
+                raise ShotgunError("update_project_last_accessed requires server version 5.3.20 or "\
                     "higher, server is %s" % (self.server_caps.version,))
-
-        # Find a page from the project
-        page = self.find_one('Page', [['project','is',project], ['ui_category','is','project_overview']])
-        if not page:
-            # There should be a project overview page page for a live project, but if there is not,
-            # another page from the project will work.
-            page = self.find_one('Page', [['project','is',project]])
-
-        if not page:
-            raise RuntimeError("Unable to find page for project %s" % str(project))
 
         if not user:
             # Try to use sudo as user if present
@@ -1467,10 +1457,13 @@ class Shotgun(object):
             # Try to use login if present
             if self.config.user_login:
                 user = self.find_one('HumanUser', [['login', 'is', self.config.user_login]])
-        if not user:
-            raise RuntimeError("No user supplied and unable to determine user from login or sudo_as")
 
-        self.create( 'PageHit', { 'page': page, 'user': user } )
+        params = { "project_id": project['id'], }
+        if user:
+            params['user_id'] = user['id']
+
+        record = self._call_rpc("update_project_last_accessed_by_current_user", params)
+        result = self._parse_records(record)[0]
 
 
     def _get_session_token(self):

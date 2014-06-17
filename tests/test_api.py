@@ -1562,7 +1562,7 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
 class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
     # Ticket #24681
     def test_logged_in_user(self):
-        if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 17):
+        if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 20):
             return
 
         sg = shotgun_api3.Shotgun(self.config.server_url,
@@ -1582,7 +1582,7 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
 
 
     def test_pass_in_user(self):
-        if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 17):
+        if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 20):
             return
 
         sg = shotgun_api3.Shotgun( self.config.server_url,
@@ -1603,7 +1603,7 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
             assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
 
     def test_sudo_as_user(self):
-        if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 17):
+        if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 20):
             return
 
         sg = shotgun_api3.Shotgun( self.config.server_url,
