@@ -323,7 +323,6 @@ class Shotgun(object):
         self.config.api_path = urlparse.urljoin(urlparse.urljoin(
             api_base or "/", self.config.api_ver + "/"), "json")
 
-        self.reset_user_agent()
 
         # if the service contains user information strip it out
         # copied from the xmlrpclib which turned the user:password into
@@ -359,9 +358,12 @@ class Shotgun(object):
             self._json_loads = self._json_loads_ascii
 
         self.client_caps = ClientCapabilities()
+        # this relies on self.client_caps being set first 
+        self.reset_user_agent()
+
         self._server_caps = None
-        #test to ensure the the server supports the json API
-        #call to server will only be made once and will raise error
+        # test to ensure the the server supports the json API
+        # call to server will only be made once and will raise error
         if connect:
             self.server_caps
 
@@ -1065,8 +1067,14 @@ class Shotgun(object):
 
     def reset_user_agent(self):
         """Reset user agent to the default
+
+        Eg. shotgun-json (3.0.17); Python 2.6 (Mac)
         """
-        self._user_agents = ["shotgun-json (%s)" % __version__]
+        ua_platform = "Unknown"
+        if self.client_caps.platform is not None:
+            ua_platform = self.client_caps.platform.capitalize()
+        self._user_agents = ["shotgun-json (%s)" % __version__,
+                             "Python %s (%s)" % (self.client_caps.py_version, ua_platform)]
 
     def set_session_uuid(self, session_uuid):
         """Sets the browser session_uuid for this API session.
