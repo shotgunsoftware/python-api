@@ -53,6 +53,12 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.17 - 2014 Jul 10**
+
+   + Add ability to update last_accessed_by_current_user on Project.
+   + Add workaround for bug in Python 2.7 mimetypes library on Windows (http://bugs.python.org/issue9291)
+   + Add platform and Python version to user-agent (eg. "shotgun-json (3.0.17); Python 2.7 (Mac)")
+
 **v3.0.16 - 2014 May 23**
 
    + Add flag to ignore entities from archived projects.
@@ -66,7 +72,7 @@ Integration and unit tests are provided.
    + Added ability to login as human user
    + Ensure that webm/mp4 mime types are always available
    + Updated link to video tour in README
-   + Fixes and update to various tests
+   + Fixes and updates to various tests
 
 **v3.0.14 - 2013 Jun 26**
 
