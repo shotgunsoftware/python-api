@@ -12,6 +12,7 @@ __license__ = "MIT"
 __history__ = """
 """
 
+import sys
 import urlparse
 
 
@@ -68,7 +69,8 @@ def iri2uri(uri):
     the IRI before passing it into the function.""" 
     if isinstance(uri ,unicode):
         (scheme, authority, path, query, fragment) = urlparse.urlsplit(uri)
-        authority = authority.encode('idna')
+        encoding_scheme = 'idna' if not sys.platform == "cli" else 'utf-8'
+        authority = authority.encode(encoding_scheme)
         # For each character in 'ucschar' or 'iprivate'
         #  1. encode as utf-8
         #  2. then %-encode each octet of that utf-8 
