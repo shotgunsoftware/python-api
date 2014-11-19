@@ -47,6 +47,9 @@ import urllib
 import urllib2      # used for image upload
 import urlparse
 import shutil       # used for attachment download
+import httplib  # used to implement custom TLS1Connection
+import socket  # used to overwrite default socket connection to use ssl.PROTOCAL_TLSv1
+
 
 # use relative import for versions >=2.5 and package import for python versions <2.5
 if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 6):
@@ -68,7 +71,7 @@ SG_TIMEZONE = SgTimezone()
 
 try:
     import ssl
-    NO_SSL_VALIDATION = False
+    NO_SSL_VALIDATION = False if not sys.platform == "cli" else True
 except ImportError:
     LOG.debug("ssl not found, disabling certificate validation")
     NO_SSL_VALIDATION = True
@@ -1992,12 +1995,39 @@ class Shotgun(object):
 # Helpers from the previous API, left as is.
 
 # Based on http://code.activestate.com/recipes/146306/
-class FormPostHandler(urllib2.BaseHandler):
+class FormPostHandler(urllib2.AbstractHTTPHandler):
     """
     Handler for multipart form data
     """
     handler_order = urllib2.HTTPHandler.handler_order - 10 # needs to run first
+    
+    # Python 2.6's urllib2 does not allow you to select the TLS dialect,
+    # and by default uses a SSLv23 compatibility negotiation implementation.
+    # Besides being vulnerable to POODLE, the OSX implementation doesn't
+    # work correctly, failing to connect to servers that respond only to
+    # TLS1.0+. These classes help set up TLS support for urllib2.
+    # Based on https://gist.github.com/flandr/74be22d1c3d7c1dfefdd
+    class TLS1Connection(httplib.HTTPSConnection):
+        """Like HTTPSConnection but more specific"""
+        def __init__(self, host, **kwargs):
+            httplib.HTTPSConnection.__init__(self, host, **kwargs)
+    
+        def connect(self):
+            """Overrides HTTPSConnection.connect to specify TLS version"""
+            # Standard implementation from HTTPSConnection, which is not
+            # designed for extension, unfortunately
+            sock = socket.create_connection((self.host, self.port),
+                    self.timeout, self.source_address)
+            if getattr(self, '_tunnel_host', None):
+                self.sock = sock
+                self._tunnel()
+    
+            # This is the only difference; default wrap_socket uses SSLv23
+            self.sock = ssl.wrap_socket(sock, self.key_file, self.cert_file, ssl_version=ssl.PROTOCOL_TLSv1)    
 
+    def https_open(self, req):
+        return self.do_open(FormPostHandler.TLS1Connection, req)
+    
     def http_request(self, request):
         data = request.get_data()
         if data is not None and not isinstance(data, basestring):

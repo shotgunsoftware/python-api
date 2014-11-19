@@ -74,7 +74,8 @@ try:
         # doesn't expose the necessary knobs. So we need to go with the default
         # of SSLv23.
         return ssl.wrap_socket(sock, keyfile=key_file, certfile=cert_file,
-                               cert_reqs=cert_reqs, ca_certs=ca_certs)
+                               cert_reqs=cert_reqs, ca_certs=ca_certs,
+                               ssl_version=ssl.PROTOCOL_TLSv1)
 except (AttributeError, ImportError):
     ssl_SSLError = None
     def _ssl_wrap_socket(sock, key_file, cert_file,
