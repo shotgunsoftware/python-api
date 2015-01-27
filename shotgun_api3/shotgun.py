@@ -945,23 +945,39 @@ class Shotgun(object):
         
         return self._call_rpc('followers', params)
 
-    def schema_entity_read(self):
+    def schema_entity_read(self, project_entity=None):
         """Gets all active entities defined in the schema.
 
         :returns: dict of Entity Type to dict containing the display name.
         """
 
-        return self._call_rpc("schema_entity_read", None)
+        params = {}
 
-    def schema_read(self):
+        if project_entity:
+                params["project"] = project_entity
+
+        if params:
+            return self._call_rpc("schema_entity_read", params)
+        else:
+            return self._call_rpc("schema_entity_read", None)
+
+    def schema_read(self, project_entity=None):
         """Gets the schema for all fields in all entities.
 
         :returns: nested dicts
         """
 
-        return self._call_rpc("schema_read", None)
+        params = {}
 
-    def schema_field_read(self, entity_type, field_name=None):
+        if project_entity:
+            params["project"] = project_entity
+
+        if params:
+            return self._call_rpc("schema_read", params)
+        else:
+            return self._call_rpc("schema_read", None)
+
+    def schema_field_read(self, entity_type, field_name=None, project_entity=None):
         """Gets all schema for fields in the specified entity_type or one
         field.
 
@@ -976,10 +992,12 @@ class Shotgun(object):
         """
 
         params = {
-            "type" : entity_type,
+            "type": entity_type,
         }
         if field_name:
             params["field_name"] = field_name
+        if project_entity:
+            params["project"] = project_entity
 
         return self._call_rpc("schema_field_read", params)
 
