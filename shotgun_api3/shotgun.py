@@ -381,13 +381,6 @@ class Shotgun(object):
         # call to server will only be made once and will raise error
         if connect:
             self.server_caps
-            
-        # if the connection has been established using a username/password combination,
-        # retrieve a session token from the server and then clear the password 
-        # member variable for security reasons
-        if self.config.user_password:
-            self._get_session_token()
-            self.config.user_password = None
 
     # ========================================================================
     # API Functions
@@ -1433,13 +1426,11 @@ class Shotgun(object):
         return url
 
     def authenticate_human_user(self, user_login, user_password):
-        """
-        Authenticate Shotgun HumanUser. HumanUser must be an active account.
-        
-        :param user_login: Login name of Shotgun HumanUser
-        :param user_password: Password for Shotgun HumanUser
-        :return: Dictionary of HumanUser including ID if authenticated, None is unauthorized.
-        """
+        '''Authenticate Shotgun HumanUser. HumanUser must be an active account.
+        @param user_login: Login name of Shotgun HumanUser
+        @param user_password: Password for Shotgun HumanUser
+        @return: Dictionary of HumanUser including ID if authenticated, None is unauthorized.
+        '''
         if not user_login:
             raise ValueError('Please supply a username to authenticate.')
 
