@@ -30,6 +30,7 @@ class TestBase(unittest.TestCase):
         self.human_password = None
         self.server_url     = None
         self.server_address = None
+        self.session_token  = None
         self.connect        = False
 
 
@@ -54,6 +55,19 @@ class TestBase(unittest.TestCase):
             self.sg = api.Shotgun(self.config.server_url,
                                   login=self.human_login,
                                   password=self.human_password,
+                                  http_proxy=self.config.http_proxy,
+                                  connect=self.connect )
+        elif auth_mode == 'SessionToken':
+            # first make an instance based on script key/name so 
+            # we can generate a session token
+            sg = api.Shotgun(self.config.server_url,
+                             self.config.script_name,
+                             self.config.api_key,
+                             http_proxy=self.config.http_proxy )
+            self.session_token = sg.generate_session_token()
+            # now log in using session token
+            self.sg = api.Shotgun(self.config.server_url,
+                                  session_token=self.session_token,
                                   http_proxy=self.config.http_proxy,
                                   connect=self.connect )
         else:
@@ -258,6 +272,14 @@ class HumanUserAuthLiveTestBase(LiveTestBase):
     '''
     def setUp(self):
         super(HumanUserAuthLiveTestBase, self).setUp('HumanUser')
+
+class SessionTokenAuthLiveTestBase(LiveTestBase):
+    '''
+    Test base for relying on a Shotgun connection authenticate through the
+    configured session_token parameter.
+    '''
+    def setUp(self):
+        super(SessionTokenAuthLiveTestBase, self).setUp('SessionToken')
 
 
 class SgTestConfig(object):

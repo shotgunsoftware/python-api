@@ -1507,6 +1507,10 @@ class TestHumanUserSudoAuth(base.TestBase):
 
 
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
+    """
+    Testing the username/password authentication method
+    """
+    
     def test_humanuser_find(self):
         """Called find, find_one for known entities as human user"""
         filters = []
@@ -1528,6 +1532,63 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
 
     def test_humanuser_upload_thumbnail_for_version(self):
         """simple upload thumbnail for version test as human user."""
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir,"sg_logo.jpg")))
+        size = os.stat(path).st_size
+
+        # upload thumbnail
+        thumb_id = self.sg.upload_thumbnail("Version",
+            self.version['id'], path)
+        self.assertTrue(isinstance(thumb_id, int))
+
+        # check result on version
+        version_with_thumbnail = self.sg.find_one('Version',
+            [['id', 'is', self.version['id']]],
+            fields=['image'])
+
+        self.assertEqual(version_with_thumbnail.get('type'), 'Version')
+        self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
+
+
+        h = Http(".cache")
+        thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
+        self.assertEqual(thumb_resp['status'], '200')
+        self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
+
+        # clear thumbnail
+        response_clear_thumbnail = self.sg.update("Version",
+            self.version['id'], {'image':None})
+        expected_clear_thumbnail = {'id': self.version['id'], 'image': None, 'type': 'Version'}
+        self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
+
+
+class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
+    """
+    Testing the session token based authentication method
+    """
+    
+    def test_humanuser_find(self):
+        """Called find, find_one for known entities as session token based user"""
+        filters = []
+        filters.append(['project', 'is', self.project])
+        filters.append(['id', 'is', self.version['id']])
+
+        fields = ['id']
+
+        versions = self.sg.find("Version", filters, fields=fields)
+
+        self.assertTrue(isinstance(versions, list))
+        version = versions[0]
+        self.assertEqual("Version", version["type"])
+        self.assertEqual(self.version['id'], version["id"])
+
+        version = self.sg.find_one("Version", filters, fields=fields)
+        self.assertEqual("Version", version["type"])
+        self.assertEqual(self.version['id'], version["id"])
+
+    def test_humanuser_upload_thumbnail_for_version(self):
+        """simple upload thumbnail for version test as session based token user."""
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
             os.path.join(this_dir,"sg_logo.jpg")))
