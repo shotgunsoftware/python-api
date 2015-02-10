@@ -63,6 +63,7 @@ mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
 LOG = logging.getLogger("shotgun_api3")
 LOG.setLevel(logging.WARN)
 
+
 SG_TIMEZONE = SgTimezone()
 
 
@@ -237,9 +238,10 @@ class Shotgun(object):
                  http_proxy=None,
                  ensure_ascii=True,
                  connect=True,
-				 ca_certs=None,
+                 ca_certs=None,
                  login=None,
                  password=None,
+                 session_token=None,
                  sudo_as_login=None):
         """Initialises a new instance of the Shotgun client.
 
@@ -263,9 +265,9 @@ class Shotgun(object):
         form [username:pass@]proxy.com[:8080]
 
         :param connect: If True, connect to the server. Only used for testing.
-		
-		:param ca_certs: The path to the SSL certificate file. Useful for users
-		who would like to package their application into an executable.
+        
+        :param ca_certs: The path to the SSL certificate file. Useful for users
+        who would like to package their application into an executable.
 
         :param login: The login to use to authenticate to the server. If login
         is provided, then password must be as well and neither script_name nor
@@ -274,6 +276,10 @@ class Shotgun(object):
         :param password: The password for the login to use to authenticate to
         the server. If password is provided, then login must be as well and
         neither script_name nor api_key can be provided.
+
+        :param session_token: The session token to use to authenticate to the server. This
+        can be used as an alternative to authenticating with a script user or regular user.
+        You retrieve the session token by running the generate_session_token() method.
         
         :param sudo_as_login: A user login string for the user whose permissions will
         be applied to all actions and who will be logged as the user performing
@@ -282,6 +288,14 @@ class Shotgun(object):
         """
 
         # verify authentication arguments
+        if session_token is not None:
+            if script_name is not None or api_key is not None:
+                raise ValueError("cannot provide both session_token "
+                                 "and script_name/api_key")
+            if login is not None or password is not None:
+                raise ValueError("cannot provide both session_token "
+                                 "and login/password")
+        
         if login is not None or password is not None:
             if script_name is not None or api_key is not None:
                 raise ValueError("cannot provide both login/password "
@@ -298,9 +312,9 @@ class Shotgun(object):
                 raise ValueError("script_name provided without api_key")
 
         # Can't use 'all' with python 2.4
-        if len([x for x in [script_name, api_key, login, password] if x]) == 0:
+        if len([x for x in [session_token, script_name, api_key, login, password] if x]) == 0:
             if connect:
-                raise ValueError("must provide either login/password "
+                raise ValueError("must provide either login/password, session_token "
                                  "or script_name/api_key")
 
         self.config = _Config()
@@ -308,6 +322,7 @@ class Shotgun(object):
         self.config.script_name = script_name
         self.config.user_login = login
         self.config.user_password = password
+        self.config.session_token = session_token
         self.config.sudo_as_login = sudo_as_login
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
@@ -1473,20 +1488,33 @@ class Shotgun(object):
         record = self._call_rpc("update_project_last_accessed_by_current_user", params)
         result = self._parse_records(record)[0]
 
-
-    def _get_session_token(self):
-        """Hack to authenticate in order to download protected content
-        like Attachments
+    def generate_session_token(self):
         """
-        if self.config.session_token:
-            return self.config.session_token
-
+        Generate a session token that can be used to authenticate the currently 
+        logged in user or script.
+        
+        :returns: String containing a session token
+        """
         rv = self._call_rpc("get_session_token", None)
         session_token = (rv or {}).get("session_id")
         if not session_token:
             raise RuntimeError("Could not extract session_id from %s", rv)
+        return session_token
 
-        self.config.session_token = session_token
+    def _get_session_token(self):
+        """
+        Return a session token associated with this session.
+        This method will use the current session token if such exists,
+        and in case there is no session token established, one will be
+        retrieved from the server and cached internally.
+        
+        :returns: String containing a session token
+        """
+        if self.config.session_token:
+            return self.config.session_token
+        
+        # no session token handy. Request new one
+        self.config.session_token = self.generate_session_token()
         return self.config.session_token
 
     def _build_opener(self, handler):
@@ -1559,6 +1587,7 @@ class Shotgun(object):
 
     def _auth_params(self):
         """ return a dictionary of the authentication parameters being used. """
+                
         # Used to authenticate HumanUser credentials
         if self.config.user_login and self.config.user_password:
             auth_params = {
@@ -1571,6 +1600,12 @@ class Shotgun(object):
             auth_params = {
                 "script_name" : str(self.config.script_name),
                 "script_key" : str(self.config.api_key),
+            }
+
+        # Authenticate using session_id
+        elif self.config.session_token:
+            auth_params = {
+                "session_token" : str(self.config.session_token)
             }
 
         else:

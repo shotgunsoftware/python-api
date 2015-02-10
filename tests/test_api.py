@@ -124,10 +124,10 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual("Page", page[0]['type'])
         self.assertEqual(datetime.datetime, type(page[0]['last_accessed']))
 
-    def test_get_session_token(self):
+    def test_generate_session_token(self):
         """Got session UUID"""
         #TODO test results
-        rv = self.sg._get_session_token()
+        rv = self.sg.generate_session_token()
         self.assertTrue(rv)
 
     def test_upload_download(self):
@@ -165,7 +165,7 @@ class TestShotgunApi(base.LiveTestBase):
         file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "sg_logo_download.jpg")
         result = self.sg.download_attachment(attach_id, file_path=file_path)
         self.assertEqual(result, file_path)
-    	# On windows read may not read to end of file unless opened 'rb'
+        # On windows read may not read to end of file unless opened 'rb'
         fp = open(file_path, 'rb')
         attach_file = fp.read()
         fp.close()
