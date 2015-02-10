@@ -210,6 +210,7 @@ class _Config(object):
         self.scheme = None
         self.server = None
         self.api_path = None
+        self.raw_http_proxy = None 
         self.proxy_server = None
         self.proxy_port = 8080
         self.proxy_user = None
@@ -326,6 +327,7 @@ class Shotgun(object):
         self.config.sudo_as_login = sudo_as_login
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
+        self.config.raw_http_proxy = http_proxy
         self._connection = None
         self.__ca_certs = ca_certs
 
