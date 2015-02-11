@@ -246,8 +246,8 @@ class Shotgun(object):
                  ca_certs=None,
                  login=None,
                  password=None,
-                 session_token=None,
-                 sudo_as_login=None):
+                 sudo_as_login=None,
+                 session_token=None):
         """Initialises a new instance of the Shotgun client.
 
         :param base_url: http or https url to the shotgun server.
@@ -281,15 +281,15 @@ class Shotgun(object):
         :param password: The password for the login to use to authenticate to
         the server. If password is provided, then login must be as well and
         neither script_name nor api_key can be provided.
-
-        :param session_token: The session token to use to authenticate to the server. This
-        can be used as an alternative to authenticating with a script user or regular user.
-        You retrieve the session token by running the generate_session_token() method.
         
         :param sudo_as_login: A user login string for the user whose permissions will
         be applied to all actions and who will be logged as the user performing
         all actions. Note that logged events will have an additional extra meta-data parameter 
         'sudo_actual_user' indicating the script or user that actually authenticated.
+        
+        :param session_token: The session token to use to authenticate to the server. This
+        can be used as an alternative to authenticating with a script user or regular user.
+        You retrieve the session token by running the generate_session_token() method.        
         """
 
         # verify authentication arguments
