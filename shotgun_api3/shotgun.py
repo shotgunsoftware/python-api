@@ -214,6 +214,10 @@ class _Config(object):
         self.scheme = None
         self.server = None
         self.api_path = None
+        # The raw_http_proxy reflects the exact string passed in 
+        # to the Shotgun constructor. This can be useful if you 
+        # need to construct a Shotgun API instance based on 
+        # another Shotgun API instance.
         self.raw_http_proxy = None 
         self.proxy_server = None
         self.proxy_port = 8080
@@ -289,7 +293,7 @@ class Shotgun(object):
         
         :param session_token: The session token to use to authenticate to the server. This
         can be used as an alternative to authenticating with a script user or regular user.
-        You retrieve the session token by running the generate_session_token() method.        
+        You retrieve the session token by running the get_session_token() method.        
         """
 
         # verify authentication arguments
@@ -319,8 +323,7 @@ class Shotgun(object):
         # Can't use 'all' with python 2.4
         if len([x for x in [session_token, script_name, api_key, login, password] if x]) == 0:
             if connect:
-                raise ValueError("must provide either login/password, session_token "
-                                 "or script_name/api_key")
+                raise ValueError("must provide login/password, session_token or script_name/api_key")
 
         self.config = _Config()
         self.config.api_key = api_key
@@ -1380,7 +1383,7 @@ class Shotgun(object):
         """Sets up urllib2 with a cookie for authentication on the Shotgun 
         instance.
         """
-        sid = self._get_session_token()
+        sid = self.get_session_token()
         cj = cookielib.LWPCookieJar()
         c = cookielib.Cookie('0', '_session_id', sid, None, False,
             self.config.server, False, False, "/", True, False, None, True,
@@ -1494,34 +1497,23 @@ class Shotgun(object):
         record = self._call_rpc("update_project_last_accessed_by_current_user", params)
         result = self._parse_records(record)[0]
 
-    def generate_session_token(self):
+    def get_session_token(self):
         """
-        Generate a session token that can be used to authenticate the currently 
-        logged in user or script.
-        
-        :returns: String containing a session token
-        """
-        rv = self._call_rpc("get_session_token", None)
-        session_token = (rv or {}).get("session_id")
-        if not session_token:
-            raise RuntimeError("Could not extract session_id from %s", rv)
-        return session_token
-
-    def _get_session_token(self):
-        """
-        Return a session token associated with this session.
-        This method will use the current session token if such exists,
-        and in case there is no session token established, one will be
-        retrieved from the server and cached internally.
+        Get the session token associated with the current session.
+        If a session token has already been established, the token for this 
+        is returned, otherwise a new one is generated on the server and returned.
         
         :returns: String containing a session token
         """
         if self.config.session_token:
             return self.config.session_token
-        
-        # no session token handy. Request new one
-        self.config.session_token = self.generate_session_token()
-        return self.config.session_token
+
+        rv = self._call_rpc("get_session_token", None)
+        session_token = (rv or {}).get("session_id")
+        if not session_token:
+            raise RuntimeError("Could not extract session_id from %s", rv)
+        self.config.session_token = session_token 
+        return session_token
 
     def _build_opener(self, handler):
         """Build urllib2 opener with appropriate proxy handler."""
@@ -1612,7 +1604,6 @@ class Shotgun(object):
         elif self.config.session_token:
             auth_params = {
                 "session_token" : str(self.config.session_token),
-                "reject_if_expired": False
             }
 
         else:
