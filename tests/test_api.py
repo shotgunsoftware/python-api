@@ -124,10 +124,10 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual("Page", page[0]['type'])
         self.assertEqual(datetime.datetime, type(page[0]['last_accessed']))
 
-    def test_generate_session_token(self):
+    def test_get_session_token(self):
         """Got session UUID"""
         #TODO test results
-        rv = self.sg.generate_session_token()
+        rv = self.sg.get_session_token()
         self.assertTrue(rv)
 
     def test_upload_download(self):

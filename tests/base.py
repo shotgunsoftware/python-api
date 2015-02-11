@@ -64,7 +64,7 @@ class TestBase(unittest.TestCase):
                              self.config.script_name,
                              self.config.api_key,
                              http_proxy=self.config.http_proxy )
-            self.session_token = sg.generate_session_token()
+            self.session_token = sg.get_session_token()
             # now log in using session token
             self.sg = api.Shotgun(self.config.server_url,
                                   session_token=self.session_token,
