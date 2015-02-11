@@ -93,6 +93,10 @@ class Fault(ShotgunError):
     """Exception when server side exception detected."""
     pass
 
+class SessionAuthenticationFault(Fault):
+    """Exception when the server side reports that a session is no longer valid"""
+    pass
+
 # ----------------------------------------------------------------------------
 # API
 
@@ -1607,7 +1611,8 @@ class Shotgun(object):
         # Authenticate using session_id
         elif self.config.session_token:
             auth_params = {
-                "session_token" : str(self.config.session_token)
+                "session_token" : str(self.config.session_token),
+                "reject_if_expired": False
             }
 
         else:
@@ -1789,8 +1794,24 @@ class Shotgun(object):
         """
 
         if isinstance(sg_response, dict) and sg_response.get("exception"):
-            raise Fault(sg_response.get("message",
-                "Unknown Error"))
+            
+            # handle the following cases explicitly
+            #
+            # {'exception': True, 
+            #  'error_code': 102, 
+            #  'message': "Can't authenticate session token 'xxxxxxxx'"}
+            #
+            # {'exception': True, 
+            #  'error_code': 102, 
+            #  'message': "Session token 'xxxxxxxx has expired'"}
+            
+            msg = sg_response.get("message")
+            
+            if msg and ("Can't authenticate session token" in msg or "has expired" in msg):
+                raise SessionAuthenticationFault(msg)
+            else:
+                # raise general Fault            
+                raise Fault(sg_response.get("message", "Unknown Error"))
         return
 
     def _visit_data(self, data, visitor):
