@@ -1604,6 +1604,8 @@ class Shotgun(object):
         elif self.config.session_token:
             auth_params = {
                 "session_token" : str(self.config.session_token),
+                # Request server side to raise exception for expired sessions
+                "reject_if_expired": True
             }
 
         else:
