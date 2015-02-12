@@ -1783,10 +1783,12 @@ class Shotgun(object):
 
         :raises ShotgunError: If the server response contains an exception.
         """
+ 
+        ERR_AUTH = 102 # error code for authentication related problems
 
         if isinstance(sg_response, dict) and sg_response.get("exception"):
             
-            if sg_response.get("error_code") == 102:
+            if sg_response.get("error_code") == ERR_AUTH:
                 raise AuthenticationFault(sg_response.get("message", "Unknown Authentication Error"))
 
             else:
