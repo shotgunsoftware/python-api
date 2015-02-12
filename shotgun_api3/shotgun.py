@@ -1500,8 +1500,8 @@ class Shotgun(object):
     def get_session_token(self):
         """
         Get the session token associated with the current session.
-        If a session token has already been established, the token for this 
-        is returned, otherwise a new one is generated on the server and returned.
+        If a session token has already been established, this is returned, 
+        otherwise a new one is generated on the server and returned.
         
         :returns: String containing a session token
         """
