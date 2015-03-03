@@ -218,7 +218,11 @@ class _Config(object):
         # to the Shotgun constructor. This can be useful if you 
         # need to construct a Shotgun API instance based on 
         # another Shotgun API instance.
-        self.raw_http_proxy = None 
+        self.raw_http_proxy = None
+        # if a proxy server is being used, the proxy_handler
+        # below will contain a urllib2.ProxyHandler instance
+        # which can be used whenever a request needs to be made.
+        self.proxy_handler = None
         self.proxy_server = None
         self.proxy_port = 8080
         self.proxy_user = None
@@ -226,6 +230,7 @@ class _Config(object):
         self.session_token = None
         self.authorization = None
         self.no_ssl_validation = False
+
 
 class Shotgun(object):
     """Shotgun Client Connection"""
@@ -376,6 +381,15 @@ class Shotgun(object):
                         "format is '123.456.789.012' or '123.456.789.012:3456'"\
                         ". If no port is specified, a default of %d will be "\
                         "used." % (http_proxy, self.config.proxy_port))
+
+            # now populate self.config.proxy_handler
+            if self.config.proxy_user and self.config.proxy_pass:
+                auth_string = "%s:%s@" % (self.config.proxy_user, self.config.proxy_pass)
+            else:
+                auth_string = ""
+            proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
+            self.config.proxy_handler = urllib2.ProxyHandler({self.config.scheme : proxy_addr})
+
 
 
         if ensure_ascii:
@@ -1517,16 +1531,8 @@ class Shotgun(object):
 
     def _build_opener(self, handler):
         """Build urllib2 opener with appropriate proxy handler."""
-        if self.config.proxy_server:
-            # handle proxy auth
-            if self.config.proxy_user and self.config.proxy_pass:
-                auth_string = "%s:%s@" % (self.config.proxy_user, self.config.proxy_pass)
-            else:
-                auth_string = ""
-            proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
-            proxy_support = urllib2.ProxyHandler({self.config.scheme : proxy_addr})
-
-            opener = urllib2.build_opener(proxy_support, handler)
+        if self.config.proxy_handler:
+            opener = urllib2.build_opener(self.config.proxy_handler, handler)
         else:
             opener = urllib2.build_opener(handler)
         return opener
