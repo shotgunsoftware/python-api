@@ -958,7 +958,7 @@ class Shotgun(object):
         params = {}
 
         if project_entity:
-                params["project"] = project_entity
+            params["project"] = project_entity
 
         if params:
             return self._call_rpc("schema_entity_read", params)
