@@ -948,6 +948,10 @@ class Shotgun(object):
     def schema_entity_read(self, project_entity=None):
         """Gets all active entities defined in the schema.
 
+        :param dict project_entity: Optional, if set, each field's visibility is reported accordingly
+        to the specified project's current visibility settings.
+        If None, all fields are reported as visible.
+
         :returns: dict of Entity Type to dict containing the display name.
         """
 
@@ -963,6 +967,10 @@ class Shotgun(object):
 
     def schema_read(self, project_entity=None):
         """Gets the schema for all fields in all entities.
+
+        :param dict project_entity: Optional, if set, each field's visibility is reported accordingly
+        to the specified project's current visibility settings.
+        If None, all fields are reported as visible.
 
         :returns: nested dicts
         """
@@ -987,6 +995,10 @@ class Shotgun(object):
         :param field_name: Optional, name of the field to get the schema
         definition for. If not supplied all fields for the entity type are
         returned.
+
+        :param dict project_entity: Optional, if set, each field's visibility is reported accordingly
+        to the specified project's current visibility settings.
+        If None, all fields are reported as visible.
 
         :returns: dict of field name to nested dicts which describe the field
         """
