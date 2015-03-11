@@ -111,6 +111,7 @@ class TestShotgunApiLong(base.LiveTestBase):
         self.assertTrue(schema, dict)
         self.assertTrue(len(schema) > 0)
         self.assertTrue('Version' in schema)
+        self.assertFalse('visible' in schema.keys())
 
         schema = self.sg.schema_field_read('Version', project_entity=project_entity)
         self.assertTrue(schema, dict)
