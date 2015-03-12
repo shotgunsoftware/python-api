@@ -137,23 +137,35 @@ class ServerCapabilities(object):
         self._ensure_json_supported()
 
 
-    def _ensure_json_supported(self):
-        """Checks the server version supports the JSON api, raises an
+    def _ensure_support(self, feature):
+        """Checks the server version supports a given feature, raises an
         exception if it does not.
 
-        :raises ShotgunError: The current server version does not support json
+        :param feature: dict supported version and human label { 'version': (int, int, int), 'label': str }
+
+        :raises ShotgunError: The current server version does not [feature]
         """
-        if not self.version or self.version < (2, 4, 0):
-            raise ShotgunError("JSON API requires server version 2.4 or "\
-                "higher, server is %s" % (self.version,))
+
+        if not self.version or self.version < feature['version']:
+            raise ShotgunError(
+                "%s requires server version %s or higher, "\
+                "server is %s" % (feature['label'], _version_str(feature['version']), _version_str(self.version))
+            )
+
+
+    def _ensure_json_supported(self):
+        """Wrapper for ensure_support"""
+        self._ensure_support({
+            'version': (2, 4, 0),
+            'label': 'JSON API'
+        })
 
     def ensure_include_archived_projects(self):
-        """Checks the server version support include_archived_projects parameter
-        to find.
-        """
-        if not self.version or self.version < (5, 3, 14):
-            raise ShotgunError("The include_archived_projects flag requires server version 5.3.14 or "\
-                "higher, server is %s" % (self.version,))
+        """Wrapper for ensure_support"""
+        self._ensure_support({
+            'version': (5, 3, 14),
+            'label': 'include_archived_projects parameter'
+        })
 
 
     def __str__(self):
@@ -2208,4 +2220,6 @@ def _translate_filters_simple(sg_filter):
 
     return condition
 
-     
+def _version_str(version):
+    """Converts a tuple of int's to a '.' separated str"""
+    return '.'.join(map(str, version))
