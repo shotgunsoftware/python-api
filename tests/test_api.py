@@ -439,7 +439,7 @@ class TestShotgunApi(base.LiveTestBase):
         assert(result['groups'][0]['summaries'])
         assert(result['summaries'])
 
-    def test_summary_include_archived_projects(self):
+    def _test_summary_include_archived_projects(self):
         if self.sg.server_caps.version > (5, 3, 13):
             # archive project
             self.sg.update('Project', self.project['id'], {'archived':True})
@@ -1345,7 +1345,7 @@ class TestFind(base.LiveTestBase):
         result = self.sg.find_one( 'Asset', [['id','is',self.asset['id']],[num_field, 'is_not', None]] ,[num_field] )
         self.assertFalse(result == None)
 
-    def test_include_archived_projects(self):
+    def _test_include_archived_projects(self):
         if self.sg.server_caps.version > (5, 3, 13):
             # Ticket #25082
             result = self.sg.find_one('Shot', [['id','is',self.shot['id']]])
