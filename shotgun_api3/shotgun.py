@@ -134,7 +134,7 @@ class ServerCapabilities(object):
             self.is_dev = False
 
         self.version = tuple(self.version[:3])
-        self._ensure_json_supported()
+        self.ensure_json_supported()
 
 
     def _ensure_support(self, feature, raise_hell=True):
@@ -157,23 +157,23 @@ class ServerCapabilities(object):
             return True
 
 
-    def _ensure_json_supported(self):
+    def ensure_json_supported(self):
         """Wrapper for ensure_support"""
-        self._ensure_support({
+        return self._ensure_support({
             'version': (2, 4, 0),
             'label': 'JSON API'
         })
 
     def ensure_include_archived_projects(self):
         """Wrapper for ensure_support"""
-        self._ensure_support({
+        return self._ensure_support({
             'version': (5, 3, 14),
             'label': 'include_archived_projects parameter'
         })
 
     def ensure_include_template_projects(self):
         """Wrapper for ensure_support"""
-        self._ensure_support({
+        return self._ensure_support({
             'version': (6, 0, 0),
             'label': 'include_template_projects parameter'
         })
@@ -525,7 +525,7 @@ class Shotgun(object):
         :param include_template_projects: Optional, flag to include entities
         belonging to template projects. Default: False
 
-        :returns: Result
+        :returns: dict of requested entity's fields, or None if not found.
         """
 
         results = self.find(entity_type, filters, fields, order,
@@ -588,22 +588,13 @@ class Shotgun(object):
             raise ShotgunError("Deprecated: Use of filter_operator for find()"
                 " is not valid any more. See the documentation on find()")
 
-        if not include_archived_projects:
-            # This defaults to True on the server (no argument is sent)
-            # So we only need to check the server version if it is False
-            self.server_caps.ensure_include_archived_projects()
-
-        if include_template_projects:
-            # This defaults to False on the server (no argument is sent)
-            # So we only need to check the server version if it is True
-            self.server_caps.ensure_include_template_projects()
-
-
         params = self._construct_read_parameters(entity_type,
                                                  fields,
                                                  filters,
                                                  retired_only,
-                                                 order,
+                                                 order)
+
+        params = self._construct_flag_parameters(params,
                                                  include_archived_projects,
                                                  include_template_projects)
 
@@ -642,31 +633,24 @@ class Shotgun(object):
         return self._parse_records(records)
 
 
-
     def _construct_read_parameters(self,
                                    entity_type,
                                    fields,
                                    filters,
                                    retired_only,
-                                   order,
-                                   include_archived_projects,
-                                   include_template_projects):
-        params = {}
-        params["type"] = entity_type
-        params["return_fields"] = fields or ["id"]
-        params["filters"] = filters
-        params["return_only"] = (retired_only and 'retired') or "active"
-        params["return_paging_info"] = True
-        params["paging"] = { "entities_per_page": self.config.records_per_page,
-                             "current_page": 1 }
+                                   order):
 
-        if include_archived_projects is False:
-            # Defaults to True on the server, so only pass it if it's False
-            params["include_archived_projects"] = False
-
-        if include_template_projects is True:
-            # Defaults to False on the server, so only pass it if it's True
-            params["include_template_projects"] = True
+        params = {
+            "type": entity_type,
+            "return_fields": fields or ["id"],
+            "filters": filters,
+            "return_only": (retired_only and 'retired') or "active",
+            "return_paging_info": True,
+            "paging": {
+                "entities_per_page": self.config.records_per_page,
+                "current_page": 1
+            }
+        }
 
         if order:
             sort_list = []
@@ -680,6 +664,29 @@ class Shotgun(object):
                     'direction' : sort['direction']
                 })
             params['sorts'] = sort_list
+
+        return params
+
+
+    def _construct_flag_parameters(self,
+                                   params,
+                                   include_archived_projects,
+                                   include_template_projects):
+
+        if not include_archived_projects:
+            # This defaults to True on the server (no argument is sent)
+            # So we only need to check the server version if it's False
+            self.server_caps.ensure_include_archived_projects()
+            # Only pass it if it's False
+            params["include_archived_projects"] = False
+
+        if include_template_projects:
+            # This defaults to False on the server (no argument is sent)
+            # So we only need to check the server version if it's True
+            self.server_caps.ensure_include_template_projects()
+            # Only pass it if it's True
+            params["include_template_projects"] = True
+
         return params
 
 
@@ -715,19 +722,9 @@ class Shotgun(object):
                   "summaries": summary_fields,
                   "filters": filters}
 
-        if not include_archived_projects:
-            # This defaults to True on the server (no argument is sent)
-            # So we only need to check the server version if it is False
-            self.server_caps.ensure_include_archived_projects()
-            # Only pass it if it's False
-            params["include_archived_projects"] = False
-
-        if include_template_projects:
-            # This defaults to False on the server (no argument is sent)
-            # So we only need to check the server version if it is True
-            self.server_caps.ensure_include_template_projects()
-            # Only pass it if it's True
-            params["include_template_projects"] = True
+        params = self._construct_flag_parameters(params,
+                                                 include_archived_projects,
+                                                 include_template_projects)
 
         if grouping != None:
             params['grouping'] = grouping

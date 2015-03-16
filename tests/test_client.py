@@ -74,18 +74,18 @@ class TestShotgunClient(base.MockTestBase):
         sc = ServerCapabilities("foo", {"version" : (2,4,0)})
 
         sc.version = (2,3,99)
-        self.assertRaises(api.ShotgunError, sc._ensure_json_supported)
+        self.assertRaises(api.ShotgunError, sc.ensure_json_supported)
         self.assertRaises(api.ShotgunError, ServerCapabilities, "foo",
             {"version" : (2,2,0)})
 
         sc.version = (0,0,0)
-        self.assertRaises(api.ShotgunError, sc._ensure_json_supported)
+        self.assertRaises(api.ShotgunError, sc.ensure_json_supported)
 
         sc.version = (2,4,0)
-        sc._ensure_json_supported()
+        sc.ensure_json_supported()
 
         sc.version = (2,5,0)
-        sc._ensure_json_supported()
+        sc.ensure_json_supported()
 
 
     def test_session_uuid(self):
