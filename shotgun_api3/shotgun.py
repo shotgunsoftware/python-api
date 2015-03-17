@@ -314,7 +314,10 @@ class Shotgun(object):
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
         self._connection = None
-        self.__ca_certs = ca_certs or os.environ.get('SHOTGUN_API_CACERTS')
+        if ca_certs is not None:
+            self.__ca_certs = ca_certs
+        else:
+            self.__ca_certs = os.environ.get('SHOTGUN_API_CACERTS')
 
         self.base_url = (base_url or "").lower()
         self.config.scheme, self.config.server, api_base, _, _ = \
