@@ -63,6 +63,7 @@ mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
 LOG = logging.getLogger("shotgun_api3")
 LOG.setLevel(logging.WARN)
 
+
 SG_TIMEZONE = SgTimezone()
 
 
@@ -90,6 +91,10 @@ class ShotgunFileDownloadError(ShotgunError):
 
 class Fault(ShotgunError):
     """Exception when server side exception detected."""
+    pass
+
+class AuthenticationFault(Fault):
+    """Exception when the server side reports an error related to authentication"""
     pass
 
 # ----------------------------------------------------------------------------
@@ -209,6 +214,15 @@ class _Config(object):
         self.scheme = None
         self.server = None
         self.api_path = None
+        # The raw_http_proxy reflects the exact string passed in 
+        # to the Shotgun constructor. This can be useful if you 
+        # need to construct a Shotgun API instance based on 
+        # another Shotgun API instance.
+        self.raw_http_proxy = None
+        # if a proxy server is being used, the proxy_handler
+        # below will contain a urllib2.ProxyHandler instance
+        # which can be used whenever a request needs to be made.
+        self.proxy_handler = None
         self.proxy_server = None
         self.proxy_port = 8080
         self.proxy_user = None
@@ -216,6 +230,7 @@ class _Config(object):
         self.session_token = None
         self.authorization = None
         self.no_ssl_validation = False
+
 
 class Shotgun(object):
     """Shotgun Client Connection"""
@@ -237,10 +252,11 @@ class Shotgun(object):
                  http_proxy=None,
                  ensure_ascii=True,
                  connect=True,
-				 ca_certs=None,
+                 ca_certs=None,
                  login=None,
                  password=None,
-                 sudo_as_login=None):
+                 sudo_as_login=None,
+                 session_token=None):
         """Initialises a new instance of the Shotgun client.
 
         :param base_url: http or https url to the shotgun server.
@@ -263,9 +279,9 @@ class Shotgun(object):
         form [username:pass@]proxy.com[:8080]
 
         :param connect: If True, connect to the server. Only used for testing.
-		
-		:param ca_certs: The path to the SSL certificate file. Useful for users
-		who would like to package their application into an executable.
+        
+        :param ca_certs: The path to the SSL certificate file. Useful for users
+        who would like to package their application into an executable.
 
         :param login: The login to use to authenticate to the server. If login
         is provided, then password must be as well and neither script_name nor
@@ -279,9 +295,21 @@ class Shotgun(object):
         be applied to all actions and who will be logged as the user performing
         all actions. Note that logged events will have an additional extra meta-data parameter 
         'sudo_actual_user' indicating the script or user that actually authenticated.
+        
+        :param session_token: The session token to use to authenticate to the server. This
+        can be used as an alternative to authenticating with a script user or regular user.
+        You retrieve the session token by running the get_session_token() method.        
         """
 
         # verify authentication arguments
+        if session_token is not None:
+            if script_name is not None or api_key is not None:
+                raise ValueError("cannot provide both session_token "
+                                 "and script_name/api_key")
+            if login is not None or password is not None:
+                raise ValueError("cannot provide both session_token "
+                                 "and login/password")
+        
         if login is not None or password is not None:
             if script_name is not None or api_key is not None:
                 raise ValueError("cannot provide both login/password "
@@ -298,19 +326,20 @@ class Shotgun(object):
                 raise ValueError("script_name provided without api_key")
 
         # Can't use 'all' with python 2.4
-        if len([x for x in [script_name, api_key, login, password] if x]) == 0:
+        if len([x for x in [session_token, script_name, api_key, login, password] if x]) == 0:
             if connect:
-                raise ValueError("must provide either login/password "
-                                 "or script_name/api_key")
+                raise ValueError("must provide login/password, session_token or script_name/api_key")
 
         self.config = _Config()
         self.config.api_key = api_key
         self.config.script_name = script_name
         self.config.user_login = login
         self.config.user_password = password
+        self.config.session_token = session_token
         self.config.sudo_as_login = sudo_as_login
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
+        self.config.raw_http_proxy = http_proxy
         self._connection = None
         self.__ca_certs = ca_certs
 
@@ -352,6 +381,15 @@ class Shotgun(object):
                         "format is '123.456.789.012' or '123.456.789.012:3456'"\
                         ". If no port is specified, a default of %d will be "\
                         "used." % (http_proxy, self.config.proxy_port))
+
+            # now populate self.config.proxy_handler
+            if self.config.proxy_user and self.config.proxy_pass:
+                auth_string = "%s:%s@" % (self.config.proxy_user, self.config.proxy_pass)
+            else:
+                auth_string = ""
+            proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
+            self.config.proxy_handler = urllib2.ProxyHandler({self.config.scheme : proxy_addr})
+
 
 
         if ensure_ascii:
@@ -1389,7 +1427,7 @@ class Shotgun(object):
         """Sets up urllib2 with a cookie for authentication on the Shotgun 
         instance.
         """
-        sid = self._get_session_token()
+        sid = self.get_session_token()
         cj = cookielib.LWPCookieJar()
         c = cookielib.Cookie('0', '_session_id', sid, None, False,
             self.config.server, False, False, "/", True, False, None, True,
@@ -1503,10 +1541,13 @@ class Shotgun(object):
         record = self._call_rpc("update_project_last_accessed_by_current_user", params)
         result = self._parse_records(record)[0]
 
-
-    def _get_session_token(self):
-        """Hack to authenticate in order to download protected content
-        like Attachments
+    def get_session_token(self):
+        """
+        Get the session token associated with the current session.
+        If a session token has already been established, this is returned, 
+        otherwise a new one is generated on the server and returned.
+        
+        :returns: String containing a session token
         """
         if self.config.session_token:
             return self.config.session_token
@@ -1515,22 +1556,13 @@ class Shotgun(object):
         session_token = (rv or {}).get("session_id")
         if not session_token:
             raise RuntimeError("Could not extract session_id from %s", rv)
-
-        self.config.session_token = session_token
-        return self.config.session_token
+        self.config.session_token = session_token 
+        return session_token
 
     def _build_opener(self, handler):
         """Build urllib2 opener with appropriate proxy handler."""
-        if self.config.proxy_server:
-            # handle proxy auth
-            if self.config.proxy_user and self.config.proxy_pass:
-                auth_string = "%s:%s@" % (self.config.proxy_user, self.config.proxy_pass)
-            else:
-                auth_string = ""
-            proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
-            proxy_support = urllib2.ProxyHandler({self.config.scheme : proxy_addr})
-
-            opener = urllib2.build_opener(proxy_support, handler)
+        if self.config.proxy_handler:
+            opener = urllib2.build_opener(self.config.proxy_handler, handler)
         else:
             opener = urllib2.build_opener(handler)
         return opener
@@ -1589,6 +1621,7 @@ class Shotgun(object):
 
     def _auth_params(self):
         """ return a dictionary of the authentication parameters being used. """
+                
         # Used to authenticate HumanUser credentials
         if self.config.user_login and self.config.user_password:
             auth_params = {
@@ -1601,6 +1634,14 @@ class Shotgun(object):
             auth_params = {
                 "script_name" : str(self.config.script_name),
                 "script_key" : str(self.config.api_key),
+            }
+
+        # Authenticate using session_id
+        elif self.config.session_token:
+            auth_params = {
+                "session_token" : str(self.config.session_token),
+                # Request server side to raise exception for expired sessions
+                "reject_if_expired": True
             }
 
         else:
@@ -1780,10 +1821,17 @@ class Shotgun(object):
 
         :raises ShotgunError: If the server response contains an exception.
         """
+ 
+        ERR_AUTH = 102 # error code for authentication related problems
 
         if isinstance(sg_response, dict) and sg_response.get("exception"):
-            raise Fault(sg_response.get("message",
-                "Unknown Error"))
+            
+            if sg_response.get("error_code") == ERR_AUTH:
+                raise AuthenticationFault(sg_response.get("message", "Unknown Authentication Error"))
+
+            else:
+                # raise general Fault            
+                raise Fault(sg_response.get("message", "Unknown Error"))
         return
 
     def _visit_data(self, data, visitor):
