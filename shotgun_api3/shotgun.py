@@ -280,8 +280,15 @@ class Shotgun(object):
 
         :param connect: If True, connect to the server. Only used for testing.
         
-        :param ca_certs: The path to the SSL certificate file. Useful for users
-        who would like to package their application into an executable.
+        :param ca_certs: Optional path to an external SSL certificates file. By 
+        default, the Shotgun API will use its own built-in certificates file
+        which stores root certificates for the most common Certificate 
+        Authorities (CAs). If you are using a corporate or internal CA, or are
+        packaging an application into an executeable, it may be necessary to 
+        point to your own certificates file. You can do this by passing in the 
+        full path to the file via this parameter or by setting the environment 
+        variable `SHOTGUN_API_CACERTS`. In the case both are set, this 
+        parameter will take precedence. 
 
         :param login: The login to use to authenticate to the server. If login
         is provided, then password must be as well and neither script_name nor
@@ -341,7 +348,10 @@ class Shotgun(object):
         self.config.no_ssl_validation = NO_SSL_VALIDATION
         self.config.raw_http_proxy = http_proxy
         self._connection = None
-        self.__ca_certs = ca_certs
+        if ca_certs is not None:
+            self.__ca_certs = ca_certs
+        else:
+            self.__ca_certs = os.environ.get('SHOTGUN_API_CACERTS')
 
         self.base_url = (base_url or "").lower()
         self.config.scheme, self.config.server, api_base, _, _ = \
