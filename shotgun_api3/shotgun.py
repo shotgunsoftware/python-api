@@ -1638,11 +1638,16 @@ class Shotgun(object):
 
         # Authenticate using session_id
         elif self.config.session_token:
-            auth_params = {
-                "session_token" : str(self.config.session_token),
-                # Request server side to raise exception for expired sessions
-                "reject_if_expired": True
-            }
+            if self.server_caps.version and self.server_caps.version < (5, 3, 0):
+                raise ShotgunError("Session token based authentication requires server version 5.3.0 or "\
+                    "higher, server is %s" % (self.server_caps.version,))
+            
+            auth_params = {"session_token" : str(self.config.session_token)}
+
+            # Request server side to raise exception for expired sessions. 
+            # This was added in as part of Shotgun 5.4.4            
+            if self.server_caps.version and self.server_caps.version > (5, 4, 3):
+                auth_params["reject_if_expired"] = True
 
         else:
             raise ValueError("invalid auth params")
