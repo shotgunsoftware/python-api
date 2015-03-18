@@ -263,11 +263,16 @@ class Shotgun(object):
         form [username:pass@]proxy.com[:8080]
 
         :param connect: If True, connect to the server. Only used for testing.
-		
-		:param ca_certs: The path to the SSL certificate file. Useful for users
-		who would like to package their application into an executable or for
-        corporate or internal CAs. Note that providing this parameter explicitly 
-        will override any value in the SHOTGUN_API_CACERTS environment variable. 
+        
+        :param ca_certs: Optional path to an external SSL certificates file. By 
+        default, the Shotgun API will use its own built-in certificates file
+        which stores root certificates for the most common Certificate 
+        Authorities (CAs). If you are using a corporate or internal CA, or are
+        packaging an application into an executeable, it may be necessary to 
+        point to your own certificates file. You can do this by passing in the 
+        full path to the file via this parameter or by setting the environment 
+        variable `SHOTGUN_API_CACERTS`. In the case both are set, this 
+        parameter will take precedence. 
 
         :param login: The login to use to authenticate to the server. If login
         is provided, then password must be as well and neither script_name nor
