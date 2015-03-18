@@ -53,6 +53,10 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.18 - 2015 Mar 13**
+
+   + Add ability to query the per-project visibility status for entities, fields and statuses. (requires Shotgun server >= v5.4.4)
+
 **v3.0.17 - 2014 Jul 10**
 
    + Add ability to update last_accessed_by_current_user on Project.
