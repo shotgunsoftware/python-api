@@ -137,7 +137,7 @@ class ServerCapabilities(object):
         self._ensure_json_supported()
 
 
-    def _ensure_support(self, feature):
+    def _ensure_support(self, feature, raise_hell=True):
         """Checks the server version supports a given feature, raises an
         exception if it does not.
 
@@ -147,10 +147,14 @@ class ServerCapabilities(object):
         """
 
         if not self.version or self.version < feature['version']:
-            raise ShotgunError(
-                "%s requires server version %s or higher, "\
-                "server is %s" % (feature['label'], _version_str(feature['version']), _version_str(self.version))
-            )
+            if raise_hell:
+                raise ShotgunError(
+                    "%s requires server version %s or higher, "\
+                    "server is %s" % (feature['label'], _version_str(feature['version']), _version_str(self.version))
+                )
+            return False
+        else:
+            return True
 
 
     def _ensure_json_supported(self):
