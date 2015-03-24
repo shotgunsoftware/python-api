@@ -5,7 +5,7 @@ Includes the schema functions and the automated searching for all entity types
 
 import base
 import random
-
+import shotgun_api3
 
 class TestShotgunApiLong(base.LiveTestBase):
 
