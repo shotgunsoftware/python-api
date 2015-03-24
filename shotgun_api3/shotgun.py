@@ -1006,7 +1006,11 @@ class Shotgun(object):
         params = {}
 
         if project_entity:
-            params["project"] = project_entity
+            if not self.server_caps.version or self.server_caps.version < (5, 4, 4):
+                raise ShotgunError("Per project schema operations require server "\
+                                   "version 5.4.4 or higher, server is %s" % (self.server_caps.version,))
+            else:
+                params["project"] = project_entity
 
         if params:
             return self._call_rpc("schema_entity_read", params)
@@ -1026,8 +1030,12 @@ class Shotgun(object):
         params = {}
 
         if project_entity:
-            params["project"] = project_entity
-
+            if not self.server_caps.version or self.server_caps.version < (5, 4, 4):
+                raise ShotgunError("Per project schema operations require server "\
+                                   "version 5.4.4 or higher, server is %s" % (self.server_caps.version,))
+            else:
+                params["project"] = project_entity
+            
         if params:
             return self._call_rpc("schema_read", params)
         else:
@@ -1056,8 +1064,13 @@ class Shotgun(object):
         }
         if field_name:
             params["field_name"] = field_name
-        if project_entity:
-            params["project"] = project_entity
+            
+        if project_entity:            
+            if not self.server_caps.version or self.server_caps.version < (5, 4, 4):
+                raise ShotgunError("Per project schema operations require server "\
+                                   "version 5.4.4 or higher, server is %s" % (self.server_caps.version,))
+            else:
+                params["project"] = project_entity
 
         return self._call_rpc("schema_field_read", params)
 

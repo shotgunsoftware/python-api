@@ -100,30 +100,38 @@ class TestShotgunApiLong(base.LiveTestBase):
     def test_schema_with_project(self):
         """Called schema functions"""
 
-        project_entity = {'type': 'Project', 'id': 0}
-        schema = self.sg.schema_entity_read(project_entity)
-        self.assertTrue(schema, dict)
-        self.assertTrue(len(schema) > 0)
-        self.assertTrue('Project' in schema)
-        self.assertTrue('visible' in schema['Project'])
-
-        schema = self.sg.schema_read(project_entity)
-        self.assertTrue(schema, dict)
-        self.assertTrue(len(schema) > 0)
-        self.assertTrue('Version' in schema)
-        self.assertFalse('visible' in schema.keys())
-
-        schema = self.sg.schema_field_read('Version', project_entity=project_entity)
-        self.assertTrue(schema, dict)
-        self.assertTrue(len(schema) > 0)
-        self.assertTrue('user' in schema)
-        self.assertTrue('visible' in schema['user'])
-
-        schema = self.sg.schema_field_read('Version', 'user', project_entity)
-        self.assertTrue(schema, dict)
-        self.assertTrue(len(schema) > 0)
-        self.assertTrue('user' in schema)
-        self.assertTrue('visible' in schema['user'])
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 4, 4):
+            # server does not support this!
+            self.assertRaises(shotgun_api3.ShotgunError, self.sg.schema_entity_read, {'type': 'Project', 'id': 0})
+            self.assertRaises(shotgun_api3.ShotgunError, self.sg.schema_read, {'type': 'Project', 'id': 0})
+            self.assertRaises(shotgun_api3.ShotgunError, self.sg.schema_field_read, 'Version', None, {'type': 'Project', 'id': 0})
+            self.assertRaises(shotgun_api3.ShotgunError, self.sg.schema_field_read, 'Version', 'user', {'type': 'Project', 'id': 0})
+            
+        else:
+            project_entity = {'type': 'Project', 'id': 0}
+            schema = self.sg.schema_entity_read(project_entity)
+            self.assertTrue(schema, dict)
+            self.assertTrue(len(schema) > 0)
+            self.assertTrue('Project' in schema)
+            self.assertTrue('visible' in schema['Project'])
+    
+            schema = self.sg.schema_read(project_entity)
+            self.assertTrue(schema, dict)
+            self.assertTrue(len(schema) > 0)
+            self.assertTrue('Version' in schema)
+            self.assertFalse('visible' in schema.keys())
+    
+            schema = self.sg.schema_field_read('Version', project_entity=project_entity)
+            self.assertTrue(schema, dict)
+            self.assertTrue(len(schema) > 0)
+            self.assertTrue('user' in schema)
+            self.assertTrue('visible' in schema['user'])
+    
+            schema = self.sg.schema_field_read('Version', 'user', project_entity)
+            self.assertTrue(schema, dict)
+            self.assertTrue(len(schema) > 0)
+            self.assertTrue('user' in schema)
+            self.assertTrue('visible' in schema['user'])
 
 
 if __name__ == '__main__':
