@@ -164,19 +164,23 @@ class ServerCapabilities(object):
             'label': 'JSON API'
         })
 
-    def ensure_include_archived_projects(self):
+    def ensure_include_archived_projects(self, value=True):
         """Wrapper for ensure_support"""
+        # This defaults to True on the server
+        # So we only need to raise a version error if it's False
         return self._ensure_support({
             'version': (5, 3, 14),
             'label': 'include_archived_projects parameter'
-        })
+        }, (value == False))
 
-    def ensure_include_template_projects(self):
+    def ensure_include_template_projects(self, value=False):
         """Wrapper for ensure_support"""
+        # This defaults to False on the server
+        # So we only need to raise a version error if it's True
         return self._ensure_support({
             'version': (6, 0, 0),
             'label': 'include_template_projects parameter'
-        })
+        }, (value == True))
 
     def ensure_per_project_customization(self):
         """Wrapper for ensure_support"""
@@ -673,19 +677,11 @@ class Shotgun(object):
                                    include_archived_projects,
                                    include_template_projects):
 
-        if not include_archived_projects:
-            # This defaults to True on the server (no argument is sent)
-            # So we only need to check the server version if it's False
-            self.server_caps.ensure_include_archived_projects()
-            # Only pass it if it's False
-            params["include_archived_projects"] = False
+        if self.server_caps.ensure_include_archived_projects(include_archived_projects):
+            params["include_archived_projects"] = include_archived_projects
 
-        if include_template_projects:
-            # This defaults to False on the server (no argument is sent)
-            # So we only need to check the server version if it's True
-            self.server_caps.ensure_include_template_projects()
-            # Only pass it if it's True
-            params["include_template_projects"] = True
+        if self.server_caps.ensure_include_template_projects(include_template_projects):
+            params["include_template_projects"] = include_template_projects
 
         return params
 
@@ -1659,6 +1655,7 @@ class Shotgun(object):
 
         """
 
+        log_time = datetime.datetime.now()
         LOG.debug("Starting rpc call to %s with params %s" % (
             method, params))
 
@@ -1673,7 +1670,10 @@ class Shotgun(object):
         }
         http_status, resp_headers, body = self._make_call("POST",
             self.config.api_path, encoded_payload, req_headers)
-        LOG.debug("Completed rpc call to %s" % (method))
+
+        log_time = datetime.datetime.now() - log_time
+        LOG.debug("Completed rpc call to %s in %s" % (method, str(log_time)))
+
         try:
             self._parse_http_status(http_status)
         except ProtocolError, e:

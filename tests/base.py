@@ -3,12 +3,13 @@ import re
 import unittest
 from ConfigParser import ConfigParser
 
-
 import mock
 
 import shotgun_api3 as api
 from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
+
+import logging
 
 CONFIG_PATH = 'tests/config'
 
@@ -35,6 +36,10 @@ class TestBase(unittest.TestCase):
 
 
     def setUp(self, auth_mode='ApiUser'):
+
+        self.LOG = logging.getLogger("shotgun_api3")
+        self.LOG.setLevel(logging.WARN)
+
         self.config = SgTestConfig()
         self.config.read_config(CONFIG_PATH)
         self.human_login    = self.config.human_login
@@ -185,10 +190,14 @@ class MockTestBase(TestBase):
 
 class LiveTestBase(TestBase):
     '''Test base for tests relying on connection to server.'''
+
     def setUp(self, auth_mode='ApiUser'):
         super(LiveTestBase, self).setUp(auth_mode)
+
         self.sg_version = self.sg.info()['version'][:3]
+
         self._setup_db(self.config)
+
         if self.sg.server_caps.version and \
            self.sg.server_caps.version >= (3, 3, 0) and \
            (self.sg.server_caps.host.startswith('0.0.0.0') or \
@@ -197,16 +206,21 @@ class LiveTestBase(TestBase):
         else:
             self.server_address = self.sg.server_caps.host
 
+
     def _setup_db(self, config):
         data = {'name':self.config.project_name}
         self.project = _find_or_create_entity(self.sg, 'Project', data)
+
+        self.template_project = _find_or_create_entity(self.sg, 'Project', {
+            'name': 'Template Project',
+            'is_template': True
+        })
 
         data = {'name':self.config.human_name,
                 'login':self.config.human_login,
                 'password_proxy':self.config.human_password}
         if self.sg_version >= (3, 0, 0):
             data['locked_until'] = None
-
 
         self.human_user = _find_or_create_entity(self.sg, 'HumanUser', data)
 
@@ -255,6 +269,12 @@ class LiveTestBase(TestBase):
                 'sg_priority': '3'}
         keys = ['title','project', 'sg_priority']
         self.ticket = _find_or_create_entity(self.sg, 'Ticket', data, keys)
+
+        data = {'project': self.template_project,
+                'title': self.config.ticket_title,
+                'sg_priority': '1'}
+        keys = ['title', 'project', 'sg_priority']
+        self.template_ticket = _find_or_create_entity(self.sg, 'Ticket', data, keys)
 
         keys = ['code']
         data = {'code':'api wrapper test storage',
