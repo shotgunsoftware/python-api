@@ -171,6 +171,13 @@ class ServerCapabilities(object):
             'label': 'include_archived_projects parameter'
         })
 
+    def ensure_per_project_customization(self):
+        """Wrapper for ensure_support"""
+        return self._ensure_support({
+            'version': (5, 4, 4),
+            'label': 'project parameter'
+        }, True)
+
 
     def __str__(self):
         return "ServerCapabilities: host %s, version %s, is_dev %s"\
@@ -643,6 +650,15 @@ class Shotgun(object):
             params['sorts'] = sort_list
         return params
 
+
+    def _add_project_param(self, params, project_entity):
+
+        if project_entity and self.server_caps.ensure_per_project_customization():
+            params["project"] = project_entity
+
+        return params
+
+
     def summarize(self,
                   entity_type,
                   filters,
@@ -1021,12 +1037,7 @@ class Shotgun(object):
 
         params = {}
 
-        if project_entity:
-            if not self.server_caps.version or self.server_caps.version < (5, 4, 4):
-                raise ShotgunError("Per project schema operations require server "\
-                                   "version 5.4.4 or higher, server is %s" % (self.server_caps.version,))
-            else:
-                params["project"] = project_entity
+        params = self._add_project_param(params, project_entity)
 
         if params:
             return self._call_rpc("schema_entity_read", params)
@@ -1045,13 +1056,8 @@ class Shotgun(object):
 
         params = {}
 
-        if project_entity:
-            if not self.server_caps.version or self.server_caps.version < (5, 4, 4):
-                raise ShotgunError("Per project schema operations require server "\
-                                   "version 5.4.4 or higher, server is %s" % (self.server_caps.version,))
-            else:
-                params["project"] = project_entity
-            
+        params = self._add_project_param(params, project_entity)
+
         if params:
             return self._call_rpc("schema_read", params)
         else:
@@ -1078,15 +1084,11 @@ class Shotgun(object):
         params = {
             "type": entity_type,
         }
+
         if field_name:
             params["field_name"] = field_name
-            
-        if project_entity:            
-            if not self.server_caps.version or self.server_caps.version < (5, 4, 4):
-                raise ShotgunError("Per project schema operations require server "\
-                                   "version 5.4.4 or higher, server is %s" % (self.server_caps.version,))
-            else:
-                params["project"] = project_entity
+
+        params = self._add_project_param(params, project_entity)
 
         return self._call_rpc("schema_field_read", params)
 
