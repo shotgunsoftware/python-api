@@ -28,8 +28,15 @@ class TestShotgunApiLong(base.LiveTestBase):
                 continue
 
             # trying to use some different code paths to the other find test
+            # pivot_column fields aren't valid for sorting so ensure we're 
+            # not using one.
+            order_field = None
+            for field_name, field in fields.iteritems():
+                if field['data_type']["value"] != 'pivot_column':
+                    order_field = field_name
+                    break       
             # TODO for our test project, we haven't populated these entities....
-            order = [{'field_name': fields.keys()[0], 'direction': direction}]
+            order = [{'field_name': order_field, 'direction': direction}]
             if "project" in fields:
                 filters = [['project', 'is', self.project]]
             else:
