@@ -53,6 +53,14 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.19 - 2015 Mar 25**
+
+   + Add ability to authenticate with Shotgun using `session_token`.
+   + Add  `get_session_token()` method for obtaining token to authenticate with.
+   + Add new `AuthenticationFault` exception type to indicate when server communication has failed due to authentication reasons.
+   + Add support for `SHOTGUN_API_CACERTS` environment variable to provide location of external SSL certificates file.
+   + Fixes and updates to various tests
+
 **v3.0.18 - 2015 Mar 13**
 
    + Add ability to query the per-project visibility status for entities, fields and statuses. (requires Shotgun server >= v5.4.4)
@@ -73,7 +81,7 @@ Integration and unit tests are provided.
 
    + Fixed bug which allowed a value of None for password parameter in authenticate_human_user
    + Add  follow, unfollow and followers methods
-   + Added ability to login as human user
+   + Add ability to login as human user
    + Ensure that webm/mp4 mime types are always available
    + Updated link to video tour in README
    + Fixes and updates to various tests
