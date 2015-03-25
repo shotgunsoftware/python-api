@@ -137,23 +137,46 @@ class ServerCapabilities(object):
         self._ensure_json_supported()
 
 
-    def _ensure_json_supported(self):
-        """Checks the server version supports the JSON api, raises an
+    def _ensure_support(self, feature, raise_hell=True):
+        """Checks the server version supports a given feature, raises an
         exception if it does not.
 
-        :raises ShotgunError: The current server version does not support json
+        :param feature: dict supported version and human label { 'version': (int, int, int), 'label': str }
+
+        :raises ShotgunError: The current server version does not [feature]
         """
-        if not self.version or self.version < (2, 4, 0):
-            raise ShotgunError("JSON API requires server version 2.4 or "\
-                "higher, server is %s" % (self.version,))
+
+        if not self.version or self.version < feature['version']:
+            if raise_hell:
+                raise ShotgunError(
+                    "%s requires server version %s or higher, "\
+                    "server is %s" % (feature['label'], _version_str(feature['version']), _version_str(self.version))
+                )
+            return False
+        else:
+            return True
+
+
+    def _ensure_json_supported(self):
+        """Wrapper for ensure_support"""
+        self._ensure_support({
+            'version': (2, 4, 0),
+            'label': 'JSON API'
+        })
 
     def ensure_include_archived_projects(self):
-        """Checks the server version support include_archived_projects parameter
-        to find.
-        """
-        if not self.version or self.version < (5, 3, 14):
-            raise ShotgunError("The include_archived_projects flag requires server version 5.3.14 or "\
-                "higher, server is %s" % (self.version,))
+        """Wrapper for ensure_support"""
+        self._ensure_support({
+            'version': (5, 3, 14),
+            'label': 'include_archived_projects parameter'
+        })
+
+    def ensure_per_project_customization(self):
+        """Wrapper for ensure_support"""
+        return self._ensure_support({
+            'version': (5, 4, 4),
+            'label': 'project parameter'
+        }, True)
 
 
     def __str__(self):
@@ -627,6 +650,15 @@ class Shotgun(object):
             params['sorts'] = sort_list
         return params
 
+
+    def _add_project_param(self, params, project_entity):
+
+        if project_entity and self.server_caps.ensure_per_project_customization():
+            params["project"] = project_entity
+
+        return params
+
+
     def summarize(self,
                   entity_type,
                   filters,
@@ -1005,12 +1037,7 @@ class Shotgun(object):
 
         params = {}
 
-        if project_entity:
-            if not self.server_caps.version or self.server_caps.version < (5, 4, 4):
-                raise ShotgunError("Per project schema operations require server "\
-                                   "version 5.4.4 or higher, server is %s" % (self.server_caps.version,))
-            else:
-                params["project"] = project_entity
+        params = self._add_project_param(params, project_entity)
 
         if params:
             return self._call_rpc("schema_entity_read", params)
@@ -1029,13 +1056,8 @@ class Shotgun(object):
 
         params = {}
 
-        if project_entity:
-            if not self.server_caps.version or self.server_caps.version < (5, 4, 4):
-                raise ShotgunError("Per project schema operations require server "\
-                                   "version 5.4.4 or higher, server is %s" % (self.server_caps.version,))
-            else:
-                params["project"] = project_entity
-            
+        params = self._add_project_param(params, project_entity)
+
         if params:
             return self._call_rpc("schema_read", params)
         else:
@@ -1062,15 +1084,11 @@ class Shotgun(object):
         params = {
             "type": entity_type,
         }
+
         if field_name:
             params["field_name"] = field_name
-            
-        if project_entity:            
-            if not self.server_caps.version or self.server_caps.version < (5, 4, 4):
-                raise ShotgunError("Per project schema operations require server "\
-                                   "version 5.4.4 or higher, server is %s" % (self.server_caps.version,))
-            else:
-                params["project"] = project_entity
+
+        params = self._add_project_param(params, project_entity)
 
         return self._call_rpc("schema_field_read", params)
 
@@ -2208,4 +2226,6 @@ def _translate_filters_simple(sg_filter):
 
     return condition
 
-     
+def _version_str(version):
+    """Converts a tuple of int's to a '.' separated str"""
+    return '.'.join(map(str, version))
