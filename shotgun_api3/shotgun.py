@@ -97,6 +97,10 @@ class AuthenticationFault(Fault):
     """Exception when the server side reports an error related to authentication"""
     pass
 
+class MultiFactorAuthenticationFault(Fault):
+    """Exception when the server side reports an error related to missing 2FA credentials"""
+    pass
+
 # ----------------------------------------------------------------------------
 # API
 
@@ -231,6 +235,7 @@ class _Config(object):
         self.script_name = None
         self.user_login = None
         self.user_password = None
+        self.auth_token = None
         self.sudo_as_login = None
         # uuid as a string
         self.session_uuid = None
@@ -278,6 +283,7 @@ class Shotgun(object):
                  ca_certs=None,
                  login=None,
                  password=None,
+                 auth_token=None,
                  sudo_as_login=None,
                  session_token=None):
         """Initialises a new instance of the Shotgun client.
@@ -321,6 +327,10 @@ class Shotgun(object):
         the server. If password is provided, then login must be as well and
         neither script_name nor api_key can be provided.
         
+        :param auth_token: The one time token required to authenticate to
+        a server with 2FA turned on. If auth_token is provided, then login and password
+        must be as well and neither script_name nor api_key can be provided.
+
         :param sudo_as_login: A user login string for the user whose permissions will
         be applied to all actions and who will be logged as the user performing
         all actions. Note that logged events will have an additional extra meta-data parameter 
@@ -355,6 +365,10 @@ class Shotgun(object):
             if api_key is None:
                 raise ValueError("script_name provided without api_key")
 
+        if auth_token is not None:
+            if login is None or password is None:
+                raise ValueError("must provide a user login and password with an auth_token")
+
         # Can't use 'all' with python 2.4
         if len([x for x in [session_token, script_name, api_key, login, password] if x]) == 0:
             if connect:
@@ -365,6 +379,7 @@ class Shotgun(object):
         self.config.script_name = script_name
         self.config.user_login = login
         self.config.user_password = password
+        self.config.auth_token = auth_token
         self.config.session_token = session_token
         self.config.sudo_as_login = sudo_as_login
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
@@ -1519,7 +1534,7 @@ class Shotgun(object):
                 None, None, None))
         return url
 
-    def authenticate_human_user(self, user_login, user_password):
+    def authenticate_human_user(self, user_login, user_password, auth_token):
         '''Authenticate Shotgun HumanUser. HumanUser must be an active account.
         @param user_login: Login name of Shotgun HumanUser
         @param user_password: Password for Shotgun HumanUser
@@ -1534,24 +1549,29 @@ class Shotgun(object):
         # Override permissions on Config obj
         original_login = self.config.user_login
         original_password = self.config.user_password
+        original_auth_token = self.config.auth_token
 
         self.config.user_login = user_login
         self.config.user_password = user_password
+        self.config.auth_token = auth_token
 
         try:
             data = self.find_one('HumanUser', [['sg_status_list', 'is', 'act'], ['login', 'is', user_login]], ['id', 'login'], '', 'all')
             # Set back to default - There finally and except cannot be used together in python2.4
             self.config.user_login = original_login
             self.config.user_password = original_password
+            self.config.auth_token = original_auth_token
             return data
         except Fault:
             # Set back to default - There finally and except cannot be used together in python2.4
             self.config.user_login = original_login
             self.config.user_password = original_password
+            self.config.auth_token = original_auth_token
         except:
             # Set back to default - There finally and except cannot be used together in python2.4
             self.config.user_login = original_login
             self.config.user_password = original_password
+            self.config.auth_token = original_auth_token
             raise
 
 
@@ -1668,6 +1688,7 @@ class Shotgun(object):
             auth_params = {
                 "user_login" : str(self.config.user_login),
                 "user_password" : str(self.config.user_password),
+                "auth_token" : str(self.config.auth_token)
             }
 
         # Use script name instead
@@ -1867,14 +1888,15 @@ class Shotgun(object):
 
         :raises ShotgunError: If the server response contains an exception.
         """
- 
+
         ERR_AUTH = 102 # error code for authentication related problems
+        ERR_2FA  = 106 # error code when 2FA authentication is required but no 23FA token provided.
 
         if isinstance(sg_response, dict) and sg_response.get("exception"):
-            
             if sg_response.get("error_code") == ERR_AUTH:
                 raise AuthenticationFault(sg_response.get("message", "Unknown Authentication Error"))
-
+            elif sg_response.get("error_code") == ERR_2FA:
+                raise MultiFactorAuthenticationFault(sg_response.get("message", "Unknown 2FA Authentication Error"))
             else:
                 # raise general Fault            
                 raise Fault(sg_response.get("message", "Unknown Error"))
