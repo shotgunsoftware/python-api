@@ -97,8 +97,10 @@ class AuthenticationFault(Fault):
     """Exception when the server side reports an error related to authentication"""
     pass
 
-class MultiFactorAuthenticationFault(Fault):
-    """Exception when the server side reports an error related to missing 2FA credentials"""
+class MissingTwoFactorAuthenticationFault(Fault):
+    """Exception when the server side reports an error related to missing
+    2FA credentials
+    """
     pass
 
 # ----------------------------------------------------------------------------
@@ -283,9 +285,9 @@ class Shotgun(object):
                  ca_certs=None,
                  login=None,
                  password=None,
-                 auth_token=None,
                  sudo_as_login=None,
-                 session_token=None):
+                 session_token=None,
+                 auth_token=None):
         """Initialises a new instance of the Shotgun client.
 
         :param base_url: http or https url to the shotgun server.
@@ -327,10 +329,6 @@ class Shotgun(object):
         the server. If password is provided, then login must be as well and
         neither script_name nor api_key can be provided.
         
-        :param auth_token: The one time token required to authenticate to
-        a server with 2FA turned on. If auth_token is provided, then login and password
-        must be as well and neither script_name nor api_key can be provided.
-
         :param sudo_as_login: A user login string for the user whose permissions will
         be applied to all actions and who will be logged as the user performing
         all actions. Note that logged events will have an additional extra meta-data parameter 
@@ -339,6 +337,10 @@ class Shotgun(object):
         :param session_token: The session token to use to authenticate to the server. This
         can be used as an alternative to authenticating with a script user or regular user.
         You retrieve the session token by running the get_session_token() method.        
+
+        :param auth_token: The one time token required to authenticate to
+        a server with 2FA turned on. If auth_token is provided, then login and password
+        must be as well and neither script_name nor api_key can be provided.
         """
 
         # verify authentication arguments
@@ -368,6 +370,9 @@ class Shotgun(object):
         if auth_token is not None:
             if login is None or password is None:
                 raise ValueError("must provide a user login and password with an auth_token")
+
+            if script_name is not None or api_key is not None:
+                raise ValueError("cannot provide an auth_code with script_name/api_key")
 
         # Can't use 'all' with python 2.4
         if len([x for x in [session_token, script_name, api_key, login, password] if x]) == 0:
@@ -1534,11 +1539,14 @@ class Shotgun(object):
                 None, None, None))
         return url
 
-    def authenticate_human_user(self, user_login, user_password, auth_token):
+    def authenticate_human_user(self, user_login, user_password, auth_token=None):
         '''Authenticate Shotgun HumanUser. HumanUser must be an active account.
-        @param user_login: Login name of Shotgun HumanUser
-        @param user_password: Password for Shotgun HumanUser
-        @return: Dictionary of HumanUser including ID if authenticated, None is unauthorized.
+        :@param user_login: Login name of Shotgun HumanUser
+        :param user_password: Password for Shotgun HumanUser
+        :param auth_token: One-time token required to authenticate Shotgun HumanUser
+        when 2FA is turned on.
+        :return: Dictionary of HumanUser including ID if authenticated, None if unauthorized.
+        """
         '''
         if not user_login:
             raise ValueError('Please supply a username to authenticate.')
@@ -1896,7 +1904,8 @@ class Shotgun(object):
             if sg_response.get("error_code") == ERR_AUTH:
                 raise AuthenticationFault(sg_response.get("message", "Unknown Authentication Error"))
             elif sg_response.get("error_code") == ERR_2FA:
-                raise MultiFactorAuthenticationFault(sg_response.get("message", "Unknown 2FA Authentication Error"))
+                raise MissingTwoFactorAuthenticationFault(
+                    sg_response.get("message", "Unknown 2FA Authentication Error"))
             else:
                 # raise general Fault            
                 raise Fault(sg_response.get("message", "Unknown Error"))
