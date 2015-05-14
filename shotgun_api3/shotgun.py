@@ -338,9 +338,12 @@ class Shotgun(object):
         can be used as an alternative to authenticating with a script user or regular user.
         You retrieve the session token by running the get_session_token() method.        
 
-        :param auth_token: The one time token required to authenticate to
+        :param auth_token: The authentication token required to authenticate to
         a server with 2FA turned on. If auth_token is provided, then login and password
         must be as well and neither script_name nor api_key can be provided.
+        Note that these tokens can be short lived so a session is established right away if
+        an auth_token is provided. A MissingTwoFactorAuthenticationFault will be raised if the
+        auth_token is invalid.
         """
 
         # verify authentication arguments
@@ -443,8 +446,6 @@ class Shotgun(object):
             proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
             self.config.proxy_handler = urllib2.ProxyHandler({self.config.scheme : proxy_addr})
 
-
-
         if ensure_ascii:
             self._json_loads = self._json_loads_ascii
 
@@ -457,6 +458,15 @@ class Shotgun(object):
         # call to server will only be made once and will raise error
         if connect:
             self.server_caps
+
+        # When using auth_token in a 2FA scenario we need to switch to session-based
+        # authentication because the auth token will no longer be valid after a first use.
+        if self.config.auth_token != None:
+            self.config.session_token = self.get_session_token()
+            self.config.user_login = None
+            self.config.user_password = None
+            self.config.auth_token = None
+
 
     # ========================================================================
     # API Functions
@@ -1541,10 +1551,9 @@ class Shotgun(object):
 
     def authenticate_human_user(self, user_login, user_password, auth_token=None):
         '''Authenticate Shotgun HumanUser. HumanUser must be an active account.
-        :@param user_login: Login name of Shotgun HumanUser
+        :param user_login: Login name of Shotgun HumanUser
         :param user_password: Password for Shotgun HumanUser
-        :param auth_token: One-time token required to authenticate Shotgun HumanUser
-        when 2FA is turned on.
+        :param auth_token: One-time token required to authenticate Shotgun HumanUser when 2FA is turned on.
         :return: Dictionary of HumanUser including ID if authenticated, None if unauthorized.
         """
         '''
@@ -1625,7 +1634,8 @@ class Shotgun(object):
         session_token = (rv or {}).get("session_id")
         if not session_token:
             raise RuntimeError("Could not extract session_id from %s", rv)
-        self.config.session_token = session_token 
+        self.config.session_token = session_token
+
         return session_token
 
     def _build_opener(self, handler):
@@ -1696,8 +1706,9 @@ class Shotgun(object):
             auth_params = {
                 "user_login" : str(self.config.user_login),
                 "user_password" : str(self.config.user_password),
-                "auth_token" : str(self.config.auth_token)
             }
+            if self.config.auth_token:
+                auth_params["auth_token"] = str(self.config.auth_token)
 
         # Use script name instead
         elif self.config.script_name and self.config.api_key:
@@ -1904,8 +1915,7 @@ class Shotgun(object):
             if sg_response.get("error_code") == ERR_AUTH:
                 raise AuthenticationFault(sg_response.get("message", "Unknown Authentication Error"))
             elif sg_response.get("error_code") == ERR_2FA:
-                raise MissingTwoFactorAuthenticationFault(
-                    sg_response.get("message", "Unknown 2FA Authentication Error"))
+                raise MissingTwoFactorAuthenticationFault(sg_response.get("message", "Unknown 2FA Authentication Error"))
             else:
                 # raise general Fault            
                 raise Fault(sg_response.get("message", "Unknown Error"))

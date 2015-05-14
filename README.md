@@ -55,7 +55,7 @@ Integration and unit tests are provided.
 
 **v3.0.20 - 2015 May 12**
 
-   + Add new `MultiFactorAuthenticationFault` exception type to indicate when server communication has failed because authentication using 2FA token is required.
+   + Add new `MissingTwoFactorAuthenticationFault` exception type to indicate when server communication has failed because authentication using 2FA token is required.
 
 **v3.0.19 - 2015 Mar 25**
 
