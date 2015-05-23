@@ -53,6 +53,10 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.20 - 2015 May 12**
+
+   + Added authentication support for Shotgun servers with two factor authentication turned on.
+
 **v3.0.19 - 2015 Mar 25**
 
    + Add ability to authenticate with Shotgun using `session_token`.
