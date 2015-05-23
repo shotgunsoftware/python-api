@@ -99,7 +99,7 @@ class AuthenticationFault(Fault):
 
 class MissingTwoFactorAuthenticationFault(Fault):
     """Exception when the server side reports an error related to missing
-    2FA credentials
+    two factor authentication credentials
     """
     pass
 
@@ -339,11 +339,11 @@ class Shotgun(object):
         You retrieve the session token by running the get_session_token() method.        
 
         :param auth_token: The authentication token required to authenticate to
-        a server with 2FA turned on. If auth_token is provided, then login and password
-        must be as well and neither script_name nor api_key can be provided.
-        Note that these tokens can be short lived so a session is established right away if
-        an auth_token is provided. A MissingTwoFactorAuthenticationFault will be raised if the
-        auth_token is invalid.
+        a server with two factor authentication turned on. If auth_token is provided,
+        then login and password must be as well and neither script_name nor api_key
+        can be provided. Note that these tokens can be short lived so a session is
+        established right away if an auth_token is provided. A
+        MissingTwoFactorAuthenticationFault will be raised if the auth_token is invalid.
         """
 
         # verify authentication arguments
@@ -1552,8 +1552,12 @@ class Shotgun(object):
     def authenticate_human_user(self, user_login, user_password, auth_token=None):
         '''Authenticate Shotgun HumanUser. HumanUser must be an active account.
         :param user_login: Login name of Shotgun HumanUser
+
         :param user_password: Password for Shotgun HumanUser
-        :param auth_token: One-time token required to authenticate Shotgun HumanUser when 2FA is turned on.
+
+        :param auth_token: One-time token required to authenticate Shotgun HumanUser
+        when two factor authentication is turned on.
+
         :return: Dictionary of HumanUser including ID if authenticated, None if unauthorized.
         """
         '''

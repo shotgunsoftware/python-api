@@ -55,7 +55,7 @@ Integration and unit tests are provided.
 
 **v3.0.20 - 2015 May 12**
 
-   + Add new `MissingTwoFactorAuthenticationFault` exception type to indicate when server communication has failed because authentication using 2FA token is required.
+   + Added authentication support for Shotgun servers with two factor authentication turned on.
 
 **v3.0.19 - 2015 Mar 25**
 
