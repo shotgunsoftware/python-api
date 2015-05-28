@@ -461,7 +461,7 @@ class Shotgun(object):
 
         # When using auth_token in a 2FA scenario we need to switch to session-based
         # authentication because the auth token will no longer be valid after a first use.
-        if self.config.auth_token != None:
+        if self.config.auth_token is not None:
             self.config.session_token = self.get_session_token()
             self.config.user_login = None
             self.config.user_password = None
@@ -701,7 +701,7 @@ class Shotgun(object):
         based on the given filters.
         """
 
-        if not isinstance(grouping, list) and grouping != None:
+        if not isinstance(grouping, list) and grouping is not None:
             msg = "summarize() 'grouping' parameter must be a list or None"
             raise ValueError(msg)
 
@@ -721,7 +721,7 @@ class Shotgun(object):
             # Defaults to True on the server, so only pass it if it's False
             params["include_archived_projects"] = False
 
-        if grouping != None:
+        if grouping is not None:
             params['grouping'] = grouping
 
         records = self._call_rpc('summarize', params)
@@ -1913,7 +1913,7 @@ class Shotgun(object):
         """
 
         ERR_AUTH = 102 # error code for authentication related problems
-        ERR_2FA  = 106 # error code when 2FA authentication is required but no 23FA token provided.
+        ERR_2FA  = 106 # error code when 2FA authentication is required but no 2FA token provided.
 
         if isinstance(sg_response, dict) and sg_response.get("exception"):
             if sg_response.get("error_code") == ERR_AUTH:
@@ -1956,7 +1956,7 @@ class Shotgun(object):
 
         if self.config.convert_datetimes_to_utc:
             def _change_tz(value):
-                if value.tzinfo == None:
+                if value.tzinfo is None:
                     value = value.replace(tzinfo=SG_TIMEZONE.local)
                 return value.astimezone(SG_TIMEZONE.utc)
         else:
