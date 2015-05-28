@@ -1408,6 +1408,7 @@ class TestErrors(base.TestBase):
         api_key = self.config.api_key
         login = self.config.human_login
         password = self.config.human_password
+        auth_token = "111111"
 
         # Test various combinations of illegal arguments
         self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url)
@@ -1417,6 +1418,12 @@ class TestErrors(base.TestBase):
         self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, login=login)
         self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, password=password)
         self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, script_name, login=login, password=password)
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, login=login, auth_token=auth_token)
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, password=password, auth_token=auth_token)
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, script_name, login=login,
+                          password=password, auth_token=auth_token)
+        self.assertRaises(ValueError, shotgun_api3.Shotgun, server_url, api_key=api_key, login=login,
+                          password=password, auth_token=auth_token)
 
         # Test failed authentications
         sg = shotgun_api3.Shotgun(server_url, script_name, api_key)
