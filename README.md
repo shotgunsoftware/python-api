@@ -53,7 +53,7 @@ Integration and unit tests are provided.
 
 ## Changelog
 
-**v3.0.20 - TBD**
+**v3.0.20 - 2015 Jun 10**
 
    + Add authentication support for Shotgun servers with two-factor authentication turned on.
 
