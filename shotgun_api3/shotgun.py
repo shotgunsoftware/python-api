@@ -2039,7 +2039,7 @@ class Shotgun(object):
                 proxy_info=pi, disable_ssl_certificate_validation=self.config.no_ssl_validation)
         else:
             self._connection = Http(timeout=self.config.timeout_secs, ca_certs=self.__ca_certs,
-                disable_ssl_certificate_validation=self.config.no_ssl_validation)
+                proxy_info=None, disable_ssl_certificate_validation=self.config.no_ssl_validation)
 
         return self._connection
 
