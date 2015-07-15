@@ -1632,7 +1632,7 @@ class Shotgun(object):
             [{'content': 'Please add more awesomeness to the color grading.',
               'created_at': '2015-07-14 21:33:28 UTC',
               'created_by': {'id': 38,
-                             'name': 'John Smith',
+                             'name': 'John Pink',
                              'status': 'act',
                              'type': 'HumanUser',
                              'valid': 'valid'},
