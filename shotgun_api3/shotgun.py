@@ -1623,6 +1623,166 @@ class Shotgun(object):
         record = self._call_rpc("update_project_last_accessed_by_current_user", params)
         result = self._parse_records(record)[0]
 
+
+
+    def note_thread(self, note_id, entity_fields=None):
+        """
+        # args = {
+          #    note_id - the id of the note thread you want the contents of                        # Required
+          #    entity_fields - Dictionary of specific fields to retrieve for different entity types. In the format
+          #    { <entity_type> : [ array of fields ], <entity_type> : [ array of fields ], ... }   # Optional
+          # }
+        """        
+
+        if self.server_caps.version and self.server_caps.version < (6, 2, 0):
+                raise ShotgunError("activity_stream requires server version 6.2.0 or "\
+                    "higher, server is %s" % (self.server_caps.version,))
+
+        
+        entity_fields = entity_fields or {}
+
+        params = { "note_id": note_id, "entity_fields": entity_fields }
+
+        print params
+        record = self._call_rpc("note_thread_contents", params)
+        result = self._parse_records(record)
+        return result
+
+
+    def auto_complete(self, text, entity_types, project_ids = None, max_results=None):
+        """
+          # args = {
+          #  'text': String   // text to match against must be at least 3 characters               # Required 
+          #  'project_ids' : [ Fixnum, ...]   // Can be nil/missing for no project restriction     # Optional
+          #  'entity_types' : {   // entity types to match against
+          #      <entity_type> : { crud filters or empty hash },
+          #      <entity_type> : { crud filters or empty hash },
+          #      ... }                                                                             # Required
+          #  'max_restults': Fixnum // if missing the site pref for max items is used              # Optional
+          #   
+          # Example request:
+          # {
+          #   "text": "search for me",
+          #   "project_ids": [34],   
+          #   "entity_types": {
+          #     "Task": {"filter_operator": "any", "filters": ["sg_status_list", "is_not", "omt"]}
+          #   },
+          #   "max_results": 50
+          # },
+          #
+          # Example return:
+          #  {
+          #    "terms": ["search", "for", "me"],
+          #    "matches": [
+          #      { 
+          #        "type": "Task", 
+          #        "id": 1234, 
+          #        "name": "Display Name", 
+          #        "status": "ip", 
+          #        "subtype": null, 
+          #        "project_id": 34, 
+          #        "links": ["Shot", "S001"], 
+          #        "entity_state": null
+          #      }
+          #    ]
+          #  }
+            
+        
+        
+        """
+        if self.server_caps.version and self.server_caps.version < (6, 2, 0):
+                raise ShotgunError("auto_complete requires server version 6.2.0 or "\
+                    "higher, server is %s" % (self.server_caps.version,))
+        
+        project_ids = project_ids or []
+
+        params = { "text": text, 
+                   "entity_types": entity_types,
+                   "project_ids": project_ids }
+
+        if max_results:
+            params["max_results"] = max_results
+
+        print "params: %s" % params
+        record = self._call_rpc("query_display_name_cache", params)
+        result = self._parse_records(record)
+        return result
+
+
+    def activity_stream(self, entity_type, entity_id, entity_fields=None, min_id=None, max_id=None, limit=None):
+        """
+        Retrieve activity stream data from Shotgun.
+        This data corresponds to the data that is displayed on the Actity tab in the Shotgun Web UI.
+        
+        A complex data structure on the following form will be returned from Shotgun:
+        
+        {'earliest_update_id': 50,
+         'entity_id': 65,
+         'entity_type': 'Project',
+         'latest_update_id': 79,
+         'updates': [{'created_at': '2015-07-15 11:06:55 UTC',
+                      'created_by': {'id': 38,
+                                     'image': '6641',
+                                     'name': 'John Smith',
+                                     'status': 'act',
+                                     'type': 'HumanUser',
+                                     'valid': 'valid'},
+                      'id': 79,
+                      'meta': {'entity_id': 6004,
+                               'entity_type': 'Version',
+                               'type': 'new_entity'},
+                      'primary_entity': {'id': 6004,
+                                         'name': 'Review_turntable_v2',
+                                         'status': 'rev',
+                                         'type': 'Version',
+                                         'valid': 'valid'},
+                      'read': False,
+                      'update_type': 'create'},        
+        ]}
+        
+        The main payload of the return data can be found inside the 'updates' key, containing a list
+        of dictionaries. This list is always returned in descending date order. Each item may contain
+        differnt fields depending on their update type. The primary_entity key represents the main
+        Shotgun entity that is associated with the update. By default, this entity is returned with a
+        set of standard fields. By using the entity_fields parameter, you can extend the returned data
+        to include additional fields. If you for example wanted to return the asset type for all assets
+        and the linked sequence for all Shots, pass the following entity_fields:
+        
+        {"Shot": ["sg_sequence"], "Asset": ["sg_asset_type"]}
+        
+        Deep queries can be used in this syntax if you want to traverse into connected data.
+        
+        :param entity_type: Entity type to retrieve activity stream for
+        :param entity_id: Entity id to retrieve activity stream for
+        :param entity_fields: List of additional fields to include. See above for details
+        :param max_id: Do not retrieve ids greater than this id. 
+                       This is useful when implementing paging.
+        :param min_id: Do not retrieve ids lesser than this id. 
+                       This is useful when implementing caching of the event stream
+                       data and you want to "top up" an existing cache.
+        :param limit: Limit the number of returned records. If not specified, the system
+                      default will be used.
+
+        :returns: A complex activity stream data structure. See above for details 
+        """
+        if self.server_caps.version and self.server_caps.version < (6, 2, 0):
+                raise ShotgunError("activity_stream requires server version 6.2.0 or "\
+                    "higher, server is %s" % (self.server_caps.version,))
+
+        # set up parameters to send to server.
+        entity_fields = entity_fields or {}
+        params = { "type": entity_type,
+                   "id": entity_id,
+                   "max_id": max_id,
+                   "min_id": min_id,
+                   "limit": limit,
+                   "entity_fields": entity_fields }
+
+        record = self._call_rpc("activity_stream", params)
+        result = self._parse_records(record)[0]
+        return result
+
+
     def get_session_token(self):
         """
         Get the session token associated with the current session.
@@ -2007,6 +2167,7 @@ class Shotgun(object):
         def _inbound_visitor(value):
             if isinstance(value, basestring):
                 if len(value) == 20 and self._DATE_TIME_PATTERN.match(value):
+                    print "time value: '%s'" % value
                     try:
                         # strptime was not on datetime in python2.4
                         value = datetime.datetime(
