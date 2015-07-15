@@ -1627,23 +1627,66 @@ class Shotgun(object):
 
     def note_thread(self, note_id, entity_fields=None):
         """
-        # args = {
-          #    note_id - the id of the note thread you want the contents of                        # Required
-          #    entity_fields - Dictionary of specific fields to retrieve for different entity types. In the format
-          #    { <entity_type> : [ array of fields ], <entity_type> : [ array of fields ], ... }   # Optional
-          # }
+        Returns the full conversation for a note, including replies and attachments:
+        
+            [{'content': 'Please add more awesomeness to the color grading.',
+              'created_at': '2015-07-14 21:33:28 UTC',
+              'created_by': {'id': 38,
+                             'name': 'John Smith',
+                             'status': 'act',
+                             'type': 'HumanUser',
+                             'valid': 'valid'},
+              'id': 6013,
+              'type': 'Note'},
+             {'created_at': '2015-07-14 21:33:32 UTC',
+              'created_by': {'id': 38,
+                             'name': 'John Pink',
+                             'status': 'act',
+                             'type': 'HumanUser',
+                             'valid': 'valid'},
+              'id': 159,
+              'type': 'Attachment'},
+             {'content': 'More awesomeness added',
+              'created_at': '2015-07-14 21:54:51 UTC',
+              'id': 5,
+              'type': 'Reply',
+              'user': {'id': 38,
+                       'name': 'David Blue',
+                       'status': 'act',
+                       'type': 'HumanUser',
+                       'valid': 'valid'}}]
+
+        The list is returned in descneding chronological order.
+        
+        If you wish to include additional fields beyond the ones that are 
+        returned by default, you can specify these in an entity_fields 
+        dictionary. This dictonary should be keyed by entity type and each
+        key should contain a list of fields to retrieve, for example:
+        
+            { "Note": ["created_by.HumanUser.image", 
+                      "addressings_to", 
+                      "playlist", 
+                      "user" ],
+              "Reply": ["content"], 
+              "Attachment": ["filmstrip_image", 
+                            "local_storage", 
+                            "this_file", 
+                            "image"]
+            }
+        
+        :param note_id: The id for the note to be retrieved
+        :param entity_fields: Additional fields to retrieve as part of the request. 
+                              See above for details.
+        :returns: Complex data structure 
         """        
 
         if self.server_caps.version and self.server_caps.version < (6, 2, 0):
-                raise ShotgunError("activity_stream requires server version 6.2.0 or "\
+                raise ShotgunError("note_thread requires server version 6.2.0 or "\
                     "higher, server is %s" % (self.server_caps.version,))
 
-        
         entity_fields = entity_fields or {}
-
         params = { "note_id": note_id, "entity_fields": entity_fields }
 
-        print params
         record = self._call_rpc("note_thread_contents", params)
         result = self._parse_records(record)
         return result
