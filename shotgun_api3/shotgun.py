@@ -1625,9 +1625,8 @@ class Shotgun(object):
 
 
 
-    def note_thread(self, note_id, entity_fields=None):
-        """
-        Returns the full conversation for a given note, including 
+    def note_thread_read(self, note_id, entity_fields=None):
+        """Returns the full conversation for a given note, including 
         replies and attachments. Returns a complex data structure
         on the following form:
         
@@ -1699,7 +1698,7 @@ class Shotgun(object):
         return result
 
 
-    def auto_complete(self, text, entity_types, project_ids=None, limit=None):
+    def global_search(self, text, entity_types, project_ids=None, limit=None):
         """
         Searches across selected entity types for a string keyword or phrase.
         
@@ -1808,8 +1807,8 @@ class Shotgun(object):
         return result
 
 
-    def activity_stream(self, entity_type, entity_id, entity_fields=None, 
-                        min_id=None, max_id=None, limit=None):
+    def activity_stream_read(self, entity_type, entity_id, entity_fields=None, 
+                             min_id=None, max_id=None, limit=None):
         """
         Retrieves activity stream data from Shotgun.
         This data corresponds to the data that is displayed on the 
