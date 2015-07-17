@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-'''
+"""
  -----------------------------------------------------------------------------
  Copyright (c) 2009-2015, Shotgun Software Inc
 
@@ -27,7 +27,7 @@
  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-'''
+"""
 
 
 import base64
@@ -1550,7 +1550,7 @@ class Shotgun(object):
         return url
 
     def authenticate_human_user(self, user_login, user_password, auth_token=None):
-        '''Authenticate Shotgun HumanUser. HumanUser must be an active account.
+        """Authenticate Shotgun HumanUser. HumanUser must be an active account.
         :param user_login: Login name of Shotgun HumanUser
 
         :param user_password: Password for Shotgun HumanUser
@@ -1560,7 +1560,6 @@ class Shotgun(object):
 
         :return: Dictionary of HumanUser including ID if authenticated, None if unauthorized.
         """
-        '''
         if not user_login:
             raise ValueError('Please supply a username to authenticate.')
 
@@ -1625,10 +1624,12 @@ class Shotgun(object):
 
 
 
-    def note_thread_read(self, note_id, entity_fields=None):
-        """Returns the full conversation for a given note, including 
-        replies and attachments. Returns a complex data structure
-        on the following form:
+    def threaded_entity_read(self, entity_type, entity_id, entity_fields=None):
+        """Returns the full conversation for a given threaded entity, including 
+        replies and attachments. Threaded entities are for example notes
+        and tickets. 
+        
+        Returns a complex data structure on the following form:
         
             [{'content': 'Please add more awesomeness to the color grading.',
               'created_at': '2015-07-14 21:33:28 UTC',
@@ -1675,7 +1676,8 @@ class Shotgun(object):
                             "image"]
             }
         
-        :param note_id: The entity id for the note to be retrieved
+        :param entity_id: The type of threaded entity to be retrieved
+        :param entity_id: The id for the threaded entity to be retrieved
         :param entity_fields: Additional fields to retrieve as part 
                               of the request. See above for details.
                               
@@ -1686,21 +1688,25 @@ class Shotgun(object):
                 raise ShotgunError("note_thread requires server version 6.2.0 or "\
                     "higher, server is %s" % (self.server_caps.version,))
 
+        if entity_type != "Note":
+            raise ShotgunError("threaded_entity_read() currently only supports "
+                               "notes.")
+
         entity_fields = entity_fields or {}
         
         if not isinstance(entity_fields, dict):
             raise ValueError("entity_fields parameter must be a dictionary")
         
-        params = { "note_id": note_id, "entity_fields": entity_fields }
+        params = { "note_id": entity_id, "entity_fields": entity_fields }
 
         record = self._call_rpc("note_thread_contents", params)
         result = self._parse_records(record)
         return result
 
 
-    def global_search(self, text, entity_types, project_ids=None, limit=None):
+    def text_search(self, text, entity_types, project_ids=None, limit=None):
         """
-        Searches across selected entity types for a string keyword or phrase.
+        Searches across selected entity types for a given text.
         
         This method can be used to implement auto completion or a Shotgun 
         global search. The method requires a text input phrase that is at least 
@@ -2150,7 +2156,7 @@ class Shotgun(object):
         return json.loads(body)
 
     def _json_loads_ascii(self, body):
-        '''See http://stackoverflow.com/questions/956867'''
+        """"See http://stackoverflow.com/questions/956867"""
         def _decode_list(lst):
             newlist = []
             for i in lst:
@@ -2486,8 +2492,8 @@ class FormPostHandler(urllib2.BaseHandler):
 
 
 def _translate_filters(filters, filter_operator):
-    '''_translate_filters translates filters params into data structure
-    expected by rpc call.'''
+    """_translate_filters translates filters params into data structure
+    expected by rpc call."""
     wrapped_filters = {
         "filter_operator": filter_operator or "all",
         "filters": filters
