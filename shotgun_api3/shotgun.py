@@ -1624,10 +1624,9 @@ class Shotgun(object):
 
 
 
-    def threaded_entity_read(self, entity_type, entity_id, entity_fields=None):
-        """Returns the full conversation for a given threaded entity, including 
-        replies and attachments. Threaded entities are for example notes
-        and tickets. 
+    def note_thread_read(self, note_id, entity_fields=None):
+        """Returns the full conversation for a given note, including 
+        replies and attachments.
         
         Returns a complex data structure on the following form:
         
@@ -1676,8 +1675,7 @@ class Shotgun(object):
                             "image"]
             }
         
-        :param entity_id: The type of threaded entity to be retrieved
-        :param entity_id: The id for the threaded entity to be retrieved
+        :param note_id: The id for the note to be retrieved
         :param entity_fields: Additional fields to retrieve as part 
                               of the request. See above for details.
                               
@@ -1688,16 +1686,12 @@ class Shotgun(object):
                 raise ShotgunError("note_thread requires server version 6.2.0 or "\
                     "higher, server is %s" % (self.server_caps.version,))
 
-        if entity_type != "Note":
-            raise ShotgunError("threaded_entity_read() currently only supports "
-                               "notes.")
-
         entity_fields = entity_fields or {}
         
         if not isinstance(entity_fields, dict):
             raise ValueError("entity_fields parameter must be a dictionary")
         
-        params = { "note_id": entity_id, "entity_fields": entity_fields }
+        params = { "note_id": note_id, "entity_fields": entity_fields }
 
         record = self._call_rpc("note_thread_contents", params)
         result = self._parse_records(record)
