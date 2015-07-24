@@ -29,7 +29,8 @@ except ImportError:
 import mimetypes    # used for attachment upload
 try:
     mimetypes.add_type('video/webm','.webm') # try adding to test for unicode error
-except UnicodeDecodeError:
+except (UnicodeDecodeError, TypeError):
     # Ticket #25579 python bug on windows with unicode
+    # Ticket #23371 mimetypes initialization fails on Windows because of TypeError (http://bugs.python.org/issue23371)
     # Use patched version of mimetypes
     from .lib import mimetypes as mimetypes
