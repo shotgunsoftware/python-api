@@ -53,6 +53,10 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.22 - TBD**
+
+   + TBD
+
 **v3.0.21 - 2015 Aug 13**
 
    + Update bundled httplib2 module to latest v0.9.1 - fixes some bugs
