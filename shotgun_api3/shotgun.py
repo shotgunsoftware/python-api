@@ -140,7 +140,7 @@ class ServerCapabilities(object):
             self.is_dev = False
 
         self.version = tuple(self.version[:3])
-        self._ensure_json_supported()
+        self.ensure_json_supported()
 
 
     def _ensure_support(self, feature, raise_hell=True):
@@ -163,19 +163,30 @@ class ServerCapabilities(object):
             return True
 
 
-    def _ensure_json_supported(self):
+    def ensure_json_supported(self):
         """Wrapper for ensure_support"""
-        self._ensure_support({
+        return self._ensure_support({
             'version': (2, 4, 0),
             'label': 'JSON API'
         })
 
-    def ensure_include_archived_projects(self):
+    def ensure_include_archived_projects(self, value=True):
         """Wrapper for ensure_support"""
-        self._ensure_support({
+        # This defaults to True on the server
+        # So we only need to raise a version error if it's False
+        return self._ensure_support({
             'version': (5, 3, 14),
             'label': 'include_archived_projects parameter'
-        })
+        }, (value == False))
+
+    def ensure_include_template_projects(self, value=False):
+        """Wrapper for ensure_support"""
+        # This defaults to False on the server
+        # So we only need to raise a version error if it's True
+        return self._ensure_support({
+            'version': (6, 0, 0),
+            'label': 'include_template_projects parameter'
+        }, (value == True))
 
     def ensure_per_project_customization(self):
         """Wrapper for ensure_support"""
@@ -515,7 +526,8 @@ class Shotgun(object):
         return self._call_rpc("info", None, include_auth_params=False)
 
     def find_one(self, entity_type, filters, fields=None, order=None,
-        filter_operator=None, retired_only=False, include_archived_projects=True):
+        filter_operator=None, retired_only=False,
+        include_archived_projects=True, include_template_projects=False):
         """Calls the find() method and returns the first result, or None.
 
         :param entity_type: Required, entity type (string) to find.
@@ -534,16 +546,26 @@ class Shotgun(object):
         :param limit: Optional, number of entities to return per page.
         Defaults to 0 which returns all entities that match.
 
-        :param page: Optional, page of results to return. By default all
-        results are returned. Use together with limit.
-
         :param retired_only: Optional, flag to return only entities that have
         been retried. Defaults to False which returns only entities which
         have not been retired.
+
+        :param page: Optional, page of results to return. By default all
+        results are returned. Use together with limit.
+
+        :param include_archived_projects: Optional, flag to include entities
+        whose projects have been archived. Default: True
+
+        :param include_template_projects: Optional, flag to include entities
+        belonging to template projects. Default: False
+
+        :returns: dict of requested entity's fields, or None if not found.
         """
 
         results = self.find(entity_type, filters, fields, order,
-            filter_operator, 1, retired_only, include_archived_projects=include_archived_projects)
+            filter_operator, 1, retired_only,
+            include_archived_projects=include_archived_projects,
+            include_template_projects=include_template_projects)
 
         if results:
             return results[0]
@@ -551,7 +573,7 @@ class Shotgun(object):
 
     def find(self, entity_type, filters, fields=None, order=None,
             filter_operator=None, limit=0, retired_only=False, page=0,
-            include_archived_projects=True):
+            include_archived_projects=True, include_template_projects=False):
         """Find entities matching the given filters.
 
         :param entity_type: Required, entity type (string) to find.
@@ -578,7 +600,10 @@ class Shotgun(object):
         have not been retired.
 
         :param include_archived_projects: Optional, flag to include entities
-        whose projects have been archived
+        whose projects have been archived. Default: True
+
+        :param include_template_projects: Optional, flag to include entities
+        belonging to template projects. Default: False
 
         :returns: list of the dicts for each entity with the requested fields,
         and their id and type.
@@ -597,18 +622,15 @@ class Shotgun(object):
             raise ShotgunError("Deprecated: Use of filter_operator for find()"
                 " is not valid any more. See the documentation on find()")
 
-        if not include_archived_projects:
-            # This defaults to True on the server (no argument is sent)
-            # So we only need to check the server version if it is False
-            self.server_caps.ensure_include_archived_projects()
-
-
         params = self._construct_read_parameters(entity_type,
                                                  fields,
                                                  filters,
                                                  retired_only,
-                                                 order,
-                                                 include_archived_projects)
+                                                 order)
+
+        params = self._construct_flag_parameters(params,
+                                                 include_archived_projects,
+                                                 include_template_projects)
 
         if limit and limit <= self.config.records_per_page:
             params["paging"]["entities_per_page"] = limit
@@ -645,26 +667,24 @@ class Shotgun(object):
         return self._parse_records(records)
 
 
-
     def _construct_read_parameters(self,
                                    entity_type,
                                    fields,
                                    filters,
                                    retired_only,
-                                   order,
-                                   include_archived_projects):
-        params = {}
-        params["type"] = entity_type
-        params["return_fields"] = fields or ["id"]
-        params["filters"] = filters
-        params["return_only"] = (retired_only and 'retired') or "active"
-        params["return_paging_info"] = True
-        params["paging"] = { "entities_per_page": self.config.records_per_page,
-                             "current_page": 1 }
+                                   order):
 
-        if include_archived_projects is False:
-            # Defaults to True on the server, so only pass it if it's False
-            params["include_archived_projects"] = False
+        params = {
+            "type": entity_type,
+            "return_fields": fields or ["id"],
+            "filters": filters,
+            "return_only": (retired_only and 'retired') or "active",
+            "return_paging_info": True,
+            "paging": {
+                "entities_per_page": self.config.records_per_page,
+                "current_page": 1
+            }
+        }
 
         if order:
             sort_list = []
@@ -678,6 +698,21 @@ class Shotgun(object):
                     'direction' : sort['direction']
                 })
             params['sorts'] = sort_list
+
+        return params
+
+
+    def _construct_flag_parameters(self,
+                                   params,
+                                   include_archived_projects,
+                                   include_template_projects):
+
+        if self.server_caps.ensure_include_archived_projects(include_archived_projects):
+            params["include_archived_projects"] = include_archived_projects
+
+        if self.server_caps.ensure_include_template_projects(include_template_projects):
+            params["include_template_projects"] = include_template_projects
+
         return params
 
 
@@ -695,7 +730,8 @@ class Shotgun(object):
                   summary_fields,
                   filter_operator=None,
                   grouping=None,
-                  include_archived_projects=True):
+                  include_archived_projects=True,
+                  include_template_projects=False):
         """
         Return group and summary information for entity_type for summary_fields
         based on the given filters.
@@ -708,18 +744,13 @@ class Shotgun(object):
         if isinstance(filters, (list, tuple)):
             filters = _translate_filters(filters, filter_operator)
 
-        if not include_archived_projects:
-            # This defaults to True on the server (no argument is sent)
-            # So we only need to check the server version if it is False
-            self.server_caps.ensure_include_archived_projects()
-
         params = {"type": entity_type,
                   "summaries": summary_fields,
                   "filters": filters}
 
-        if include_archived_projects is False:
-            # Defaults to True on the server, so only pass it if it's False
-            params["include_archived_projects"] = False
+        params = self._construct_flag_parameters(params,
+                                                 include_archived_projects,
+                                                 include_template_projects)
 
         if grouping is not None:
             params['grouping'] = grouping
@@ -1666,6 +1697,7 @@ class Shotgun(object):
 
         """
 
+        log_time = datetime.datetime.now()
         LOG.debug("Starting rpc call to %s with params %s" % (
             method, params))
 
@@ -1680,7 +1712,10 @@ class Shotgun(object):
         }
         http_status, resp_headers, body = self._make_call("POST",
             self.config.api_path, encoded_payload, req_headers)
-        LOG.debug("Completed rpc call to %s" % (method))
+
+        log_time = datetime.datetime.now() - log_time
+        LOG.debug("Completed rpc call to %s in %s" % (method, str(log_time)))
+
         try:
             self._parse_http_status(http_status)
         except ProtocolError, e:
