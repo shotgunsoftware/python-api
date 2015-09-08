@@ -53,9 +53,18 @@ Integration and unit tests are provided.
 
 ## Changelog
 
-**v3.0.22 - TBD**
+**v3.0.22 - 2015 September 9**
 
-   + TBD
+   + Added method text_search() which allows an API client to access 
+     the Shotgun global search and auto completer.
+   + Added method activity_stream_read() which allows an API client
+     to access the activity stream for a given Shotgun entity.
+   + Added method note_thread_read() which allows an API client to 
+     download an entire note conversation, including replies and 
+     attachments, using a single API call.
+   + Added an experimental 'mockgun' module which can be used to emulate
+     the Shotgun API, for example inside unit test rigs.
+   + [minor] Improved docstrings.
 
 **v3.0.21 - 2015 Aug 13**
 
