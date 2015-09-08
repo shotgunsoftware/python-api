@@ -426,7 +426,7 @@ class TestShotgunApi(base.LiveTestBase):
 
 
     def test_simple_summary(self):
-        '''test_simple_summary tests simple query using summarize.'''
+        """Test simple call to summarize"""
         summaries = [{'field': 'id', 'type': 'count'}]
         grouping = [{'direction': 'asc', 'field': 'id', 'type': 'exact'}]
         filters = [['project', 'is', self.project]]
@@ -441,6 +441,7 @@ class TestShotgunApi(base.LiveTestBase):
         assert(result['summaries'])
 
     def test_summary_include_archived_projects(self):
+        """Test summarize with archived project"""
         if self.sg.server_caps.version > (5, 3, 13):
             # archive project
             self.sg.update('Project', self.project['id'], {'archived':True})
@@ -457,32 +458,54 @@ class TestShotgunApi(base.LiveTestBase):
             self.sg.update('Project', self.project['id'], {'archived':False})
 
     def test_summary_values(self):
-        ''''''
-        # try to fix data if not in expected state
-        shots = self.sg.find('Shot',[['project','is',self.project],['code','in',['shot 1','shot 2','shot 3']]])
-        print len(shots)
-        for shot in shots:
-            # These shots should have been deleted,if they still exist it is due to an failure in mid-test
-            self.sg.delete('Shot', shot['id'])
+        """Test summarize return data"""
 
+        # create three unique shots
+        shot_prefix = uuid.uuid4().hex 
 
-        shot_data = {
-            'sg_status_list': 'ip',
-            'sg_cut_duration': 100,
-            'project': self.project
-        }
         shots = []
-        shots.append(self.sg.create('Shot', dict(shot_data.items() +
-                                    {'code': 'shot 1'}.items())))
-        shots.append(self.sg.create('Shot', dict(shot_data.items() +
-                                    {'code': 'shot 2'}.items())))
-        shots.append(self.sg.create('Shot', dict(shot_data.items() +
-                                    {'code': 'shot 3',
-                                     'sg_status_list': 'fin'}.items())))
+
+        shot_data_1 = {
+            "code": "%s Shot 1" % shot_prefix,
+            "sg_status_list": "ip",
+            "sg_cut_duration": 100,
+            "project": self.project
+        }
+
+        shot_data_2 = {
+            "code": "%s Shot 2" % shot_prefix,
+            "sg_status_list": "ip",
+            "sg_cut_duration": 100,
+            "project": self.project
+        }
+        
+        shot_data_3 = {
+            "code": "%s Shot 3" % shot_prefix,
+            "sg_status_list": "fin",
+            "sg_cut_duration": 100,
+            "project": self.project
+        }
+
+        shot_data_4 = {
+            "code": "%s Shot 4" % shot_prefix,
+            "sg_status_list": "wtg",
+            "sg_cut_duration": 0,
+            "project": self.project
+        }
+
+        shots.append(self.sg.create("Shot", shot_data_1))
+        shots.append(self.sg.create("Shot", shot_data_2))
+        shots.append(self.sg.create("Shot", shot_data_3))
+        shots.append(self.sg.create("Shot", shot_data_4))
+        
+
         summaries = [{'field': 'id', 'type': 'count'},
                      {'field': 'sg_cut_duration', 'type': 'sum'}]
-        grouping = [{'direction': 'asc', 'field': 'sg_status_list', 'type': 'exact'}]
-        filters = [['project', 'is', self.project]]
+        grouping = [{'direction': 'asc', 
+                     'field': 'sg_status_list', 
+                     'type': 'exact'}]
+        filters = [['project', 'is', self.project], 
+                   ['code', 'starts_with', shot_prefix]]
         result = self.sg.summarize('Shot',
                                    filters=filters,
                                    summary_fields=summaries,
@@ -510,7 +533,7 @@ class TestShotgunApi(base.LiveTestBase):
         for s in shots:
             batch_data.append({"request_type": "delete",
                                "entity_type": "Shot",
-                               "entity_id": s['id']
+                               "entity_id": s["id"]
                               })
         self.sg.batch(batch_data)
 
@@ -1715,6 +1738,20 @@ class TestActivityStream(base.LiveTestBase):
                                              "project": self.project, 
                                              "note_links": [self._shot]})
 
+    def tearDown(self):
+        batch_data = []
+        batch_data.append({"request_type": "delete",
+                           "entity_type": self._note["type"],
+                           "entity_id": self._note["id"]
+                          })        
+        batch_data.append({"request_type": "delete",
+                           "entity_type": self._shot["type"],
+                           "entity_id": self._shot["id"]
+                          })        
+        self.sg.batch(batch_data)
+        
+        super(TestActivityStream, self).tearDown()
+
     def test_simple(self):
         """
         Test activity stream
@@ -1814,6 +1851,11 @@ class TestNoteThreadRead(base.LiveTestBase):
         reply_data = self.sg.find_one("Reply", 
                                      [["id", "is", reply_id]], 
                                      list(expected_fields))
+        
+        # the reply stream adds an image to the user fields in order
+        # to include thumbnails for users, so add this in before we compare
+        reply_data["user"]["image"] = None        
+        
         self.assertEqual(reply_data, data)
          
     def _check_attachment(self, data, attachment_id, additional_fields):
@@ -1823,11 +1865,11 @@ class TestNoteThreadRead(base.LiveTestBase):
         self.assertEqual(expected_fields, set(data.keys()))
          
         # check that the data matches the data we get from a find call
-        reply_data = self.sg.find_one("Attachment", 
-                                     [["id", "is", attachment_id]], 
-                                     list(expected_fields))
+        attachment_data = self.sg.find_one("Attachment", 
+                                           [["id", "is", attachment_id]], 
+                                           list(expected_fields))
          
-        self.assertEqual(reply_data, data)
+        self.assertEqual(attachment_data, data)
      
     def test_simple(self):
         """
@@ -1939,6 +1981,24 @@ class TestTextSearch(base.LiveTestBase):
  
         self._shot_ids = [x["id"] for x in data if x["type"] == "Shot"]
         self._asset_ids = [x["id"] for x in data if x["type"] == "Asset"]
+         
+    def tearDown(self):
+        
+        # clean up
+        batch_data = []
+        for shot_id in self._shot_ids:
+            batch_data.append({"request_type": "delete",
+                               "entity_type": "Shot",
+                               "entity_id": shot_id
+                              })        
+        for asset_id in self._asset_ids:
+            batch_data.append({"request_type": "delete",
+                               "entity_type": "Asset",
+                               "entity_id": asset_id
+                              })
+        self.sg.batch(batch_data)  
+        
+        super(TestTextSearch, self).tearDown()      
          
     def test_simple(self):
         """
