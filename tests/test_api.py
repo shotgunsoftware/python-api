@@ -1947,7 +1947,7 @@ class TestTextSearch(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
             return
          
-        result = self.sg.text_search("%s Text Search" % self._prefix, {"Shot" : {} } )
+        result = self.sg.text_search("%s Text Search" % self._prefix, {"Shot" : [] } )
          
         self.assertEqual(set(["matches", "terms"]), set(result.keys()))
         self.assertEqual(result["terms"], [self._prefix, "text", "search"])
@@ -1967,7 +1967,7 @@ class TestTextSearch(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
             return
          
-        result = self.sg.text_search("%s Text Search" % self._prefix, {"Shot" : {} }, limit=3 )        
+        result = self.sg.text_search("%s Text Search" % self._prefix, {"Shot" : [] }, limit=3 )        
         matches = result["matches"]
         self.assertEqual(len(matches), 3)
  
@@ -1979,7 +1979,7 @@ class TestTextSearch(base.LiveTestBase):
             return
          
         result = self.sg.text_search("%s Text Search" % self._prefix, 
-                                     {"Shot" : {}, "Asset": {} } )
+                                     {"Shot": [], "Asset": [] } )
          
         matches = result["matches"]
          
@@ -1987,7 +1987,7 @@ class TestTextSearch(base.LiveTestBase):
         self.assertEqual(len(matches), 10)
                  
  
-    def test_entity_filter(self):
+    def test_complex_entity_filter(self):
         """
         Test complex multi-type global search
         """
@@ -1995,8 +1995,13 @@ class TestTextSearch(base.LiveTestBase):
             return
          
         result = self.sg.text_search("%s Text Search" % self._prefix, 
-                                     {"Shot" : {"filters": [["code", "ends_with", "3"]]}, 
-                                      "Asset": {"filters": [["code", "ends_with", "4"]]} } )
+                                     {"Shot": [["code", "ends_with", "3"]], 
+                                      "Asset": [
+                                                {"filter_operator": "any", 
+                                                 "filters": [["code", "ends_with", "4"]]
+                                                }
+                                                ]
+                                     })
          
         matches = result["matches"]
          

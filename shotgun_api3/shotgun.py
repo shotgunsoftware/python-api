@@ -1813,27 +1813,15 @@ class Shotgun(object):
         
         - You need to define which subset of entity types to search using the 
           entity_types parameter. Each of these entity types can be associated 
-          with a filter query to further reduce the list of matches. Below are 
-          some examples of how this can be used practically:
+          with a filter query to further reduce the list of matches. The filter
+          list is using the standard filter syntax used by for example the 
+          find() method. For example: 
           
-          Constrain the search to assets and shots only:
-          { "Asset": {} "Shot": {} }
+          Constrain the search to all shots but character assets only:
+          { "Asset": [["sg_asset_type", "is", "character"]], 
+            "Shot":  []  
+          }
           
-          Constrain the search to characters only:
-          { "Asset": {"filters": [["sg_asset_type", "is", "character"]] } }
-          
-          Constrain the search to characters or in progress assets:
-          { "Asset": {"filter_operator": "any" 
-                      "filters": [["sg_asset_type", "is", "character"],
-                                  ["sg_status_list", "is", "ip"]] } }
-          
-          The general syntax for this data structure is:
-          { entity_type: { filter_operator: all|any,
-                           filters: shotgun_filter_list } }
-            
-          The filter_operator key is optional and if not specified, 'all' 
-          will be used.
-        
         A dictionary with keys 'terms' and 'matches' will be returned:
         
         {'matches': [{'id': 734,
@@ -1877,23 +1865,16 @@ class Shotgun(object):
             raise ValueError("entity_types parameter must be a dictionary")
         
         api_entity_types = {}
-        for (entity_type, filter_dict) in entity_types.iteritems():
+        for (entity_type, filter_list) in entity_types.iteritems():
             
-            if not isinstance(filter_dict, dict):
-                raise ValueError("value of entity_types['%s'] must "
-                                 "be a dictionary" % entity_type)
             
-            if "filters" in filter_dict:
-                # there is a filter query inside the dict. 
-                # convert it into native form 
-                filter_operator = filter_dict.get("filter_operator")
-                resolved_filters = _translate_filters(filter_dict["filters"], 
-                                                      filter_operator)
-                api_entity_types[entity_type] = resolved_filters
-            
+            if isinstance(filter_list, (list, tuple)):
+                resolved_filters = _translate_filters(filter_list, filter_operator=None)
+                api_entity_types[entity_type] = resolved_filters      
             else:
-                api_entity_types[entity_type] = {}
-        
+                raise ValueError("value of entity_types['%s'] must "
+                                 "be a list or tuple." % entity_type)
+            
         project_ids = project_ids or []
 
         params = { "text": text, 
