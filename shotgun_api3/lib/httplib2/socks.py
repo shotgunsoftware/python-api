@@ -13,7 +13,7 @@ are permitted provided that the following conditions are met:
 3. Neither the name of Dan Haim nor the names of his contributors may be used
    to endorse or promote products derived from this software without specific
    prior written permission.
-   
+
 THIS SOFTWARE IS PROVIDED BY DAN HAIM "AS IS" AND ANY EXPRESS OR IMPLIED
 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
@@ -40,10 +40,13 @@ mainly to merge bug fixes found in Sourceforge
 
 """
 
+import base64
 import socket
 import struct
 import sys
-import base64
+
+if getattr(socket, 'socket', None) is None:
+    raise ImportError('socket.socket missing, proxy support unusable')
 
 PROXY_TYPE_SOCKS4 = 1
 PROXY_TYPE_SOCKS5 = 2
@@ -125,7 +128,6 @@ class socksocket(socket.socket):
             self.__proxy = (None, None, None, None, None, None)
         self.__proxysockname = None
         self.__proxypeername = None
-
         self.__httptunnel = True
 
     def __recvall(self, count):
@@ -141,17 +143,16 @@ class socksocket(socket.socket):
         return data
 
     def sendall(self, content, *args):
-        """ override socket.socket.sendall method to rewrite the header 
-        for non-tunneling proxies if needed 
+        """ override socket.socket.sendall method to rewrite the header
+        for non-tunneling proxies if needed
         """
         if not self.__httptunnel:
             content = self.__rewriteproxy(content)
-
         return super(socksocket, self).sendall(content, *args)
 
     def __rewriteproxy(self, header):
-        """ rewrite HTTP request headers to support non-tunneling proxies 
-        (i.e. thos which do not support the CONNECT method).
+        """ rewrite HTTP request headers to support non-tunneling proxies
+        (i.e. those which do not support the CONNECT method).
         This only works for HTTP (not HTTPS) since HTTPS requires tunneling.
         """
         host, endpt = None, None
@@ -161,7 +162,7 @@ class socksocket(socket.socket):
                 host = hdr
             elif hdr.lower().startswith("get") or hdr.lower().startswith("post"):
                 endpt = hdr
-        if host and endpt: 
+        if host and endpt:
             hdrs.remove(host)
             hdrs.remove(endpt)
             host = host.split(" ")[1]
@@ -170,7 +171,6 @@ class socksocket(socket.socket):
                 hdrs.insert(0, self.__getauthheader())
             hdrs.insert(0, "Host: %s" % host)
             hdrs.insert(0, "%s http://%s%s %s" % (endpt[0], host, endpt[1], endpt[2]))
-
         return "\r\n".join(hdrs)
 
     def __getauthheader(self):
@@ -364,12 +364,12 @@ class socksocket(socket.socket):
             addr = socket.gethostbyname(destaddr)
         else:
             addr = destaddr
-        headers =  "CONNECT " + addr + ":" + str(destport) + " HTTP/1.1\r\n"
-        headers += "Host: " + destaddr + "\r\n"
+        headers =  ["CONNECT ", addr, ":", str(destport), " HTTP/1.1\r\n"]
+        headers += ["Host: ", destaddr, "\r\n"]
         if (self.__proxy[4] != None and self.__proxy[5] != None):
-                headers += self.__getauthheader() + "\r\n"
-        headers += "\r\n"
-        self.sendall(headers.encode())
+                headers += [self.__getauthheader(), "\r\n"]
+        headers.append("\r\n")
+        self.sendall("".join(headers).encode())
         # We read the response until we get the string "\r\n\r\n"
         resp = self.recv(1)
         while resp.find("\r\n\r\n".encode()) == -1:
@@ -399,7 +399,7 @@ class socksocket(socket.socket):
         To select the proxy server use setproxy().
         """
         # Do a minimal input check first
-        if (not type(destpair) in (list,tuple)) or (len(destpair) < 2) or (type(destpair[0]) != type('')) or (type(destpair[1]) != int):
+        if (not type(destpair) in (list,tuple)) or (len(destpair) < 2) or (not isinstance(destpair[0], basestring)) or (type(destpair[1]) != int):
             raise GeneralProxyError((5, _generalerrors[5]))
         if self.__proxy[0] == PROXY_TYPE_SOCKS5:
             if self.__proxy[2] != None:
@@ -429,7 +429,6 @@ class socksocket(socket.socket):
                 portnum = 8080
             _orgsocket.connect(self,(self.__proxy[1],portnum))
             if destpair[1] == 443:
-                print "WARN: SSL connections (generally on port 443) require the use of tunneling - failing back to PROXY_TYPE_HTTP"
                 self.__negotiatehttp(destpair[0],destpair[1])
             else:
                 self.__httptunnel = False

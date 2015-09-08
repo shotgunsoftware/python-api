@@ -9,6 +9,7 @@ import os
 import re
 from mock import patch, Mock, MagicMock
 import time
+import uuid
 import unittest
 import urlparse
 
@@ -425,7 +426,7 @@ class TestShotgunApi(base.LiveTestBase):
 
 
     def test_simple_summary(self):
-        '''test_simple_summary tests simple query using summarize.'''
+        """Test simple call to summarize"""
         summaries = [{'field': 'id', 'type': 'count'}]
         grouping = [{'direction': 'asc', 'field': 'id', 'type': 'exact'}]
         filters = [['project', 'is', self.project]]
@@ -440,6 +441,7 @@ class TestShotgunApi(base.LiveTestBase):
         assert(result['summaries'])
 
     def test_summary_include_archived_projects(self):
+        """Test summarize with archived project"""
         if self.sg.server_caps.version > (5, 3, 13):
             # archive project
             self.sg.update('Project', self.project['id'], {'archived':True})
@@ -456,32 +458,54 @@ class TestShotgunApi(base.LiveTestBase):
             self.sg.update('Project', self.project['id'], {'archived':False})
 
     def test_summary_values(self):
-        ''''''
-        # try to fix data if not in expected state
-        shots = self.sg.find('Shot',[['project','is',self.project],['code','in',['shot 1','shot 2','shot 3']]])
-        print len(shots)
-        for shot in shots:
-            # These shots should have been deleted,if they still exist it is due to an failure in mid-test
-            self.sg.delete('Shot', shot['id'])
+        """Test summarize return data"""
 
+        # create three unique shots
+        shot_prefix = uuid.uuid4().hex 
 
-        shot_data = {
-            'sg_status_list': 'ip',
-            'sg_cut_duration': 100,
-            'project': self.project
-        }
         shots = []
-        shots.append(self.sg.create('Shot', dict(shot_data.items() +
-                                    {'code': 'shot 1'}.items())))
-        shots.append(self.sg.create('Shot', dict(shot_data.items() +
-                                    {'code': 'shot 2'}.items())))
-        shots.append(self.sg.create('Shot', dict(shot_data.items() +
-                                    {'code': 'shot 3',
-                                     'sg_status_list': 'fin'}.items())))
+
+        shot_data_1 = {
+            "code": "%s Shot 1" % shot_prefix,
+            "sg_status_list": "ip",
+            "sg_cut_duration": 100,
+            "project": self.project
+        }
+
+        shot_data_2 = {
+            "code": "%s Shot 2" % shot_prefix,
+            "sg_status_list": "ip",
+            "sg_cut_duration": 100,
+            "project": self.project
+        }
+        
+        shot_data_3 = {
+            "code": "%s Shot 3" % shot_prefix,
+            "sg_status_list": "fin",
+            "sg_cut_duration": 100,
+            "project": self.project
+        }
+
+        shot_data_4 = {
+            "code": "%s Shot 4" % shot_prefix,
+            "sg_status_list": "wtg",
+            "sg_cut_duration": 0,
+            "project": self.project
+        }
+
+        shots.append(self.sg.create("Shot", shot_data_1))
+        shots.append(self.sg.create("Shot", shot_data_2))
+        shots.append(self.sg.create("Shot", shot_data_3))
+        shots.append(self.sg.create("Shot", shot_data_4))
+        
+
         summaries = [{'field': 'id', 'type': 'count'},
                      {'field': 'sg_cut_duration', 'type': 'sum'}]
-        grouping = [{'direction': 'asc', 'field': 'sg_status_list', 'type': 'exact'}]
-        filters = [['project', 'is', self.project]]
+        grouping = [{'direction': 'asc', 
+                     'field': 'sg_status_list', 
+                     'type': 'exact'}]
+        filters = [['project', 'is', self.project], 
+                   ['code', 'starts_with', shot_prefix]]
         result = self.sg.summarize('Shot',
                                    filters=filters,
                                    summary_fields=summaries,
@@ -509,7 +533,7 @@ class TestShotgunApi(base.LiveTestBase):
         for s in shots:
             batch_data.append({"request_type": "delete",
                                "entity_type": "Shot",
-                               "entity_id": s['id']
+                               "entity_id": s["id"]
                               })
         self.sg.batch(batch_data)
 
@@ -1696,6 +1720,362 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
         # it's possible initial is None
         if initial:
             assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
+
+
+class TestActivityStream(base.LiveTestBase):
+    """
+    Unit tests for the activity_stream_read() method
+    """
+     
+    def setUp(self):
+        super(TestActivityStream, self).setUp()
+        self._prefix = uuid.uuid4().hex 
+
+        self._shot = self.sg.create("Shot", {"code": "%s activity stream test" % self._prefix, 
+                                             "project": self.project})
+        
+        self._note = self.sg.create("Note", {"content": "Test!", 
+                                             "project": self.project, 
+                                             "note_links": [self._shot]})
+
+    def tearDown(self):
+        batch_data = []
+        batch_data.append({"request_type": "delete",
+                           "entity_type": self._note["type"],
+                           "entity_id": self._note["id"]
+                          })        
+        batch_data.append({"request_type": "delete",
+                           "entity_type": self._shot["type"],
+                           "entity_id": self._shot["id"]
+                          })        
+        self.sg.batch(batch_data)
+        
+        super(TestActivityStream, self).tearDown()
+
+    def test_simple(self):
+        """
+        Test activity stream
+        """
+         
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
+            return
+ 
+        result = self.sg.activity_stream_read(self._shot["type"], 
+                                              self._shot["id"])
+        
+        expected_keys = ["earliest_update_id", 
+                         "entity_id",
+                         "entity_type",
+                         "latest_update_id",
+                         "updates"]
+
+        self.assertEqual(set(expected_keys), set(result.keys()))
+        self.assertEqual(len(result["updates"]), 2)
+        self.assertEqual(result["entity_type"], "Shot")
+        self.assertEqual(result["entity_id"], self._shot["id"])
+ 
+
+    def test_limit(self):
+        """
+        Test limited activity stream
+        """
+         
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
+            return
+ 
+        result = self.sg.activity_stream_read(self._shot["type"], 
+                                              self._shot["id"], 
+                                              limit=1)
+        
+        self.assertEqual(len(result["updates"]), 1)
+        self.assertEqual(result["updates"][0]["update_type"], "create")
+        self.assertEqual(result["updates"][0]["meta"]["entity_type"], "Note")
+
+
+    def test_extra_fields(self):
+        """
+        Test additional fields for activity stream
+        """
+         
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
+            return
+ 
+        result = self.sg.activity_stream_read(self._shot["type"], 
+                                              self._shot["id"], 
+                                              entity_fields={"Shot": ["created_by.HumanUser.image"], 
+                                                             "Note": ["content"]})
+        
+        self.assertEqual(len(result["updates"]), 2)
+        self.assertEqual(set(result["updates"][0]["primary_entity"].keys()), 
+                         set(["content",
+                              "id",
+                              "name",
+                              "status",
+                              "type"]))
+        
+        self.assertEqual(set(result["updates"][1]["primary_entity"].keys()), 
+                         set(["created_by.HumanUser.image",
+                              "id",
+                              "name",
+                              "status",
+                              "type"]))
+
+class TestNoteThreadRead(base.LiveTestBase):
+    """
+    Unit tests for the note_thread_read method
+    """
+     
+    def setUp(self):
+        super(TestNoteThreadRead, self).setUp()
+         
+    def _check_note(self, data, note_id, additional_fields):
+         
+        # check the expected fields
+        expected_fields = set(["content", "created_at", "created_by", "id", "type"] + additional_fields)
+         
+        self.assertEqual(expected_fields, set(data.keys()))
+         
+        # check that the data matches the data we get from a find call
+        note_data = self.sg.find_one("Note", 
+                                     [["id", "is", note_id]], 
+                                     list(expected_fields))
+        self.assertEqual(note_data, data)
+         
+    def _check_reply(self, data, reply_id, additional_fields):
+         
+        # check the expected fields
+        expected_fields = set(["content", "created_at", "user", "id", "type"] + additional_fields)
+        self.assertEqual(expected_fields, set(data.keys()))
+         
+        # check that the data matches the data we get from a find call
+        reply_data = self.sg.find_one("Reply", 
+                                     [["id", "is", reply_id]], 
+                                     list(expected_fields))
+        
+        # the reply stream adds an image to the user fields in order
+        # to include thumbnails for users, so add this in before we compare
+        reply_data["user"]["image"] = None        
+        
+        self.assertEqual(reply_data, data)
+         
+    def _check_attachment(self, data, attachment_id, additional_fields):
+         
+        # check the expected fields
+        expected_fields = set(["created_at", "created_by", "id", "type"] + additional_fields)
+        self.assertEqual(expected_fields, set(data.keys()))
+         
+        # check that the data matches the data we get from a find call
+        attachment_data = self.sg.find_one("Attachment", 
+                                           [["id", "is", attachment_id]], 
+                                           list(expected_fields))
+         
+        self.assertEqual(attachment_data, data)
+     
+    def test_simple(self):
+        """
+        Test note reply thread API call
+        """
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
+            return
+         
+        # create note
+        note = self.sg.create( "Note", {"content": "Test!", "project": self.project})
+ 
+        # get thread
+        result = self.sg.note_thread_read(note["id"])
+        self.assertEqual(len(result), 1)
+        self._check_note(result[0], note["id"], additional_fields=[])
+         
+        # now add a reply
+        reply = self.sg.create( "Reply", {"content": "Reply Content", "entity": note})
+         
+        # get thread
+        result = self.sg.note_thread_read(note["id"])
+        self.assertEqual(len(result), 2)
+        self._check_note(result[0], note["id"], additional_fields=[])
+        self._check_reply(result[1], reply["id"], additional_fields=[])
+     
+        # now upload an attachment
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.join(this_dir, "sg_logo.jpg"))
+        attachment_id = self.sg.upload(note["type"], note["id"], path) 
+         
+        # get thread
+        result = self.sg.note_thread_read(note["id"])
+        self.assertEqual(len(result), 3)
+        self._check_note(result[0], note["id"], additional_fields=[])
+        self._check_reply(result[1], reply["id"], additional_fields=[])
+        self._check_attachment(result[2], attachment_id, additional_fields=[])
+         
+    def test_complex(self):
+        """
+        Test note reply thread API call with additional params
+        """
+         
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
+            return
+         
+        additional_fields = { 
+              "Note":       ["created_by.HumanUser.image", 
+                             "addressings_to", 
+                             "playlist", 
+                             "user" ],
+              "Reply":      ["content"], 
+              "Attachment": ["local_storage", "this_file"]
+            }
+     
+        # create note
+        note = self.sg.create( "Note", {"content": "Test!", 
+                                        "project": self.project,
+                                        "addressings_to": [self.human_user]})
+ 
+        # get thread
+        result = self.sg.note_thread_read(note["id"], additional_fields)
+         
+        self.assertEqual(len(result), 1)
+        self._check_note(result[0], note["id"], additional_fields["Note"])
+         
+        # now add a reply
+        reply = self.sg.create( "Reply", {"content": "Reply Content", "entity": note})
+         
+        # get thread
+        result = self.sg.note_thread_read(note["id"], additional_fields)        
+        self.assertEqual(len(result), 2)
+        self._check_note(result[0], note["id"], additional_fields["Note"])
+        self._check_reply(result[1], reply["id"], additional_fields["Reply"])
+     
+        # now upload an attachment
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.join(this_dir, "sg_logo.jpg"))
+        attachment_id = self.sg.upload(note["type"], note["id"], path) 
+         
+        # get thread
+        result = self.sg.note_thread_read(note["id"], additional_fields)        
+        self.assertEqual(len(result), 3)
+        self._check_note(result[0], note["id"], additional_fields["Note"])
+        self._check_reply(result[1], reply["id"], additional_fields["Reply"])
+        self._check_attachment(result[2], attachment_id, additional_fields["Attachment"])
+        
+class TestTextSearch(base.LiveTestBase):
+    """
+    Unit tests for the text_search() method
+    """
+      
+    def setUp(self):
+        super(TestTextSearch, self).setUp()
+         
+        # create 5 shots and 5 assets to search for
+        self._prefix = uuid.uuid4().hex 
+         
+        batch_data = []
+        for i in range(5):
+            data = { "code":"%s Text Search %s" % (self._prefix, i),
+                     "project": self.project }
+            batch_data.append( {"request_type": "create",
+                                "entity_type": "Shot",
+                                "data": data} )        
+            batch_data.append( {"request_type": "create",
+                                "entity_type": "Asset",
+                                "data": data} )      
+        data = self.sg.batch(batch_data)
+ 
+        self._shot_ids = [x["id"] for x in data if x["type"] == "Shot"]
+        self._asset_ids = [x["id"] for x in data if x["type"] == "Asset"]
+         
+    def tearDown(self):
+        
+        # clean up
+        batch_data = []
+        for shot_id in self._shot_ids:
+            batch_data.append({"request_type": "delete",
+                               "entity_type": "Shot",
+                               "entity_id": shot_id
+                              })        
+        for asset_id in self._asset_ids:
+            batch_data.append({"request_type": "delete",
+                               "entity_type": "Asset",
+                               "entity_id": asset_id
+                              })
+        self.sg.batch(batch_data)  
+        
+        super(TestTextSearch, self).tearDown()      
+         
+    def test_simple(self):
+        """
+        Test basic global search
+        """
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
+            return
+         
+        result = self.sg.text_search("%s Text Search" % self._prefix, {"Shot" : [] } )
+         
+        self.assertEqual(set(["matches", "terms"]), set(result.keys()))
+        self.assertEqual(result["terms"], [self._prefix, "text", "search"])
+        matches = result["matches"]
+        self.assertEqual(len(matches), 5)
+         
+        for match in matches:
+            self.assertTrue(match["id"] in self._shot_ids)
+            self.assertEqual(match["type"], "Shot")
+            self.assertEqual(match["project_id"], self.project["id"])
+            self.assertEqual(match["image"], None)
+         
+    def test_limit(self):
+        """
+        Test limited global search
+        """
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
+            return
+         
+        result = self.sg.text_search("%s Text Search" % self._prefix, {"Shot" : [] }, limit=3 )        
+        matches = result["matches"]
+        self.assertEqual(len(matches), 3)
+ 
+    def test_entity_filter(self):
+        """
+        Test basic multi-type global search
+        """
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
+            return
+         
+        result = self.sg.text_search("%s Text Search" % self._prefix, 
+                                     {"Shot": [], "Asset": [] } )
+         
+        matches = result["matches"]
+         
+        self.assertEqual(set(["matches", "terms"]), set(result.keys()))
+        self.assertEqual(len(matches), 10)
+                 
+ 
+    def test_complex_entity_filter(self):
+        """
+        Test complex multi-type global search
+        """
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
+            return
+         
+        result = self.sg.text_search("%s Text Search" % self._prefix, 
+                                     {"Shot": [["code", "ends_with", "3"]], 
+                                      "Asset": [
+                                                {"filter_operator": "any", 
+                                                 "filters": [["code", "ends_with", "4"]]
+                                                }
+                                                ]
+                                     })
+         
+        matches = result["matches"]
+         
+        self.assertEqual(set(["matches", "terms"]), set(result.keys()))
+        self.assertEqual(len(matches), 2)
+         
+        self.assertEqual(matches[0]["type"], "Shot")
+        self.assertEqual(matches[0]["name"], "%s Text Search 3" % self._prefix)
+        self.assertEqual(matches[1]["type"], "Asset")
+        self.assertEqual(matches[1]["name"], "%s Text Search 4" % self._prefix)
+         
+        
+
+
 
 def  _has_unicode(data):
     for k, v in data.items():
