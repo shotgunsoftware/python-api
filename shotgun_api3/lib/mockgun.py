@@ -68,14 +68,14 @@ the schema data:
     sg = Shotgun("https://mysite.shotgunstudio.com", script_name="xyz", api_key="abc")
     
     # write out schema data to files
-    from shotgun_api3 import mockgun
+    from shotgun_api3.lib import mockgun
     mockgun.generate_schema(sg, "/tmp/schema", "/tmp/entity_schema")
     
 Now that you have a schema, you can tell your mockgun instance about it.
 We do this as a class-level operation, so that the consctructor can be 
 exactly like the real Shotgun one:
 
-    from shotgun_api3 import mockgun
+    from shotgun_api3.lib import mockgun
     
     # tell mockgun about the schema
     mockgun.Shotgun.set_schema_paths("/tmp/schema", "/tmp/entity_schema")
@@ -114,12 +114,11 @@ Below is a non-exhaustive list of things that we still need to implement:
 
 """
 
-import os, copy, datetime
+import os, datetime
 import cPickle as pickle
-import pprint
 
-from . import sg_timezone, ShotgunError
-from .shotgun import _Config
+from .. import sg_timezone, ShotgunError
+from ..shotgun import _Config
 
 # ----------------------------------------------------------------------------
 # Version
