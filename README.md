@@ -53,16 +53,16 @@ Integration and unit tests are provided.
 
 ## Changelog
 
-**v3.0.22 - 2015 September 9**
+**v3.0.22 - 2015 Sept 9**
 
-   + Added method text_search() which allows an API client to access 
+   + Added method `text_search()` which allows an API client to access 
      the Shotgun global search and auto completer.
-   + Added method activity_stream_read() which allows an API client
+   + Added method `activity_stream_read()` which allows an API client
      to access the activity stream for a given Shotgun entity.
-   + Added method note_thread_read() which allows an API client to 
+   + Added method `note_thread_read()` which allows an API client to 
      download an entire note conversation, including replies and 
      attachments, using a single API call.
-   + Added an experimental 'mockgun' module which can be used to emulate
+   + Added an experimental `mockgun` module which can be used to emulate
      the Shotgun API, for example inside unit test rigs.
    + [minor] Improved docstrings.
 
@@ -208,17 +208,17 @@ Integration and unit tests are provided.
   + add batch() method to do multiple create, update, and delete requests in one
       request to the server (requires Shotgun server to be v1.13.0 or higher)
 
-**v3.0b8 - 2010 February 19**
+**v3.0b8 - 2010 Feb 19**
 
   + fix python gotcha about using lists / dictionaries as defaults.
       See: http://www.ferg.org/projects/python_gotchas.html#contents_item_6
   + add schema_read method
 
-**v3.0b7 - 2009 November 30**
+**v3.0b7 - 2009 Nov 30**
 
   + add additional retries for connection errors and a catch for broken pipe exceptions
 
-**v3.0b6 - 2009 October 20**
+**v3.0b6 - 2009 Oct 20**
 
   + add support for HTTP/1.1 keepalive, which greatly improves performance for multiple requests
   + add more helpful error if server entered is not http or https
