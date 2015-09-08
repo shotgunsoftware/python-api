@@ -76,7 +76,7 @@ except ImportError:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.0.21.dev"
+__version__ = "3.0.22.dev"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -2196,7 +2196,7 @@ class Shotgun(object):
         if status[0] >= 300:
             headers = "HTTP error from server"
             if status[0] == 503:
-                errmsg = "Shotgun is currently down for maintenance. Please try again later."
+                errmsg = "Shotgun is currently down for maintenance or too busy to reply. Please try again later."
             raise ProtocolError(self.config.server,
                                 error_code,
                                 errmsg,
