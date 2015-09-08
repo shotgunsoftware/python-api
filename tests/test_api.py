@@ -1738,6 +1738,22 @@ class TestActivityStream(base.LiveTestBase):
                                              "project": self.project, 
                                              "note_links": [self._shot]})
 
+        # check that if the created_by is a script user, we want to ensure
+        # that event log generation is enabled for this user. If it has been
+        # disabled, these tests will fail because the activity stream is 
+        # connected to events. In this case, print a warning to the user
+        d = self.sg.find_one("Shot", 
+                             [["id", "is", self._shot["id"] ]],
+                             ["created_by.ApiUser.generate_event_log_entries"])
+
+        if d["created_by.ApiUser.generate_event_log_entries"] is False:
+            # events are turned off! warn the user
+            print("WARNING! Looks like the script user that is running these "
+                  "tests has got the generate event log entries setting set to "
+                  "off. This will cause the activity stream tests to fail. "
+                  "Please enable event log generation for the script user.")
+        
+
     def tearDown(self):
         batch_data = []
         batch_data.append({"request_type": "delete",
@@ -1747,7 +1763,7 @@ class TestActivityStream(base.LiveTestBase):
         batch_data.append({"request_type": "delete",
                            "entity_type": self._shot["type"],
                            "entity_id": self._shot["id"]
-                          })        
+                          })
         self.sg.batch(batch_data)
         
         super(TestActivityStream, self).tearDown()
@@ -1827,6 +1843,11 @@ class TestNoteThreadRead(base.LiveTestBase):
      
     def setUp(self):
         super(TestNoteThreadRead, self).setUp()
+        
+        # get path to our std attahcment
+        this_dir, _ = os.path.split(__file__)
+        self._thumbnail_path = os.path.abspath(os.path.join(this_dir, "sg_logo.jpg"))
+        
          
     def _check_note(self, data, note_id, additional_fields):
          
@@ -1853,17 +1874,21 @@ class TestNoteThreadRead(base.LiveTestBase):
                                      list(expected_fields))
         
         # the reply stream adds an image to the user fields in order
-        # to include thumbnails for users, so add this in before we compare
-        reply_data["user"]["image"] = None        
+        # to include thumbnails for users, so remove this before we compare
+        # against the shotgun find data. The image is tested elsewhere.
+        del data["user"]["image"]
         
         self.assertEqual(reply_data, data)
          
     def _check_attachment(self, data, attachment_id, additional_fields):
-         
+        
+        
+        
+        
         # check the expected fields
         expected_fields = set(["created_at", "created_by", "id", "type"] + additional_fields)
         self.assertEqual(expected_fields, set(data.keys()))
-         
+            
         # check that the data matches the data we get from a find call
         attachment_data = self.sg.find_one("Attachment", 
                                            [["id", "is", attachment_id]], 
@@ -1881,6 +1906,29 @@ class TestNoteThreadRead(base.LiveTestBase):
         # create note
         note = self.sg.create( "Note", {"content": "Test!", "project": self.project})
  
+        # for this test, we check that the replies returned also
+        # contain the thumbnail associated with the user doing the
+        # reply. For this, make sure that there is a thumbnail
+        # associated with the current user
+        
+        d = self.sg.find_one("Note", 
+                             [["id", "is", note["id"]]], 
+                             ["created_by", "created_by.ApiUser.image"])
+        
+        current_thumbnail = d["created_by.ApiUser.image"]
+        
+        if current_thumbnail is None:
+            # upload thumbnail
+            self.sg.upload_thumbnail("ApiUser", 
+                                     d["created_by"]["id"],  
+                                     self._thumbnail_path)
+
+            d = self.sg.find_one("Note", 
+                                 [["id", "is", note["id"]]], 
+                                 ["created_by", "created_by.ApiUser.image"])
+            
+            current_thumbnail = d["created_by.ApiUser.image"]
+ 
         # get thread
         result = self.sg.note_thread_read(note["id"])
         self.assertEqual(len(result), 1)
@@ -1892,13 +1940,22 @@ class TestNoteThreadRead(base.LiveTestBase):
         # get thread
         result = self.sg.note_thread_read(note["id"])
         self.assertEqual(len(result), 2)
+
+        # now check that the reply thumbnail field matches
+        # the uploaded thumbnail. strip off any s3 querystring
+        # for the comparison
+        reply_thumb = result[1]["user"]["image"]
+        url_obj_a = urlparse.urlparse(current_thumbnail)
+        url_obj_b = urlparse.urlparse(reply_thumb)
+        self.assertEqual("%s/%s" % (url_obj_a.netloc, url_obj_a.path),
+                         "%s/%s" % (url_obj_b.netloc, url_obj_b.path),)
+        
+        # and check ther rest of the data
         self._check_note(result[0], note["id"], additional_fields=[])
         self._check_reply(result[1], reply["id"], additional_fields=[])
      
         # now upload an attachment
-        this_dir, _ = os.path.split(__file__)
-        path = os.path.abspath(os.path.join(this_dir, "sg_logo.jpg"))
-        attachment_id = self.sg.upload(note["type"], note["id"], path) 
+        attachment_id = self.sg.upload(note["type"], note["id"], self._thumbnail_path) 
          
         # get thread
         result = self.sg.note_thread_read(note["id"])
@@ -1921,7 +1978,7 @@ class TestNoteThreadRead(base.LiveTestBase):
                              "playlist", 
                              "user" ],
               "Reply":      ["content"], 
-              "Attachment": ["local_storage", "this_file"]
+              "Attachment": ["this_file"]
             }
      
         # create note
@@ -1945,15 +2002,14 @@ class TestNoteThreadRead(base.LiveTestBase):
         self._check_reply(result[1], reply["id"], additional_fields["Reply"])
      
         # now upload an attachment
-        this_dir, _ = os.path.split(__file__)
-        path = os.path.abspath(os.path.join(this_dir, "sg_logo.jpg"))
-        attachment_id = self.sg.upload(note["type"], note["id"], path) 
-         
+        attachment_id = self.sg.upload(note["type"], note["id"], self._thumbnail_path)
+
         # get thread
         result = self.sg.note_thread_read(note["id"], additional_fields)        
         self.assertEqual(len(result), 3)
         self._check_note(result[0], note["id"], additional_fields["Note"])
         self._check_reply(result[1], reply["id"], additional_fields["Reply"])
+        
         self._check_attachment(result[2], attachment_id, additional_fields["Attachment"])
         
 class TestTextSearch(base.LiveTestBase):
