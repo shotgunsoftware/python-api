@@ -53,6 +53,10 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.23 - TBD**
+
+   + TBD
+
 **v3.0.22 - 2015 Sept 9**
 
    + Added method `text_search()` which allows an API client to access 
