@@ -55,7 +55,8 @@ Integration and unit tests are provided.
 
 **v3.0.23 - TBD**
 
-   + TBD
+   + Fix for python bug on Windows loading mimetypes module (http://bugs.python.org/issue23371) thanks to @patrickwolf.
+   + Fix for tests on older versions of python.
 
 **v3.0.22 - 2015 Sept 9**
 

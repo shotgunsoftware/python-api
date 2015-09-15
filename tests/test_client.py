@@ -382,7 +382,8 @@ class TestShotgunClient(base.MockTestBase):
         system = platform.system().lower()
         if system =='darwin':
             local_path_field = "local_path_mac"
-        elif system == 'windows':
+        # python 2.4 returns 'Microsoft'
+        elif system in ['windows', 'microsoft']:
             local_path_field = "local_path_windows"
         elif system == 'linux':
             local_path_field = "local_path_linux"

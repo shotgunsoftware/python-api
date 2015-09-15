@@ -2142,11 +2142,17 @@ def  _has_unicode(data):
     return False
 
 def _get_path(url):
+    """Returns path component of a url without the sheme, host, query, anchor, or any other
+    additional elements. 
+    For example, the url "https://foo.shotgunstudio.com/page/2128#Shot_1190_sr10101_034"
+    returns "/page/2128"
+    """
     # url_parse returns native objects for older python versions (2.4)
     if isinstance(url, dict):
         return url.get('path')
     elif isinstance(url, tuple):
-        return os.path.join(url[:4])
+        # 3rd component is the path
+        return url[2]
     else:
         return url.path
 
