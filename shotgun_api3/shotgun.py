@@ -1405,8 +1405,37 @@ class Shotgun(object):
         :param path: Path to file on disk
         :returns: Id of the new attachment
         """
-        return self.upload(entity_type, entity_id, path,
-            field_name="thumb_image", **kwargs)
+
+        # Note: in semiPrivate mode (eg. captain project)
+        # we do not want user to upload thumbnail in the cloud
+        # note that user can still upload thumbnail directly with upload method
+        # This modification was recommended by Shotgun support
+
+        # Note: SHOTGUN_SITE_TYPE and SHOTGUN_THUMBNAIL_ROOT are defined
+        # per tank config (eg. animtst2TkConfig)
+
+        # Note: be sure to be in sync with tkCore package
+
+        if os.environ.get('SHOTGUN_SITE_TYPE', '') == 'semiPrivate':
+
+            entity = {'type': entity_type, 'id': entity_id}
+            
+            # find project
+            sg_entity = self.find_one(entity_type, [['id', 'is', entity_id]], fields=['project'])
+
+            if not sg_entity or 'project' not in sg_entity:
+                raise ShotgunError('Entity is not linked to a shotgun project, could not call share_thumbnail')
+
+            attachment_id = self.share_thumbnail(entities=[entity], source_entity=sg_entity['project'])
+
+            shutil.copy(path, os.path.join(os.environ['SHOTGUN_THUMBNAIL_ROOT'], entity_type, str(entity_id)))
+
+            return attachment_id # return attachment_id for API compat
+
+        else:
+ 
+            return self.upload(entity_type, entity_id, path,
+                field_name="thumb_image", **kwargs)
 
     def upload_filmstrip_thumbnail(self, entity_type, entity_id, path, **kwargs):
         """Convenience function for uploading filmstrip thumbnails.
@@ -1422,6 +1451,11 @@ class Shotgun(object):
         if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
             raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
                 "higher, server is %s" % (self.server_caps.version,))
+
+        # see comments of upload_thumbnail
+        # Note: be sure to be in sync with tkCore package
+        if os.environ.get('SHOTGUN_SITE_TYPE', '') == 'semiPrivate':
+            raise ShotgunError('Unsupported call for semi private Shotgun')
 
         return self.upload(entity_type, entity_id, path,
             field_name="filmstrip_thumb_image", **kwargs)
