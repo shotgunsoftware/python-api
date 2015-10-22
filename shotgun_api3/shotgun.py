@@ -1427,8 +1427,20 @@ class Shotgun(object):
                 raise ShotgunError('Entity is not linked to a shotgun project, could not call share_thumbnail')
 
             attachment_id = self.share_thumbnail(entities=[entity], source_entity=sg_entity['project'])
+            
+            dst = os.path.join(os.environ['SHOTGUN_THUMBNAIL_ROOT'], entity_type, str(entity_id))
 
-            shutil.copy(path, os.path.join(os.environ['SHOTGUN_THUMBNAIL_ROOT'], entity_type, str(entity_id)))
+            import errno
+            try:
+                os.makedirs(os.path.dirname(dst))
+            except OSError, e:
+                if e.errno == errno.EEXIST:
+                    # do not raise if folder is already there
+                    pass
+                else:
+                    raise ShotgunError
+
+            shutil.copy(path, dst)
 
             return attachment_id # return attachment_id for API compat
 
