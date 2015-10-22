@@ -1,5 +1,5 @@
 name = 'shotgunPythonApi'
-version = '3.0.22'
+version = '3.0.22.mikros.1.0'
 
 # Note for core pipeline team
 # Be sure that the same modifications are in both this api
