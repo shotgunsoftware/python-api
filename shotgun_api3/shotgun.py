@@ -1379,7 +1379,7 @@ class Shotgun(object):
         except urllib2.HTTPError, e:
             if e.code == 500:
                 raise ShotgunError("Server encountered an internal error. "
-                    "\n%s\n(%s)\n%s\n\n" % (url, params, e))
+                    "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
             else:
                 raise ShotgunError("Unanticipated error occurred %s" % (e))
         else:
@@ -1491,7 +1491,7 @@ class Shotgun(object):
         except urllib2.HTTPError, e:
             if e.code == 500:
                 raise ShotgunError("Server encountered an internal error. "
-                    "\n%s\n(%s)\n%s\n\n" % (url, params, e))
+                    "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
             else:
                 raise ShotgunError("Unanticipated error occurred uploading "
                     "%s: %s" % (path, e))
@@ -2096,6 +2096,17 @@ class Shotgun(object):
             auth_params["sudo_as_login"] = self.config.sudo_as_login
 
         return auth_params
+
+    def _sanitize_auth_params(self, params):
+        """
+        Given an authentication parameter dictionary, sanitize any sensitive
+        information and return the sanitized dict copy.
+        """
+        sanitized_params = copy.copy(params)
+        for k in ['user_password', 'script_key', 'session_token']:
+            if k in sanitized_params:
+                sanitized_params[k] = '********'
+        return sanitized_params
 
     def _build_payload(self, method, params, include_auth_params=True):
         """Builds the payload to be send to the rpc endpoint.
