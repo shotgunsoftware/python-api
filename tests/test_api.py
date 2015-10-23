@@ -1482,7 +1482,7 @@ class TestErrors(base.TestBase):
             # Try to upload a bogus file
             self.sg.upload('Note', 1234, thumbnail_path)
         except shotgun_api3.ShotgunError, e:
-            self.assertFalse(self.api_key in e)
+            self.assertFalse(self.api_key in str(e))
             return
 
         # You should never get here... Otherwise some mocking failed and the
