@@ -12,6 +12,7 @@ import time
 import uuid
 import unittest
 import urlparse
+import urllib2
 
 import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http
@@ -1468,6 +1469,25 @@ class TestErrors(base.TestBase):
         response.reason = 'reason'
         mock_request.return_value = (response, {})
         self.assertRaises(shotgun_api3.ProtocolError, self.sg.find_one, 'Shot', [])
+
+    @patch.object(urllib2.OpenerDirector, 'open')
+    def test_sanitized_auth_params(self, mock_open):
+        # Simulate the server blowing up and giving us a 500 error
+        mock_open.side_effect = urllib2.HTTPError('url', 500, 'message', {}, None)
+
+        this_dir, _ = os.path.split(__file__)
+        thumbnail_path = os.path.abspath(os.path.join(this_dir, "sg_logo.jpg"))
+
+        try:
+            # Try to upload a bogus file
+            self.sg.upload('Note', 1234, thumbnail_path)
+        except shotgun_api3.ShotgunError, e:
+            self.assertFalse(self.api_key in e)
+            return
+
+        # You should never get here... Otherwise some mocking failed and the
+        # except above wasn't properly run
+        self.assertTrue(False)
 
 #    def test_malformed_response(self):
 #        #TODO ResponseError

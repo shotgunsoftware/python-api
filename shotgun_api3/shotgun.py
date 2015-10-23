@@ -2097,7 +2097,7 @@ class Shotgun(object):
 
         return auth_params
 
-    def _sanitize_auth_params(params):
+    def _sanitize_auth_params(self, params):
         """
         Given an authentication parameter dictionary, sanitize any sensitive
         information and return the sanitized dict copy.
