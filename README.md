@@ -53,6 +53,10 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.24 - TBD**
+
+   + TBD
+
 **v3.0.23 - 2015 Oct 26**
 
    + Fix for python bug on Windows loading mimetypes module (http://bugs.python.org/issue23371) thanks to @patrickwolf.
