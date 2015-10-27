@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 """
- -----------------------------------------------------------------------------
  Copyright (c) 2009-2015, Shotgun Software Inc
 
  Redistribution and use in source and binary forms, with or without
@@ -116,7 +115,7 @@ class ServerCapabilities(object):
         :param host: Host name for the server excluding protocol.
 
         :param meta: dict of meta data for the server returned from the
-        info api method.
+            info api method.
         """
         #Server host name
         self.host = host
@@ -480,7 +479,7 @@ class Shotgun(object):
     def server_caps(self):
         """
         :returns: ServerCapabilities that describe the server the client is
-        connected to.
+            connected to.
         """
         if not self._server_caps or (
             self._server_caps.host != self.config.server):
@@ -523,23 +522,23 @@ class Shotgun(object):
         :param filters: Required, list of filters to apply.
 
         :param fields: Optional list of fields from the matched entities to
-        return. Defaults to id.
+            return. Defaults to id.
 
         :param order: Optional list of fields to order the results by, list
-        has the form [{'field_name':'foo','direction':'asc or desc'},]
+            has the form [{'field_name':'foo','direction':'asc or desc'},]
 
         :param filter_operator: Optional operator to apply to the filters,
-        supported values are 'all' and 'any'. Defaults to 'all'.
+            supported values are 'all' and 'any'. Defaults to 'all'.
 
         :param limit: Optional, number of entities to return per page.
-        Defaults to 0 which returns all entities that match.
+            Defaults to 0 which returns all entities that match.
 
         :param page: Optional, page of results to return. By default all
-        results are returned. Use together with limit.
+            results are returned. Use together with limit.
 
         :param retired_only: Optional, flag to return only entities that have
-        been retried. Defaults to False which returns only entities which
-        have not been retired.
+            been retried. Defaults to False which returns only entities which
+            have not been retired.
         
         :returns: Dictionary of requested Shotgun fields and values.
         """
@@ -559,31 +558,31 @@ class Shotgun(object):
         :param entity_type: Required, entity type (string) to find.
 
         :param filters: Required, list of filters to apply.
-
+        
         :param fields: Optional list of fields from the matched entities to
-        return. Defaults to id.
-
+            return. Defaults to id.
+        
         :param order: Optional list of fields to order the results by, list
-        has the form [{'field_name':'foo','direction':'asc or desc'},]
-
+            has the form [{'field_name':'foo','direction':'asc or desc'},]
+        
         :param filter_operator: Optional operator to apply to the filters,
-        supported values are 'all' and 'any'. Defaults to 'all'.
-
+            supported values are 'all' and 'any'. Defaults to 'all'.
+        
         :param limit: Optional, number of entities to return per page.
-        Defaults to 0 which returns all entities that match.
-
+            Defaults to 0 which returns all entities that match.
+        
         :param page: Optional, page of results to return. By default all
-        results are returned. Use together with limit.
-
+            results are returned. Use together with limit.
+        
         :param retired_only: Optional, flag to return only entities that have
-        been retried. Defaults to False which returns only entities which
-        have not been retired.
-
+            been retried. Defaults to False which returns only entities which
+            have not been retired.
+        
         :param include_archived_projects: Optional, flag to include entities
-        whose projects have been archived
+            whose projects have been archived
 
         :returns: list of the dicts for each entity with the requested fields,
-        and their id and type.
+            and their id and type.
         """
 
         if not isinstance(limit, int) or limit < 0:
@@ -711,44 +710,45 @@ class Shotgun(object):
                         Uses the same syntax as for example the find() method.
         
         :param summary_fields: A list of dictionaries with the following keys:
-                - field: Which field you are summarizing
-                - type: The type of summary you are performing on the field. 
-                  Summary types can be any of [record_count, count, sum, 
-                  maximum, minimum, average, earliest, latest, percentage, 
-                  status_percentage, status_list, checked, unchecked] 
-                  depending on the type of field you're summarizing.
+            
+            :field: Which field you are summarizing
+            :type: The type of summary you are performing on the field. 
+              Summary types can be any of [record_count, count, sum, 
+              maximum, minimum, average, earliest, latest, percentage, 
+              status_percentage, status_list, checked, unchecked] 
+              depending on the type of field you're summarizing.
+
+        :param filter_operator: Controls how the filters are matched. There are only two valid 
+            options, `all` and `any`. You cannot currently combine the two options in the same query. 
+            Defaults to "all".
         
-        :param filter_operator: Controls how the filters are matched. 
-                                There are only two valid options: all and any. 
-                                You cannot currently combine the two options 
-                                in the same query. Defaults to "all".
         :param grouping: Optional list of dicts with the following keys:
-                - field: a string indicating the field on entity_type to 
-                  group results by.
-                - type: a string indicating the type of grouping to perform 
-                  for each group. Valid types depend on the type of field 
-                  you are grouping on and can be one of [exact, tens, hundreds, 
-                  thousands, tensofthousands, hundredsofthousands, millions, 
-                  day, week, month, quarter, year, clustered_date, oneday, 
-                  fivedays, entitytype, firstletter].
-                - direction: a string that sets the order to display the 
-                  grouped results. Valid direction options are asc (default) 
-                  and desc.
+                
+                :field: a string indicating the field on entity_type to group results by.
+                :type: a string indicating the type of grouping to perform 
+                    for each group. Valid types depend on the type of field 
+                    you are grouping on and can be one of [exact, tens, hundreds, 
+                    thousands, tensofthousands, hundredsofthousands, millions, 
+                    day, week, month, quarter, year, clustered_date, oneday, 
+                    fivedays, entitytype, firstletter].
+                :direction: a string that sets the order to display the 
+                    grouped results. Valid direction options are asc (default) 
+                    and desc.
                   
         :returns: dict object containing grouping and summaries keys.
-                - grouping: list of dictionaries containing grouping 
-                  information:
-                    - group_name: Display name of the value 
-                      that defines the group.
-                    - group_value: Data representation of the value 
-                      that defines the group.
-                    - summaries: see summary key
-                    - groups: For nested groups. This structure will be 
-                              repeated with the same structure as defined 
-                              in the top-level grouping key.
-                - summaries: Dict of key/value pairs where the key is the 
-                  field name and the value is the summary value 
-                  requested for that field.
+                
+                :grouping: list of dictionaries containing grouping 
+                    information:
+                :group_name: Display name of the value that defines the group.
+                    
+                    :group_value: Data representation of the value that defines the group.
+                    :summaries: see summary key
+                    :groups: For nested groups. This structure will be repeated with the same 
+                        structure as defined in the top-level grouping key.
+
+                :summaries: Dict of key/value pairs where the key is the field name and the value 
+                  is the summary value requested for that field.
+
         """
 
         if not isinstance(grouping, list) and grouping is not None:
@@ -781,11 +781,11 @@ class Shotgun(object):
         """Create a new entity of the specified entity_type.
 
         :param entity_type: Required, entity type (string) to create.
-
+        
         :param data: Required, dict fields to set on the new entity.
-
+        
         :param return_fields: Optional list of fields from the new entity
-        to return. Defaults to 'id' field.
+            to return. Defaults to 'id' field.
 
         :returns: dict of the requested fields.
         """
@@ -834,13 +834,13 @@ class Shotgun(object):
         """Updates the specified entity with the supplied data.
 
         :param entity_type: Required, entity type (string) to update.
-
+        
         :param entity_id: Required, id of the entity to update.
-
+        
         :param data: Required, dict fields to update on the entity.
 
         :returns: dict of the fields updated, with the entity_type and
-        id added.
+            id added.
         """
 
         data = data.copy()
@@ -887,11 +887,11 @@ class Shotgun(object):
         The entity can be brought back to life using the revive function.
 
         :param entity_type: Required, entity type (string) to delete.
-
+        
         :param entity_id: Required, id of the entity to delete.
 
         :returns: True if the entity was deleted, False otherwise e.g. if the
-        entity has previously been deleted.
+            entity has previously been deleted.
         """
 
         params = {
@@ -905,11 +905,11 @@ class Shotgun(object):
         """Revive an entity that has previously been deleted.
 
         :param entity_type: Required, entity type (string) to revive.
-
+        
         :param entity_id: Required, id of the entity to revive.
 
         :returns: True if the entity was revived, False otherwise e.g. if the
-        entity has previously been revived (or was not deleted).
+            entity has previously been revived (or was not deleted).
         """
 
         params = {
@@ -926,14 +926,15 @@ class Shotgun(object):
         complete or none will.
 
         :param requests: A list of dict's of the form which have a
-            request_type key and also specifies:
-            - create: entity_type, data dict of fields to set
-            - update: entity_type, entity_id, data dict of fields to set
-            - delete: entity_type and entity_id
+            request_type key and also specifies
+            
+            * create: entity_type, data dict of fields to set
+            * update: entity_type, entity_id, data dict of fields to set
+            * delete: entity_type and entity_id
 
         :returns: A list of values for each operation, create and update
-        requests return a dict of the fields updated. Delete requests
-        return True if the entity was deleted.
+            requests return a dict of the fields updated. Delete requests
+            return True if the entity was deleted.
         """
 
         if not isinstance(requests, list):
@@ -994,9 +995,12 @@ class Shotgun(object):
 
         :param start_date: Start date of date range.
         :type start_date: str (YYYY-MM-DD)
+        
         :param end_date: End date of date range.
         :type end_date: str (YYYY-MM-DD)
+        
         :param dict project: Project entity to query WorkDayRules for. (optional)
+        
         :param dict user: User entity to query WorkDayRules for. (optional)
         """
 
@@ -1020,12 +1024,17 @@ class Shotgun(object):
         """Update the work schedule for a given date. If neither project nor user are passed the studio work schedule will be updated.
         Project and User can only be used separately.
 
-        :param date: Date of WorkDayRule to update.
+        :param date: Date of WorkDayRule to update. 
         :type date: str (YYYY-MM-DD)
+        
         :param bool working:
+        
         :param str description: Reason for time off. (optional)
+        
         :param dict project: Project entity to assign to. Cannot be used with user. (optional)
+        
         :param dict user: User entity to assign to. Cannot be used with project. (optional)
+        
         :param str recalculate_field: Choose the schedule field that will be recalculated on Tasks when they are affected by a change in working schedule. 'due_date' or 'duration', default is a Site Preference (optional)
         """
 
@@ -1051,6 +1060,7 @@ class Shotgun(object):
         """Adds the entity to the user's followed entities (or does nothing if the user is already following the entity)
         
         :param dict user: User entity to follow the entity
+        
         :param dict entity: Entity to be followed
         
         :returns: dict with 'followed'=true, and dicts for the 'user' and 'entity' that were passed in
@@ -1071,6 +1081,7 @@ class Shotgun(object):
         """Removes entity from the user's followed entities (or does nothing if the user is not following the entity)
         
         :param dict user: User entity to unfollow the entity
+        
         :param dict entity: Entity to be unfollowed
         
         :returns: dict with 'unfollowed'=true, and dicts for the 'user' and 'entity' that were passed in
@@ -1108,9 +1119,9 @@ class Shotgun(object):
     def schema_entity_read(self, project_entity=None):
         """Gets all active entities defined in the schema.
 
-        :param dict project_entity: Optional, if set, each field's visibility is reported accordingly
-        to the specified project's current visibility settings.
-        If None, all fields are reported as visible.
+        :param dict project_entity: Optional, if set, each field's visibility is reported 
+            accordingly to the specified project's current visibility settings. If None, all 
+            fields are reported as visible.
 
         :returns: dict of Entity Type to dict containing the display name.
         """
@@ -1127,9 +1138,9 @@ class Shotgun(object):
     def schema_read(self, project_entity=None):
         """Gets the schema for all fields in all entities.
 
-        :param dict project_entity: Optional, if set, each field's visibility is reported accordingly
-        to the specified project's current visibility settings.
-        If None, all fields are reported as visible.
+        :param dict project_entity: Optional, if set, each field's visibility is reported 
+            accordingly to the specified project's current visibility settings. If None, all 
+            fields are reported as visible.
 
         :returns: nested dicts
         """
@@ -1147,16 +1158,14 @@ class Shotgun(object):
         """Gets all schema for fields in the specified entity_type or one
         field.
 
-        :param entity_type: Required, entity type (string) to get the schema
-        for.
+        :param entity_type: Required, entity type (string) to get the schema for.
+        
+        :param field_name: Optional, name of the field to get the schema definition for. If not 
+            supplied all fields for the entity type are returned.
 
-        :param field_name: Optional, name of the field to get the schema
-        definition for. If not supplied all fields for the entity type are
-        returned.
-
-        :param dict project_entity: Optional, if set, each field's visibility is reported accordingly
-        to the specified project's current visibility settings.
-        If None, all fields are reported as visible.
+        :param dict project_entity: Optional, if set, each field's visibility is reported 
+            accordingly to the specified project's current visibility settings. If None, all fields 
+            are reported as visible.
 
         :returns: dict of field name to nested dicts which describe the field
         """
@@ -1177,15 +1186,15 @@ class Shotgun(object):
         """Creates a field for the specified entity type.
 
         :param entity_type: Required, entity type (string) to add the field to
-
+        
         :param data_type: Required, Shotgun data type for the new field.
-
+        
         :param display_name: Required, display name for the new field.
-
+        
         :param properties: Optional, dict of properties for the new field.
 
         :returns: The Shotgun name (string) for the new field, this is
-        different to the display_name passed in.
+            different to the display_name passed in.
         """
 
         params = {
@@ -1205,11 +1214,10 @@ class Shotgun(object):
         properties.
 
         :param entity_type: Required, entity type (string) to add the field to
-
+        
         :param field_name: Required, Shotgun name of the field to update.
-
+        
         :param properties: Required, dict of updated properties for the field.
-
         :returns: True if the field was updated, False otherwise.
         """
 
@@ -1228,10 +1236,10 @@ class Shotgun(object):
         """Deletes the specified field definition from the entity_type.
 
         :param entity_type: Required, entity type (string) to delete the field
-        from.
-
+            from.
+        
         :param field_name: Required, Shotgun name of the field to delete.
-
+        
         :param properties: Required, dict of updated properties for the field.
 
         :returns: True if the field was updated, False otherwise.
@@ -1294,8 +1302,10 @@ class Shotgun(object):
         
         :param entities: The entities to update to point to the shared 
                          thumbnail provided in standard hash (dict) format.
-                         Example: [{'type': 'Version', 'id': 123}, 
-                                   {'type': 'Version', 'id': 456}]
+                         Example:: 
+
+                            [{'type': 'Version', 'id': 123}, 
+                             {'type': 'Version', 'id': 456}]
         
         :param thumbnail_path: Required if source_entity is not provided.
                                The full path to the local thumbnail file to 
@@ -1401,8 +1411,11 @@ class Shotgun(object):
         to the upload() method.
         
         :param entity_type: Entity type of the entity to associate with
+        
         :param entity_id: Required, id of the entity to associate with
+        
         :param path: Path to file on disk
+        
         :returns: Id of the new attachment
         """
         return self.upload(entity_type, entity_id, path,
@@ -1415,8 +1428,11 @@ class Shotgun(object):
         to the upload() method.
         
         :param entity_type: Entity type of the entity to associate with
+        
         :param entity_id: Required, id of the entity to associate with
+        
         :param path: Path to file on disk
+        
         :returns: Id of the new attachment
         """
         if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
@@ -1432,17 +1448,17 @@ class Shotgun(object):
         entity_type and entity_id.
 
         :param entity_type: Entity type of the entity to associate with
-
+        
         :param entity_id: Entity id of the entity to associate with
-
+        
         :param path: Path to file on disk
-
+        
         :param field_name: the field on the entity to upload to
             (ignored if thumbnail)
-
+        
         :param display_name: the display name to use for the file in the ui
             (ignored if thumbnail)
-
+        
         :param tag_list: comma-separated string of tags to assign to the file
 
         :returns: Id of the new attachment.
@@ -1513,25 +1529,26 @@ class Shotgun(object):
         returns a 200 with the page content.
 
         :param attachment: (mixed) Usually a dict representing an Attachment.
-        The dict should have a 'url' key that specifies the download url. 
-        Optionally, the dict can be a standard entity hash format with 'id' and
-        'type' keys as long as 'type'=='Attachment'. This is only supported for
-        backwards compatibility (#22150).
-        If an int value is passed in, the Attachment with the matching id will
-        be downloaded from the Shotgun server.
+            The dict should have a 'url' key that specifies the download url. 
+            Optionally, the dict can be a standard entity hash format with 'id' and
+            'type' keys as long as 'type'=='Attachment'. This is only supported for
+            backwards compatibility (#22150).
+            
+            If an int value is passed in, the Attachment with the matching id will
+            be downloaded from the Shotgun server.
 
         :param file_path: (str) Optional. If provided, write the data directly
-        to local disk using the file_path. This avoids loading all of the data 
-        in memory and saves the file locally which is probably what is desired
-        anyway. 
+            to local disk using the file_path. This avoids loading all of the data 
+            in memory and saves the file locally which is probably what is desired
+            anyway. 
 
         :param attachment_id: (int) Optional. Deprecated in favor of passing in 
-        Attachment hash to attachment param. This attachment_id exists only for
-        backwards compatibility for scripts specifying the parameter with
-        keywords.
+            Attachment hash to attachment param. This attachment_id exists only for
+            backwards compatibility for scripts specifying the parameter with
+            keywords.
 
         :returns: (str) If file_path is None, returns data of the Attachment 
-        file as a string. If file_path is provided, returns file_path.
+            file as a string. If file_path is provided, returns file_path.
         """
         # backwards compatibility when passed via keyword argument 
         if attachment is False:
@@ -1611,18 +1628,18 @@ class Shotgun(object):
         """Returns the URL for downloading provided Attachment.
 
         :param attachment: (mixed) If type is an int, construct url to download
-        Attachment with id from Shotgun. 
-        If type is a dict, and a url key is present, use that url. 
-        If type is a dict, and url key is not present, check if we have
-        an id and type keys and the type is 'Attachment' in which case we 
-        construct url to download Attachment with id from Shotgun as if just
-        the id has been passed in. 
+            Attachment with id from Shotgun. 
+            If type is a dict, and a url key is present, use that url. 
+            If type is a dict, and url key is not present, check if we have
+            an id and type keys and the type is 'Attachment' in which case we 
+            construct url to download Attachment with id from Shotgun as if just
+            the id has been passed in. 
 
         :todo: Support for a standard entity hash should be removed: #22150
 
         :returns: (str) the download URL for the Attachment or None if None was
-        passed to attachment param. This avoids raising an error when results
-        from a find() are passed off to a download_attachment() call.
+            passed to attachment param. This avoids raising an error when results
+            from a find() are passed off to a download_attachment() call.
         """
         attachment_id = None
         if isinstance(attachment, int):
@@ -1654,11 +1671,11 @@ class Shotgun(object):
         Note that HumanUser must be an active account.
         
         :param user_login: Login name of Shotgun HumanUser
-
+        
         :param user_password: Password for Shotgun HumanUser
-
+        
         :param auth_token: One-time token required to authenticate Shotgun HumanUser
-        when two factor authentication is turned on.
+            when two factor authentication is turned on.
 
         :return: Dictionary of HumanUser including ID if authenticated, None if unauthorized.
         """
@@ -1701,6 +1718,7 @@ class Shotgun(object):
         """Update projects last_accessed_by_current_user field.
         
         :param project: a project entity hash
+        
         :param user: A human user entity hash. Optional if either login or sudo_as are used.
         """
         if self.server_caps.version and self.server_caps.version < (5, 3, 20):
@@ -1728,7 +1746,7 @@ class Shotgun(object):
         """Returns the full conversation for a given note, including 
         replies and attachments.
         
-        Returns a complex data structure on the following form:
+        Returns a complex data structure on the following form::
         
             [{'content': 'Please add more awesomeness to the color grading.',
               'created_at': '2015-07-14 21:33:28 UTC',
@@ -1762,7 +1780,7 @@ class Shotgun(object):
         If you wish to include additional fields beyond the ones that are 
         returned by default, you can specify these in an entity_fields 
         dictionary. This dictonary should be keyed by entity type and each
-        key should contain a list of fields to retrieve, for example:
+        key should contain a list of fields to retrieve, for example::
         
             { "Note":       ["created_by.HumanUser.image", 
                              "addressings_to", 
@@ -1776,6 +1794,7 @@ class Shotgun(object):
             }
         
         :param note_id: The id for the note to be retrieved
+        
         :param entity_fields: Additional fields to retrieve as part 
                               of the request. See above for details.
                               
@@ -1807,39 +1826,40 @@ class Shotgun(object):
         
         Several ways to limit the results of the query are available: 
         
-        - Using the project_ids parameter, you can provide a list 
+        * Using the project_ids parameter, you can provide a list 
           of project ids to search across. Leaving this at its default
           value of None will search across all Shotgun data. 
         
-        - You need to define which subset of entity types to search using the 
+        * You need to define which subset of entity types to search using the 
           entity_types parameter. Each of these entity types can be associated 
           with a filter query to further reduce the list of matches. The filter
           list is using the standard filter syntax used by for example the 
           find() method. For example: 
           
-          Constrain the search to all shots but character assets only:
-          { "Asset": [["sg_asset_type", "is", "character"]], 
-            "Shot":  []  
-          }
+          Constrain the search to all shots but character assets only::
+              
+              { "Asset": [["sg_asset_type", "is", "character"]], 
+                "Shot":  []  
+              }
           
-        A dictionary with keys 'terms' and 'matches' will be returned:
+        A dictionary with keys 'terms' and 'matches' will be returned::
         
-        {'matches': [{'id': 734,
-                      'type': 'Asset',
-                      'name': 'Bunny',
-                      'project_id': 65,                      
-                      'image': 'https://...',
-                      'links': ['', ''],
-                      'status': 'fin'},
-                      
-                      {'id': 558,
-                       'type': 'Task'
-                       'name': 'FX',
-                       'project_id': 65,
-                       'image': 'https://...',
-                       'links': ['Shot', 'bunny_010_0010'],
-                       'status': 'fin'}],
-            'terms': ['bunny']}
+            {'matches': [{'id': 734,
+                          'type': 'Asset',
+                          'name': 'Bunny',
+                          'project_id': 65,                      
+                          'image': 'https://...',
+                          'links': ['', ''],
+                          'status': 'fin'},
+                          
+                          {'id': 558,
+                           'type': 'Task'
+                           'name': 'FX',
+                           'project_id': 65,
+                           'image': 'https://...',
+                           'links': ['Shot', 'bunny_010_0010'],
+                           'status': 'fin'}],
+                'terms': ['bunny']}
         
         The links field will contain information about any linked entity. 
         This is useful when for example presenting tasks and you want to 
@@ -1847,10 +1867,13 @@ class Shotgun(object):
 
         :param text: Text to search for. This must be at least three 
                      characters long, or an exception will be raised.
+        
         :param entity_types: Dictionary to specify which entity types to search 
                              across. See above for usage examples.
+        
         :param project_ids: List of projects to search. By default, all 
                             projects will be searched. 
+        
         :param limit: Specify the maximum number of matches to return.
         
         :returns: A complex dictonary structure, see above for example.
@@ -1895,29 +1918,31 @@ class Shotgun(object):
         Activity tab for an entity in the Shotgun Web UI.
         
         A complex data structure on the following form will be 
-        returned from Shotgun:
+        returned from Shotgun::
         
-        {'earliest_update_id': 50,
-         'entity_id': 65,
-         'entity_type': 'Project',
-         'latest_update_id': 79,
-         'updates': [{'created_at': '2015-07-15 11:06:55 UTC',
-                      'created_by': {'id': 38,
-                                     'image': '6641',
-                                     'name': 'John Smith',
-                                     'status': 'act',
-                                     'type': 'HumanUser'},
-                      'id': 79,
-                      'meta': {'entity_id': 6004,
-                               'entity_type': 'Version',
-                               'type': 'new_entity'},
-                      'primary_entity': {'id': 6004,
-                                         'name': 'Review_turntable_v2',
-                                         'status': 'rev',
-                                         'type': 'Version'},
-                      'read': False,
-                      'update_type': 'create'},        
-        ]}
+            {'earliest_update_id': 50,
+             'entity_id': 65,
+             'entity_type': 'Project',
+             'latest_update_id': 79,
+             'updates': [{'created_at': '2015-07-15 11:06:55 UTC',
+                          'created_by': {'id': 38,
+                                         'image': '6641',
+                                         'name': 'John Smith',
+                                         'status': 'act',
+                                         'type': 'HumanUser'},
+                          'id': 79,
+                          'meta': {'entity_id': 6004,
+                                   'entity_type': 'Version',
+                                   'type': 'new_entity'},
+                          'primary_entity': {'id': 6004,
+                                             'name': 'Review_turntable_v2',
+                                             'status': 'rev',
+                                             'type': 'Version'},
+                          'read': False,
+                          'update_type': 'create'},
+                         {...},
+                        ]    
+            }
         
         The main payload of the return data can be found inside the 'updates' 
         key, containing a list of dictionaries. This list is always returned 
@@ -1928,23 +1953,28 @@ class Shotgun(object):
         entity_fields parameter, you can extend the returned data to include 
         additional fields. If for example you wanted to return the asset type 
         for all assets and the linked sequence for all Shots, pass the 
-        following entity_fields:
+        following entity_fields::
         
-        {"Shot": ["sg_sequence"], "Asset": ["sg_asset_type"]}
+            {"Shot": ["sg_sequence"], "Asset": ["sg_asset_type"]}
         
         Deep queries can be used in this syntax if you want to 
         traverse into connected data.
         
         :param entity_type: Entity type to retrieve activity stream for
+        
         :param entity_id: Entity id to retrieve activity stream for
+        
         :param entity_fields: List of additional fields to include. 
                               See above for details
+        
         :param max_id: Do not retrieve ids greater than this id. 
                        This is useful when implementing paging.
+        
         :param min_id: Do not retrieve ids lesser than this id. 
                        This is useful when implementing caching of 
                        the event stream data and you want to 
                        "top up" an existing cache.
+        
         :param limit: Limit the number of returned records. If not specified, 
                       the system default will be used.
 
@@ -2213,8 +2243,8 @@ class Shotgun(object):
         :param body: Raw response body from the server.
 
         :returns: If the content-type starts with application/json or
-        text/javascript the body is json decoded. Otherwise the raw body is
-        returned.
+            text/javascript the body is json decoded. Otherwise the raw body is
+            returned.
         """
         if not body:
             return body
@@ -2298,8 +2328,8 @@ class Shotgun(object):
         """Transforms data types or values before they are sent by the
         client.
 
-        - changes timezones
-        - converts dates and times to strings
+        * changes timezones
+        * converts dates and times to strings
         """
 
         if self.config.convert_datetimes_to_utc:
@@ -2410,9 +2440,9 @@ class Shotgun(object):
     def _parse_records(self, records):
         """Parses 'records' returned from the api to do local modifications:
 
-        - Insert thumbnail urls
-        - Insert local file paths.
-        - Revert &lt; html entities that may be the result of input sanitization
+        * Insert thumbnail urls
+        * Insert local file paths.
+        * Revert &lt; html entities that may be the result of input sanitization
           mechanisms back to a litteral < character.
 
         :param records: List of records (dicts) to process or a single record.
@@ -2463,7 +2493,7 @@ class Shotgun(object):
         Note: This makes a call to the server for every thumbnail.
 
         :param entity_type: Entity type the id is for.
-
+        
         :param entity_id: id of the entity to get the thumbnail for.
 
         :returns: Fully qualified url to the thumbnail.
