@@ -1,79 +1,267 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>python-api by shotgunsoftware</title>
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Shotgun Python API3 &mdash; python-api sphinx documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
     
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>python-api</h1>
-        <p>Shotgun Python API</p>
-        <p class="view"><a href="https://github.com/shotgunsoftware/python-api">View the Project on GitHub <small>shotgunsoftware/python-api</small></a></p>
-        <ul>
-          <li><a href="https://github.com/shotgunsoftware/python-api/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/shotgunsoftware/python-api/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/shotgunsoftware/python-api">Fork On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <p><img src="http://shotgunsoftware.com/images/sg_logo_grey_144.png" alt="shotgun"></p>
 
-<h1>Python API</h1>
+  
 
-<p>Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools. This is the official API that is maintained by Shotgun Software (support@shotgunsoftware.com)</p>
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
 
-<h2>Minimum Requirements</h2>
+  
 
-<ul>
-<li>Shotgun server v2.4.12 or higher. (Earlier builds of 2.4 will work, but have buggy support for float field types)</li>
-<li>Python v2.4 - v2.7. (We do have plans to eventually support Python 3)</li>
-</ul><h2>High Performance Requirements</h2>
+  
+    <link rel="top" title="python-api sphinx documentation" href="#"/>
+        <link rel="next" title="Getting Started" href="getting_started.html"/> 
 
-<ul>
-<li>For Python 2.4 and 2.5, install simplejson 2.0.9: <a href="http://pypi.python.org/pypi/simplejson/2.0.9">http://pypi.python.org/pypi/simplejson/2.0.9</a></li>
-<li>For Python 2.6 and higher, install simplejson 2.1.6: <a href="http://pypi.python.org/pypi/simplejson/2.1.6">http://pypi.python.org/pypi/simplejson/2.1.6</a></li>
-</ul><h2>Installing</h2>
+  
+  <script src="_static/js/modernizr.min.js"></script>
 
-<p>To use Shotgun's Python API module, you need to place the package shotgun_api3 in one of the directories specified by the environment variable PYTHONPATH. For more information on PYTHONPATH and using modules in Python, see <a href="http://docs.python.org/tutorial/modules.html">http://docs.python.org/tutorial/modules.html</a></p>
+</head>
 
-<h2>Documentation</h2>
+<body class="wy-body-for-nav" role="document">
 
-<p>Tutorials and detailed documentation about the Python API are available on the <a href="https://github.com/shotgunsoftware/python-api/wiki">Python API Wiki</a>. There is also some additional related documentation on the <a href="https://support.shotgunsoftware.com/forums/48807-developer-api-info">Shotgun Support Website</a>.
-Some useful direct links in each are below:</p>
+  <div class="wy-grid-for-nav">
 
-<ul>
-<li>
-<a href="https://support.shotgunsoftware.com/entries/38181-api-introduction-video-tour">Introduction and Video Tour</a><br>
-</li>
-<li><a href="https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Methods">Reference: Methods</a></li>
-<li><a href="https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Data-Types">Reference: Data Types</a></li>
-<li><a href="https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax">Reference: Filter Syntax</a></li>
-</ul><h2>Tests</h2>
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    
+        <img style='width: 191px;
+                height: 60px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='./_static/logo_sg@2x.png'/>
+    
+    
 
-<p>Integration and unit tests are provided.
-- test_client and tests_unit mock server interaction and do not require a shotgun instance to be available.
-- test_api and test_api_long do require a shotgun instance, with a script key available for the tests. These tests rely on a tests/config file, which can be created by renaming example_config and supplying the server and script user values. The tests will set up test data on the server based on the data set forth in the config. This data will be manipulated by the tests, and should not be used for other purposes.
-- To run all of the tests, use the shell script run-tests. This script require nose to be installed.</p>
+          
+            <a href="#" class="icon icon-home"> python-api
+          
 
-<h2>Changelog</h2>
+          
+          </a>
 
-<p>The latest changes can be seen in the latest <a href="https://github.com/shotgunsoftware/python-api/blob/master/README.mdown">README file</a></p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/shotgunsoftware">shotgunsoftware</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Developer Reference</a></li>
+</ul>
+
+            
+          
+       
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>python-api</b> sphinx.<br>
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
+
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
-  </body>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">python-api</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>Shotgun Python API3</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="shotgun-python-api3">
+<h1>Shotgun Python API3<a class="headerlink" href="#shotgun-python-api3" title="Permalink to this headline">¶</a></h1>
+<p>Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools.</p>
+<div class="section" id="minimum-requirements">
+<h2>Minimum Requirements<a class="headerlink" href="#minimum-requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Shotgun server v5.4.14 or higher for API v3.0.16.</li>
+<li>Shotgun server v2.4.12 or higher for API v3.0.8.</li>
+<li>Shotgun server v1.8 or higher for API v3.0.7.</li>
+<li>Python v2.4 - v2.7. (We do not currently support Python 3)</li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To use Shotgun&#8217;s Python API module, you need to place it in one of the directories specified by the environment variable <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>. For more information on <code class="docutils literal"><span class="pre">PYTHONPATH</span></code> and using modules in Python, see <a class="reference external" href="http://docs.python.org/tutorial/modules.html">http://docs.python.org/tutorial/modules.html</a></p>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#setting-up-shotgun-for-api-access">Setting Up Shotgun for API Access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#api-usage-tips">API Usage Tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#shotgun-server-api-changelog">Shotgun Server API Changelog</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#beginner">Beginner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#advanced">Advanced</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Developer Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#shotgun">Shotgun</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#exceptions">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#servercapabilities">ServerCapabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#clientcapabilities">ClientCapabilities</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'sphinx',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>

@@ -1,0 +1,435 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Getting Started &mdash; python-api sphinx documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="python-api sphinx documentation" href="index.html"/>
+        <link rel="next" title="Tutorials" href="tutorials.html"/>
+        <link rel="prev" title="Shotgun Python API3" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    
+        <img style='width: 191px;
+                height: 60px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='./_static/logo_sg@2x.png'/>
+    
+    
+
+          
+            <a href="index.html" class="icon icon-home"> python-api
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#crud">CRUD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#media-files">Media Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#authentication">Authentication</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-shotgun-for-api-access">Setting Up Shotgun for API Access</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#why-have-different-application-keys-for-different-scripts">Why have different application keys for different scripts?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#permissions">Permissions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#event-logging">Event Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-would-you-want-to-turn-logging-off">Why would you want to turn logging off?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#api-usage-tips">API Usage Tips</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#entity-fields">Entity Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shotgun-ui-fields-not-available-via-the-api">Shotgun UI fields not available via the API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#humanuser">HumanUser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shot">Shot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pipeline-step-summary-fields-on-entities">Pipeline Step summary fields on entities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#query-fields">Query Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#audit-fields">Audit Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logging">Logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ironpython">IronPython</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#shotgun-server-api-changelog">Shotgun Server API Changelog</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Developer Reference</a></li>
+</ul>
+
+            
+          
+       
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>python-api</b> sphinx.<br>
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
+
+    </div>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">python-api</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Getting Started</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>The Shotgun API allows users to integrate their tools with Shotgun very easily. Using the simple Python-based API we provide, you can quickly get your scripts integrated with Shotgun&#8217;s CRUD-based API. Because the needs of every studio can prove to be very different, we don&#8217;t do a lot of &#8220;automation&#8221; or &#8220;smarts&#8221; in our API. We have kept it pretty low-level and leave most of those decisions to you. The API is powerful enough you can write your own &#8220;smarts&#8221; in a wrapper on top of the Shotgun API.</p>
+<div class="section" id="crud">
+<h3>CRUD<a class="headerlink" href="#crud" title="Permalink to this headline">¶</a></h3>
+<p>The API follows the CRUD pattern allowing simple Create, Read, Update, and Delete actions. Each request acts on a single entity type and depending on the specific action, can define filters, columns to return, sorting information, and some additional options.</p>
+</div>
+<div class="section" id="media-files">
+<h3>Media Files<a class="headerlink" href="#media-files" title="Permalink to this headline">¶</a></h3>
+<p>The API has additional methods for managing thumbnails, images, and both uploaded and linked media.</p>
+</div>
+<div class="section" id="authentication">
+<h3>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h3>
+<p>In order to communicate with the Shotgun server via the API, your script must be registered with Shotgun and have a valid API key. Then authentication is simple. You just provide your script name and it&#8217;s API key. We strongly recommend you register each script separately and have individual API keys for each. This allows you to track down each of your scripts and the actions they are performing much more accurately in the event logs.</p>
+</div>
+</div>
+<div class="section" id="setting-up-shotgun-for-api-access">
+<h2>Setting Up Shotgun for API Access<a class="headerlink" href="#setting-up-shotgun-for-api-access" title="Permalink to this headline">¶</a></h2>
+<p>Before writing scripts to interact with the Shotgun API, you need to create add a script entity in Shotgun. This will automatically generate an application key which will act as the script&#8217;s password. The key will look something like this: &#8220;bc29517b4928b8336e007ae48e71f082eb0e7c88&#8221;. To create a new key, click the + button on the &#8220;Scripts&#8221; page in the Admin section:</p>
+<img alt="_images/scripts_page.png" src="_images/scripts_page.png" />
+<div class="section" id="why-have-different-application-keys-for-different-scripts">
+<h3>Why have different application keys for different scripts?<a class="headerlink" href="#why-have-different-application-keys-for-different-scripts" title="Permalink to this headline">¶</a></h3>
+<p>We recommend you create a new key for each script so you can log what scripts are doing what in case one of them causes problems. This will also allow you to better see what scripts are performing what actions in the EventLog. We&#8217;ve found that even though you may think you&#8217;ll probably never need to know, an extra 2 minutes of setup now can prevent hours of headache in the future.</p>
+</div>
+<div class="section" id="permissions">
+<h3>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h3>
+<p>Script users are bound restrictions of their permission role, which is edited on the script record in the &#8220;Permission Role&#8221; field. The default permission role for all scripts is &#8220;API Admin User&#8221; which allows full access to create, update, and delete entities and fields, including editing the &#8220;date created&#8221; audit field and creating event log entries. If you have other permission roles for ApiUsers, you can set the default role that will be assigned when a new script is created, in the site preferences.</p>
+</div>
+<div class="section" id="event-logging">
+<h3>Event Logging<a class="headerlink" href="#event-logging" title="Permalink to this headline">¶</a></h3>
+<p>By default, events generated by scripts using an application key are logged in Shotgun&#8217;s event log. You can turn this off by unchecking the &#8220;Generate Events&#8221; checkbox either in the script detail page or from the main Scripts admin page. Note that this will also prevent any email notifications from being triggered by your scripts since the email notifier relies on the event log to find events to notify for.</p>
+</div>
+<div class="section" id="why-would-you-want-to-turn-logging-off">
+<h3>Why would you want to turn logging off?<a class="headerlink" href="#why-would-you-want-to-turn-logging-off" title="Permalink to this headline">¶</a></h3>
+<p>It is an optimization that is not used often, but some clients have integration scripts that are pushing data into Shotgun just for reference, like publishes from their asset management system. This publish data is never changed later, so the data itself has the entire history, and the events would just clutter the event log.</p>
+</div>
+</div>
+<div class="section" id="api-usage-tips">
+<h2>API Usage Tips<a class="headerlink" href="#api-usage-tips" title="Permalink to this headline">¶</a></h2>
+<p>Below is a list of helpful tips when using the Shotgun API. We have tried to make the API very simple to use with predictable results while remaining a powerful tool to integrate with your pipeline. However, there&#8217;s always a couple of things that crop up that our users might not be aware of. Those are the types of things you&#8217;ll find below. We&#8217;ll be adding to this document over time as new questions come up from our users that exhibit these types of cases.</p>
+<div class="section" id="entity-fields">
+<h3>Entity Fields<a class="headerlink" href="#entity-fields" title="Permalink to this headline">¶</a></h3>
+<p>When you do a <cite>find()</cite> that returns a field of type entity or multi-entity (for example the &#8216;assets&#8217; column on Shot), the entities are returned in a standard hash (dict) format:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span><span class="s">&#39;Asset&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;redBall&#39;</span><span class="p">,</span> <span class="s">&#39;id&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>For each entity returned, you will get a <code class="docutils literal"><span class="pre">'type'</span></code>, <code class="docutils literal"><span class="pre">'name'</span></code>, and <code class="docutils literal"><span class="pre">'id'</span></code> key. This does not mean there are fields named <code class="docutils literal"><span class="pre">'type'</span></code> and <code class="docutils literal"><span class="pre">'name'</span></code> on the Asset. This is only used to provide a consistent way to represent entities returned via the API.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">type</span></code>: the entity type (CamelCase)</li>
+<li><code class="docutils literal"><span class="pre">name</span></code>: the display name of the entity. For most entity types this is the field named <code class="docutils literal"><span class="pre">code</span></code> but not always. For example, on the Ticket and Delivery entities the name key would contain the value of the <code class="docutils literal"><span class="pre">title</span></code> field.</li>
+</ul>
+</div>
+<div class="section" id="shotgun-ui-fields-not-available-via-the-api">
+<h3>Shotgun UI fields not available via the API<a class="headerlink" href="#shotgun-ui-fields-not-available-via-the-api" title="Permalink to this headline">¶</a></h3>
+<p>Summary type fields like Query Fields and Pipeline Step summary fields are currently only available via the UI. Some other fields may not work as expected through the API because they are &#8220;display only&#8221; fields made available for convenience and are only available in the browser UI.</p>
+<div class="section" id="humanuser">
+<h4>HumanUser<a class="headerlink" href="#humanuser" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">name</span></code>: This is a UI-only field that is a combination of the <code class="docutils literal"><span class="pre">'firstname'</span> <span class="pre">+</span> <span class="pre">'</span> <span class="pre">'</span> <span class="pre">+</span> <span class="pre">'lastname'</span></code>.</li>
+</ul>
+</div>
+<div class="section" id="shot">
+<h4>Shot<a class="headerlink" href="#shot" title="Permalink to this headline">¶</a></h4>
+<p><strong>Smart Cut Fields</strong>: These fields are available only in the browser UI. You can read more about smart cut fields and the API in the Smart Cut Fields doc (link TK).:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">smart_cut_in</span>
+<span class="n">smart_cut_out</span>
+<span class="n">smart_cut_duration</span>
+<span class="n">smart_cut_summary_display</span>
+<span class="n">smart_duration_summary_display</span>
+<span class="n">smart_head_in</span>
+<span class="n">smart_head_out</span>
+<span class="n">smart_head_duration</span>
+<span class="n">smart_tail_in</span>
+<span class="n">smart_tail_out</span>
+<span class="n">smart_tail_duration</span>
+<span class="n">smart_working_duration</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pipeline-step-summary-fields-on-entities">
+<h4>Pipeline Step summary fields on entities<a class="headerlink" href="#pipeline-step-summary-fields-on-entities" title="Permalink to this headline">¶</a></h4>
+<p>The Pipeline Step summary fields on entities that have Tasks aren&#8217;t currently available via the API and are calculated on the client side in the UI. These fields are like <code class="docutils literal"><span class="pre">step_0</span></code>, or <code class="docutils literal"><span class="pre">step_13</span></code>. Note that the Pipeline Step entity itself is available via the API as the entity type <code class="docutils literal"><span class="pre">Step</span></code>.</p>
+</div>
+<div class="section" id="query-fields">
+<h4>Query Fields<a class="headerlink" href="#query-fields" title="Permalink to this headline">¶</a></h4>
+<p>Query fields are also summary fields like Pipeline Steps, the query is run from the client side UI and therefore is not currently supported in the API.</p>
+</div>
+</div>
+<div class="section" id="audit-fields">
+<h3>Audit Fields<a class="headerlink" href="#audit-fields" title="Permalink to this headline">¶</a></h3>
+<p>You can set the <code class="docutils literal"><span class="pre">created_by</span></code> and <code class="docutils literal"><span class="pre">created_at</span></code> fields via the API at creation time. This is often useful for when you&#8217;re importing or migrating data from another source and want to keep the history in tact. However, you cannot set the <code class="docutils literal"><span class="pre">updated_by</span></code> and <code class="docutils literal"><span class="pre">updated_at</span></code> fields. These are automatically set whenever an entity is created or updated.</p>
+</div>
+<div class="section" id="logging">
+<h3>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h3>
+<p>The API uses standard python logging but does not define a handler.</p>
+<p>To see the logging output in stdout, define a streamhandler in your script:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">shotgun_api3</span> <span class="kn">as</span> <span class="nn">shotgun</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To write logging output from the shotgun API to a file, define a file handler in your script:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">shotgun_api3</span> <span class="kn">as</span> <span class="nn">shotgun</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s">&#39;/path/to/your/log&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To suppress the logging output from the API in a script which uses logging, set the level of the shotgun logger to a higher level:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">shotgun_api3</span> <span class="kn">as</span> <span class="nn">shotgun</span>
+<span class="n">sg_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;shotgun_api3&#39;</span><span class="p">)</span>
+<span class="n">sg_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ironpython">
+<h3>IronPython<a class="headerlink" href="#ironpython" title="Permalink to this headline">¶</a></h3>
+<p>We do not test against IronPython and cannot be sure that we won&#8217;t introduce breaking changes or that we will be compatible with future releases of IronPython. While we don&#8217;t officially support IronPython, we certainly will do our best to figure out any issues that come up while using it and how to avoid them.</p>
+<p>As of July 9, 2015 you can look at this fork of the repo to see what changes were needed as of that date to make things work. The original fork was as of v3.0.20 of the API. Big thanks to our awesome clients Pixomondo for making their work public and letting us refer to it:</p>
+<p><a class="reference external" href="https://github.com/Pixomondo/python-api/tree/v3.0.20.ipy">https://github.com/Pixomondo/python-api/tree/v3.0.20.ipy</a></p>
+<p>v3.0.20 can be used with IronPython with a little bit of added work:</p>
+<ul class="simple">
+<li>The Python API uses the zlib module to handle decompressing the gzipped response from the server. There&#8217;s no built-in zlib module in IronPython, but there&#8217;s a potential solution from Jeff Hardy at <a class="reference external" href="https://bitbucket.org/jdhardy/ironpythonzlib/src/">https://bitbucket.org/jdhardy/ironpythonzlib/src/</a>. And the blog post about it here <a class="reference external" href="http://blog.jdhardy.ca/2008/12/solving-zlib-problem-ironpythonzlib.html">http://blog.jdhardy.ca/2008/12/solving-zlib-problem-ironpythonzlib.html</a></li>
+<li>If you encounter any SSL errors like <code class="docutils literal"><span class="pre">unknown</span> <span class="pre">field:</span> <span class="pre">SERIALNUMBER=0123456789</span></code> or <code class="docutils literal"><span class="pre">:SSL3_GET_SERVER_CERTIFICATE:certificate</span> <span class="pre">verify</span> <span class="pre">failed</span></code>. For now you can workaround this problem by disabling ssl certificate validation which we&#8217;ve encountered some intermittent issues with. In the block ~ln 70 of <code class="docutils literal"><span class="pre">shotgun.py</span></code>, force <code class="docutils literal"><span class="pre">NO_SSL_VALIDATION</span> <span class="pre">=</span> <span class="pre">True</span></code> for either case.</li>
+<li>If you encounter <code class="docutils literal"><span class="pre">LookupError:</span> <span class="pre">unknown</span> <span class="pre">encoding:</span> <span class="pre">idna</span></code>, you can force utf-8 by changing iri2uri.py ~ln 71 from <code class="docutils literal"><span class="pre">authority</span> <span class="pre">=</span> <span class="pre">authority.encode('idna')</span></code> to <code class="docutils literal"><span class="pre">authority</span> <span class="pre">=</span> <span class="pre">authority.encode('utf-8')</span></code></li>
+<li>If you encounter an SSL error such as <code class="docutils literal"><span class="pre">SSL3_READ_BYTES:sslv3</span> <span class="pre">alert</span> <span class="pre">handshake</span> <span class="pre">failure</span></code>, then the lower level SSL library backing python&#8217;s network infrastructure is attempting to connect to our servers via SSLv3, which is no longer supported. You can use the code from this gist to force the SSL connections to use a specific protocol. The forked repo linked above has an example of how to do that to force the use of TLSv1.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="shotgun-server-api-changelog">
+<h2>Shotgun Server API Changelog<a class="headerlink" href="#shotgun-server-api-changelog" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">note:</th><td class="field-body">This list is out of date and has not been updated since 5/2014</td>
+</tr>
+</tbody>
+</table>
+<p>The following is a list of changes in the Shotgun server code that affect the API. These are not changes in the Python API code, rather fixes/changes to the Shotgun server&#8217;s API interface that may affect behavior. Generally changes to the Shotgun server API code are ensured to be non-breaking and backwards compatible bug fixes and feature enhancements. This is to ensure your scripts will not unexpectedly break when updating.</p>
+<p>These updates should also appear on the general Release Notes pages but are provided here for convenience.</p>
+<p>Format: <strong>[Shotgun server version]</strong>: Description of change made. [internal ticket #]</p>
+<ul class="simple">
+<li><strong>[5.3.15]</strong>: Added filtering out Archived projects. [25082]</li>
+<li><strong>[5.3.12]</strong>: Added support for api sudo as user. [19989]</li>
+<li><strong>[5.1.22]</strong>: Added followers, follow, and unfollow methods to code handling api requests. [20562]</li>
+<li><strong>[3.3.1]</strong>: Modified CRUD code so that if a request reads, sorts, or summarizes a join (ConnectionEntity) field, and the parent entity has not been passed in the request, the code will try to infer it from the filter conditions. Prior to this fix on 3.3 - the API was returning an error when trying to sort Versions on playlists.PlaylistVersionConnection.sg_sort_order. Note that if the parent entity cannot be inferred automatically, this error will still occur. [17107]</li>
+<li><strong>[3.3.0]</strong>: Added support for returning the full paths of thumbnail fields in regular api calls. This works for thumbnail fields on the entity, linked thumbnails, and filmstrip thumbnails. [10693]</li>
+<li><strong>[3.0.0]</strong>: We&#8217;ve released v3.08 of the Python API which now includes a JSON backend. The JSON transport is up to 40% faster than the XML-RPC based transport. The XML-RPC interface will continue to be supported but may not include new features, so previous versions of the API will still be supported as-is.</li>
+<li><strong>[3.0.0]</strong>: Added support for name_is filter operator on single and multi-entity fields, both in the API and the UI.</li>
+<li><strong>[2.4.8]</strong>: Added support for id inquery filters in the API. The syntax is slightly different than similar filters, in that the filter value is not an array. [14261]</li>
+<li><strong>[2.4.6]</strong>: Fixed issue with multi-entity field filters where Python None was passed in. Prior to this fix, one could not use the api to create filters such as &#8220;[&#8216;task_assignees&#8217;, &#8216;is&#8217;, None]&#8221; or &#8220;[&#8216;task_assignees&#8217;, &#8216;is_not&#8217;, None]&#8221;, without generating an api error. These filters are now allowed, and work as expected. [14111]</li>
+<li><strong>[2.4.0]</strong>: Added query builder and API support for next/previous modifiers for the &#8220;&#8221;in calendar period&#8221;&#8221; filter operators for date and datetime fields. For example, &#8220;find tasks that were created in the last 7 months...&#8221;</li>
+<li><strong>[2.4.0]</strong>: Ensured that the UI and the API disallow configuring Note Links field to allow the Task or Note entity type.</li>
+<li><strong>[2.4.0]</strong>: Date fields now require YYYY-MM-DD format. Previously they were documented as requiring that format, but would actually allow other date formats if the server was able to parse them into a valid date.</li>
+<li><strong>[2.3.9]</strong>: Ensured that creating a task (via the API) with ONLY the duration set - if that task is created with an upstream task that has an end date - results in the created task having both its Start and Due date set by the task dependency logic. [13407]</li>
+<li><strong>[2.3.7]</strong>: Ensured api parity with UI in terms of passing in filters on linked fields more than 1 link away. [12867]</li>
+<li><strong>[2.3.7]</strong>: Ensured that api errors are not thrown when creating/updating a task with milestone=True, and start date=end date. This behavior is true when using create(), update(), or either method with batch(). Also, added a unit test to cover this. [13318]</li>
+<li><strong>[2.3.5]</strong>: Added api support for getting Shotgun&#8217;s version and build number. Usage requires Shotgun Wrapper version 3.0.6 or higher.</li>
+<li><strong>[2.3.3]</strong>: Fixed bug with api where local file paths for windows mount points were being double-escaped, resulting in &#8220;&#8221; character sequences. [13119]</li>
+<li><strong>[2.2.5]</strong>: Ensured that api calls requesting summary fields do not result in silent logging on errors to production.log. This fix results in no change for api programmers, but does ensure that such api calls can occur without the possibility of killing apache due to unwieldy and unnecessary logging. [12850]</li>
+<li><strong>[2.2.4]</strong>: Ensured that creating a Task Template Task through the api doesn&#8217;t require a project id - unlike creating a non template task. [11283]</li>
+<li><strong>[2.2.4]</strong>: Fixed error generated when trying to revive a Script (ApiUser) via the API [12794]</li>
+<li><strong>[2.0.0]</strong>: Added the ability to link to local files via the API.</li>
+<li><strong>[2.1.2]</strong>: Enforced uniqueness on Script Names (API_user class) so that when creating scripts, the naming conflicts will no longer be allowed. [11479]</li>
+<li><strong>[2.1.0]</strong>: added a revive() method in the API. Syntax follows that of delete()</li>
+<li><strong>[2.0.8]</strong>: Disallowed retired scripts from authenticating via the api. The main Shotgun method wills till return a valid Shotgun instance, but any other method calls will return the following error...shotgun.Fault: [11480]</li>
+<li><strong>[2.0.0]</strong>: Provided API support for layout_project for project creation. Functionality mirrors the web interface: omitting layout_project creates the project based on template project. Supplying layout_project ensures that the new project is based on the supplied project. This fixes the problem of script-created projects having no pages - since they lacked a template, implicit or explicit.</li>
+<li><strong>[2.0.0]</strong>: Improved API error message resulting when trying to set the default_value property on non status list fields, using schema_field_create().</li>
+<li><strong>[2.0.0]</strong>: Removed legacy support for sg_system_task_type. Now, all API methods should use Pipeline Steps instead.</li>
+<li><strong>[2.0.0]</strong>: ended support for API v2 (API2)</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tutorials.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Shotgun Python API3" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'sphinx',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
