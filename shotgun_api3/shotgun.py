@@ -446,8 +446,7 @@ class Shotgun(object):
             proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
             self.config.proxy_handler = urllib2.ProxyHandler({self.config.scheme : proxy_addr})
 
-        if ensure_ascii:
-            self._json_loads = self._json_loads_ascii
+        self._ensure_ascii = ensure_ascii
 
         self.client_caps = ClientCapabilities()
         # this relies on self.client_caps being set first 
@@ -2237,7 +2236,10 @@ class Shotgun(object):
         return body
 
     def _json_loads(self, body):
-        return json.loads(body)
+        if self._ensure_ascii:
+            return self._json_loads_ascii(body)
+        else:
+            return json.loads(body)
 
     def _json_loads_ascii(self, body):
         """"See http://stackoverflow.com/questions/956867"""
