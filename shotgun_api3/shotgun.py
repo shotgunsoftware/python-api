@@ -1423,6 +1423,11 @@ class Shotgun(object):
             raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
                 "higher, server is %s" % (self.server_caps.version,))
 
+        # see comments of upload
+        # Note: be sure to be in sync with tkCore package
+        if os.environ.get('SHOTGUN_SITE_TYPE', '') == 'semiPrivate':
+            raise ShotgunError('Unsupported call for semi private Shotgun')
+
         return self.upload(entity_type, entity_id, path,
             field_name="filmstrip_thumb_image", **kwargs)
 
