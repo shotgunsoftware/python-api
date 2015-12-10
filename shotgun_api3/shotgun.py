@@ -1461,9 +1461,9 @@ class Shotgun(object):
         if not os.path.isfile(path):
             raise ShotgunError("Path must be a valid file, got '%s'" % path)
 
-        isSemiPrivate = (os.environ.get('SHOTGUN_SITE_TYPE', '') == 'semiPrivate')
+        is_semi_private = (os.environ.get('SHOTGUN_SITE_TYPE', '') == 'semiPrivate')
         
-        if field_name == "thumb_image" and isSemiPrivate:
+        if field_name == "thumb_image" and is_semi_private:
 
             entity = {'type': entity_type, 'id': entity_id}
             
@@ -1491,7 +1491,7 @@ class Shotgun(object):
 
             return attachment_id # return attachment_id for API compat
 
-        elif field_name == "filmstrip_thumb_image" and isSemiPrivate:
+        elif field_name == "filmstrip_thumb_image" and is_semi_private:
 
             raise ShotgunError('Unsupported call for semi private Shotgun')
 
