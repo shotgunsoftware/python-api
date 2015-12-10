@@ -1405,10 +1405,51 @@ class Shotgun(object):
         :param path: Path to file on disk
         :returns: Id of the new attachment
         """
+        return self.upload(entity_type, entity_id, path,
+            field_name="thumb_image", **kwargs)
+
+    def upload_filmstrip_thumbnail(self, entity_type, entity_id, path, **kwargs):
+        """Convenience function for uploading filmstrip thumbnails.
+
+        Additional keyword arguments passed to this method will be forwarded
+        to the upload() method.
+        
+        :param entity_type: Entity type of the entity to associate with
+        :param entity_id: Required, id of the entity to associate with
+        :param path: Path to file on disk
+        :returns: Id of the new attachment
+        """
+        if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
+            raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
+                "higher, server is %s" % (self.server_caps.version,))
+
+        return self.upload(entity_type, entity_id, path,
+            field_name="filmstrip_thumb_image", **kwargs)
+
+    def upload(self, entity_type, entity_id, path, field_name=None,
+        display_name=None, tag_list=None):
+        """Upload a file as an attachment/thumbnail to the specified
+        entity_type and entity_id.
+
+        :param entity_type: Entity type of the entity to associate with
+
+        :param entity_id: Entity id of the entity to associate with
+
+        :param path: Path to file on disk
+
+        :param field_name: the field on the entity to upload to
+            (ignored if thumbnail)
+
+        :param display_name: the display name to use for the file in the ui
+            (ignored if thumbnail)
+
+        :param tag_list: comma-separated string of tags to assign to the file
+
+        :returns: Id of the new attachment.
+        """
 
         # Note: in semiPrivate mode (eg. captain project)
         # we do not want user to upload thumbnail in the cloud
-        # note that user can still upload thumbnail directly with upload method
         # This modification was recommended by Shotgun support
 
         # Note: SHOTGUN_SITE_TYPE and SHOTGUN_THUMBNAIL_ROOT are defined
@@ -1416,7 +1457,13 @@ class Shotgun(object):
 
         # Note: be sure to be in sync with tkCore package
 
-        if os.environ.get('SHOTGUN_SITE_TYPE', '') == 'semiPrivate':
+        path = os.path.abspath(os.path.expanduser(path or ""))
+        if not os.path.isfile(path):
+            raise ShotgunError("Path must be a valid file, got '%s'" % path)
+
+        is_semi_private = (os.environ['SHOTGUN_SITE_TYPE'] == 'semiPrivate')
+        
+        if field_name == "thumb_image" and is_semi_private:
 
             entity = {'type': entity_type, 'id': entity_id}
             
@@ -1444,58 +1491,10 @@ class Shotgun(object):
 
             return attachment_id # return attachment_id for API compat
 
-        else:
- 
-            return self.upload(entity_type, entity_id, path,
-                field_name="thumb_image", **kwargs)
+        elif field_name == "filmstrip_thumb_image" and is_semi_private:
 
-    def upload_filmstrip_thumbnail(self, entity_type, entity_id, path, **kwargs):
-        """Convenience function for uploading filmstrip thumbnails.
-
-        Additional keyword arguments passed to this method will be forwarded
-        to the upload() method.
-        
-        :param entity_type: Entity type of the entity to associate with
-        :param entity_id: Required, id of the entity to associate with
-        :param path: Path to file on disk
-        :returns: Id of the new attachment
-        """
-        if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
-            raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
-                "higher, server is %s" % (self.server_caps.version,))
-
-        # see comments of upload_thumbnail
-        # Note: be sure to be in sync with tkCore package
-        if os.environ.get('SHOTGUN_SITE_TYPE', '') == 'semiPrivate':
             raise ShotgunError('Unsupported call for semi private Shotgun')
 
-        return self.upload(entity_type, entity_id, path,
-            field_name="filmstrip_thumb_image", **kwargs)
-
-    def upload(self, entity_type, entity_id, path, field_name=None,
-        display_name=None, tag_list=None):
-        """Upload a file as an attachment/thumbnail to the specified
-        entity_type and entity_id.
-
-        :param entity_type: Entity type of the entity to associate with
-
-        :param entity_id: Entity id of the entity to associate with
-
-        :param path: Path to file on disk
-
-        :param field_name: the field on the entity to upload to
-            (ignored if thumbnail)
-
-        :param display_name: the display name to use for the file in the ui
-            (ignored if thumbnail)
-
-        :param tag_list: comma-separated string of tags to assign to the file
-
-        :returns: Id of the new attachment.
-        """
-        path = os.path.abspath(os.path.expanduser(path or ""))
-        if not os.path.isfile(path):
-            raise ShotgunError("Path must be a valid file, got '%s'" % path)
 
         is_thumbnail = (field_name == "thumb_image" or field_name == "filmstrip_thumb_image")
 
