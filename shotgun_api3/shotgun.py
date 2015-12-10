@@ -1461,7 +1461,7 @@ class Shotgun(object):
         if not os.path.isfile(path):
             raise ShotgunError("Path must be a valid file, got '%s'" % path)
 
-        is_semi_private = (os.environ.get('SHOTGUN_SITE_TYPE', '') == 'semiPrivate')
+        is_semi_private = (os.environ['SHOTGUN_SITE_TYPE'] == 'semiPrivate')
         
         if field_name == "thumb_image" and is_semi_private:
 
