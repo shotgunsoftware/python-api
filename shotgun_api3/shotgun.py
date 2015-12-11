@@ -1477,6 +1477,12 @@ class Shotgun(object):
             
             dst = os.path.join(os.environ['SHOTGUN_THUMBNAIL_ROOT'], entity_type, str(entity_id))
 
+            # Access Rights
+            try:
+                os.chmod(path, stat.S_IRUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP)
+            except:
+                raise ShotgunError("Could not update permissions")
+
             import errno
             try:
                 os.makedirs(os.path.dirname(dst))
