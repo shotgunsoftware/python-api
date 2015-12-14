@@ -1477,13 +1477,9 @@ class Shotgun(object):
             
             dst = os.path.join(os.environ['SHOTGUN_THUMBNAIL_ROOT'], entity_type, str(entity_id))
 
-            # Access Rights
-            try:
-                os.chmod(path, stat.S_IRUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP)
-            except:
-                raise ShotgunError("Could not update permissions")
-
             import errno
+
+            # Create folders
             try:
                 os.makedirs(os.path.dirname(dst))
             except OSError, e:
@@ -1493,7 +1489,27 @@ class Shotgun(object):
                 else:
                     raise ShotgunError
 
-            shutil.copy(path, dst)
+            # Remove if already exists (in case of re-upload)
+            try:
+                os.unlink(dst)
+            except OSError, e:
+                if e.errno == errno.ENOENT:
+                    # do not raise if file does not exist
+                    pass
+                else:
+                    raise ShotgunError
+
+            # Copy File
+            try:
+                shutil.copy(path, dst)
+            except OSError, e:
+                raise ShotgunError
+
+            # Access Rights
+            try:
+                os.chmod(dst, stat.S_IRUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+            except OSError, e:
+                raise ShotgunError("Could not update permissions")
 
             return attachment_id # return attachment_id for API compat
 
