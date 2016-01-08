@@ -67,16 +67,18 @@ LOG.setLevel(logging.WARN)
 SG_TIMEZONE = SgTimezone()
 
 
+NO_SSL_VALIDATION = False
 try:
     import ssl
-    NO_SSL_VALIDATION = False
+    if os.environ.get("SHOTGUN_DISABLE_SSL_VALIDATION", False):
+        NO_SSL_VALIDATION = True
 except ImportError:
     LOG.debug("ssl not found, disabling certificate validation")
     NO_SSL_VALIDATION = True
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.0.24.dev"
+__version__ = "3.0.24"
 
 # ----------------------------------------------------------------------------
 # Errors

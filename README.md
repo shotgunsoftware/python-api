@@ -53,9 +53,10 @@ Integration and unit tests are provided.
 
 ## Changelog
 
-**v3.0.24 - TBD**
+**v3.0.24 - 2016 Jan 08**
 
-   + TBD
+   + Add environment variable override for `NO_SSL_VALIDATION`.
+     
 
 **v3.0.23 - 2015 Oct 26**
 
