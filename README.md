@@ -53,9 +53,12 @@ Integration and unit tests are provided.
 
 ## Changelog
 
-**v3.0.24 - TBD**
+**v3.0.24 - 2016 Jan 08**
 
-   + TBD
+   + add support for `SHOTGUN_DISABLE_SSL_VALIDATION` env variable. 
+     We are updating our server certificates to more secure ones signed with SHA-2. Older versions of Python may have some issues with this change so we're tying to help accommodate these users by making it a little easier to disable SSL certificate verification without having to modify the actual Python API code, and using an environment variable instead.
+
+     The impact of disabling validation is that the identity of the Shotgun server can't be determined for sure. The communication is still encrypted, but this leaves the client subject to a man-in-the-middle attack. Such attacks are hard to perpetrate, but remain a possibility.
 
 **v3.0.23 - 2015 Oct 26**
 
