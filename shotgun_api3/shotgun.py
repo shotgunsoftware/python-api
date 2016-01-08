@@ -217,6 +217,8 @@ class ClientCapabilities(object):
 
         self.py_version = ".".join(str(x) for x in sys.version_info[:2])
 
+        self.can_use_requests = (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and 
+                                                              sys.version_info[1] >= 6)
     def __str__(self):
         return "ClientCapabilities: platform %s, local_path_field %s, "\
             "py_verison %s" % (self.platform, self.local_path_field,
@@ -276,6 +278,14 @@ class Shotgun(object):
         "^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])"\
         "(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?)?$")
 
+
+    def __new__(cls, *args, **kwargs):
+        if cls is Shotgun:
+            if "multi_thread" in kwargs and kwargs.get("multi_thread") is True:
+                return super(Shotgun, cls).__new__(ShotgunMulti)
+        return super(Shotgun, cls).__new__(cls)
+
+
     def __init__(self,
                  base_url,
                  script_name=None,
@@ -289,7 +299,8 @@ class Shotgun(object):
                  password=None,
                  sudo_as_login=None,
                  session_token=None,
-                 auth_token=None):
+                 auth_token=None,
+                 multi_thread=False):
         """Initializes a new instance of the Shotgun client.
 
         :param base_url: http or https url to the shotgun server.
@@ -346,8 +357,11 @@ class Shotgun(object):
         can be provided. Note that these tokens can be short lived so a session is
         established right away if an auth_token is provided. A
         MissingTwoFactorAuthenticationFault will be raised if the auth_token is invalid.
-        """
 
+        :param multi_thread: Use the requests module instead of httplib2/urllib for http
+        connections. This provides additional features including performance improvements and
+        progress callbacks for uploads and downloads. This option is only available for Python 2.6+.
+        """
         # verify authentication arguments
         if session_token is not None:
             if script_name is not None or api_key is not None:
@@ -396,10 +410,10 @@ class Shotgun(object):
         self.config.no_ssl_validation = NO_SSL_VALIDATION
         self.config.raw_http_proxy = http_proxy
         self._connection = None
-        if ca_certs is not None:
-            self.__ca_certs = ca_certs
-        else:
-            self.__ca_certs = os.environ.get('SHOTGUN_API_CACERTS')
+        # We may subclass Shotgun and since this is a private instance variable,
+        # we do this in a separate method so we don't have to override
+        # the entire __init__
+        self._set_ca_certs(ca_certs)
 
         self.base_url = (base_url or "").lower()
         self.config.scheme, self.config.server, api_base, _, _ = \
@@ -436,7 +450,7 @@ class Shotgun(object):
                     self.config.proxy_port = int(proxy_netloc_list[1])
                 except ValueError:
                     raise ValueError("Invalid http_proxy address '%s'. Valid " \
-                        "format is '123.456.789.012' or '123.456.789.012:3456'"\
+                        "formats are '123.456.789.012' or '123.456.789.012:3456'"\
                         ". If no port is specified, a default of %d will be "\
                         "used." % (http_proxy, self.config.proxy_port))
 
@@ -453,6 +467,11 @@ class Shotgun(object):
 
         self.client_caps = ClientCapabilities()
         # this relies on self.client_caps being set first 
+        # Requests only supports Python 2.6+
+        if multi_thread is True and not self.client_caps.can_use_requests:
+            raise ValueError("The multi_thread parameter requires Python 2.6+. You are "
+                             "running v%s" % self.client_caps.py_version)
+
         self.reset_user_agent()
 
         self._server_caps = None
@@ -469,6 +488,11 @@ class Shotgun(object):
             self.config.user_password = None
             self.config.auth_token = None
 
+    def _set_ca_certs(self, ca_certs):
+        if ca_certs is not None:
+            self.__ca_certs = ca_certs
+        else:
+            self.__ca_certs = os.environ.get('SHOTGUN_API_CACERTS')
 
     # ========================================================================
     # API Functions
@@ -2474,6 +2498,7 @@ class Shotgun(object):
         entity type and the entity id.
 
         Note: This makes a call to the server for every thumbnail.
+        Note: Only valid for Shotgun servers < v3.3.0. Newer versions do not require this.
 
         :param entity_type: Entity type the id is for.
 
@@ -2635,4 +2660,476 @@ def _translate_filters_simple(sg_filter):
 def _version_str(version):
     """Converts a tuple of int's to a '.' separated str"""
     return '.'.join(map(str, version))
-    
+
+
+from .lib.requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
+from .lib import requests
+from .lib import certifi
+
+
+class ShotgunProgressMonitor(MultipartEncoderMonitor):
+    """
+    This is an ugly way to wrap our own progress monitor. Uploads use a MultipartEncoderMonitor from requests-toolbelt
+    but downloads do not. In order to have a standard progress object to pass to clients we subclass the
+    MultipartEncoderMonitor and use it when we need it.
+    """
+    def __init__(self, encoder, bytes_read, file_size=None):
+        self.len = 0
+        if encoder is not None:
+            super(ShotgunProgressMonitor, self).__init__(encoder, bytes_read)
+        else:
+            self.bytes_read = int(bytes_read)
+            if file_size is not None:
+                self.len = int(file_size)
+
+    @property
+    def percent(self):
+        """
+        :return: percentage complete as an integer
+        """
+        if self.bytes_read and self.len:
+            return int(float(self.bytes_read)/float(self.len)*100)
+
+    def is_complete(self):
+        """
+        :return: True if the progress is complete. False if not.
+        """
+        if self.bytes_read == self.len:
+            return True
+        else:
+            return False
+
+
+class ShotgunMulti(Shotgun):
+    """
+    Implements a python-requests-based version of the Shotgun API.
+    """
+
+    # A global lock that can be used in critical places to make them exclusive
+    # __lock = threading.Lock()
+
+    def download_attachment(self, attachment=False, file_path=None,
+                            attachment_id=None, progress_callback=None):
+        """Downloads the file associated with a Shotgun Attachment.
+
+        NOTE: On older (< v5.1.0) Shotgun versions, non-downloadable files
+        on Shotgun don't raise exceptions, they cause a server error which
+        returns a 200 with the page content.
+
+        :param attachment: (mixed) Usually a dict representing an Attachment.
+        The dict should have a 'url' key that specifies the download url.
+        Optionally, the dict can be a standard entity hash format with 'id' and
+        'type' keys as long as 'type'=='Attachment'. This is only supported for
+        backwards compatibility (#22150).
+        If an int value is passed in, the Attachment with the matching id will
+        be downloaded from the Shotgun server.
+
+        :param file_path: (str) Optional. If provided, write the data directly
+        to local disk using the file_path. This avoids loading all of the data
+        in memory and saves the file locally which is probably what is desired
+        anyway.
+
+        :param attachment_id: (int) Optional. Deprecated in favor of passing in
+        Attachment hash to attachment param. This attachment_id exists only for
+        backwards compatibility for scripts specifying the parameter with
+        keywords.
+
+        :param progress_callback: (optional) callback function that accepts a progress object. This callback will
+        be called every time a chunk is written to disk. The progress object will contain updated information
+        about the number of bytes transferred so far and the total size of the file.
+
+        :returns: (str) If file_path is None, returns data of the Attachment
+        file as a string. If file_path is provided, returns file_path.
+        """
+        # backwards compatibility when passed via keyword argument
+        if attachment is False:
+            if type(attachment_id) == int:
+                attachment = attachment_id
+            else:
+                raise TypeError("Missing parameter 'attachment'. Expected a "
+                                "dict, int, NoneType value or"
+                                "an int for parameter attachment_id")
+
+        url = self.get_attachment_download_url(attachment)
+        if url is None:
+            return None
+
+        # We only need to set the auth cookie for downloads from Shotgun server
+        sid = None
+        if self.config.server in url:
+            sid = self.get_session_token()
+
+        chunk_size = 8192
+        headers = {'user-agent': "; ".join(self._user_agents)}
+        try:
+            resp = requests.get(url, stream=True, headers=headers, cookies={"_session_id": sid})
+        # 400 [sg] Attachment id doesn't exist or is a local file
+        # 403 [s3] link is invalid
+        # @todo see how these errors bubble up in requests
+        except requests.exceptions.RequestException, e:
+            error_msg = "Failed to download %s. %s" % (url, e)
+            raise ShotgunFileDownloadError(error_msg)
+
+        total_content_size = resp.headers.get('Content-Length')
+        if total_content_size is not None:
+            monitor = ShotgunProgressMonitor(encoder=None, bytes_read=0, file_size=total_content_size)
+
+        if file_path:
+            with open(file_path, 'wb') as fh:
+                if total_content_size is None:
+                    # this is an expensive check!
+                    if resp.content.startswith("<!"):
+                        raise AuthenticationFault("Authentication Error your credentials are missing or invalid.")
+                    fh.write(resp.content)
+                else:
+                    for chunk in resp.iter_content(chunk_size):
+                        # check the beginning of the response for non-standard response. If it's html, we assume it's
+                        # an authentication error as that is the most likely issue, though this could indicate some
+                        # other server error.
+                        if monitor.bytes_read == 0:
+                            if chunk.startswith("<!"):
+                                raise AuthenticationFault("Authentication Error your credentials are missing or "
+                                                          "invalid.")
+                        fh.write(chunk)
+                        # we update this even if it's not being used by a callback.
+                        monitor.bytes_read += len(chunk)
+                        if progress_callback:
+                            progress_callback(monitor)
+
+            attachment = file_path
+        else:
+            # @todo: This is an expensive check for large responses. Does this cause reading of the content multiple
+            # times or because we check it first, is it already in memory?
+            if resp.content.startswith("<!"):
+                raise AuthenticationFault("Authentication Error your credentials are missing or invalid.")
+            attachment = resp.content
+
+        if resp.status_code != 200:
+            error_msg = "%s: Failed to download %s. " % (resp.status_code, url)
+            if resp.status_code == 400:
+                error_msg += "The Attachment does not exist. Maybe it is a local file?"
+            elif resp.status_code == 403:
+                # Only parse the body if it is an Amazon S3 url.
+                if url.find('s3.amazonaws.com') != -1 and resp.headers['content-type'] == 'application/xml':
+                    match = re.search('<Message>(.*)</Message>', resp.text)
+                    if match:
+                        error_msg += match.group(1)
+            else:
+                error_msg += "%s." % resp.reason
+            raise ShotgunFileDownloadError(error_msg)
+        else:
+            return attachment
+
+    def upload(self, entity_type, entity_id, path, field_name=None,
+               display_name=None, tag_list=None, progress_callback=None):
+        """Upload a file as an attachment/thumbnail to the specified
+        entity_type and entity_id.
+
+        :param entity_type: Required, entity type (string) to revive.
+
+        :param entity_id: Required, id of the entity to revive.
+
+        :param path: path to file on disk
+
+        :param field_name: the field on the entity to upload to
+            (ignored if thumbnail)
+
+        :param display_name: the display name to use for the file in the ui
+            (ignored if thumbnail)
+
+        :param tag_list: comma-separated string of tags to assign to the file
+
+        :param progress_callback: (optional) callback function that accepts a progress object. This callback will
+        be called every time a chunk is uploaded to the server. The progress object will have updated information
+        about the number of bytes transferred so far and the total size of the file.
+
+        :returns: Id of the new attachment.
+        """
+        path = os.path.abspath(os.path.expanduser(path or ""))
+        if not os.path.isfile(path):
+            raise ShotgunError("Path must be a valid file, got '%s'" % path)
+
+        is_thumbnail = (field_name == "thumb_image" or field_name == "filmstrip_thumb_image")
+
+        # build parameter dict
+        params = {
+            "entity_type": entity_type,
+            "entity_id": entity_id,
+        }
+        # add auth headers if we need them
+        params.update(self._auth_params())
+
+        if is_thumbnail:
+            url_path = "/upload/publish_thumbnail"
+            # the file we're sending
+            params["thumb_image"] = (os.path.basename(path), open(path, "rb").read())
+            if field_name == "filmstrip_thumb_image":
+                params["filmstrip"] = True
+        else:
+            url_path = "/upload/upload_file"
+            if display_name is None:
+                display_name = os.path.basename(path)
+            # we allow linking to nothing for generic reference use cases
+            if field_name is not None:
+                params["field_name"] = field_name
+            params["display_name"] = display_name
+            # None gets converted to a string and added as a tag...
+            if tag_list:
+                params["tag_list"] = tag_list
+            params['file'] = (os.path.basename(path), open(path, "rb").read())
+
+        # requests-toolbelt assumes all form data provided is either str or tuple (for files). This is different than
+        # requests which handles this automatically. They currently have no plans to change this behavior. See
+        # https://github.com/sigmavirus24/requests-toolbelt/issues/99. So for now, we have to convert any non-str values
+        # to str manually.
+        self._transform_upload_form_data(params)
+
+        encoder = MultipartEncoder(fields=params)
+        # monitor = MultipartEncoderMonitor(encoder, progress_callback)
+        monitor = ShotgunProgressMonitor(encoder, progress_callback)
+        headers = {'Content-Type': encoder.content_type}
+        (resp_status, resp_headers, resp_body) = self._http_request(verb="POST", path=url_path, body=monitor,
+                                                                    headers=headers)
+
+        # check resp_status
+        url = urlparse.urlunparse((self.config.scheme, self.config.server, url_path, None, None, None))
+        if resp_status[0] != 200:
+            if resp_status[0] == 500:
+                error_msg = "Server encountered an internal error.\n%s\n%s\n(%d) %s" % (url,
+                                                                                        self._sanitize_auth_params(params),
+                                                                                        resp_status[0], resp_status[1])
+            else:
+                error_msg = "Unanticipated error occurred uploading %s: (%d) %s" % (path, resp_status[0],
+                                                                                    resp_status[1])
+            raise ShotgunError(error_msg)
+
+        # check the response content for a valid response
+        try:
+            attachment_id = self._check_controller_api_response(resp_body)
+            return attachment_id
+        except ShotgunError:
+            raise ShotgunError("Could not upload file successfully, but not sure why.\nPath: %s\nUrl: %s\n"
+                               "Error: %s" % (path, url, resp_body))
+
+    def share_thumbnail(self, entities, thumbnail_path=None, source_entity=None,
+                        filmstrip_thumbnail=False, **kwargs):
+        """
+        Shares a given thumbnail with one or more other entities. This alleviates the need to upload the same
+        thumbnail multiple times in cases where the thumbnail is for multiple entities. The source thumbnail is
+        provided by providing EITHER the thumbnail_path or a source_entity. The source thumbnail will then be
+        used for all entities specified.
+
+        :param entities: list of standard entity dictionaries that should be assigned the thumbnail
+        :param thumbnail_path: (optional) if the source thumbnail to share is being uploaded, this is the full path to
+        image. NOTE: You must provide either thumbnail_path or source_entity but cannot provide values for both.
+        :param source_entity: (optional) if the source thumbnail to share is already assigned to an entity, this is
+        the standard entity dictionary of that entity. NOTE: You must provide either thumbnail_path or source_entity
+        but cannot provide values for both.
+        :param filmstrip_thumbnail: (optional) True if you want to share a filmstrip thumbnail. False (default) if
+        you are sharing a standard static thumbnail
+        :param kwargs:
+
+        :return: id of the Attachment entity of the shared thumbnail
+        """
+        # Validation
+        if not self.server_caps.version or self.server_caps.version < (4, 0, 0):
+            raise ShotgunError("Thumbnail sharing support requires server version 4.0 or higher, "
+                               "server is %s" % (self.server_caps.version,))
+
+        if not isinstance(entities, list) or len(entities) == 0:
+            raise ShotgunError("'entities' parameter must be a list of entity hashes and may not be empty")
+
+        for e in entities:
+            if not isinstance(e, dict) or 'id' not in e or 'type' not in e:
+                raise ShotgunError("'entities' parameter must be a list of entity hashes with at least 'type' and "
+                                   "'id' keys.\nInvalid entity: %s" % e)
+
+        if (not thumbnail_path and not source_entity) or (thumbnail_path and source_entity):
+            raise ShotgunError("You must supply either thumbnail_path OR source_entity.")
+
+        # Upload thumbnail
+        if thumbnail_path:
+            source_entity = entities.pop(0)
+            if filmstrip_thumbnail:
+                thumb_id = self.upload_filmstrip_thumbnail(source_entity['type'], source_entity['id'],
+                                                           thumbnail_path, **kwargs)
+            else:
+                thumb_id = self.upload_thumbnail(source_entity['type'], source_entity['id'], thumbnail_path, **kwargs)
+        else:
+            if not isinstance(source_entity, dict) or 'id' not in source_entity or 'type' not in source_entity:
+                raise ShotgunError("'source_entity' parameter must be a dict with at least 'type' and 'id' keys.\n "
+                                   "Got: %s (%s)" % (source_entity, type(source_entity)))
+
+        # only 1 entity in list and we already uploaded the thumbnail to it
+        if len(entities) == 0:
+            return thumb_id
+
+        # update entities with source_entity thumbnail
+        entities_str = []
+        for e in entities:
+            entities_str.append("%s_%s" % (e['type'], e['id']))
+        if filmstrip_thumbnail:
+            filmstrip_thumbnail = 1
+        params = {
+            "entities": ','.join(entities_str),
+            "source_entity": "%s_%s" % (source_entity['type'], source_entity['id']),
+            "filmstrip_thumbnail": filmstrip_thumbnail,
+        }
+        params.update(self._auth_params())
+
+        url_path = "/upload/share_thumbnail"
+        url = urlparse.urlunparse((self.config.scheme, self.config.server, url_path, None, None, None))
+        (resp_status, resp_headers, resp_body) = self._http_request(verb="POST", path=url_path, body=params,
+                                                                    headers=headers)
+        # check resp_status
+        if resp_status[0] != 200:
+            if resp_status[0] == 500:
+                error_msg = "Server encountered an internal error.\n%s\n%s\n(%d) %s" % (url,
+                                                                                        self._sanitize_auth_params(params),
+                                                                                        resp_status[0], resp_status[1])
+            else:
+                error_msg = "Unanticipated error occurred uploading %s: (%d) %s" % (path, resp_status[0],
+                                                                                    resp_status[1])
+            raise ShotgunError(error_msg)
+
+        # check the response content for a valid response
+        try:
+            attachment_id = self._check_controller_api_response(resp_body)
+        except ShotgunError:
+            raise ShotgunError("Unable to share thumbnail: %s" % resp_body)
+        except ValueError:
+            # clearing thumbnail returns no attachment_id so when we try and parse this value to an int we
+            # get a ValueError
+            attachment_id = None
+
+        return attachment_id
+
+    # noinspection PyMethodMayBeStatic
+    def _check_controller_api_response(self, response_text):
+        """
+        The non-standard API endpoints that are located at any url *besides* <your_shotgun_server>/api3 are
+        non-standard. These endpoints return a 1 at the beginning of their response to indicate success. If anything
+        else is returned it indicates an error. A 0 could be returned first if it's a handled error on the server
+        side. Another possibility is html could be returned representing a server error page, or a login page for cases
+        where authentication has failed.
+
+        Example response indicating success and an Attachment id of 5783:
+
+            1:5783
+
+        In some of these cases, the status code returned can still be 200 so we can't rely just on the status code
+        alone to determine whether an error has occurred or not.
+
+        Assuming all goes well, we parse the response to get the resulting Attachment id returned by the server
+
+        :param response_text: content of the page returned from the server
+        :return: Attachment id returned by the server cast to an int
+        """
+        if not response_text.startswith("1"):
+            raise ShotgunError("The Shotgun server did not process this request successfully. (Response content does "
+                               "not begin with '1').")
+        attachment_id = int(response_text.split(":")[1].split("\n")[0])
+        return attachment_id
+
+    # noinspection PyMethodMayBeStatic
+    def _transform_upload_form_data(self, data):
+        """
+        Takes a dictionary and converts any int values to str
+
+        :param data: simple dictionary representing form data being sent to Shotgun for an upload request. These
+        requests are very simple so we assume there are no other data types we need to convert and there is no nested
+        structure.
+        """
+        for k, v in data.iteritems():
+            if type(v) is int:
+                data[k] = str(v)
+
+    def _set_ca_certs(self, ca_certs):
+        """
+        Sets the absolute path to the certificates file to use for certificate verification. If ca_certs is provided
+        then we use that path. If the environment variable is set then we use that path. Otherwise we use the default
+        certificates file provided by the certifi module.
+
+        :param ca_certs: absolute path to location of the certificates file to use for certificate verification.
+        """
+        if ca_certs is not None:
+            self.__ca_certs = ca_certs
+        elif os.environ.get('SHOTGUN_API_CACERTS') is not None:
+            self.__ca_certs = ca_certs
+        else:
+            self.__ca_certs = certifi.where()
+
+        LOG.debug("Using SSL certificates file: %s" % self.__ca_certs)
+
+    def _get_proxy_params(self):
+        """
+        Returns a dictionary representing a requests proxies parameter based on the current Shotgun API instance
+        proxy settings.
+        """
+        if not self.config.proxy_server:
+            return
+
+        proxy_auth = ""
+        if self.config.proxy_user and self.config.proxy_pass:
+            proxy_auth = "%s:%s@" % (self.config.proxy_user, self.config.proxy_pass)
+        proxy_params = {
+            "http": "http://%s%s:%d" % (proxy_auth, self.config.proxy_server, self.config.proxy_port),
+            "https": "https://%s%s:%d" % (proxy_auth, self.config.proxy_server, self.config.proxy_port)
+        }
+
+        return proxy_params
+
+    def _get_requests_connection_params(self):
+        """
+        Returns a dictionary with connection parameters suitable for making the request. This dictionary
+        can be used directly in the requests call.
+        """
+        req_params = {
+            "timeout": self.config.timeout_secs,
+            "verify": self.__ca_certs,
+            "proxies": self._get_proxy_params(),
+        }
+        if NO_SSL_VALIDATION:
+            LOG.warning("Certificate validation is currently disabled. This presents a potential security risk! We "
+                        "strongly recommend you re-enable this setting. Please contact Shotgun Support if you need "
+                        "help resolving issues around this. (NO_SSL_VALIDATION == %s" % NO_SSL_VALIDATION)
+            req_params["verify"] = False
+
+        return req_params
+
+    def _http_request(self, verb, path, body, headers):
+        """
+        Execute the actual http request using the requests module.
+
+        :param verb: type of request to execute as str (eg. "GET", "POST", etc.)
+        :param path: relative path on server to submit this request to
+        :param body: data to send as the body of the request
+        :param headers: headers to send with the request as a dictionary of {header_name: value}
+
+        :return: tuple of (response status, response headers, response body).
+        response status is a tuple of (status code, status reason)
+        response headers is a dict of {lowercase_header_name: value}
+        response body is uncompressed body of the server's response
+        """
+        url = urlparse.urlunparse((self.config.scheme, self.config.server, path, None, None, None))
+
+        LOG.debug("Request is %s:%s" % (verb, url))
+        LOG.debug("Request headers are %s" % headers)
+        LOG.debug("Request body is %s" % body)
+
+        connection_params = self._get_requests_connection_params()
+        response = requests.request(verb, url, data=body, headers=headers, **connection_params)
+
+        # http response code is handled else where
+        http_status = (response.status_code, response.reason)
+        resp_headers = dict(
+            (k.lower(), v)
+            for k, v in response.headers.iteritems()
+        )
+        resp_body = response.text
+
+        LOG.debug("Response status is %s %s" % http_status)
+        LOG.debug("Response headers are %s" % resp_headers)
+        LOG.debug("Response body is %s" % resp_body)
+
+        return http_status, resp_headers, resp_body
