@@ -2178,7 +2178,7 @@ class Shotgun(object):
                 # sha-2 errors look like: 
                 #   [Errno 1] _ssl.c:480: error:0D0C50A1:asn1 encoding routines:ASN1_item_verify:
                 #   unknown message digest algorithm
-                if not str(e).endswith("unknown message digest algorithm") or 
+                if not str(e).endswith("unknown message digest algorithm") or \
                    "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
                     raise
                 
