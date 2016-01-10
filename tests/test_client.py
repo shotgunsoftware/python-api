@@ -174,10 +174,11 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.info()
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s); test-agent" % (
+        expected = "shotgun-json (%s); Python %s (%s); ssl-validation %d; test-agent" % (
                         api.__version__, 
                         client_caps.py_version,
-                        client_caps.platform.capitalize()
+                        client_caps.platform.capitalize(),
+                        int(config.no_ssl_validation is False)
                         )
         self.assertEqual(expected, headers.get("user-agent"))
 
@@ -186,9 +187,10 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.info()
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s)" % (api.__version__, 
+        expected = "shotgun-json (%s); Python %s (%s); ssl-validation %d" % (api.__version__, 
                                                           client_caps.py_version,
                                                           client_caps.platform.capitalize(),
+                                                          int(config.no_ssl_validation is False)
                                                           )
         self.assertEqual(expected, headers.get("user-agent"))
 
