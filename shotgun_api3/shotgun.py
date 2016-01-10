@@ -2174,17 +2174,20 @@ class Shotgun(object):
             try:
                 return self._http_request(verb, path, body, req_headers)
             except SSLHandshakeError, e:
-                # not a sha2 error or sha2 error we want to enforce
-                # sha-2 errors look like: 
+                # Not a SHA-2 error or SHA-2 error we want to enforce. SHA-2 errors look like: 
+                #
                 #   [Errno 1] _ssl.c:480: error:0D0C50A1:asn1 encoding routines:ASN1_item_verify:
                 #   unknown message digest algorithm
+                #
                 if not str(e).endswith("unknown message digest algorithm") or \
-                   "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
+                   # valid values should be "0" and "1" but we're trying to catch edge cases too
+                   os.environ.get("SHOTGUN_FORCE_CERTIFICATE_VALIDATION") not in [0, "0", "", None]:
                     raise
                 
                 LOG.warning("SSLHandshakeError: this Python installation is incompatible with "
                             "certificates signed with SHA-2. Disabling certificate validation. "
-                            "For more information, see http://blog.shotgunsoftware.com/2016/01/important-ssl-certificate-renewal-and.html")
+                            "For more information, see http://blog.shotgunsoftware.com/2016/01/"
+                            "important-ssl-certificate-renewal-and.html")
                 self._close_connection()
                 self._turn_off_ssl_validation()
                 # reload user agent to reflect that we have turned off ssl validation
