@@ -2179,8 +2179,8 @@ class Shotgun(object):
                 #   [Errno 1] _ssl.c:480: error:0D0C50A1:asn1 encoding routines:ASN1_item_verify:
                 #   unknown message digest algorithm
                 #
+                # valid values should be "0" and "1" but we're trying to catch edge cases too
                 if not str(e).endswith("unknown message digest algorithm") or \
-                   # valid values should be "0" and "1" but we're trying to catch edge cases too
                    os.environ.get("SHOTGUN_FORCE_CERTIFICATE_VALIDATION") not in [0, "0", "", None]:
                     raise
                 
