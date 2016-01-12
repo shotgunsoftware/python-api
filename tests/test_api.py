@@ -1481,24 +1481,21 @@ class TestErrors(base.TestBase):
         original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
 
         # ensure we're starting with the right values
-        self.sg.config.no_ssl_validation = False
-        shotgun_api3.shotgun.NO_SSL_VALIDATION = False
         self.sg.reset_user_agent()
 
         # ensure the initial settings are correct
-        # note the space before 'validate' so we don't accidentally match 'no-validate'
         self.assertFalse(self.sg.config.no_ssl_validation)
         self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-        self.assertTrue(" validate" in " ".join(self.sg._user_agents))
-        self.assertFalse("no-validate" in " ".join(self.sg._user_agents))
+        self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
+        self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
         try:
             result = self.sg.info()
         except SSLHandshakeError:
             # ensure the api has reset the values in the correct fallback behavior
             self.assertTrue(self.sg.config.no_ssl_validation)
             self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertFalse(" validate" in " ".join(self.sg._user_agents))
-            self.assertTrue("no-validate" in " ".join(self.sg._user_agents))
+            self.assertFalse("(validate)" in " ".join(self.sg._user_agents))
+            self.assertTrue("(no-validate)" in " ".join(self.sg._user_agents))
 
         if original_env_val is not None:
             os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
@@ -1526,8 +1523,8 @@ class TestErrors(base.TestBase):
             # set the env variable to force validation
             self.assertFalse(self.sg.config.no_ssl_validation)
             self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertFalse("no-validate" in " ".join(self.sg._user_agents))
-            self.assertTrue(" validate" in " ".join(self.sg._user_agents))
+            self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
+            self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
 
         if original_env_val is not None:
             os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val

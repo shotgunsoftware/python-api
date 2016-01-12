@@ -73,9 +73,8 @@ except ImportError, e:
     if "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
         raise ImportError("%s. SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable prevents "
                           "disabling SSL certificate validation." % e)
-    else:
-        LOG.debug("ssl not found, disabling certificate validation")
-        NO_SSL_VALIDATION = True
+    LOG.debug("ssl not found, disabling certificate validation")
+    NO_SSL_VALIDATION = True
 
 # ----------------------------------------------------------------------------
 # Version
@@ -220,20 +219,11 @@ class ClientCapabilities(object):
 
         # extract the OpenSSL version if we can. The version is only available in Python 2.7 and
         # only if we successfully imported ssl
-        ssl_version_str = None
-        ssl_version_num = "unknown"
+        self.ssl_version = "unknown"
         try:
-            ssl_version_str = ssl.OPENSSL_VERSION
+            self.ssl_version = ssl.OPENSSL_VERSION
         except AttributeError, NameError:
             pass
-        if ssl_version_str:
-            try:
-                ssl_version_num = re.search("openssl\s*([\S.]+).*", ssl_version_str, 
-                                            flags=re.IGNORECASE).group(1)
-            except AttributeError:
-                # the version string format isn't right
-                pass
-        self.ssl_version = ssl_version_num
 
     def __str__(self):
         return "ClientCapabilities: platform %s, local_path_field %s, "\
@@ -1291,7 +1281,7 @@ class Shotgun(object):
         
         self._user_agents = ["shotgun-json (%s)" % __version__,
                              "Python %s (%s)" % (self.client_caps.py_version, ua_platform),
-                             "ssl %s %s" % (self.client_caps.ssl_version, validation_str)]
+                             "ssl %s (%s)" % (self.client_caps.ssl_version, validation_str)]
 
 
     def set_session_uuid(self, session_uuid):
@@ -2033,7 +2023,7 @@ class Shotgun(object):
         self.config.no_ssl_validation = True
         NO_SSL_VALIDATION = True
         # reset ssl-validation in user-agents
-        self._user_agents = ["ssl %s no-validate" % self.client_caps.ssl_version 
+        self._user_agents = ["ssl %s (no-validate)" % self.client_caps.ssl_version 
                              if ua.startswith("ssl ") else ua 
                              for ua in self._user_agents] 
 
@@ -2225,10 +2215,11 @@ class Shotgun(object):
                                 "certificates signed with SHA-2. Disabling certificate validation. "
                                 "For more information, see http://blog.shotgunsoftware.com/2016/01/"
                                 "important-ssl-certificate-renewal-and.html")
+                    self._turn_off_ssl_validation()
+                    # reload user agent to reflect that we have turned off ssl validation
+                    req_headers["user-agent"] = "; ".join(self._user_agents)
+                
                 self._close_connection()
-                self._turn_off_ssl_validation()
-                # reload user agent to reflect that we have turned off ssl validation
-                req_headers["user-agent"] = "; ".join(self._user_agents)
                 if attempt == max_rpc_attempts:
                     raise
             except Exception:
