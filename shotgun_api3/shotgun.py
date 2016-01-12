@@ -1267,7 +1267,7 @@ class Shotgun(object):
     def reset_user_agent(self):
         """Reset user agent to the default.
 
-        Eg. "shotgun-json (3.0.17); Python 2.6 (Mac); ssl 0.9.8a validate"
+        Eg. "shotgun-json (3.0.17); Python 2.6 (Mac); ssl OpenSSL 1.0.2d 9 Jul 2015 (validate)"
         """
         ua_platform = "Unknown"
         if self.client_caps.platform is not None:
