@@ -222,7 +222,7 @@ class ClientCapabilities(object):
         self.ssl_version = "unknown"
         try:
             self.ssl_version = ssl.OPENSSL_VERSION
-        except AttributeError, NameError:
+        except (AttributeError, NameError):
             pass
 
     def __str__(self):
