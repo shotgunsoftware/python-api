@@ -15,7 +15,7 @@ import urlparse
 import urllib2
 
 import shotgun_api3
-from shotgun_api3.lib.httplib2 import Http
+from shotgun_api3.lib.httplib2 import Http, SSLHandshakeError
 
 import base
 
@@ -1469,6 +1469,65 @@ class TestErrors(base.TestBase):
         response.reason = 'reason'
         mock_request.return_value = (response, {})
         self.assertRaises(shotgun_api3.ProtocolError, self.sg.find_one, 'Shot', [])
+
+    @patch('shotgun_api3.shotgun.Http.request')
+    def test_sha2_error(self, mock_request):
+        # Simulate the SSLHandshakeError raised with SHA-2 errors
+        mock_request.side_effect = SSLHandshakeError("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
+                                    "encoding routines:ASN1_item_verify: unknown message digest "
+                                    "algorithm")
+
+        # save the original state
+        original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
+
+        # ensure we're starting with the right values
+        self.sg.reset_user_agent()
+
+        # ensure the initial settings are correct
+        self.assertFalse(self.sg.config.no_ssl_validation)
+        self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
+        self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
+        self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
+        try:
+            result = self.sg.info()
+        except SSLHandshakeError:
+            # ensure the api has reset the values in the correct fallback behavior
+            self.assertTrue(self.sg.config.no_ssl_validation)
+            self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
+            self.assertFalse("(validate)" in " ".join(self.sg._user_agents))
+            self.assertTrue("(no-validate)" in " ".join(self.sg._user_agents))
+
+        if original_env_val is not None:
+            os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
+
+    @patch('shotgun_api3.shotgun.Http.request')
+    def test_sha2_error_with_strict(self, mock_request):
+        # Simulate the SSLHandshakeError raised with SHA-2 errors
+        mock_request.side_effect = SSLHandshakeError("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
+                                    "encoding routines:ASN1_item_verify: unknown message digest "
+                                    "algorithm")
+
+        # save the original state
+        original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
+        os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = "1"
+        
+        # ensure we're starting with the right values
+        self.sg.config.no_ssl_validation = False
+        shotgun_api3.shotgun.NO_SSL_VALIDATION = False
+        self.sg.reset_user_agent()
+
+        try:
+            result = self.sg.info()
+        except SSLHandshakeError:
+            # ensure the api has NOT reset the values in the fallback behavior because we have
+            # set the env variable to force validation
+            self.assertFalse(self.sg.config.no_ssl_validation)
+            self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
+            self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
+            self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
+
+        if original_env_val is not None:
+            os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
 
     @patch.object(urllib2.OpenerDirector, 'open')
     def test_sanitized_auth_params(self, mock_open):
