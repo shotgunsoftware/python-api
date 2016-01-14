@@ -53,6 +53,8 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.26 - TBD**
+
 **v3.0.25 - 2016 Jan 12**
 
    + Add handling for Python versions incompatible with SHA-2 (see http://blog.shotgunsoftware.com/2016/01/important-ssl-certificate-renewal-and.html).
