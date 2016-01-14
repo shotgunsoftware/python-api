@@ -5,6 +5,7 @@ test_api_long for other tests.
 """
 
 import datetime
+import sys
 import os
 import re
 from mock import patch, Mock, MagicMock
@@ -1483,11 +1484,19 @@ class TestErrors(base.TestBase):
         # ensure we're starting with the right values
         self.sg.reset_user_agent()
 
-        # ensure the initial settings are correct
-        self.assertFalse(self.sg.config.no_ssl_validation)
-        self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-        self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
-        self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
+        # ensure the initial settings are correct. These will be different depending on whether
+        # the ssl module imported successfully or not.
+        if "ssl" in sys.modules:
+            self.assertFalse(self.sg.config.no_ssl_validation)
+            self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
+            self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
+            self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
+        else:
+            self.assertTrue(self.sg.config.no_ssl_validation)
+            self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
+            self.assertFalse("(validate)" in " ".join(self.sg._user_agents))
+            self.assertTrue("(no-validate)" in " ".join(self.sg._user_agents))
+
         try:
             result = self.sg.info()
         except SSLHandshakeError:
