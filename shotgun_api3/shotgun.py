@@ -66,19 +66,19 @@ LOG.setLevel(logging.WARN)
 
 SG_TIMEZONE = SgTimezone()
 
+
 NO_SSL_VALIDATION = False
 try:
-    import ssl        
-except ImportError, e:
-    if "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
-        raise ImportError("%s. SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable prevents "
-                          "disabling SSL certificate validation." % e)
+    import ssl
+    if os.environ.get("SHOTGUN_DISABLE_SSL_VALIDATION", False):
+        NO_SSL_VALIDATION = True
+except ImportError:
     LOG.debug("ssl not found, disabling certificate validation")
     NO_SSL_VALIDATION = True
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.0.26.dev"
+__version__ = "3.0.24"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -217,18 +217,10 @@ class ClientCapabilities(object):
 
         self.py_version = ".".join(str(x) for x in sys.version_info[:2])
 
-        # extract the OpenSSL version if we can. The version is only available in Python 2.7 and
-        # only if we successfully imported ssl
-        self.ssl_version = "unknown"
-        try:
-            self.ssl_version = ssl.OPENSSL_VERSION
-        except (AttributeError, NameError):
-            pass
-
     def __str__(self):
         return "ClientCapabilities: platform %s, local_path_field %s, "\
-            "py_verison %s, ssl version %s" % (self.platform, self.local_path_field,
-            self.py_version, self.ssl_version)
+            "py_verison %s" % (self.platform, self.local_path_field,
+            self.py_version)
 
 class _Config(object):
     """Container for the client configuration."""
@@ -963,7 +955,15 @@ class Shotgun(object):
                 raise ShotgunError("%s missing required key: %s. "\
                     "Value was: %s." % (message, ", ".join(missing), data))
 
+        image_data = []
+
         for req in requests:
+            _required_keys("Batched create request", ['data'], req)
+            if 'image' in req["data"]:
+                image_data.append(req["data"].pop('image'))
+            else:
+                image_data.append('empty')
+            
             _required_keys("Batched request",
                            ['request_type', 'entity_type'],
                            req)
@@ -988,7 +988,16 @@ class Shotgun(object):
                                    req["request_type"]))
             calls.append(request_params)
         records = self._call_rpc("batch", calls)
-        return self._parse_records(records)
+        
+        return_fields = self._parse_records(records)
+        
+        for image in image_data:
+            if image is not 'empty':
+                self.upload_thumbnail(return_fields[image_data.index(image)]['type'],
+                                      return_fields[image_data.index(image)]["id"],
+                                      image)
+        
+        return return_fields
 
     def work_schedule_read(self, start_date, end_date, project=None, user=None):
         """Get the work day rules for a given date range.
@@ -1267,22 +1276,13 @@ class Shotgun(object):
     def reset_user_agent(self):
         """Reset user agent to the default.
 
-        Eg. "shotgun-json (3.0.17); Python 2.6 (Mac); ssl OpenSSL 1.0.2d 9 Jul 2015 (validate)"
+        Eg. shotgun-json (3.0.17); Python 2.6 (Mac)
         """
         ua_platform = "Unknown"
         if self.client_caps.platform is not None:
             ua_platform = self.client_caps.platform.capitalize()
-        
-
-        # create ssl validation string based on settings
-        validation_str = "validate"
-        if self.config.no_ssl_validation:
-            validation_str = "no-validate"
-        
         self._user_agents = ["shotgun-json (%s)" % __version__,
-                             "Python %s (%s)" % (self.client_caps.py_version, ua_platform),
-                             "ssl %s (%s)" % (self.client_caps.ssl_version, validation_str)]
-
+                             "Python %s (%s)" % (self.client_caps.py_version, ua_platform)]
 
     def set_session_uuid(self, session_uuid):
         """Sets the browser session_uuid for this API session.
@@ -2017,16 +2017,6 @@ class Shotgun(object):
             opener = urllib2.build_opener(handler)
         return opener
 
-    def _turn_off_ssl_validation(self):
-        """Turn off SSL certificate validation."""
-        global NO_SSL_VALIDATION
-        self.config.no_ssl_validation = True
-        NO_SSL_VALIDATION = True
-        # reset ssl-validation in user-agents
-        self._user_agents = ["ssl %s (no-validate)" % self.client_caps.ssl_version 
-                             if ua.startswith("ssl ") else ua 
-                             for ua in self._user_agents] 
-
     # Deprecated methods from old wrapper
     def schema(self, entity_type):
         raise ShotgunError("Deprecated: use schema_field_read('type':'%s') "
@@ -2176,8 +2166,9 @@ class Shotgun(object):
         """
 
         attempt = 0
-        req_headers = {}
-        req_headers["user-agent"] = "; ".join(self._user_agents)
+        req_headers = {
+            "user-agent": "; ".join(self._user_agents),
+        }
         if self.config.authorization:
             req_headers["Authorization"] = self.config.authorization
 
@@ -2190,38 +2181,6 @@ class Shotgun(object):
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
-            except SSLHandshakeError, e:
-                # Test whether the exception is due to the fact that this is an older version of
-                # Python that cannot validate certificates encrypted with SHA-2. If it is, then 
-                # fall back on disabling the certificate validation and try again - unless the
-                # SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable has been set by the 
-                # user. In that case we simply raise the exception. Any other exceptions simply 
-                # get raised as well. 
-                #
-                # For more info see:
-                # http://blog.shotgunsoftware.com/2016/01/important-ssl-certificate-renewal-and.html
-                #
-                # SHA-2 errors look like this: 
-                #   [Errno 1] _ssl.c:480: error:0D0C50A1:asn1 encoding routines:ASN1_item_verify:
-                #   unknown message digest algorithm
-                # 
-                # Any other exceptions simply get raised.
-                if not str(e).endswith("unknown message digest algorithm") or \
-                   "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
-                    raise
-                
-                if self.config.no_ssl_validation is False:
-                    LOG.warning("SSLHandshakeError: this Python installation is incompatible with "
-                                "certificates signed with SHA-2. Disabling certificate validation. "
-                                "For more information, see http://blog.shotgunsoftware.com/2016/01/"
-                                "important-ssl-certificate-renewal-and.html")
-                    self._turn_off_ssl_validation()
-                    # reload user agent to reflect that we have turned off ssl validation
-                    req_headers["user-agent"] = "; ".join(self._user_agents)
-                
-                self._close_connection()
-                if attempt == max_rpc_attempts:
-                    raise
             except Exception:
                 #TODO: LOG ?
                 self._close_connection()
