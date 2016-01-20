@@ -955,14 +955,19 @@ class Shotgun(object):
                 raise ShotgunError("%s missing required key: %s. "\
                     "Value was: %s." % (message, ", ".join(missing), data))
 
-        image_data = []
+        def _safe_pop(data_set, key):
+            try:
+                return data_set.pop(key)
+            except:
+                return None
+
+        file_data = []
 
         for req in requests:
             _required_keys("Batched create request", ['data'], req)
-            if 'image' in req["data"]:
-                image_data.append(req["data"].pop('image'))
-            else:
-                image_data.append('empty')
+            
+            file_data.append((_safe_pop(req["data"], 'image'), 'image'))
+            file_data.append((_safe_pop(req["data"], 'sg_uploaded_movie'), 'sg_uploaded_movie'))
             
             _required_keys("Batched request",
                            ['request_type', 'entity_type'],
@@ -991,11 +996,16 @@ class Shotgun(object):
         
         return_fields = self._parse_records(records)
         
-        for image in image_data:
-            if image is not 'empty':
-                self.upload_thumbnail(return_fields[image_data.index(image)]['type'],
-                                      return_fields[image_data.index(image)]["id"],
-                                      image)
+        for upload_file in file_data:
+            if upload_file[0] is not None:
+                if upload_file[1] is 'image':
+                    self.upload_thumbnail(return_fields[file_data.index(upload_file)/2]['type'],
+                                          return_fields[file_data.index(upload_file)/2]["id"],
+                                          upload_file[0])
+                elif upload_file[1] is 'sg_uploaded_movie':
+                    self.upload(return_fields[file_data.index(upload_file)/2]['type'],
+                                return_fields[file_data.index(upload_file)/2]["id"],
+                                upload_file[0])
         
         return return_fields
 
