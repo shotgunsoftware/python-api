@@ -796,16 +796,22 @@ class Shotgun(object):
         if not return_fields:
             return_fields = ["id"]
 
-        upload_image = None
-        if 'image' in data:
-            upload_image = data.pop('image')
+        def _safe_pop(data_set, key):
+            try:
+                return data_set.pop(key)
+            except:
+                return None
 
-        upload_filmstrip_image = None
+        upload_data = []
+
+        upload_data.append((_safe_pop(data, 'image'), 'image'))
+        upload_data.append((_safe_pop(data, 'sg_uploaded_movie'), 'sg_uploaded_movie'))
+
         if 'filmstrip_image' in data:
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
                 raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
                     "higher, server is %s" % (self.server_caps.version,))
-            upload_filmstrip_image = data.pop('filmstrip_image')
+            upload_data.append((_safe_pop(data, 'filmstrip_image'), 'filmstrip_image'))
 
         params = {
             "type" : entity_type,
@@ -816,19 +822,17 @@ class Shotgun(object):
         record = self._call_rpc("create", params, first=True)
         result = self._parse_records(record)[0]
 
-        if upload_image:
-            image_id = self.upload_thumbnail(entity_type, result['id'],
-                                             upload_image)
-            image = self.find_one(entity_type, [['id', 'is', result.get('id')]],
-                                  fields=['image'])
-            result['image'] = image.get('image')
-
-        if upload_filmstrip_image:
-            filmstrip_id = self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
-            filmstrip = self.find_one(entity_type,
-                                     [['id', 'is', result.get('id')]],
-                                     fields=['filmstrip_image'])
-            result['filmstrip_image'] = filmstrip.get('filmstrip_image')
+        for upload_file in upload_data:
+            if upload_file[0] is not None:
+                if upload_file[1] is 'sg_uploaded_movie':
+                    self.upload(entity_type,
+                                result['id'],
+                                upload_file[0],
+                                'sg_uploaded_movie')
+                elif upload_file[1] is 'image':
+                    self.upload_thumbnail(entity_type,
+                                          result['id'],
+                                          upload_file[0])
 
         return result
 
@@ -998,14 +1002,15 @@ class Shotgun(object):
         
         for upload_file in file_data:
             if upload_file[0] is not None:
-                if upload_file[1] is 'image':
+                if upload_file[1] is 'sg_uploaded_movie':
+                    self.upload(return_fields[file_data.index(upload_file)/2]['type'],
+                                return_fields[file_data.index(upload_file)/2]["id"],
+                                upload_file[0],
+                                'sg_uploaded_movie')
+                elif upload_file[1] is 'image':
                     self.upload_thumbnail(return_fields[file_data.index(upload_file)/2]['type'],
                                           return_fields[file_data.index(upload_file)/2]["id"],
                                           upload_file[0])
-                elif upload_file[1] is 'sg_uploaded_movie':
-                    self.upload(return_fields[file_data.index(upload_file)/2]['type'],
-                                return_fields[file_data.index(upload_file)/2]["id"],
-                                upload_file[0])
         
         return return_fields
 
