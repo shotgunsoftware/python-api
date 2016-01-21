@@ -858,15 +858,23 @@ class Shotgun(object):
         """
 
         data = data.copy()
-        upload_image = None
-        if 'image' in data and data['image'] is not None:
-            upload_image = data.pop('image')
-        upload_filmstrip_image = None
+        
+        def _safe_pop(data_set, key):
+            try:
+                return data_set.pop(key)
+            except:
+                return None
+
+        upload_data = []
+
+        upload_data.append((_safe_pop(data, 'image'), 'image'))
+        upload_data.append((_safe_pop(data, 'sg_uploaded_movie'), 'sg_uploaded_movie'))
+
         if 'filmstrip_image' in data:
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
                 raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
                     "higher, server is %s" % (self.server_caps.version,))
-            upload_filmstrip_image = data.pop('filmstrip_image')
+            upload_data.append((_safe_pop(data, 'filmstrip_image'), 'filmstrip_image'))
 
         if data:
             params = {
@@ -879,19 +887,17 @@ class Shotgun(object):
         else:
             result = {'id': entity_id, 'type': entity_type}
 
-        if upload_image:
-            image_id = self.upload_thumbnail(entity_type, entity_id,
-                                             upload_image)
-            image = self.find_one(entity_type, [['id', 'is', result.get('id')]],
-                                  fields=['image'])
-            result['image'] = image.get('image')
-
-        if upload_filmstrip_image:
-            filmstrip_id = self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_filmstrip_image)
-            filmstrip = self.find_one(entity_type,
-                                     [['id', 'is', result.get('id')]],
-                                     fields=['filmstrip_image'])
-            result['filmstrip_image'] = filmstrip.get('filmstrip_image')
+        for upload_file in upload_data:
+            if upload_file[0] is not None:
+                if upload_file[1] is 'sg_uploaded_movie':
+                    self.upload(entity_type,
+                                result['id'],
+                                upload_file[0],
+                                'sg_uploaded_movie')
+                elif upload_file[1] is 'image':
+                    self.upload_thumbnail(entity_type,
+                                          result['id'],
+                                          upload_file[0])
 
         return result
 
