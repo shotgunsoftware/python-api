@@ -812,8 +812,8 @@ class Shotgun(object):
 
         upload_data = []
 
-        upload_data.append((_safe_pop(data, 'image'), 'image'))
         upload_data.append((_safe_pop(data, 'sg_uploaded_movie'), 'sg_uploaded_movie'))
+        upload_data.append((_safe_pop(data, 'image'), 'image'))
 
         if 'filmstrip_image' in data:
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
@@ -867,8 +867,8 @@ class Shotgun(object):
 
         upload_data = []
 
-        upload_data.append((_safe_pop(data, 'image'), 'image'))
         upload_data.append((_safe_pop(data, 'sg_uploaded_movie'), 'sg_uploaded_movie'))
+        upload_data.append((_safe_pop(data, 'image'), 'image'))
 
         if 'filmstrip_image' in data:
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
@@ -984,8 +984,8 @@ class Shotgun(object):
         for req in requests:
             _required_keys("Batched create request", ['data'], req)
             
-            file_data.append((_safe_pop(req["data"], 'image'), 'image'))
             file_data.append((_safe_pop(req["data"], 'sg_uploaded_movie'), 'sg_uploaded_movie'))
+            file_data.append((_safe_pop(req["data"], 'image'), 'image'))
             
             _required_keys("Batched request",
                            ['request_type', 'entity_type'],
