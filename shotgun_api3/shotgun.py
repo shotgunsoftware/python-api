@@ -804,16 +804,10 @@ class Shotgun(object):
         if not return_fields:
             return_fields = ["id"]
 
-        def _safe_pop(data_set, key):
-            try:
-                return data_set.pop(key)
-            except:
-                return None
-
         upload_data = []
 
-        upload_data.append((_safe_pop(data, 'sg_uploaded_movie'), 'sg_uploaded_movie'))
-        upload_data.append((_safe_pop(data, 'image'), 'image'))
+        upload_data.append((data.pop('sg_uploaded_movie', None), 'sg_uploaded_movie'))
+        upload_data.append((data.pop('image', None), 'image'))
 
         if 'filmstrip_image' in data:
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
@@ -859,16 +853,10 @@ class Shotgun(object):
 
         data = data.copy()
         
-        def _safe_pop(data_set, key):
-            try:
-                return data_set.pop(key)
-            except:
-                return None
-
         upload_data = []
 
-        upload_data.append((_safe_pop(data, 'sg_uploaded_movie'), 'sg_uploaded_movie'))
-        upload_data.append((_safe_pop(data, 'image'), 'image'))
+        upload_data.append((data.pop('sg_uploaded_movie', None), 'sg_uploaded_movie'))
+        upload_data.append((data.pop('image', None), 'image'))
 
         if 'filmstrip_image' in data:
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
@@ -973,19 +961,13 @@ class Shotgun(object):
                 raise ShotgunError("%s missing required key: %s. "\
                     "Value was: %s." % (message, ", ".join(missing), data))
 
-        def _safe_pop(data_set, key):
-            try:
-                return data_set.pop(key)
-            except:
-                return None
-
         file_data = []
 
         for req in requests:
             _required_keys("Batched create request", ['data'], req)
             
-            file_data.append((_safe_pop(req["data"], 'sg_uploaded_movie'), 'sg_uploaded_movie'))
-            file_data.append((_safe_pop(req["data"], 'image'), 'image'))
+            file_data.append((req.pop('sg_uploaded_movie', None), 'sg_uploaded_movie'))
+            file_data.append((req.pop('image', None), 'image'))
             
             _required_keys("Batched request",
                            ['request_type', 'entity_type'],
