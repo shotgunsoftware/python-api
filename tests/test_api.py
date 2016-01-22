@@ -318,6 +318,17 @@ class TestShotgunApi(base.LiveTestBase):
             self.version['id'], {'image': None})
         expected_clear_thumbnail = {'id': self.version['id'], 'image': None, 'type': 'Version'}
         self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
+        
+    def test_upload_thumbnail_with_upload_function(self):
+        """Upload thumbnail via upload function test"""
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir,"sg_logo.jpg")))
+        size = os.stat(path).st_size
+
+        # upload thumbnail
+        thumb_id = self.sg.upload("Task", self.task['id'], path, 'image')
+        self.assertTrue(isinstance(thumb_id, int))
 
     def test_linked_thumbnail_url(self):
         this_dir, _ = os.path.split(__file__)
