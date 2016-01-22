@@ -1471,7 +1471,7 @@ class Shotgun(object):
             raise ShotgunError("Path must be a valid file, got '%s'" % path)
 
         is_thumbnail = (field_name == "thumb_image" or field_name == "filmstrip_thumb_image"
-                        or field_name == "image" or field_name == "filmstrip_image")
+                       or field_name == "image" or field_name == "filmstrip_image")
 
         params = {
             "entity_type" : entity_type,
