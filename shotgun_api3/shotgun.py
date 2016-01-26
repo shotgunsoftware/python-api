@@ -1484,7 +1484,7 @@ class Shotgun(object):
             url = urlparse.urlunparse((self.config.scheme, self.config.server,
                 "/upload/publish_thumbnail", None, None, None))
             params["thumb_image"] = open(path, "rb")
-            if field_name == "filmstrip_thumb_image":
+            if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
                 params["filmstrip"] = True
 
         else:

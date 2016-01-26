@@ -326,7 +326,11 @@ class TestShotgunApi(base.LiveTestBase):
         # upload thumbnail
         thumb_id = self.sg.upload("Task", self.task['id'], path, 'image')
         self.assertTrue(isinstance(thumb_id, int))
-
+        
+        #upload filmstrip thumbnail
+        f_thumb_id = self.sg.upload("Task", self.task['id'], path, 'filmstrip_image')
+        self.assertTrue(isinstance(f_thumb_id, int))
+        
     def test_linked_thumbnail_url(self):
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
