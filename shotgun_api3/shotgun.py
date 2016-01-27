@@ -409,7 +409,7 @@ class Shotgun(object):
         else:
             self.__ca_certs = os.environ.get('SHOTGUN_API_CACERTS')
 
-        self.base_url = (base_url or "")
+        self.base_url = (base_url or "").lower()
         self.config.scheme, self.config.server, api_base, _, _ = \
             urlparse.urlsplit(self.base_url)
         if self.config.scheme not in ("http", "https"):
@@ -422,7 +422,7 @@ class Shotgun(object):
         # if the service contains user information strip it out
         # copied from the xmlrpclib which turned the user:password into
         # and auth header
-        auth, self.config.server = urllib.splituser(self.config.server)
+        auth, self.config.server = urllib.splituser(urlparse.urlsplit(base_url).netloc)
         if auth:
             auth = base64.encodestring(urllib.unquote(auth))
             self.config.authorization = "Basic " + auth.strip()

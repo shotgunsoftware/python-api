@@ -286,29 +286,34 @@ class SessionTokenAuthLiveTestBase(LiveTestBase):
 class SgTestConfig(object):
     '''Reads test config and holds values'''
     def __init__(self):
-        self.mock           = True
-        self.server_url     = None
-        self.script_name    = None
-        self.api_key        = None
-        self.http_proxy     = None
-        self.session_uuid   = None
-        self.project_name   = None
-        self.human_name     = None
-        self.human_login    = None
-        self.human_password = None
-        self.asset_code     = None
-        self.version_code   = None
-        self.shot_code      = None
-        self.task_content   = None
+
+        for key in self.config_keys():
+            value = None
+            if key in ['mock']:
+                value = True
+            # Look for any environment variables that match our test
+            # configuration naming of "SG_{KEY}". Default is None.
+            value = os.environ.get('SG_{0}'.format(str(key).upper()))
+            setattr(self, key, value)
+
+    def config_keys(self):
+        return [
+            'api_key', 'asset_code', 'http_proxy', 'human_login', 'human_name',
+            'human_password', 'mock', 'project_name', 'script_name', 
+            'server_url', 'session_uuid', 'shot_code', 'task_content', 
+            'version_code'
+        ]
 
     def read_config(self, config_path):
         config_parser = ConfigParser()
         config_parser.read(config_path)
         for section in config_parser.sections():
             for option in config_parser.options(section):
-                value = (os.environ.get('SG_{0}'.format(str(option).upper())) or
-                        config_parser.get(section, option))
-                setattr(self, option, value)
+                # We only care about the configuration file if an environment
+                # variable has not already been set
+                if not getattr(self, option, None):
+                    value = config_parser.get(section, option)
+                    setattr(self, option, value)
 
 
 def _find_or_create_entity(sg, entity_type, data, identifyiers=None):

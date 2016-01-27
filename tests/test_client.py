@@ -240,7 +240,7 @@ class TestShotgunClient(base.MockTestBase):
 
         try:
             self.sg.info()
-        except api.Fault as e:
+        except api.Fault, e:
             self.assertEqual("Go BANG", str(e))
 
     def test_call_rpc(self):
