@@ -409,7 +409,7 @@ class Shotgun(object):
         else:
             self.__ca_certs = os.environ.get('SHOTGUN_API_CACERTS')
 
-        self.base_url = (base_url or "").lower()
+        self.base_url = (base_url or "")
         self.config.scheme, self.config.server, api_base, _, _ = \
             urlparse.urlsplit(self.base_url)
         if self.config.scheme not in ("http", "https"):

@@ -1,4 +1,5 @@
 """Base class for Shotgun API tests."""
+import os
 import re
 import unittest
 from ConfigParser import ConfigParser
@@ -300,13 +301,13 @@ class SgTestConfig(object):
         self.shot_code      = None
         self.task_content   = None
 
-
     def read_config(self, config_path):
         config_parser = ConfigParser()
         config_parser.read(config_path)
         for section in config_parser.sections():
             for option in config_parser.options(section):
-                value = config_parser.get(section, option)
+                value = (os.environ.get('SG_{0}'.format(str(option).upper())) or
+                        config_parser.get(section, option))
                 setattr(self, option, value)
 
 
