@@ -292,13 +292,8 @@ class SgTestConfig(object):
             # Look for any environment variables that match our test
             # configuration naming of "SG_{KEY}". Default is None.
             value = os.environ.get('SG_%s' % (str(key).upper()))
-
             if key in ['mock']:
-                if value == None or str(value).lower() in ['true','1']:
-                    value = True
-                else:
-                    value = False
-
+                value = (value == None) or (str(value).lower() in ['true','1']):
             setattr(self, key, value)
 
     def config_keys(self):
