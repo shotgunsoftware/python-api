@@ -1,0 +1,9 @@
+# readme
+include README.md 
+
+# include all licenses
+include LICENSE 
+include NOTICE 
+
+# include bundled certs
+include shotgun_api3/lib/httplib2/cacerts.txt
