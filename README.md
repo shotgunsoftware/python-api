@@ -1,55 +1,65 @@
 # Shotgun Python API
 
-Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools. This is the official API that is maintained by Shotgun Software (support@shotgunsoftware.com)
+[![Build Status](https://secure.travis-ci.org/shotgunsoftware/python-api.png?branch=master)](http://travis-ci.org/shotgunsoftware/python-api)
+
+Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools. This is the official API that is maintained by [Shotgun Software](mailto:support@shotgunsoftware.com)
 
 The latest version can always be found at http://github.com/shotgunsoftware/python-api
 
 ## Minimum Requirements
 
-* Shotgun server v2.4.12 or higher. (Earlier builds of 2.4 will work, but have buggy support for float field types)
 * Python v2.4 - v2.7.
 
 ## High Performance Requirements
 
-* For Python 2.4 and 2.5, install simplejson 2.0.9: http://pypi.python.org/pypi/simplejson/2.0.9
-* For Python 2.6 and higher, install simplejson 2.1.6: http://pypi.python.org/pypi/simplejson/2.1.6
+* For Python 2.4 and 2.5, install [simplejson 2.0.9](http://pypi.python.org/pypi/simplejson/2.0.9)
+* For Python 2.6 and higher, install [simplejson 2.1.6](http://pypi.python.org/pypi/simplejson/2.1.6)
 
 ## Installing
-To use Shotgun's Python API module, you need to place the package shotgun_api3 in one of the directories specified by the environment variable PYTHONPATH. For more information on PYTHONPATH and using modules in Python, see http://docs.python.org/tutorial/modules.html
+
 
 ### Installing with `pip`
- 
+
+#### PyPI
+
+The Shotgun API is available in the Python Package Index as `shotgun-api` (note the dash instead of underscore) starting with version 3.0.27.
+
+```
+pip install shotgun-api
+```
+
 #### Master 
-If you wish to install the current master, use the following command (Note that master contains the latest revisions and is largely considered "stable" but it is not an official packaged release. If you want the latest packaged release, use the latest tag number):  
-`pip install git+git://github.com/shotgunsoftware/python-api.git`
+If you wish to install the current master, use the following command (Note that master contains the latest revisions and while largely considered "stable"  it is not an official packaged release. 
+
+```
+pip install git+git://github.com/shotgunsoftware/python-api.git
+```
 
 #### Specific Versions 
-To install a specific version of the package with `pip` (recommended), run the following command 
-(This example installs the v3.0.9 tag. Replace the version tag with the one you want):  
-`pip install git+git://github.com/shotgunsoftware/python-api.git@v3.0.9`
+To install a specific version of the package, run the following command 
+(This example installs the v3.0.26 tag. Replace the version tag with the one you want):  
+```
+pip install git+git://github.com/shotgunsoftware/python-api.git@v3.0.26
+```
 
 #### requirements.txt
 If you're using pip with `requirements.txt`, add the following line:  
-`git+git://github.com/shotgunsoftware/python-api.git`
+```
+git+git://github.com/shotgunsoftware/python-api.git
+```
 
 ## Documentation
-Tutorials and detailed documentation about the Python API are available on the [Python API Wiki](https://github.com/shotgunsoftware/python-api/wiki). There is also some additional related documentation on the [Shotgun Support Website](https://support.shotgunsoftware.com/forums/48807-developer-api-info).
-Some useful direct links in each are below:
+Tutorials and detailed documentation about the Python API are available on the [Shotgun Developer site](https://developer.shotgunsoftware.com/python-api/). 
 
-* [Introduction and Video Tour](https://www.youtube.com/watch?v=QdL5E9XbdJQ)
-* [Reference: Methods](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Methods)
-* [Reference: Data Types](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Data-Types)
-* [Reference: Filter Syntax](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax)
+There is also some additional related documentation on the [Shotgun Support Website](https://support.shotgunsoftware.com/forums/48807-developer-api-info).
 
 ## Tests 
 
-Integration and unit tests are provided. 
+Integration and unit tests are provided in the packages installed from Github. 
 
-[![Build Status](https://secure.travis-ci.org/shotgunsoftware/python-api.png?branch=master)](http://travis-ci.org/shotgunsoftware/python-api)
-
-- test_client and tests_unit mock server interaction and do not require a shotgun instance to be available.
-- test_api and test_api_long do require a shotgun instance, with a script key available for the tests. These tests rely on a tests/config file, which can be created by renaming example_config and supplying the server and script user values. The tests will set up test data on the server based on the data set forth in the config. This data will be manipulated by the tests, and should not be used for other purposes.
-- To run all of the tests, use the shell script run-tests. This script require nose to be installed.
+- `test_client` and `tests_unit` mock server interaction and do not require a Shotgun instance to be available.
+- `test_api` and `test_api_long` require a Shotgun instance, with a script key available for the tests. These tests rely on a `tests/config` file, which can be created by renaming `example_config` and supplying the server and script user values. The tests will set up test data on the server based on the data set forth in the config. This data will be manipulated by the tests, and should not be used for other purposes.
+- To run all of the tests, use the shell script `run-tests`. This script requires `nose` and will optionally run `coverage` as well if it's installed.
 
 ## Changelog
 
