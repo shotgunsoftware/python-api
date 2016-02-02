@@ -78,7 +78,7 @@ except ImportError, e:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.0.26.dev"
+__version__ = "3.0.27.dev"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -422,7 +422,7 @@ class Shotgun(object):
         # if the service contains user information strip it out
         # copied from the xmlrpclib which turned the user:password into
         # and auth header
-        auth, self.config.server = urllib.splituser(self.config.server)
+        auth, self.config.server = urllib.splituser(urlparse.urlsplit(base_url).netloc)
         if auth:
             auth = base64.encodestring(urllib.unquote(auth))
             self.config.authorization = "Basic " + auth.strip()
