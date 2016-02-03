@@ -9,8 +9,8 @@ before_script:
 script: nosetests -v
 notifications:
   email:
-    - api@shotgunsoftware.com
+  - api@shotgunsoftware.com
   hipchat:
     rooms:
-      secure: E3KqkCZXTRSr91g0d00VSzNshsYZcD7akKeJBd+Yv83LHCnLCeTZImQblV9kPoKv+JVXHyfzIzX4SJ93oqzFq17ilSjPsnpagmOlVzuczuPHIPTBKc/nDslIAdMiCfkOihTQPsCeDQ6NlGvtteP683D2juyK+RkTMa0ptW94HhQ=
+      secure: Fn5h3NWccsKeXrH/wP/WcfIMco1xCxJsqnEgzSguAIo2DlQX8UprmbyDPoZTOmKF3Tl1HMSZzgLDr2CWQua5IR8IfFum5rfvkckUCeN+PkihL8aJ+1kqXe1GZc0+rRY8iDjAUyX8i+lupnsF0RGmg/eS9QfqblM83VBKskiSsDs=
     format: html
