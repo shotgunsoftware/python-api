@@ -1425,7 +1425,7 @@ class Shotgun(object):
         :returns: Id of the new attachment
         """
         return self.upload(entity_type, entity_id, path,
-            field_name="thumb_image", **kwargs)
+            field_name="image", **kwargs)
 
     def upload_filmstrip_thumbnail(self, entity_type, entity_id, path, **kwargs):
         """Convenience function for uploading filmstrip thumbnails.
@@ -1443,7 +1443,7 @@ class Shotgun(object):
                 "higher, server is %s" % (self.server_caps.version,))
 
         return self.upload(entity_type, entity_id, path,
-            field_name="filmstrip_thumb_image", **kwargs)
+            field_name="filmstrip_image", **kwargs)
 
     def upload(self, entity_type, entity_id, path, field_name=None,
         display_name=None, tag_list=None):
@@ -1470,7 +1470,8 @@ class Shotgun(object):
         if not os.path.isfile(path):
             raise ShotgunError("Path must be a valid file, got '%s'" % path)
 
-        is_thumbnail = (field_name == "thumb_image" or field_name == "filmstrip_thumb_image")
+        is_thumbnail = (field_name in ["thumb_image", "filmstrip_thumb_image", "image",
+                                       "filmstrip_image"])
 
         params = {
             "entity_type" : entity_type,
@@ -1483,7 +1484,7 @@ class Shotgun(object):
             url = urlparse.urlunparse((self.config.scheme, self.config.server,
                 "/upload/publish_thumbnail", None, None, None))
             params["thumb_image"] = open(path, "rb")
-            if field_name == "filmstrip_thumb_image":
+            if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
                 params["filmstrip"] = True
 
         else:
