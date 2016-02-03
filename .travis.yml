@@ -1,14 +1,16 @@
 language: python
 python:
-  - "2.6"
-  - "2.7"
-# command to install dependencies
+- '2.6'
+- '2.7'
 install:
-  - pip install nose
+- pip install nose
 before_script:
-  - cp ./tests/example_config ./tests/config
-# command to run tests
+- cp ./tests/example_config ./tests/config
 script: nosetests -v
 notifications:
   email:
     - api@shotgunsoftware.com
+  hipchat:
+    rooms:
+      secure: E3KqkCZXTRSr91g0d00VSzNshsYZcD7akKeJBd+Yv83LHCnLCeTZImQblV9kPoKv+JVXHyfzIzX4SJ93oqzFq17ilSjPsnpagmOlVzuczuPHIPTBKc/nDslIAdMiCfkOihTQPsCeDQ6NlGvtteP683D2juyK+RkTMa0ptW94HhQ=
+    format: html
