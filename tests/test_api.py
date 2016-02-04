@@ -321,7 +321,7 @@ class TestShotgunApi(base.LiveTestBase):
         
     def test_upload_thumbnail_with_upload_function(self):
         """Upload thumbnail via upload function test"""
-        size = os.stat(path).st_size
+        path = os.path.abspath(os.path.expanduser(os.path.join(os.path.dirname(__file__), "sg_logo.jpg")))
 
         # upload thumbnail
         thumb_id = self.sg.upload("Task", self.task['id'], path, 'image')
