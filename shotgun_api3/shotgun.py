@@ -827,18 +827,27 @@ class Shotgun(object):
         for upload_file in upload_data:
             if upload_file[0]:
                 if upload_file[1] is 'sg_uploaded_movie':
-                    self.upload(entity_type,
+                    uploaded_to_id = self.upload(entity_type,
                                 result['id'],
                                 upload_file[0],
                                 'sg_uploaded_movie')
+                    result['sg_uploaded_movie'] = self.find_one(entity_type,
+                                                                [['id', 'is', uploaded_to_id]],
+                                                                ['sg_uploaded_movie'])['sg_uploaded_movie']
                 elif upload_file[1] is 'image':
-                    self.upload_thumbnail(entity_type,
+                    uploaded_to_id = self.upload_thumbnail(entity_type,
                                           result['id'],
                                           upload_file[0])
+                    result['image'] = self.find_one(entity_type,
+                                                                [['id', 'is', uploaded_to_id]],
+                                                                ['image'])['image']
                 elif upload_file[1] is 'filmstrip_image':
-                    self.upload_filmstrip_thumbnail(entity_type,
+                    uploaded_to_id = self.upload_filmstrip_thumbnail(entity_type,
                                                     result['id'],
                                                     upload_file[0])
+                    result['filmstrip_image'] = self.find_one(entity_type,
+                                                                [['id', 'is', uploaded_to_id]],
+                                                                ['filmstrip_image'])['filmstrip_image']
 
         return result
         
@@ -882,18 +891,27 @@ class Shotgun(object):
         for upload_file in upload_data:
             if upload_file[0]:
                 if upload_file[1] is 'sg_uploaded_movie':
-                    self.upload(entity_type,
+                    uploaded_to_id = self.upload(entity_type,
                                 result['id'],
                                 upload_file[0],
                                 'sg_uploaded_movie')
+                    result['sg_uploaded_movie'] = self.find_one(entity_type,
+                                                                [['id', 'is', uploaded_to_id]],
+                                                                ['sg_uploaded_movie'])['sg_uploaded_movie']
                 elif upload_file[1] is 'image':
-                    self.upload_thumbnail(entity_type,
+                    uploaded_to_id = self.upload_thumbnail(entity_type,
                                           result['id'],
                                           upload_file[0])
+                    result['image'] = self.find_one(entity_type,
+                                                                [['id', 'is', uploaded_to_id]],
+                                                                ['image'])['image']
                 elif upload_file[1] is 'filmstrip_image':
-                    self.upload_filmstrip_thumbnail(entity_type,
+                    uploaded_to_id = self.upload_filmstrip_thumbnail(entity_type,
                                                     result['id'],
                                                     upload_file[0])
+                    result['filmstrip_image'] = self.find_one(entity_type,
+                                                                [['id', 'is', uploaded_to_id]],
+                                                                ['filmstrip_image'])['filmstrip_image']
 
         return result
 

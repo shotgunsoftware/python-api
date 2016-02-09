@@ -268,10 +268,10 @@ class TestShotgunApi(base.LiveTestBase):
         batchCall = [{'data':data, 'request_type':'create', 'entity_type':'Version'}]
         new_version = self.sg.batch(batchCall)
         self.assertTrue(new_version is not None)
-        self.assertTrue(isinstance(new_version, dict))
-        self.assertTrue(isinstance(new_version.get('id'), int))
-        self.assertEqual(new_version.get('type'), 'Version')
-        self.assertEqual(new_version.get('project'), self.project)
+        self.assertTrue(isinstance(new_version, list))
+        self.assertTrue(isinstance(new_version[0].get('id'), int))
+        self.assertEqual(new_version[0].get('type'), 'Version')
+        self.assertEqual(new_version[0].get('project'), self.project)
         self.assertTrue(sg.find_one('Version', [['id', 'is', new_version.get('id')]], ['image']) is not None)
 
         self.sg.delete("Version", new_version['id'])
@@ -281,11 +281,11 @@ class TestShotgunApi(base.LiveTestBase):
                 'project': self.project}
         batchCall = [{'data':data, 'request_type':'create', 'entity_type':'Version'}]
         new_version = self.sg.batch(batchCall)
-        self.assertTrue(new_version is not None)
-        self.assertTrue(isinstance(new_version, dict))
-        self.assertTrue(isinstance(new_version.get('id'), int))
-        self.assertEqual(new_version.get('type'), 'Version')
-        self.assertEqual(new_version.get('project'), self.project)
+         self.assertTrue(new_version is not None)
+        self.assertTrue(isinstance(new_version, list))
+        self.assertTrue(isinstance(new_version[0].get('id'), int))
+        self.assertEqual(new_version[0].get('type'), 'Version')
+        self.assertEqual(new_version[0].get('project'), self.project)
         self.assertTrue(sg.find_one('Version', [['id', 'is', new_version.get('id')]], ['filmstrip_image']) is not None)
 
         self.sg.delete("Version", new_version['id'])
@@ -295,11 +295,11 @@ class TestShotgunApi(base.LiveTestBase):
                 'project': self.project}
         batchCall = [{'data':data, 'request_type':'create', 'entity_type':'Version'}]
         new_version = self.sg.batch(batchCall)
-        self.assertTrue(new_version is not None)
-        self.assertTrue(isinstance(new_version, dict))
-        self.assertTrue(isinstance(new_version.get('id'), int))
-        self.assertEqual(new_version.get('type'), 'Version')
-        self.assertEqual(new_version.get('project'), self.project)
+         self.assertTrue(new_version is not None)
+        self.assertTrue(isinstance(new_version, list))
+        self.assertTrue(isinstance(new_version[0].get('id'), int))
+        self.assertEqual(new_version[0].get('type'), 'Version')
+        self.assertEqual(new_version[0].get('project'), self.project)
         self.assertTrue(sg.find_one('Version', [['id', 'is', new_version.get('id')]], ['sg_uploaded_movie']) is not None)
 
         self.sg.delete("Version", new_version['id'])
@@ -310,10 +310,10 @@ class TestShotgunApi(base.LiveTestBase):
         batchCall = [{'data':data, 'request_type':'create', 'entity_type':'Version'}]
         new_version = self.sg.batch(batchCall)
         self.assertTrue(new_version is not None)
-        self.assertTrue(isinstance(new_version, dict))
-        self.assertTrue(isinstance(new_version.get('id'), int))
-        self.assertEqual(new_version.get('type'), 'Version')
-        self.assertEqual(new_version.get('project'), self.project)
+        self.assertTrue(isinstance(new_version, list))
+        self.assertTrue(isinstance(new_version[0].get('id'), int))
+        self.assertEqual(new_version[0].get('type'), 'Version')
+        self.assertEqual(new_version[0].get('project'), self.project)
         batchCall = [{'data':{'sg_uploaded_movie':path, 'image':path, 'filmstrip_image':path}, 'request_type':'update', 'entity_type':'Version', 'entity_id':new_version.get('id')}]
         self.sg.batch(batchCall)
         self.assertTrue(sg.find_one('Version', [['id', 'is', new_version.get('id')]], ['sg_uploaded_movie']) is not None)
