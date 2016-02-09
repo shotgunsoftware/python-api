@@ -295,7 +295,7 @@ class TestShotgunApi(base.LiveTestBase):
                 'project': self.project}
         batchCall = [{'data':data, 'request_type':'create', 'entity_type':'Version'}]
         new_version = self.sg.batch(batchCall)
-         self.assertTrue(new_version is not None)
+        self.assertTrue(new_version is not None)
         self.assertTrue(isinstance(new_version, list))
         self.assertTrue(isinstance(new_version[0].get('id'), int))
         self.assertEqual(new_version[0].get('type'), 'Version')
