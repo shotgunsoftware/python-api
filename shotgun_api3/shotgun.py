@@ -849,7 +849,7 @@ class Shotgun(object):
                                                                 [['id', 'is', uploaded_to_id]],
                                                                 ['filmstrip_image'])['filmstrip_image']
                                                                 
-        for specialField in ['image', 'filmstrip_image', 'sg_uploaded_movie']
+        for specialField in ['image', 'filmstrip_image', 'sg_uploaded_movie']:
             if specialField in data:
                 if specialField not in result:
                     result[specialField] = None
@@ -917,7 +917,7 @@ class Shotgun(object):
                     result['filmstrip_image'] = self.find_one(entity_type,
                                                                 [['id', 'is', uploaded_to_id]],
                                                                 ['filmstrip_image'])['filmstrip_image']
-        for specialField in ['image', 'filmstrip_image', 'sg_uploaded_movie']
+        for specialField in ['image', 'filmstrip_image', 'sg_uploaded_movie']:
             if specialField in data:
                 if specialField not in result:
                     result[specialField] = None
