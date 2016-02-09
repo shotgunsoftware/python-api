@@ -971,9 +971,7 @@ class Shotgun(object):
 
         file_data = []
 
-        for req in requests:
-            _required_keys("Batched create request", ['data'], req)
-            
+        for req in requests:            
             file_data.append((req.pop('sg_uploaded_movie', None), 'sg_uploaded_movie'))
             file_data.append((req.pop('image', None), 'image'))
             file_data.append((req.pop('filmstrip_image', None), 'image'))
