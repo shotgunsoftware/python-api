@@ -977,22 +977,20 @@ class Shotgun(object):
                            req)
             request_params = {'request_type': req['request_type'],
                               "type" : req["entity_type"]}
-            if req["request_type"] in ["create", "update"]
+            if req["request_type"] in ["create", "update"]:
+                _required_keys("Batched create or update request", ['data'], req)
                 file_data.append((req['data'].pop('sg_uploaded_movie', None), 'sg_uploaded_movie'))
                 file_data.append((req['data'].pop('image', None), 'image'))
                 file_data.append((req['data'].pop('filmstrip_image', None), 'image'))
+            if req["request_type"] in ["update", "delete"]:
+                 _required_keys("Batched update or delete request", ['entity_id'], req)
             if req["request_type"] == "create":
-                _required_keys("Batched create request", ['data'], req)
                 request_params['fields'] = self._dict_to_list(req["data"])
                 request_params["return_fields"] = req.get("return_fields") or["id"]
             elif req["request_type"] == "update":
-                _required_keys("Batched update request",
-                               ['entity_id', 'data'],
-                               req)
                 request_params['id'] = req['entity_id']
                 request_params['fields'] = self._dict_to_list(req["data"])
             elif req["request_type"] == "delete":
-                _required_keys("Batched delete request", ['entity_id'], req)
                 request_params['id'] = req['entity_id']
             else:
                 raise ShotgunError("Invalid request_type '%s' for batch" % (
