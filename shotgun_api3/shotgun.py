@@ -813,7 +813,7 @@ class Shotgun(object):
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
                 raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
                     "higher, server is %s" % (self.server_caps.version,))
-            upload_data.append((_safe_pop(data, 'filmstrip_image'), 'filmstrip_image'))
+            upload_data.append((data.pop('filmstrip_image', None), 'filmstrip_image'))
 
         params = {
             "type" : entity_type,
@@ -825,7 +825,7 @@ class Shotgun(object):
         result = self._parse_records(record)[0]
 
         for upload_file in upload_data:
-            if upload_file[0] is not None:
+            if upload_file[0]:
                 if upload_file[1] is 'sg_uploaded_movie':
                     self.upload(entity_type,
                                 result['id'],
@@ -835,6 +835,10 @@ class Shotgun(object):
                     self.upload_thumbnail(entity_type,
                                           result['id'],
                                           upload_file[0])
+                elif upload_file[1] is 'filmstrip_image':
+                    self.upload_filmstrip_thumbnail(entity_type,
+                                                    result['id'],
+                                                    upload_file[0])
 
         return result
         
@@ -862,7 +866,7 @@ class Shotgun(object):
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
                 raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
                     "higher, server is %s" % (self.server_caps.version,))
-            upload_data.append((_safe_pop(data, 'filmstrip_image'), 'filmstrip_image'))
+            upload_data.append((data.pop('filmstrip_image', None), 'filmstrip_image'))
 
         if data:
             params = {
@@ -876,7 +880,7 @@ class Shotgun(object):
             result = {'id': entity_id, 'type': entity_type}
 
         for upload_file in upload_data:
-            if upload_file[0] is not None:
+            if upload_file[0]:
                 if upload_file[1] is 'sg_uploaded_movie':
                     self.upload(entity_type,
                                 result['id'],
@@ -886,6 +890,10 @@ class Shotgun(object):
                     self.upload_thumbnail(entity_type,
                                           result['id'],
                                           upload_file[0])
+                elif upload_file[1] is 'filmstrip_image':
+                    self.upload_filmstrip_thumbnail(entity_type,
+                                                    result['id'],
+                                                    upload_file[0])
 
         return result
 
@@ -968,6 +976,7 @@ class Shotgun(object):
             
             file_data.append((req.pop('sg_uploaded_movie', None), 'sg_uploaded_movie'))
             file_data.append((req.pop('image', None), 'image'))
+            file_data.append((req.pop('filmstrip_image', None), 'image'))
             
             _required_keys("Batched request",
                            ['request_type', 'entity_type'],
@@ -1007,6 +1016,10 @@ class Shotgun(object):
                     self.upload_thumbnail(return_fields[file_data.index(upload_file)/2]['type'],
                                           return_fields[file_data.index(upload_file)/2]["id"],
                                           upload_file[0])
+                elif upload_file[1] is 'filmstrip_image':
+                    self.upload_filmstrip_thumbnail(return_fields[file_data.index(upload_file)/2]['type'],
+                                                    return_fields[file_data.index(upload_file)/2]["id"],
+                                                    upload_file[0])
         
         return return_fields
 
