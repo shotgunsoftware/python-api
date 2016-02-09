@@ -839,8 +839,8 @@ class Shotgun(object):
                                           result['id'],
                                           upload_file[0])
                     result['image'] = self.find_one(entity_type,
-                                                                [['id', 'is', uploaded_to_id]],
-                                                                ['image'])['image']
+                                                    [['id', 'is', uploaded_to_id]],
+                                                    ['image'])['image']
                 elif upload_file[1] is 'filmstrip_image':
                     uploaded_to_id = self.upload_filmstrip_thumbnail(entity_type,
                                                     result['id'],
@@ -848,6 +848,11 @@ class Shotgun(object):
                     result['filmstrip_image'] = self.find_one(entity_type,
                                                                 [['id', 'is', uploaded_to_id]],
                                                                 ['filmstrip_image'])['filmstrip_image']
+                                                                
+        for specialField in ['image', 'filmstrip_image', 'sg_uploaded_movie']
+            if specialField in data:
+                if specialField not in result:
+                    result[specialField] = None
 
         return result
         
@@ -912,6 +917,10 @@ class Shotgun(object):
                     result['filmstrip_image'] = self.find_one(entity_type,
                                                                 [['id', 'is', uploaded_to_id]],
                                                                 ['filmstrip_image'])['filmstrip_image']
+        for specialField in ['image', 'filmstrip_image', 'sg_uploaded_movie']
+            if specialField in data:
+                if specialField not in result:
+                    result[specialField] = None
 
         return result
 
