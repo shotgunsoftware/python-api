@@ -972,16 +972,15 @@ class Shotgun(object):
         file_data = []
 
         for req in requests:            
-            file_data.append((req.pop('sg_uploaded_movie', None), 'sg_uploaded_movie'))
-            file_data.append((req.pop('image', None), 'image'))
-            file_data.append((req.pop('filmstrip_image', None), 'image'))
-            
             _required_keys("Batched request",
                            ['request_type', 'entity_type'],
                            req)
             request_params = {'request_type': req['request_type'],
                               "type" : req["entity_type"]}
-
+            if req["request_type"] in ["create", "update"]
+                file_data.append((req['data'].pop('sg_uploaded_movie', None), 'sg_uploaded_movie'))
+                file_data.append((req['data'].pop('image', None), 'image'))
+                file_data.append((req['data'].pop('filmstrip_image', None), 'image'))
             if req["request_type"] == "create":
                 _required_keys("Batched create request", ['data'], req)
                 request_params['fields'] = self._dict_to_list(req["data"])
