@@ -1626,15 +1626,15 @@ class TestHumanUserSudoAuth(base.TestBase):
                     http_proxy=self.config.http_proxy,
                     sudo_as_login="blah" )
         self.assertRaises(shotgun_api3.Fault, x.find_one, 'Shot', [])
-        expected = "The user does not have permission to 'sudo': %s" % self.config.human_login
+        expected = "The user does not have permission to 'sudo':"
         try :
             x.find_one('Shot',[])
         except shotgun_api3.Fault, e:
             # py24 exceptions don't have message attr
             if hasattr(e, 'message'):
-                self.assertEquals(expected, e.message)
+                self.assert_(e.message.startswith(expected))
             else:
-                self.assertEquals(expected, e.args[0])
+                self.assert_(e.args[0].startswith(expected))
 
 
 
