@@ -974,7 +974,7 @@ class Shotgun(object):
                 _required_keys("Batched create or update request", ['data'], req)
                 for specialField in ['image', 'sg_uploaded_movie', 'filmstrip_image']:
                     if specialField in req['data'] and req['data'][specialField] is not None:
-                        upload_data.append((req['data'].pop(specialField), specialField, requests.index(req)))
+                        file_data.append((req['data'].pop(specialField), specialField, requests.index(req)))
             if req["request_type"] in ["update", "delete"]:
                  _required_keys("Batched update or delete request", ['entity_id'], req)
             if req["request_type"] == "create":
