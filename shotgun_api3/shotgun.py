@@ -994,20 +994,20 @@ class Shotgun(object):
         return_fields = self._parse_records(records)
         
         for upload_file in file_data:
-        	if upload_file[0]:
-	            if upload_file[1] is 'sg_uploaded_movie':
-    	            self.upload(return_fields[upload_file[2]]['type'],
-        	                    return_fields[upload_file[2]]["id"],
-            	                upload_file[0],
-                	            'sg_uploaded_movie')
-	            elif upload_file[1] is 'image':
-    	            self.upload_thumbnail(return_fields[upload_file[2]]['type'],
-        	                              return_fields[upload_file[2]]["id"],
-            	                          upload_file[0])
-	            elif upload_file[1] is 'filmstrip_image':
-    	            self.upload_filmstrip_thumbnail(return_fields[upload_file[2]]['type'],
-        	                                        return_fields[upload_file[2]]["id"],
-            	                                    upload_file[0])
+            if upload_file[0]:
+                if upload_file[1] is 'sg_uploaded_movie':
+                    self.upload(return_fields[upload_file[2]]['type'],
+                                return_fields[upload_file[2]]["id"],
+                                upload_file[0],
+                                'sg_uploaded_movie')
+                elif upload_file[1] is 'image':
+                    self.upload_thumbnail(return_fields[upload_file[2]]['type'],
+                                          return_fields[upload_file[2]]["id"],
+                                          upload_file[0])
+                elif upload_file[1] is 'filmstrip_image':
+                    self.upload_filmstrip_thumbnail(return_fields[upload_file[2]]['type'],
+                                                    return_fields[upload_file[2]]["id"],
+                                                    upload_file[0])
         
         return return_fields
 
@@ -1486,8 +1486,8 @@ class Shotgun(object):
         """
         if field_name == 'filmstrip_image' or field_name == 'filmstrip_thumb_image':
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
-            raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
-                "higher, server is %s" % (self.server_caps.version,))
+                raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
+                                   "higher, server is %s" % (self.server_caps.version,))
 
         path = os.path.abspath(os.path.expanduser(path or ""))
         if not os.path.isfile(path):
