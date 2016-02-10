@@ -806,15 +806,10 @@ class Shotgun(object):
 
         upload_data = []
 
-        for specialField in ['image', 'sg_uploaded_movie']:
+        for specialField in ['image', 'sg_uploaded_movie', 'filmstrip_image']:
             if specialField in data and data[specialField] is not None:
                 upload_data.append((data.pop(specialField), specialField))
 
-        if 'filmstrip_image' in data:
-            if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
-                raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
-                    "higher, server is %s" % (self.server_caps.version,))
-            upload_data.append((data.pop('filmstrip_image'), 'filmstrip_image'))
 
         params = {
             "type" : entity_type,
@@ -861,15 +856,9 @@ class Shotgun(object):
         
         upload_data = []
         
-        for specialField in ['image', 'sg_uploaded_movie']:
+        for specialField in ['image', 'sg_uploaded_movie', 'filmstrip_image']:
             if specialField in data and data[specialField] is not None:
                 upload_data.append((data.pop(specialField), specialField))
-
-        if 'filmstrip_image' in data:
-            if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
-                raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
-                    "higher, server is %s" % (self.server_caps.version,))
-            upload_data.append((data.pop('filmstrip_image'), 'filmstrip_image'))
 
         if data:
             params = {
@@ -983,9 +972,9 @@ class Shotgun(object):
                               "type" : req["entity_type"]}
             if req["request_type"] in ["create", "update"]:
                 _required_keys("Batched create or update request", ['data'], req)
-                file_data.append((req['data'].pop('sg_uploaded_movie', None), 'sg_uploaded_movie'))
-                file_data.append((req['data'].pop('image', None), 'image'))
-                file_data.append((req['data'].pop('filmstrip_image', None), 'image'))
+                for specialField in ['image', 'sg_uploaded_movie', 'filmstrip_image']:
+                    if specialField in req['data'] and req['data'][specialField] is not None:
+                        upload_data.append((req['data'].pop(specialField), specialField, requests.index(req)))
             if req["request_type"] in ["update", "delete"]:
                  _required_keys("Batched update or delete request", ['entity_id'], req)
             if req["request_type"] == "create":
@@ -1005,20 +994,20 @@ class Shotgun(object):
         return_fields = self._parse_records(records)
         
         for upload_file in file_data:
-            if upload_file[0] is not None:
-                if upload_file[1] is 'sg_uploaded_movie':
-                    self.upload(return_fields[file_data.index(upload_file)/2]['type'],
-                                return_fields[file_data.index(upload_file)/2]["id"],
-                                upload_file[0],
-                                'sg_uploaded_movie')
-                elif upload_file[1] is 'image':
-                    self.upload_thumbnail(return_fields[file_data.index(upload_file)/2]['type'],
-                                          return_fields[file_data.index(upload_file)/2]["id"],
-                                          upload_file[0])
-                elif upload_file[1] is 'filmstrip_image':
-                    self.upload_filmstrip_thumbnail(return_fields[file_data.index(upload_file)/2]['type'],
-                                                    return_fields[file_data.index(upload_file)/2]["id"],
-                                                    upload_file[0])
+        	if upload_file[0]:
+	            if upload_file[1] is 'sg_uploaded_movie':
+    	            self.upload(return_fields[upload_file[2]]['type'],
+        	                    return_fields[upload_file[2]]["id"],
+            	                upload_file[0],
+                	            'sg_uploaded_movie')
+	            elif upload_file[1] is 'image':
+    	            self.upload_thumbnail(return_fields[upload_file[2]]['type'],
+        	                              return_fields[upload_file[2]]["id"],
+            	                          upload_file[0])
+	            elif upload_file[1] is 'filmstrip_image':
+    	            self.upload_filmstrip_thumbnail(return_fields[upload_file[2]]['type'],
+        	                                        return_fields[upload_file[2]]["id"],
+            	                                    upload_file[0])
         
         return return_fields
 
@@ -1470,9 +1459,6 @@ class Shotgun(object):
         :param path: Path to file on disk
         :returns: Id of the new attachment
         """
-        if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
-            raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
-                "higher, server is %s" % (self.server_caps.version,))
 
         return self.upload(entity_type, entity_id, path,
             field_name="filmstrip_thumb_image", **kwargs)
@@ -1498,6 +1484,11 @@ class Shotgun(object):
 
         :returns: Id of the new attachment.
         """
+        if field_name == 'filmstrip_image' or field_name == 'filmstrip_thumb_image':
+            if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
+            raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
+                "higher, server is %s" % (self.server_caps.version,))
+
         path = os.path.abspath(os.path.expanduser(path or ""))
         if not os.path.isfile(path):
             raise ShotgunError("Path must be a valid file, got '%s'" % path)
