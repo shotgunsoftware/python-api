@@ -862,7 +862,7 @@ class Shotgun(object):
         upload_data = []
         
         for specialField in ['image', 'sg_uploaded_movie']:
-            if specialField in data:
+            if specialField in data and data[specialField] is not None:
                 upload_data.append((data.pop(specialField), specialField))
 
         if 'filmstrip_image' in data:

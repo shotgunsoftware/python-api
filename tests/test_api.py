@@ -274,7 +274,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version[0].get('project'), self.project)
         self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['image']) is not None)
 
-        self.sg.delete("Version", new_version['id'])
+        self.sg.delete("Version", new_version[0]['id'])
 
         # test filmstrip image upload via batch create
         data = {'filmstrip_image': path, 'code': 'Test Version',
@@ -288,7 +288,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version[0].get('project'), self.project)
         self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['filmstrip_image']) is not None)
 
-        self.sg.delete("Version", new_version['id'])
+        self.sg.delete("Version", new_version[0]['id'])
         
         # test uploaded_movie upload via batch create
         data = {'sg_uploaded_movie': path, 'code': 'Test Version',
@@ -302,7 +302,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version[0].get('project'), self.project)
         self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['sg_uploaded_movie']) is not None)
 
-        self.sg.delete("Version", new_version['id'])
+        self.sg.delete("Version", new_version[0]['id'])
         
         # test uploaded upload via batch update
         data = {'code': 'Test Version',
@@ -319,6 +319,8 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['sg_uploaded_movie']) is not None)
         self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['image']) is not None)
         self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['filmstrip_image']) is not None)
+
+        self.sg.delete("Version", new_version[0]['id'])
 
     def test_upload_thumbnail_for_version(self):
         """simple upload thumbnail for version test."""
