@@ -975,6 +975,8 @@ class Shotgun(object):
                 for specialField in ['image', 'sg_uploaded_movie', 'filmstrip_image']:
                     if specialField in req['data'] and req['data'][specialField] is not None:
                         file_data.append((req['data'].pop(specialField), specialField, requests.index(req)))
+                if len(req['data']) == 0:
+                    break
             if req["request_type"] in ["update", "delete"]:
                  _required_keys("Batched update or delete request", ['entity_id'], req)
             if req["request_type"] == "create":
@@ -988,8 +990,10 @@ class Shotgun(object):
             else:
                 raise ShotgunError("Invalid request_type '%s' for batch" % (
                                    req["request_type"]))
+            
             calls.append(request_params)
-        records = self._call_rpc("batch", calls)
+        if len(calls) != 0:
+            records = self._call_rpc("batch", calls)
         
         return_fields = self._parse_records(records)
         
