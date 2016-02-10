@@ -314,7 +314,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertTrue(isinstance(new_version[0].get('id'), int))
         self.assertEqual(new_version[0].get('type'), 'Version')
         self.assertEqual(new_version[0].get('project'), self.project)
-        batchCall = [{'data':{'sg_uploaded_movie':path, 'image':path, 'filmstrip_image':path}, 'request_type':'update', 'entity_type':'Version', 'entity_id':new_version.get('id')}]
+        batchCall = [{'data':{'sg_uploaded_movie':path, 'image':path, 'filmstrip_image':path}, 'request_type':'update', 'entity_type':'Version', 'entity_id':new_version[0].get('id')}]
         self.sg.batch(batchCall)
         self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['sg_uploaded_movie']) is not None)
         self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['image']) is not None)
