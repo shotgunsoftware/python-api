@@ -13,6 +13,7 @@
 tests/config
 .coverage
 .cache
+.travis-solo
 htmlcov
 
 # setup related
