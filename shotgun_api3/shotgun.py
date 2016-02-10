@@ -963,6 +963,8 @@ class Shotgun(object):
                     "Value was: %s." % (message, ", ".join(missing), data))
 
         file_data = []
+        consistant_return = {}
+        origin = False
 
         for req in requests:            
             _required_keys("Batched request",
@@ -975,8 +977,7 @@ class Shotgun(object):
                 for specialField in ['image', 'sg_uploaded_movie', 'filmstrip_image']:
                     if specialField in req['data'] and req['data'][specialField] is not None:
                         file_data.append((req['data'].pop(specialField), specialField, requests.index(req)))
-                if len(req['data']) == 0:
-                    break
+                        origin = True
             if req["request_type"] in ["update", "delete"]:
                  _required_keys("Batched update or delete request", ['entity_id'], req)
             if req["request_type"] == "create":
@@ -990,13 +991,21 @@ class Shotgun(object):
             else:
                 raise ShotgunError("Invalid request_type '%s' for batch" % (
                                    req["request_type"]))
-            
-            calls.append(request_params)
+                                   
+            if len(request_params['fields']) != 0 or (len(request_params['fields']) == 0 and not origin):
+                calls.append(request_params)
+            if req["request_type"] == 'update' and origin:
+                consistant_return[requests.index(req)] = req['entity_id']
+            origin = False
+        
+        return_fields = []
         if len(calls) != 0:
             records = self._call_rpc("batch", calls)
-        
-        return_fields = self._parse_records(records)
-        
+            return_fields = self._parse_records(records)
+               
+        for origin_index, id in consistant_return.iteritems():
+            return_fields.insert(origin_index, id)
+            
         for upload_file in file_data:
             if upload_file[0]:
                 if upload_file[1] is 'sg_uploaded_movie':
