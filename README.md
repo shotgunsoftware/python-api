@@ -53,7 +53,12 @@ Integration and unit tests are provided.
 
 ## Changelog
 
-**v3.0.26 - TBD**
+**v3.0.27 - TBD**
+
+**v3.0.26 - 2016 Feb 1**
+
+   + Updating testing framework to use environment variables inconjunction with existing example_config file so that commits and pull requests are automatically run on travis-ci.
+   + Fix to prevent stripping out case-sensitivity of a URL if the user passes their credentials to config.server as an authrization header.
 
 **v3.0.25 - 2016 Jan 12**
 

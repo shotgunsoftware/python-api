@@ -4,11 +4,18 @@ python:
   - "2.7"
 # command to install dependencies
 install:
-  - pip install nose --use-mirrors
+  - pip install nose
 before_script:
   - cp ./tests/example_config ./tests/config
 # command to run tests
-script: nosetests tests.tests_unit tests.test_client
+script: nosetests -v
 notifications:
   email:
     - api@shotgunsoftware.com
+  hipchat:
+    rooms:
+      secure: Fn5h3NWccsKeXrH/wP/WcfIMco1xCxJsqnEgzSguAIo2DlQX8UprmbyDPoZTOmKF3Tl1HMSZzgLDr2CWQua5IR8IfFum5rfvkckUCeN+PkihL8aJ+1kqXe1GZc0+rRY8iDjAUyX8i+lupnsF0RGmg/eS9QfqblM83VBKskiSsDs=
+    template:
+      - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
+    format: html
+    on_pull_requests: false
