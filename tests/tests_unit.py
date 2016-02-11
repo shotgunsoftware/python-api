@@ -85,7 +85,7 @@ class TestShotgunInit(unittest.TestCase):
         self.assertEquals(sg.config.proxy_user, proxy_user)
         self.assertEquals(sg.config.proxy_pass, proxy_pass)
 
-    def test_http_proxy_with_ampersand_in_password(self):
+    def test_http_proxy_with_at_in_password(self):
         proxy_server = "someserver.com"
         proxy_port = 1234
         proxy_user = "user"
