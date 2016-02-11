@@ -429,8 +429,9 @@ class Shotgun(object):
 
         # foo:bar@123.456.789.012:3456
         if http_proxy:
-            # check if we're using authentication
-            p = http_proxy.split("@", 1)
+            # check if we're using authentication. Start from the end since there might be
+            # @ in the user's password.
+            p = http_proxy.rsplit("@", 1)
             if len(p) > 1:
                 self.config.proxy_user, self.config.proxy_pass = \
                     p[0].split(":", 1)
