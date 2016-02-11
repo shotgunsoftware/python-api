@@ -992,8 +992,7 @@ class Shotgun(object):
                 raise ShotgunError("Invalid request_type '%s' for batch" % (
                                    req["request_type"]))
                                    
-            if (req["request_type"] == 'update') and (len(request_params['fields']) != 0
-                                                  or (len(request_params['fields']) == 0 and not origin)):
+            if (len(request_params['fields']) != 0) or not (req["request_type"] == 'update' and not origin):
                 calls.append(request_params)
             elif req["request_type"] == 'update' and origin and len(request_params['fields']) == 0:
                 consistant_return[requests.index(req)] = req['entity_id']
