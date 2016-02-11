@@ -993,7 +993,7 @@ class Shotgun(object):
                                    req["request_type"]))
                                    
             if req["request_type"] == 'update' and (len(request_params['fields']) == 0) and origin:
-                consistant_return[requests.index(req)] = req['entity_id']
+                consistant_return[requests.index(req)] = {'id':req['entity_id'], 'type':req['entity_type']}
             else:
                 calls.append(request_params)
             origin = False
@@ -1003,8 +1003,8 @@ class Shotgun(object):
             records = self._call_rpc("batch", calls)
             return_fields = self._parse_records(records)
                
-        for origin_index, id in consistant_return.iteritems():
-            return_fields.insert(origin_index, id)
+        for origin_index, info in consistant_return.iteritems():
+            return_fields.insert(origin_index, info)
             
         for upload_file in file_data:
             if upload_file[0]:
