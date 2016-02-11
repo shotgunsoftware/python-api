@@ -384,7 +384,19 @@ class TestShotgunApi(base.LiveTestBase):
             self.version['id'], {'image': None})
         expected_clear_thumbnail = {'id': self.version['id'], 'image': None, 'type': 'Version'}
         self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
+        
+    def test_upload_thumbnail_with_upload_function(self):
+        """Upload thumbnail via upload function test"""
+        path = os.path.abspath(os.path.expanduser(os.path.join(os.path.dirname(__file__), "sg_logo.jpg")))
 
+        # upload thumbnail
+        thumb_id = self.sg.upload("Task", self.task['id'], path, 'image')
+        self.assertTrue(isinstance(thumb_id, int))
+        
+        #upload filmstrip thumbnail
+        f_thumb_id = self.sg.upload("Task", self.task['id'], path, 'filmstrip_image')
+        self.assertTrue(isinstance(f_thumb_id, int))
+        
     def test_linked_thumbnail_url(self):
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
@@ -1680,14 +1692,15 @@ class TestHumanUserSudoAuth(base.TestBase):
                     http_proxy=self.config.http_proxy,
                     sudo_as_login="blah" )
         self.assertRaises(shotgun_api3.Fault, x.find_one, 'Shot', [])
+        expected = "The user does not have permission to 'sudo':"
         try :
             x.find_one('Shot',[])
         except shotgun_api3.Fault, e:
             # py24 exceptions don't have message attr
             if hasattr(e, 'message'):
-                self.assertEquals("The user does not have permission to 'sudo': ", e.message)
+                self.assert_(e.message.startswith(expected))
             else:
-                self.assertEquals("The user does not have permission to 'sudo': ", e.args[0])
+                self.assert_(e.args[0].startswith(expected))
 
 
 

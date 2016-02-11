@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
  -----------------------------------------------------------------------------
- Copyright (c) 2009-2015, Shotgun Software Inc
+ Copyright (c) 2009-2016, Shotgun Software Inc
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ except ImportError, e:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.0.26.dev"
+__version__ = "3.0.27.dev"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -422,15 +422,16 @@ class Shotgun(object):
         # if the service contains user information strip it out
         # copied from the xmlrpclib which turned the user:password into
         # and auth header
-        auth, self.config.server = urllib.splituser(self.config.server)
+        auth, self.config.server = urllib.splituser(urlparse.urlsplit(base_url).netloc)
         if auth:
             auth = base64.encodestring(urllib.unquote(auth))
             self.config.authorization = "Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
         if http_proxy:
-            # check if we're using authentication
-            p = http_proxy.split("@", 1)
+            # check if we're using authentication. Start from the end since there might be
+            # @ in the user's password.
+            p = http_proxy.rsplit("@", 1)
             if len(p) > 1:
                 self.config.proxy_user, self.config.proxy_pass = \
                     p[0].split(":", 1)
@@ -1459,7 +1460,7 @@ class Shotgun(object):
         :returns: Id of the new attachment
         """
         return self.upload(entity_type, entity_id, path,
-            field_name="thumb_image", **kwargs)
+            field_name="image", **kwargs)
 
     def upload_filmstrip_thumbnail(self, entity_type, entity_id, path, **kwargs):
         """Convenience function for uploading filmstrip thumbnails.
@@ -1474,7 +1475,7 @@ class Shotgun(object):
         """
 
         return self.upload(entity_type, entity_id, path,
-            field_name="filmstrip_thumb_image", **kwargs)
+            field_name="filmstrip_image", **kwargs)
 
     def upload(self, entity_type, entity_id, path, field_name=None,
         display_name=None, tag_list=None):
@@ -1506,7 +1507,8 @@ class Shotgun(object):
         if not os.path.isfile(path):
             raise ShotgunError("Path must be a valid file, got '%s'" % path)
 
-        is_thumbnail = (field_name == "thumb_image" or field_name == "filmstrip_thumb_image")
+        is_thumbnail = (field_name in ["thumb_image", "filmstrip_thumb_image", "image",
+                                       "filmstrip_image"])
 
         params = {
             "entity_type" : entity_type,
@@ -1519,7 +1521,7 @@ class Shotgun(object):
             url = urlparse.urlunparse((self.config.scheme, self.config.server,
                 "/upload/publish_thumbnail", None, None, None))
             params["thumb_image"] = open(path, "rb")
-            if field_name == "filmstrip_thumb_image":
+            if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
                 params["filmstrip"] = True
 
         else:
