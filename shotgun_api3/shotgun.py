@@ -825,23 +825,6 @@ class Shotgun(object):
             self.upload(entity_type, result['id'], upload_file[0], upload_file[1])
             result[upload_file[1]] = self.find_one(entity_type, [['id', 'is', result['id']]],
                                                    [upload_file[1]]).pop(upload_file[1], None)
-            """LEGACY
-            if upload_file[1] is 'sg_uploaded_movie':
-                self.upload(entity_type, result['id'], upload_file[0], 'sg_uploaded_movie')
-                result['sg_uploaded_movie'] = self.find_one(entity_type,
-                                                            [['id', 'is', result['id']]],
-                                                            ['sg_uploaded_movie']).pop('sg_uploaded_movie', None)
-            elif upload_file[1] is 'image':
-                self.upload_thumbnail(entity_type, result['id'], upload_file[0])
-                result['image'] = self.find_one(entity_type,
-                                                [['id', 'is', result['id']]],
-                                                ['image']).pop('image', None)
-            elif upload_file[1] is 'filmstrip_image':
-                self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_file[0])
-                result['filmstrip_image'] = self.find_one(entity_type,
-                                                          [['id', 'is', result['id']]],
-                                                          ['filmstrip_image']).pop('filmstrip_image', None)
-            """
 
         return result
         
@@ -881,23 +864,7 @@ class Shotgun(object):
             self.upload(entity_type, result['id'], upload_file[0], upload_file[1])
             result[upload_file[1]] = self.find_one(entity_type, [['id', 'is', result['id']]],
                                                    [upload_file[1]]).pop(upload_file[1], None)
-            """LEGACY
-            if upload_file[1] is 'sg_uploaded_movie':
-                self.upload(entity_type, result['id'], upload_file[0], 'sg_uploaded_movie')
-                result['sg_uploaded_movie'] = self.find_one(entity_type,
-                                                            [['id', 'is', result['id']]],
-                                                            ['sg_uploaded_movie']).pop('sg_uploaded_movie', None)
-            elif upload_file[1] is 'image':
-                self.upload_thumbnail(entity_type, result['id'], upload_file[0])
-                result['image'] = self.find_one(entity_type,
-                                                [['id', 'is', result['id']]],
-                                                ['image']).pop('image', None)
-            elif upload_file[1] is 'filmstrip_image':
-                self.upload_filmstrip_thumbnail(entity_type, result['id'], upload_file[0])
-                result['filmstrip_image'] = self.find_one(entity_type,
-                                                          [['id', 'is', result['id']]],
-                                                          ['filmstrip_image']).pop('filmstrip_image', None)
-            """
+
         return result
 
     def delete(self, entity_type, entity_id):
@@ -1019,21 +986,6 @@ class Shotgun(object):
         for upload_file in file_data:
             self.upload(return_fields[upload_file[2]]['type'], return_fields[upload_file[2]]["id"],
                         upload_file[0], upload_file[1])
-            """LEGACY
-            if upload_file[1] is 'sg_uploaded_movie':
-                self.upload(return_fields[upload_file[2]]['type'],
-                            return_fields[upload_file[2]]["id"],
-                            upload_file[0],
-                            'sg_uploaded_movie')
-            elif upload_file[1] is 'image':
-                self.upload_thumbnail(return_fields[upload_file[2]]['type'],
-                                        return_fields[upload_file[2]]["id"],
-                                        upload_file[0])
-            elif upload_file[1] is 'filmstrip_image':
-                self.upload_filmstrip_thumbnail(return_fields[upload_file[2]]['type'],
-                                                return_fields[upload_file[2]]["id"],
-                                                upload_file[0])
-            """
         
         return return_fields
 
