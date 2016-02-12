@@ -822,6 +822,10 @@ class Shotgun(object):
         result = self._parse_records(record)[0]
 
         for upload_file in upload_data:
+            self.upload(entity_type, result['id'], upload_file[0], upload_file[1])
+            result[upload_file[1]] = self.find_one(entity_type, [['id', 'is', result['id']]],
+                                                   [upload_file[1]]).pop(upload_file[1], None)
+            """LEGACY
             if upload_file[1] is 'sg_uploaded_movie':
                 self.upload(entity_type, result['id'], upload_file[0], 'sg_uploaded_movie')
                 result['sg_uploaded_movie'] = self.find_one(entity_type,
@@ -837,6 +841,7 @@ class Shotgun(object):
                 result['filmstrip_image'] = self.find_one(entity_type,
                                                           [['id', 'is', result['id']]],
                                                           ['filmstrip_image']).pop('filmstrip_image', None)
+            """
 
         return result
         
@@ -873,6 +878,10 @@ class Shotgun(object):
             result = {'id': entity_id, 'type': entity_type}
 
         for upload_file in upload_data:
+            self.upload(entity_type, result['id'], upload_file[0], upload_file[1])
+            result[upload_file[1]] = self.find_one(entity_type, [['id', 'is', result['id']]],
+                                                   [upload_file[1]]).pop(upload_file[1], None)
+            """LEGACY
             if upload_file[1] is 'sg_uploaded_movie':
                 self.upload(entity_type, result['id'], upload_file[0], 'sg_uploaded_movie')
                 result['sg_uploaded_movie'] = self.find_one(entity_type,
@@ -888,7 +897,7 @@ class Shotgun(object):
                 result['filmstrip_image'] = self.find_one(entity_type,
                                                           [['id', 'is', result['id']]],
                                                           ['filmstrip_image']).pop('filmstrip_image', None)
-
+            """
         return result
 
     def delete(self, entity_type, entity_id):
@@ -1008,20 +1017,23 @@ class Shotgun(object):
             return_fields.insert(origin_index, info)
             
         for upload_file in file_data:
-            if upload_file[0]:
-                if upload_file[1] is 'sg_uploaded_movie':
-                    self.upload(return_fields[upload_file[2]]['type'],
-                                return_fields[upload_file[2]]["id"],
-                                upload_file[0],
-                                'sg_uploaded_movie')
-                elif upload_file[1] is 'image':
-                    self.upload_thumbnail(return_fields[upload_file[2]]['type'],
-                                          return_fields[upload_file[2]]["id"],
-                                          upload_file[0])
-                elif upload_file[1] is 'filmstrip_image':
-                    self.upload_filmstrip_thumbnail(return_fields[upload_file[2]]['type'],
-                                                    return_fields[upload_file[2]]["id"],
-                                                    upload_file[0])
+            self.upload(return_fields[upload_file[2]]['type'], return_fields[upload_file[2]]["id"],
+                        upload_file[0], upload_file[1])
+            """LEGACY
+            if upload_file[1] is 'sg_uploaded_movie':
+                self.upload(return_fields[upload_file[2]]['type'],
+                            return_fields[upload_file[2]]["id"],
+                            upload_file[0],
+                            'sg_uploaded_movie')
+            elif upload_file[1] is 'image':
+                self.upload_thumbnail(return_fields[upload_file[2]]['type'],
+                                        return_fields[upload_file[2]]["id"],
+                                        upload_file[0])
+            elif upload_file[1] is 'filmstrip_image':
+                self.upload_filmstrip_thumbnail(return_fields[upload_file[2]]['type'],
+                                                return_fields[upload_file[2]]["id"],
+                                                upload_file[0])
+            """
         
         return return_fields
 
