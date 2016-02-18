@@ -53,16 +53,13 @@ Integration and unit tests are provided.
 
 ## Changelog
 
-**v3.0.27 - 2016 Feb 17**
+**v3.0.27 - 2016 Feb 18**
 
    + Make sure HTTP proxy authentication works with the @ character in a password.
    + Make sure sudo authentication test works with Shotgun versions after 6.3.10
    + Smarter uploading of thumbnails and filmstrips with the upload() method.
    + Improve Travis build integration of the Python-API to run the full suite of
-   API tests instead of just the unit and client tests. This includes
-   integrating Travis build notifications with Shotgun's HipChat service and
-   ignoring the .travis-solo folder for those testing locally.
-   + Copyright date updated
+   API tests instead of just the unit and client tests.
 
 **v3.0.26 - 2016 Feb 1**
 
