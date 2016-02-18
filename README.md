@@ -53,6 +53,10 @@ Integration and unit tests are provided.
 
 ## Changelog
 
+**v3.0.28 - TBD**
+
+   + TBD
+
 **v3.0.27 - 2016 Feb 18**
 
    + Make sure HTTP proxy authentication works with the @ character in a password.
