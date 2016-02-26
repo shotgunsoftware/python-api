@@ -2231,8 +2231,103 @@ class TestTextSearch(base.LiveTestBase):
         self.assertEqual(matches[1]["name"], "%s Text Search 4" % self._prefix)
          
         
+class TestReadAdditionalFilterPresets(base.LiveTestBase):
+    """
+    Unit tests for the additional_server_presets read parameter
+    """
+
+    def test_simple_case(self):
+
+        filters = [
+            ['project', 'is', self.project],
+            ['id', 'is', self.version['id']]
+        ]
+
+        fields = ['id']
+
+        additional_filters = [['LATEST', {'condition': 'BY_ENTITIES_CREATED_AT'}]]
+
+        versions = self.sg.find("Version", filters, fields=fields, additional_filter_presets=additional_filters)
+        self.assertEqual("Version", version["type"])
+        self.assertEqual(self.version['id'], version["id"])
+
+    def test_filter_with_no_name(self):
+
+        filters = [
+            ['project', 'is', self.project],
+            ['id', 'is', self.version['id']]
+        ]
+
+        fields = ['id']
+
+        additional_filters = [[]]
+
+        self.assertRaises(ValueError,
+                          self.sg.find,
+                          "Version", filters, fields=fields, additional_filter_presets=additional_filters)
+
+    def test_invalid_filter(self):
+
+        filters = [
+            ['project', 'is', self.project],
+            ['id', 'is', self.version['id']]
+        ]
+
+        fields = ['id']
+
+        additional_filters = [["BAD_FILTER"]]
+
+        self.assertRaises(shotgun_api3.Fault,
+                          self.sg.find,
+                          "Version", filters, fields=fields, additional_filter_presets=additional_filters)
+
+    def test_filter_not_list(self):
+
+        filters = [
+            ['project', 'is', self.project],
+            ['id', 'is', self.version['id']]
+        ]
+
+        fields = ['id']
+
+        additional_filters = {}
+
+        self.assertRaises(ValueError,
+                          self.sg.find,
+                          "Version", filters, fields=fields, additional_filter_presets=additional_filters)
 
 
+    def test_filter_not_list_of_list(self):
+
+        filters = [
+            ['project', 'is', self.project],
+            ['id', 'is', self.version['id']]
+        ]
+
+        fields = ['id']
+
+        additional_filters = [{}]
+
+        self.assertRaises(ValueError,
+                          self.sg.find,
+                          "Version", filters, fields=fields, additional_filter_presets=additional_filters)
+
+
+def test_multiple_latest_filters(self):
+
+        filters = [
+            ['project', 'is', self.project],
+            ['id', 'is', self.version['id']]
+        ]
+
+        fields = ['id']
+
+        additional_filters = [["LATEST", {"condition": "BY_ENTITY_CREATED_AT"}],
+                              ["LATEST", {"condition": "BY_PIPELINE_STEP_NUMBER_AND_ENTITIES_CREATED_AT"}]]
+
+        self.assertRaises(shotgun_api3.Fault,
+                          self.sg.find,
+                          "Version", filters, fields=fields, additional_filter_presets=additional_filters)
 
 def  _has_unicode(data):
     for k, v in data.items():
