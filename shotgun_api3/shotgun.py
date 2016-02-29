@@ -599,8 +599,16 @@ class Shotgun(object):
         :param include_archived_projects: Optional, flag to include entities
         whose projects have been archived
 
-        :param additional_filter_presets: Optional, list of filter presets to
-        apply.
+        :param additional_filter_presets: Optional list of presets to
+        further filter the result set, list has the form:
+        [ [ <preset_name>, { <optional_preset parameters> } ],]
+
+        Note that these filters are ANDed together and ANDed with the 'filter'
+        argument.
+
+        For details on supported presets and the format of this parameter,
+        please consult the API documentation:
+        https://github.com/shotgunsoftware/python-api/wiki
 
         :returns: list of the dicts for each entity with the requested fields,
         and their id and type.
@@ -678,7 +686,7 @@ class Shotgun(object):
                                    retired_only,
                                    order,
                                    include_archived_projects,
-                                   additional_server_presets):
+                                   additional_filter_presets):
         params = {}
         params["type"] = entity_type
         params["return_fields"] = fields or ["id"]
@@ -688,31 +696,7 @@ class Shotgun(object):
         params["paging"] = { "entities_per_page": self.config.records_per_page,
                              "current_page": 1 }
 
-        if additional_server_presets is not None:
-            if not isinstance(additional_server_presets, list):
-                msg = "'additional_server_presets' parameter must be a list or None"
-                raise ValueError(msg)
-
-            preset_list = []
-            for preset in additional_server_presets:
-                if not isinstance(preset, list):
-                    msg = "Elements of 'additional_server_presets' parameter must be lists"
-                    raise ValueError(msg)
-
-                if len(preset) == 0:
-                    msg = "Missing 'name' for 'additional_server_presets'"
-                    raise ValueError(msg)
-
-                preset_param = {
-                    'name': preset[0]
-                }
-
-                if len(preset) > 1:
-                    preset_param['params'] = preset[1]
-
-                preset_list.append(preset_param)
-
-            params["additional_filter_presets"] = preset_list
+        params = self._add_filter_presets(additional_filter_presets, params)
 
         if include_archived_projects is False:
             # Defaults to True on the server, so only pass it if it's False
@@ -732,6 +716,47 @@ class Shotgun(object):
             params['sorts'] = sort_list
         return params
 
+    def _add_filter_presets(self, additional_filter_presets, params):
+        """
+        Generate crud-ready filter preset
+            ['name_of_preset', {'param1': 'value1', 'param2': 'value2'} ]
+             ->
+            {'name': 'name_of_preset', params: {'param1': 'value1', 'param2': 'value2'}}
+
+        :param additional_filter_presets: list of filter presets to process
+        :param params: param object to update
+        :return: The updated params object
+        """
+        if additional_filter_presets is not None:
+            if not isinstance(additional_filter_presets, (list, tuple)):
+                msg = "'additional_server_presets' parameter must be a list or None"
+                raise ValueError(msg)
+
+            preset_list = []
+            for preset in additional_filter_presets:
+                if not isinstance(preset, (list, tuple)):
+                    msg = "Elements of 'additional_server_presets' parameter must be lists"
+                    raise ValueError(msg)
+
+                if len(preset) == 0:
+                    msg = "Missing 'name' for 'additional_server_presets'"
+                    raise ValueError(msg)
+
+                crud_preset = {
+                    "name": preset[0]
+                }
+
+                if len(preset) > 1:
+                    if not isinstance(preset[1], dict):
+                        msg = "Parameters of additional server preset  must be lists"
+                        raise ValueError(msg)
+                    crud_preset["params"] = preset[1]
+
+                preset_list.append(crud_preset)
+
+            params["additional_filter_presets"] = preset_list
+
+        return params
 
     def _add_project_param(self, params, project_entity):
 
@@ -1926,8 +1951,7 @@ class Shotgun(object):
         
         api_entity_types = {}
         for (entity_type, filter_list) in entity_types.iteritems():
-            
-            
+
             if isinstance(filter_list, (list, tuple)):
                 resolved_filters = _translate_filters(filter_list, filter_operator=None)
                 api_entity_types[entity_type] = resolved_filters      
