@@ -53,9 +53,9 @@ Integration and unit tests are provided.
 
 ## Changelog
 
-**v3.0.28 - TBD**
+**v3.0.28 - 2016 Mar 3**
 
-   + TBD
+   + Refactored nested classing of sgtimezone library to allow for serializable timestamps.
 
 **v3.0.27 - 2016 Feb 18**
 
