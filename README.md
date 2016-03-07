@@ -53,9 +53,9 @@ Integration and unit tests are provided.
 
 ## Changelog
 
-**v3.0.29.dev - TBD**
+**v3.0.29 - 2016 Mar 7**
 
-   + TBD
+   + Reverted the change to the default field names for image uploading.
 
 **v3.0.28 - 2016 Mar 3**
 
