@@ -1426,7 +1426,7 @@ class Shotgun(object):
         :returns: Id of the new attachment
         """
         return self.upload(entity_type, entity_id, path,
-            field_name="image", **kwargs)
+            field_name="thumb_image", **kwargs)
 
     def upload_filmstrip_thumbnail(self, entity_type, entity_id, path, **kwargs):
         """Convenience function for uploading filmstrip thumbnails.
@@ -1444,7 +1444,7 @@ class Shotgun(object):
                 "higher, server is %s" % (self.server_caps.version,))
 
         return self.upload(entity_type, entity_id, path,
-            field_name="filmstrip_image", **kwargs)
+            field_name="filmstrip_thumb_image", **kwargs)
 
     def upload(self, entity_type, entity_id, path, field_name=None,
         display_name=None, tag_list=None):
