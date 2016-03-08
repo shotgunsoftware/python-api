@@ -50,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Shotgun Python API3'
-copyright = u'2015, Shotgun Software, Autodesk Inc.'
+copyright = u'2016, Shotgun Software, Autodesk Inc.'
 author = u'Shotgun Software, Autodesk Inc.'
 
 # The version info for the project you're documenting, acts as replacement for
