@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
- Copyright (c) 2009-2015, Shotgun Software Inc
+ Copyright (c) 2009-2016, Shotgun Software Inc
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
@@ -60,12 +60,26 @@ mimetypes.add_type('video/webm','.webm') # webm and mp4 seem to be missing
 mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
 
 LOG = logging.getLogger("shotgun_api3")
+"""Logging instance for shotgun_api3
+
+Provides a logging instance where log messages are sent during execution. This instance has no
+handler associated with it.
+
+.. seealso:: :ref:`logging`
+"""
 LOG.setLevel(logging.WARN)
 
 
 SG_TIMEZONE = SgTimezone()
 
+
 NO_SSL_VALIDATION = False
+"""Turns off hostname matching validation for SSL certificates
+
+Sometimes there are cases where certificate validation should be disabled. For example, if you 
+have a self-signed internal certificate that isn't included in our certificate bundle, you may
+not require the added security provided by enforcing this.
+"""
 try:
     import ssl        
 except ImportError, e:
@@ -77,6 +91,7 @@ except ImportError, e:
 
 # ----------------------------------------------------------------------------
 # Version
+#: Release version of the API
 __version__ = "3.0.27.dev"
 
 # ----------------------------------------------------------------------------
@@ -113,7 +128,7 @@ class ServerCapabilities(object):
 
     def __init__(self, host, meta):
         """ServerCapabilities.__init__
-
+        
         :param host: Host name for the server excluding protocol.
 
         :param meta: dict of meta data for the server returned from the
@@ -299,60 +314,92 @@ class Shotgun(object):
                  auth_token=None):
         """Initializes a new instance of the Shotgun client.
 
-        :param base_url: http or https url to the shotgun server.
+        :param base_url: http or https url of the Shotgun server. Do not include the trailing slash. 
+            Example:: 
+                https://example.shotgunstudio.com
 
-        :param script_name: name of the client script, used to authenticate
-        to the server. If script_name is provided, then api_key must be as
-        well and neither login nor password can be provided.
+        :param script_name: name of the Script entity used to authenticate to the server.
+            If provided, then ``api_key`` must be as well, and neither ``login`` nor ``password`` 
+            can be provided.
 
-        :param api_key: key assigned to the client script, used to
-        authenticate to the server.  If api_key is provided, then script_name
-        must be as well and neither login nor password can be provided.
+            .. seealso:: :ref:`authentication`
 
-        :param convert_datetimes_to_utc: If True date time values are
-        converted from local time to UTC time before been sent to the server.
-        Datetimes received from the server are converted back to local time.
-        If False the client should use UTC date time values.
-        Default is True.
+        :param api_key: API key for the provided ``script_name``. Used to authenticate to the 
+            server.  If provided, then ``script_name`` must be as well, and neither ``login`` nor 
+            ``password`` can be provided.
 
-        :param http_proxy: Optional, URL for the http proxy server, on the
-        form [username:pass@]proxy.com[:8080]
+            .. seealso:: :ref:`authentication`
 
-        :param connect: If True, connect to the server. Only used for testing.
+        :param convert_datetimes_to_utc: (optional) When ``True``, datetime values are converted 
+            from local time to UTC time before being sent to the server. Datetimes received from 
+            the server are then converted back to local time. When ``False`` the client should use 
+            UTC date time values. Default is ``True``.
+
+        :param http_proxy: (optional) URL for a proxy server to use for all connections. The
+            expected str format is ``[username:password@]111.222.333.444[:8080]``. Examples::
+                192.168.0.1
+                192.168.0.1:8888
+                joe:user@192.168.0.1:8888
+
+        :param connect: (optional) When ``True``, as soon as the :class:`~shotgun_api3.Shotgun` 
+            instance is created, a connection will be made to the Shotgun server to determine the 
+            server capabilities and confirm this version of the client is compatible with the server 
+            version. This is mostly used for testing. Default is ``True``.
         
-        :param ca_certs: Optional path to an external SSL certificates file. By 
-        default, the Shotgun API will use its own built-in certificates file
-        which stores root certificates for the most common Certificate 
-        Authorities (CAs). If you are using a corporate or internal CA, or are
-        packaging an application into an executable, it may be necessary to 
-        point to your own certificates file. You can do this by passing in the 
-        full path to the file via this parameter or by setting the environment 
-        variable `SHOTGUN_API_CACERTS`. In the case both are set, this 
-        parameter will take precedence. 
+        :param ca_certs: (optional) path to an external SSL certificates file. By default, the 
+            Shotgun API will use its own built-in certificates file which stores root certificates 
+            for the most common Certificate Authorities (CAs). If you are using a corporate or 
+            internal CA, or are packaging an application into an executable, it may be necessary to 
+            point to your own certificates file. You can do this by passing in the full path to the 
+            file via this parameter or by setting the environment variable ``SHOTGUN_API_CACERTS``. 
+            In the case both are set, this parameter will take precedence. 
 
-        :param login: The login to use to authenticate to the server. If login
-        is provided, then password must be as well and neither script_name nor
-        api_key can be provided.
+        :param login: The user login str to use to authenticate to the server when using user-based
+            authentication. If provided, then ``password`` must be as well, and neither 
+            ``script_name`` nor ``api_key`` can be provided.
+            
+            .. seealso:: :ref:`authentication`
 
-        :param password: The password for the login to use to authenticate to
-        the server. If password is provided, then login must be as well and
-        neither script_name nor api_key can be provided.
+        :param password: The password str to use to authenticate to the server when using user-based
+            authentication. If provided, then ``login`` must be as well and neither ``script_name`` 
+            nor ``api_key`` can be provided.
+
+            .. seealso:: :ref:`authentication`
         
-        :param sudo_as_login: A user login string for the user whose permissions will
-        be applied to all actions and who will be logged as the user performing
-        all actions. Note that logged events will have an additional extra meta-data parameter 
-        'sudo_actual_user' indicating the script or user that actually authenticated.
+        :param sudo_as_login: A user login string for the user whose permissions will be applied 
+            to all actions. Event log entries will be generated showing this user performing all 
+            actions with an additional extra meta-data parameter 'sudo_actual_user' indicating the 
+            script or user that is actually authenticated.
         
         :param session_token: The session token to use to authenticate to the server. This
-        can be used as an alternative to authenticating with a script user or regular user.
-        You retrieve the session token by running the get_session_token() method.        
+            can be used as an alternative to authenticating with a script user or regular user.
+            You can retrieve the session token by running the 
+            :meth:`~shotgun_api3.Shotgun.get_session_token()` method.
 
-        :param auth_token: The authentication token required to authenticate to
-        a server with two factor authentication turned on. If auth_token is provided,
-        then login and password must be as well and neither script_name nor api_key
-        can be provided. Note that these tokens can be short lived so a session is
-        established right away if an auth_token is provided. A
-        MissingTwoFactorAuthenticationFault will be raised if the auth_token is invalid.
+            .. todo: Add this info to the Authentication section of the docs     
+
+        :param auth_token: The authentication token required to authenticate to a server with 
+            two-factor authentication turned on. If provided, then ``login`` and ``password`` must 
+            be provided as well, and neither ``script_name`` nor ``api_key`` can be provided. 
+
+            .. note:: These tokens can be short lived so a session is established right away if an 
+                ``auth_token`` is provided. A 
+                :class:`~shotgun_api3.MissingTwoFactorAuthenticationFault` will be raised if the 
+                ``auth_token`` is invalid.
+
+            .. todo: Add this info to the Authentication section of the docs     
+
+        .. note:: A note about proxy connections: If you are using Python <= v2.6.2, HTTPS 
+            connections through a proxy server will not work due to a bug in the :mod:`urllib2` 
+            library (see http://bugs.python.org/issue1424152). This will affect upload and 
+            download-related methods in the Shotgun API (eg. :meth:`~shotgun_api3.Shotgun.upload`, 
+            :meth:`~shotgun_api3.Shotgun.upload_thumbnail`, 
+            :meth:`~shotgun_api3.Shotgun.upload_filmstrip_thumbnail`,
+            :meth:`~shotgun_api3.Shotgun.download_attachment`. Normal CRUD methods for passing JSON 
+            data should still work fine. If you cannot upgrade your Python installation, you can see 
+            the patch merged into Python v2.6.3 (http://hg.python.org/cpython/rev/0f57b30a152f/) and 
+            try and hack it into your installation but YMMV. For older versions of Python there 
+            are other patches that were proposed in the bug report that may help you as well.
         """
 
         # verify authentication arguments
@@ -1265,17 +1312,19 @@ class Shotgun(object):
     def add_user_agent(self, agent):
         """Add agent to the user-agent header.
 
-        Append agent to the string passed in as the user-agent to be logged
-        in events for this API session.
+        Appends agent to the user-agent string sent with every API request.
 
-        :param agent: Required, string to append to user-agent.
+        :param agent: string to append to user-agent.
         """
         self._user_agents.append(agent)
 
     def reset_user_agent(self):
         """Reset user agent to the default.
 
-        Eg. "shotgun-json (3.0.17); Python 2.6 (Mac); ssl OpenSSL 1.0.2d 9 Jul 2015 (validate)"
+        Example default user-agent::
+
+            shotgun-json (3.0.17); Python 2.6 (Mac); ssl OpenSSL 1.0.2d 9 Jul 2015 (validate)
+
         """
         ua_platform = "Unknown"
         if self.client_caps.platform is not None:
@@ -1295,8 +1344,8 @@ class Shotgun(object):
     def set_session_uuid(self, session_uuid):
         """Sets the browser session_uuid for this API session.
 
-        Once set events generated by this API session will include the
-        session_uuid in their EventLogEntries.
+        Once set, events generated by this API session will include the
+        session_uuid in their EventLogEntry data in Shotgun.
 
         :param session_uuid: Session UUID to set.
         """
