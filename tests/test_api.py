@@ -255,6 +255,72 @@ class TestShotgunApi(base.LiveTestBase):
 
         self.sg.delete("Version", new_version['id'])
     # end test_upload_thumbnail_in_create
+    
+    def test_batch_upload(self):
+        """Upload a thumbnail via the batch method"""
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir,"sg_logo.jpg")))
+
+        # test thumbnail upload via batch create
+        data = {'image': path, 'code': 'Test Version',
+                'project': self.project}
+        batchCall = [{'data':data, 'request_type':'create', 'entity_type':'Version'}]
+        new_version = self.sg.batch(batchCall)
+        self.assertTrue(new_version is not None)
+        self.assertTrue(isinstance(new_version, list))
+        self.assertTrue(isinstance(new_version[0].get('id'), int))
+        self.assertEqual(new_version[0].get('type'), 'Version')
+        self.assertEqual(new_version[0].get('project'), self.project)
+        self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['image']) is not None)
+
+        self.sg.delete("Version", new_version[0]['id'])
+
+        # test filmstrip image upload via batch create
+        data = {'filmstrip_image': path, 'code': 'Test Version',
+                'project': self.project}
+        batchCall = [{'data':data, 'request_type':'create', 'entity_type':'Version'}]
+        new_version = self.sg.batch(batchCall)
+        self.assertTrue(new_version is not None)
+        self.assertTrue(isinstance(new_version, list))
+        self.assertTrue(isinstance(new_version[0].get('id'), int))
+        self.assertEqual(new_version[0].get('type'), 'Version')
+        self.assertEqual(new_version[0].get('project'), self.project)
+        self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['filmstrip_image']) is not None)
+
+        self.sg.delete("Version", new_version[0]['id'])
+        
+        # test uploaded_movie upload via batch create
+        data = {'sg_uploaded_movie': path, 'code': 'Test Version',
+                'project': self.project}
+        batchCall = [{'data':data, 'request_type':'create', 'entity_type':'Version'}]
+        new_version = self.sg.batch(batchCall)
+        self.assertTrue(new_version is not None)
+        self.assertTrue(isinstance(new_version, list))
+        self.assertTrue(isinstance(new_version[0].get('id'), int))
+        self.assertEqual(new_version[0].get('type'), 'Version')
+        self.assertEqual(new_version[0].get('project'), self.project)
+        self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['sg_uploaded_movie']) is not None)
+
+        self.sg.delete("Version", new_version[0]['id'])
+        
+        # test uploaded upload via batch update
+        data = {'code': 'Test Version',
+                'project': self.project}
+        batchCall = [{'data':data, 'request_type':'create', 'entity_type':'Version'}]
+        new_version = self.sg.batch(batchCall)
+        self.assertTrue(new_version is not None)
+        self.assertTrue(isinstance(new_version, list))
+        self.assertTrue(isinstance(new_version[0].get('id'), int))
+        self.assertEqual(new_version[0].get('type'), 'Version')
+        self.assertEqual(new_version[0].get('project'), self.project)
+        batchCall = [{'data':{'sg_uploaded_movie':path, 'image':path, 'filmstrip_image':path}, 'request_type':'update', 'entity_type':'Version', 'entity_id':new_version[0].get('id')}]
+        self.sg.batch(batchCall)
+        self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['sg_uploaded_movie']) is not None)
+        self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['image']) is not None)
+        self.assertTrue(self.sg.find_one('Version', [['id', 'is', new_version[0].get('id')]], ['filmstrip_image']) is not None)
+
+        self.sg.delete("Version", new_version[0]['id'])
 
     def test_upload_thumbnail_for_version(self):
         """simple upload thumbnail for version test."""
