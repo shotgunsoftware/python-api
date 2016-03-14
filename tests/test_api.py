@@ -2282,7 +2282,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
                           self.sg.find,
                           "Version", filters, fields=fields, additional_filter_presets=additional_filters)
 
-    def test_filter_not_list(self):
+    def test_filter_not_iterable(self):
 
         filters = [
             ['project', 'is', self.project],
@@ -2291,14 +2291,14 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
         fields = ['id']
 
-        additional_filters = {}
+        additional_filters = 3
 
-        self.assertRaises(ValueError,
+        self.assertRaises(TypeError,
                           self.sg.find,
                           "Version", filters, fields=fields, additional_filter_presets=additional_filters)
 
 
-    def test_filter_not_list_of_list(self):
+    def test_filter_not_list_of_iterable(self):
 
         filters = [
             ['project', 'is', self.project],
@@ -2307,9 +2307,9 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
         fields = ['id']
 
-        additional_filters = [{}]
+        additional_filters = [3]
 
-        self.assertRaises(ValueError,
+        self.assertRaises(TypeError,
                           self.sg.find,
                           "Version", filters, fields=fields, additional_filter_presets=additional_filters)
 

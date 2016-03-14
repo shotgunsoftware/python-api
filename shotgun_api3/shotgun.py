@@ -190,7 +190,7 @@ class ServerCapabilities(object):
         """Wrapper for ensure_support"""
         return self._ensure_support({
             'version': (6, 3, 11),
-            'label': 'project parameter'
+            'label': 'additional_filter_presets parameter'
         }, True)
 
     def __str__(self):
@@ -727,17 +727,9 @@ class Shotgun(object):
         :param params: param object to update
         :return: The updated params object
         """
-        if additional_filter_presets is not None:
-            if not isinstance(additional_filter_presets, (list, tuple)):
-                msg = "'additional_server_presets' parameter must be a list or None"
-                raise ValueError(msg)
-
+        if additional_filter_presets:
             preset_list = []
             for preset in additional_filter_presets:
-                if not isinstance(preset, (list, tuple)):
-                    msg = "Elements of 'additional_server_presets' parameter must be lists"
-                    raise ValueError(msg)
-
                 if len(preset) == 0:
                     msg = "Missing 'name' for 'additional_server_presets'"
                     raise ValueError(msg)
@@ -747,11 +739,9 @@ class Shotgun(object):
                 }
 
                 if len(preset) > 1:
-                    if not isinstance(preset[1], dict):
-                        msg = "Parameters of additional server preset  must be lists"
-                        raise ValueError(msg)
                     crud_preset["params"] = preset[1]
-
+                    if len(preset) > 2:
+                        LOG.warning("Additional filter preset contains too many elements: %s" % preset)
                 preset_list.append(crud_preset)
 
             params["additional_filter_presets"] = preset_list
