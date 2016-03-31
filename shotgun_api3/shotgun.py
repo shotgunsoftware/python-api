@@ -186,10 +186,10 @@ class ServerCapabilities(object):
             'label': 'project parameter'
         }, True)
 
-    def ensure_support_for_additional_server_presets(self):
+    def ensure_support_for_additional_filter_presets(self):
         """Wrapper for ensure_support"""
         return self._ensure_support({
-            'version': (6, 3, 11),
+            'version': (7, 0, 0),
             'label': 'additional_filter_presets parameter'
         }, True)
 
@@ -601,7 +601,7 @@ class Shotgun(object):
 
         :param additional_filter_presets: Optional list of presets to
         further filter the result set, list has the form:
-        [ [ <preset_name>, { <optional_preset parameters> } ],]
+        [ { preset_name: <preset_name>, <optional_preset parameters> } ],
 
         Note that these filters are ANDed together and ANDed with the 'filter'
         argument.
@@ -633,7 +633,7 @@ class Shotgun(object):
             self.server_caps.ensure_include_archived_projects()
 
         if additional_filter_presets:
-            self.server_caps.ensure_support_for_additional_server_presets()
+            self.server_caps.ensure_support_for_additional_filter_presets()
 
         params = self._construct_read_parameters(entity_type,
                                                  fields,
@@ -696,7 +696,8 @@ class Shotgun(object):
         params["paging"] = { "entities_per_page": self.config.records_per_page,
                              "current_page": 1 }
 
-        params = self._add_filter_presets(additional_filter_presets, params)
+        if additional_filter_presets:
+            params["additional_filter_presets"] = additional_filter_presets;
 
         if include_archived_projects is False:
             # Defaults to True on the server, so only pass it if it's False
@@ -714,38 +715,6 @@ class Shotgun(object):
                     'direction' : sort['direction']
                 })
             params['sorts'] = sort_list
-        return params
-
-    def _add_filter_presets(self, additional_filter_presets, params):
-        """
-        Generate crud-ready filter preset
-            ['name_of_preset', {'param1': 'value1', 'param2': 'value2'} ]
-             ->
-            {'name': 'name_of_preset', params: {'param1': 'value1', 'param2': 'value2'}}
-
-        :param additional_filter_presets: list of filter presets to process
-        :param params: param object to update
-        :return: The updated params object
-        """
-        if additional_filter_presets:
-            preset_list = []
-            for preset in additional_filter_presets:
-                if len(preset) == 0:
-                    msg = "Missing 'name' for 'additional_server_presets'"
-                    raise ValueError(msg)
-
-                crud_preset = {
-                    "name": preset[0]
-                }
-
-                if len(preset) > 1:
-                    crud_preset["params"] = preset[1]
-                    if len(preset) > 2:
-                        LOG.warning("Additional filter preset contains too many elements: %s" % preset)
-                preset_list.append(crud_preset)
-
-            params["additional_filter_presets"] = preset_list
-
         return params
 
     def _add_project_param(self, params, project_entity):

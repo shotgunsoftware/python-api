@@ -2233,7 +2233,7 @@ class TestTextSearch(base.LiveTestBase):
 
 class TestReadAdditionalFilterPresets(base.LiveTestBase):
     """
-    Unit tests for the additional_server_presets read parameter
+    Unit tests for the additional_filter_presets read parameter
     """
 
     def test_simple_case(self):
@@ -2245,7 +2245,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
         fields = ['id']
 
-        additional_filters = [['LATEST', {'condition': 'BY_ENTITIES_CREATED_AT'}]]
+        additional_filters = [{'preset_name': 'LATEST', 'latest_by': 'ENTITIES_CREATED_AT'}]
 
         versions = self.sg.find("Version", filters, fields=fields, additional_filter_presets=additional_filters)
         version = versions[0]
@@ -2261,9 +2261,9 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
         fields = ['id']
 
-        additional_filters = [[]]
+        additional_filters = [{}]
 
-        self.assertRaises(ValueError,
+        self.assertRaises(shotgun_api3.Fault,
                           self.sg.find,
                           "Version", filters, fields=fields, additional_filter_presets=additional_filters)
 
@@ -2276,7 +2276,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
         fields = ['id']
 
-        additional_filters = [["BAD_FILTER"]]
+        additional_filters = [{"preset_name" : "BAD_FILTER"}]
 
         self.assertRaises(shotgun_api3.Fault,
                           self.sg.find,
@@ -2293,7 +2293,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
         additional_filters = 3
 
-        self.assertRaises(TypeError,
+        self.assertRaises(shotgun_api3.Fault,
                           self.sg.find,
                           "Version", filters, fields=fields, additional_filter_presets=additional_filters)
 
@@ -2309,7 +2309,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
         additional_filters = [3]
 
-        self.assertRaises(TypeError,
+        self.assertRaises(shotgun_api3.Fault,
                           self.sg.find,
                           "Version", filters, fields=fields, additional_filter_presets=additional_filters)
 
@@ -2323,8 +2323,8 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
         fields = ['id']
 
-        additional_filters = (("LATEST", {"condition": "BY_ENTITY_CREATED_AT"}),
-                              ("LATEST", {"condition": "BY_PIPELINE_STEP_NUMBER_AND_ENTITIES_CREATED_AT"}))
+        additional_filters = ({"preset_name": "LATEST", "latest_by": "ENTITY_CREATED_AT"},
+                              {"preset_name": "LATEST", "latest_by": "PIPELINE_STEP_NUMBER_AND_ENTITIES_CREATED_AT"})
 
         self.assertRaises(shotgun_api3.Fault,
                           self.sg.find,
