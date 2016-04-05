@@ -270,6 +270,7 @@ class _Config(object):
         self.session_token = None
         self.authorization = None
         self.no_ssl_validation = False
+        self.multi_entity_update_modes = ['set','add','remove']
 
 
 class Shotgun(object):
@@ -841,7 +842,7 @@ class Shotgun(object):
 
         return result
 
-    def update(self, entity_type, entity_id, data):
+    def update(self, entity_type, entity_id, data, multi_entity_update_modes=None):
         """Updates the specified entity with the supplied data.
 
         :param entity_type: Required, entity type (string) to update.
@@ -849,6 +850,10 @@ class Shotgun(object):
         :param entity_id: Required, id of the entity to update.
 
         :param data: Required, dict fields to update on the entity.
+
+        :param multi_entity_update_modes: Optional, dict of what update mode to use when updating
+        a multi-entity link field.  The keys in the dict are the fields to set the mode for and
+        the values from the dict are one of "set", "add", or "remove".
 
         :returns: dict of the fields updated, with the entity_type and
         id added.
@@ -869,7 +874,10 @@ class Shotgun(object):
             params = {
                 "type" : entity_type,
                 "id" : entity_id,
-                "fields" : self._dict_to_list(data)
+                "fields" : self._dict_to_list(
+                    data,
+                    extra_data=self._dict_to_extra_data(multi_entity_update_modes, "multi_entity_update_mode",
+                        validation=self.config.multi_entity_update_modes))
             }
             record = self._call_rpc("update", params)
             result = self._parse_records(record)[0]
@@ -939,7 +947,7 @@ class Shotgun(object):
         :param requests: A list of dict's of the form which have a
             request_type key and also specifies:
             - create: entity_type, data dict of fields to set
-            - update: entity_type, entity_id, data dict of fields to set
+            - update: entity_type, entity_id, data dict of fields to set, optionally multi_entity_update_modes
             - delete: entity_type and entity_id
 
         :returns: A list of values for each operation, create and update
@@ -980,7 +988,11 @@ class Shotgun(object):
                                ['entity_id', 'data'],
                                req)
                 request_params['id'] = req['entity_id']
-                request_params['fields'] = self._dict_to_list(req["data"])
+                request_params['fields'] = self._dict_to_list(req["data"], extra_data=self._dict_to_extra_data(
+                    req.get("multi_entity_update_modes"), "multi_entity_update_mode",
+                    validation=self.config.multi_entity_update_modes))
+                if "multi_entity_update_mode" in req:
+                    request_params['multi_entity_update_mode'] = req["multi_entity_update_mode"]
             elif req["request_type"] == "delete":
                 _required_keys("Batched delete request", ['entity_id'], req)
                 request_params['id'] = req['entity_id']
@@ -2566,18 +2578,40 @@ class Shotgun(object):
         # Comments in prev version said we can get this sometimes.
         raise RuntimeError("Unknown code %s %s" % (code, thumb_url))
 
-    def _dict_to_list(self, d, key_name="field_name", value_name="value"):
+    def _dict_to_list(self, d, key_name="field_name", value_name="value", extra_data=None):
         """Utility function to convert a dict into a list dicts using the
         key_name and value_name keys.
 
-        e.g. d {'foo' : 'bar'} changed to [{'field_name':'foo, 'value':'bar'}]
+        e.g. d {'foo' : 'bar'} changed to [{'field_name':'foo', 'value':'bar'}]
+
+        Any dictionary passed in via extra_data will be merged into the resulting dictionary.
+        e.g. d as above and extra_data of {'foo': {'thing1': 'value1'}} changes into
+        [{'field_name': 'foo', 'value': 'bar', 'thing1': 'value1'}]
         """
+        ret = []
+        for k, v in (d or {}).iteritems():
+            d = {key_name: k, value_name: v}
+            d.update((extra_data or {}).get(k, {}))
+            ret.append(d)
+        return ret
 
-        return [
-            {key_name : k, value_name : v }
-            for k, v in (d or {}).iteritems()
-        ]
+    def _dict_to_extra_data(self, d, key_name="value", validation=None):
+        """Utility function to convert a dict into a dict compatible with the extra_data arg
+        of _dict_to_list
 
+        e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
+        """
+        if validation:
+            extra_data = []
+            for (k,v) in (d or {}).iteritems():
+                if v in validation:
+                    extra_data.append((k, {key_name: v}))
+                else:
+                    raise ValueError("Key-value pair {'%s':'%s'} is not valid. "
+                        "Please use one of %s as your value." % (k, v, validation))
+        else:
+            extra_data = [(k, {key_name: v}) for (k,v) in (d or {}).iteritems()]
+        return dict(extra_data)
 
 # Helpers from the previous API, left as is.
 

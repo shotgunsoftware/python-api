@@ -639,7 +639,7 @@ class TestDataTypes(base.LiveTestBase):
     '''Test fields representing the different data types mapped on the server side.
 
      Untested data types:  password, percent, pivot_column, serializable, image, currency
-                           multi_entity, system_task_type, timecode, url, uuid, url_template
+                           system_task_type, timecode, url, uuid, url_template
     '''
     def setUp(self):
         super(TestDataTypes, self).setUp()
@@ -739,6 +739,61 @@ class TestDataTypes(base.LiveTestBase):
         self.assertEqual(expected, actual)
 
 
+    def test_set_multi_entity(self):
+        sg = shotgun_api3.Shotgun( self.config.server_url,
+                                   self.config.script_name,
+                                   self.config.api_key )
+        keys = ['project','user','code']
+        data = {'project':self.project,
+                'user':self.human_user,
+                'code':'Alpha'}
+        version_1 = base._find_or_create_entity(sg, 'Version', data, keys)
+        data = {'project':self.project,
+                'user':self.human_user,
+                'code':'Beta'}
+        version_2 = base._find_or_create_entity(sg, 'Version', data, keys)
+
+        entity = 'Playlist'
+        entity_id = self.playlist['id']
+        field_name = 'versions'
+
+        # Default set behaviour
+        pos_values = [[version_1, version_2]]
+        expected, actual = self.assert_set_field(entity, entity_id,
+            field_name, pos_values)
+        self.assertEqual(len(expected), len(actual))
+        self.assertEqual(
+            sorted([x['id'] for x in expected]),
+            sorted([x['id'] for x in actual])
+        )
+
+        # Multi-entity remove mode
+        pos_values = [[version_1]]
+        expected, actual = self.assert_set_field(entity, entity_id,
+            field_name, pos_values, multi_entity_update_mode='remove')
+        self.assertEqual(1, len(actual))
+        self.assertEqual(len(expected), len(actual))
+        self.assertNotEqual(expected[0]['id'],actual[0]['id'])
+        self.assertEqual(version_2['id'], actual[0]['id'])
+
+        # Multi-entity add mode
+        pos_values = [[version_1]]
+        expected, actual = self.assert_set_field(entity, entity_id,
+            field_name, pos_values, multi_entity_update_mode='add')
+        self.assertEqual(2, len(actual))
+        self.assertTrue(version_1['id'] in [x['id'] for x in actual])
+
+        # Multi-entity set mode
+        pos_values = [[version_1, version_2]]
+        expected, actual = self.assert_set_field(entity, entity_id,
+            field_name, pos_values, multi_entity_update_mode='set')
+        self.assertEqual(len(expected), len(actual))
+        self.assertEqual(
+            sorted([x['id'] for x in expected]),
+            sorted([x['id'] for x in actual])
+        )
+
+
     def test_set_number(self):
         entity = 'Shot'
         entity_id = self.shot['id']
@@ -805,13 +860,17 @@ class TestDataTypes(base.LiveTestBase):
                                                  pos_values)
         self.assertEqual(expected, actual)
 
-    def assert_set_field(self, entity, entity_id, field_name, pos_values):
+    def assert_set_field(self, entity, entity_id, field_name, pos_values, multi_entity_update_mode=None):
         query_result = self.sg.find_one(entity,
                                          [['id', 'is', entity_id]],
                                          [field_name])
         initial_value = query_result[field_name]
         new_value = (initial_value == pos_values[0] and pos_values[1]) or pos_values[0]
-        self.sg.update(entity, entity_id, {field_name:new_value})
+        if multi_entity_update_mode:
+            self.sg.update(entity, entity_id, {field_name:new_value},
+                multi_entity_update_modes={field_name:multi_entity_update_mode})
+        else:
+            self.sg.update(entity, entity_id, {field_name:new_value})
         new_values = self.sg.find_one(entity,
                                      [['id', 'is', entity_id]],
                                      [field_name])

@@ -26,6 +26,7 @@ class TestBase(unittest.TestCase):
         self.asset          = None
         self.version        = None
         self.note           = None
+        self.playlist       = None
         self.task           = None
         self.ticket         = None
         self.human_password = None
@@ -180,9 +181,12 @@ class MockTestBase(TestBase):
         self.version    = { 'id':5,
                             'code':self.config.version_code,
                             'type':'Version' }
-        self.ticket    = { 'id':6,
+        self.ticket     = { 'id':6,
                             'title':self.config.ticket_title,
                             'type':'Ticket' }
+        self.playlist   = { 'id':7,
+                            'code':self.config.playlist_code,
+                            'type':'Playlist'}
 
 class LiveTestBase(TestBase):
     '''Test base for tests relying on connection to server.'''
@@ -236,6 +240,11 @@ class LiveTestBase(TestBase):
                 'content':'anything'}
         self.note = _find_or_create_entity(self.sg, 'Note', data, keys)
 
+        keys = ['code','project']
+        data = {'project':self.project,
+                'code':self.config.playlist_code}
+        self.playlist = _find_or_create_entity(self.sg, 'Playlist', data, keys)
+
         keys = ['code', 'entity_type']
         data = {'code': 'wrapper test step',
                 'entity_type': 'Shot'}
@@ -262,7 +271,6 @@ class LiveTestBase(TestBase):
                 'mac_path':'nowhere',
                 'windows_path':'nowhere',
                 'linux_path':'nowhere'}
-
         self.local_storage = _find_or_create_entity(self.sg, 'LocalStorage', data, keys)
 
 
