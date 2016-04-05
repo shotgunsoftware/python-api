@@ -249,6 +249,8 @@ class _Config(object):
         self.user_password = None
         self.auth_token = None
         self.sudo_as_login = None
+        # Authentication parameters to be folded into final auth_params dict
+        self.extra_auth_params = None
         # uuid as a string
         self.session_uuid = None
         self.scheme = None
@@ -2125,6 +2127,9 @@ class Shotgun(object):
                 raise ShotgunError("Option 'sudo_as_login' requires server version 5.3.12 or "\
                     "higher, server is %s" % (self.server_caps.version,))
             auth_params["sudo_as_login"] = self.config.sudo_as_login
+
+        if self.config.extra_auth_params:
+            auth_params.update(self.config.extra_auth_params)
 
         return auth_params
 
