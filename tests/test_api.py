@@ -2239,27 +2239,43 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
     def test_simple_case(self):
 
         filters = [
-            ['project', 'is', self.project],
-            ['id', 'is', self.version['id']]
+            ["project", "is", self.project],
+            ["id", "is", self.version["id"]]
         ]
 
-        fields = ['id']
+        fields = ["id"]
 
-        additional_filters = [{'preset_name': 'LATEST', 'latest_by': 'ENTITIES_CREATED_AT'}]
+        additional_filters = [{"preset_name": "LATEST", "latest_by": "ENTITIES_CREATED_AT"}]
 
         versions = self.sg.find("Version", filters, fields=fields, additional_filter_presets=additional_filters)
         version = versions[0]
         self.assertEqual("Version", version["type"])
-        self.assertEqual(self.version['id'], version["id"])
+        self.assertEqual(self.version["id"], version["id"])
+
+
+    def test_find_one(self):
+
+        filters = [
+            ["project", "is", self.project],
+            ["id", "is", self.version["id"]]
+        ]
+
+        fields = ["id"]
+
+        additional_filters = [{"preset_name": "LATEST", "latest_by": "ENTITIES_CREATED_AT"}]
+
+        version = self.sg.find_one("Version", filters, fields=fields, additional_filter_presets=additional_filters)
+        self.assertEqual("Version", version["type"])
+        self.assertEqual(self.version["id"], version["id"])
 
     def test_filter_with_no_name(self):
 
         filters = [
-            ['project', 'is', self.project],
-            ['id', 'is', self.version['id']]
+            ["project", "is", self.project],
+            ["id", "is", self.version["id"]]
         ]
 
-        fields = ['id']
+        fields = ["id"]
 
         additional_filters = [{}]
 
@@ -2270,11 +2286,11 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
     def test_invalid_filter(self):
 
         filters = [
-            ['project', 'is', self.project],
-            ['id', 'is', self.version['id']]
+            ["project", "is", self.project],
+            ["id", "is", self.version["id"]]
         ]
 
-        fields = ['id']
+        fields = ["id"]
 
         additional_filters = [{"preset_name" : "BAD_FILTER"}]
 
@@ -2285,11 +2301,11 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
     def test_filter_not_iterable(self):
 
         filters = [
-            ['project', 'is', self.project],
-            ['id', 'is', self.version['id']]
+            ["project", "is", self.project],
+            ["id", "is", self.version["id"]]
         ]
 
-        fields = ['id']
+        fields = ["id"]
 
         additional_filters = 3
 
@@ -2301,11 +2317,11 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
     def test_filter_not_list_of_iterable(self):
 
         filters = [
-            ['project', 'is', self.project],
-            ['id', 'is', self.version['id']]
+            ["project", "is", self.project],
+            ["id", "is", self.version["id"]]
         ]
 
-        fields = ['id']
+        fields = ["id"]
 
         additional_filters = [3]
 
@@ -2317,11 +2333,11 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
     def test_multiple_latest_filters(self):
 
         filters = [
-            ['project', 'is', self.project],
-            ['id', 'is', self.version['id']]
+            ["project", "is", self.project],
+            ["id", "is", self.version["id"]]
         ]
 
-        fields = ['id']
+        fields = ["id"]
 
         additional_filters = ({"preset_name": "LATEST", "latest_by": "ENTITY_CREATED_AT"},
                               {"preset_name": "LATEST", "latest_by": "PIPELINE_STEP_NUMBER_AND_ENTITIES_CREATED_AT"})

@@ -532,7 +532,8 @@ class Shotgun(object):
         return self._call_rpc("info", None, include_auth_params=False)
 
     def find_one(self, entity_type, filters, fields=None, order=None,
-        filter_operator=None, retired_only=False, include_archived_projects=True):
+        filter_operator=None, retired_only=False, include_archived_projects=True,
+        additional_filter_presets=None):
         """Calls the find() method and returns the first result, or None.
 
         :param entity_type: Required, entity type (string) to find.
@@ -557,12 +558,24 @@ class Shotgun(object):
         :param retired_only: Optional, flag to return only entities that have
         been retried. Defaults to False which returns only entities which
         have not been retired.
-        
+
+        :param additional_filter_presets: Optional list of presets to
+        further filter the result set, list has the form:
+        [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
+
+        Note that these filters are ANDed together and ANDed with the 'filter'
+        argument.
+
+        For details on supported presets and the format of this parameter,
+        please consult the API documentation:
+        https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax
+
         :returns: Dictionary of requested Shotgun fields and values.
         """
 
         results = self.find(entity_type, filters, fields, order,
-            filter_operator, 1, retired_only, include_archived_projects=include_archived_projects)
+            filter_operator, 1, retired_only, include_archived_projects=include_archived_projects,
+            additional_filter_presets=additional_filter_presets)
 
         if results:
             return results[0]
@@ -597,18 +610,18 @@ class Shotgun(object):
         have not been retired.
 
         :param include_archived_projects: Optional, flag to include entities
-        whose projects have been archived
+        whose projects have been archived.
 
         :param additional_filter_presets: Optional list of presets to
         further filter the result set, list has the form:
-        [ { preset_name: <preset_name>, <optional_preset parameters> } ],
+        [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
 
         Note that these filters are ANDed together and ANDed with the 'filter'
         argument.
 
         For details on supported presets and the format of this parameter,
         please consult the API documentation:
-        https://github.com/shotgunsoftware/python-api/wiki
+        https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax
 
         :returns: list of the dicts for each entity with the requested fields,
         and their id and type.
