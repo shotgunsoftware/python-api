@@ -19,3 +19,6 @@ notifications:
       - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
     format: html
     on_pull_requests: false
+  slack:
+    rooms:
+      secure: NgcVxptQji2OL7EKx5owh21tOl4rRg51ydYhLPHpBIpBVzlqPxi1jbMHpcbl8mG+GuhU6y1D6kVQgQfuAfIWx5YOc4FodhOFZgeS+eol5RTmEepl1OT6XmAVgEclSZUYQmK25OkcxnFnOV/31RuDPXWcgCvSBZqTy6lAbOZ5VwQ=

@@ -78,7 +78,7 @@ except ImportError, e:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.0.28.dev"
+__version__ = "3.0.30.dev"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -255,6 +255,8 @@ class _Config(object):
         self.user_password = None
         self.auth_token = None
         self.sudo_as_login = None
+        # Authentication parameters to be folded into final auth_params dict
+        self.extra_auth_params = None
         # uuid as a string
         self.session_uuid = None
         self.scheme = None
@@ -1449,7 +1451,7 @@ class Shotgun(object):
         :returns: Id of the new attachment
         """
         return self.upload(entity_type, entity_id, path,
-            field_name="image", **kwargs)
+            field_name="thumb_image", **kwargs)
 
     def upload_filmstrip_thumbnail(self, entity_type, entity_id, path, **kwargs):
         """Convenience function for uploading filmstrip thumbnails.
@@ -1467,7 +1469,7 @@ class Shotgun(object):
                 "higher, server is %s" % (self.server_caps.version,))
 
         return self.upload(entity_type, entity_id, path,
-            field_name="filmstrip_image", **kwargs)
+            field_name="filmstrip_thumb_image", **kwargs)
 
     def upload(self, entity_type, entity_id, path, field_name=None,
         display_name=None, tag_list=None):
@@ -2147,6 +2149,9 @@ class Shotgun(object):
                 raise ShotgunError("Option 'sudo_as_login' requires server version 5.3.12 or "\
                     "higher, server is %s" % (self.server_caps.version,))
             auth_params["sudo_as_login"] = self.config.sudo_as_login
+
+        if self.config.extra_auth_params:
+            auth_params.update(self.config.extra_auth_params)
 
         return auth_params
 
