@@ -270,7 +270,6 @@ class _Config(object):
         self.session_token = None
         self.authorization = None
         self.no_ssl_validation = False
-        self.multi_entity_update_modes = ['set','add','remove']
 
 
 class Shotgun(object):
@@ -851,9 +850,15 @@ class Shotgun(object):
 
         :param data: Required, dict fields to update on the entity.
 
-        :param multi_entity_update_modes: Optional, dict of what update mode to use when updating
-        a multi-entity link field.  The keys in the dict are the fields to set the mode for and
-        the values from the dict are one of "set", "add", or "remove".
+        :param multi_entity_update_modes: Optional, dict of what update mode to
+        use when updating a multi-entity link field.  The keys in the dict are
+        the fields to set the mode for and the values from the dict are one
+        of "set", "add", or "remove". The default behaviour is to use "set" if a
+        field being updated doesn't have an explicitly set mode. For example,
+        to append to the 'shots' field and remove from the 'assets' field on
+        a 'Sequence', you would specify:
+
+            multi_entity_update_modes={"shots":"add", "assets":"remove"}
 
         :returns: dict of the fields updated, with the entity_type and
         id added.
@@ -876,8 +881,8 @@ class Shotgun(object):
                 "id" : entity_id,
                 "fields" : self._dict_to_list(
                     data,
-                    extra_data=self._dict_to_extra_data(multi_entity_update_modes, "multi_entity_update_mode",
-                        validation=self.config.multi_entity_update_modes))
+                    extra_data=self._dict_to_extra_data(
+                        multi_entity_update_modes, "multi_entity_update_mode"))
             }
             record = self._call_rpc("update", params)
             result = self._parse_records(record)[0]
@@ -988,9 +993,10 @@ class Shotgun(object):
                                ['entity_id', 'data'],
                                req)
                 request_params['id'] = req['entity_id']
-                request_params['fields'] = self._dict_to_list(req["data"], extra_data=self._dict_to_extra_data(
-                    req.get("multi_entity_update_modes"), "multi_entity_update_mode",
-                    validation=self.config.multi_entity_update_modes))
+                request_params['fields'] = self._dict_to_list(req["data"],
+                    extra_data=self._dict_to_extra_data(
+                        req.get("multi_entity_update_modes"),
+                        "multi_entity_update_mode"))
                 if "multi_entity_update_mode" in req:
                     request_params['multi_entity_update_mode'] = req["multi_entity_update_mode"]
             elif req["request_type"] == "delete":
@@ -2595,23 +2601,13 @@ class Shotgun(object):
             ret.append(d)
         return ret
 
-    def _dict_to_extra_data(self, d, key_name="value", validation=None):
+    def _dict_to_extra_data(self, d, key_name="value"):
         """Utility function to convert a dict into a dict compatible with the extra_data arg
         of _dict_to_list
 
         e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
         """
-        if validation:
-            extra_data = []
-            for (k,v) in (d or {}).iteritems():
-                if v in validation:
-                    extra_data.append((k, {key_name: v}))
-                else:
-                    raise ValueError("Key-value pair {'%s':'%s'} is not valid. "
-                        "Please use one of %s as your value." % (k, v, validation))
-        else:
-            extra_data = [(k, {key_name: v}) for (k,v) in (d or {}).iteritems()]
-        return dict(extra_data)
+        return dict([(k, {key_name: v}) for (k,v) in (d or {}).iteritems()])
 
 # Helpers from the previous API, left as is.
 
