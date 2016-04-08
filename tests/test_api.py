@@ -14,6 +14,7 @@ import uuid
 import unittest
 import urlparse
 import urllib2
+import warnings
 
 import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http, SSLHandshakeError
@@ -2237,6 +2238,9 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
     """
 
     def test_simple_case(self):
+        if self.sg_version < (7, 0, 0):
+            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            return
 
         filters = [
             ["project", "is", self.project],
@@ -2254,6 +2258,9 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
 
     def test_find_one(self):
+        if self.sg_version < (7, 0, 0):
+            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            return
 
         filters = [
             ["project", "is", self.project],
@@ -2269,6 +2276,9 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
         self.assertEqual(self.version["id"], version["id"])
 
     def test_filter_with_no_name(self):
+        if self.sg_version < (7, 0, 0):
+            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            return
 
         filters = [
             ["project", "is", self.project],
@@ -2284,6 +2294,10 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
                           "Version", filters, fields=fields, additional_filter_presets=additional_filters)
 
     def test_invalid_filter(self):
+        if self.sg_version < (7, 0, 0):
+            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            return
+
 
         filters = [
             ["project", "is", self.project],
@@ -2299,6 +2313,9 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
                           "Version", filters, fields=fields, additional_filter_presets=additional_filters)
 
     def test_filter_not_iterable(self):
+        if self.sg_version < (7, 0, 0):
+            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            return
 
         filters = [
             ["project", "is", self.project],
@@ -2315,6 +2332,9 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
 
     def test_filter_not_list_of_iterable(self):
+        if self.sg_version < (7, 0, 0):
+            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            return
 
         filters = [
             ["project", "is", self.project],
@@ -2331,6 +2351,9 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
 
     def test_multiple_latest_filters(self):
+        if self.sg_version < (7, 0, 0):
+            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            return
 
         filters = [
             ["project", "is", self.project],
