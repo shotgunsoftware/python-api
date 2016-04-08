@@ -853,10 +853,10 @@ class Shotgun(object):
         :param multi_entity_update_modes: Optional, dict of what update mode to
         use when updating a multi-entity link field.  The keys in the dict are
         the fields to set the mode for and the values from the dict are one
-        of "set", "add", or "remove". The default behaviour is to use "set" if a
-        field being updated doesn't have an explicitly set mode. For example,
-        to append to the 'shots' field and remove from the 'assets' field on
-        a 'Sequence', you would specify:
+        of "set", "add", or "remove". The default behavior if mode is not
+        specified for a field is 'set'. For example, on the 'Sequence' entity,
+        to append to the 'shots' field and remove from the 'assets' field, you
+        would specify:
 
             multi_entity_update_modes={"shots":"add", "assets":"remove"}
 
