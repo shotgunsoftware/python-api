@@ -352,7 +352,7 @@ class Shotgun(object):
             # order: [{"field_name": "code", "direction": "asc"}, ... ]
             for order_entry in order:
                 if "field_name" not in order_entry:
-                    raise ValueError("Order clauses must be list of dicts with keys field_name and direction!")
+                    raise ValueError("Order clauses must be list of dicts with keys 'field_name' and 'direction'!")
 
                 order_field = order_entry["field_name"]
                 if order_entry["direction"] == "asc":
