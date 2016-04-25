@@ -55,9 +55,12 @@ Integration and unit tests are provided.
 
 ## Changelog
 
-**v3.0.30.dev - TBD**
+**v3.0.30 - 2016 Apr 25**
 
-   + TBD
+   + Add option to use add/remove/set modes when updating multi-entity fields
+   + Add explicit file handler close to download_attachment
+   + Add basic find() ordering support to mockgun
+   + Allow for product specific authorization parameters
 
 **v3.0.29 - 2016 Mar 7**
 
