@@ -1612,6 +1612,8 @@ class Shotgun(object):
             raise ShotgunFileDownloadError(err)
         else:
             if file_path:
+                if not fp.closed:
+                    fp.close()
                 return file_path
             else:
                 return attachment
