@@ -1586,7 +1586,6 @@ class Shotgun(object):
             req = urllib2.urlopen(request)
             if file_path:
                 shutil.copyfileobj(req, fp)
-                fp.close()
             else:
                 attachment = req.read()
         # 400 [sg] Attachment id doesn't exist or is a local file
