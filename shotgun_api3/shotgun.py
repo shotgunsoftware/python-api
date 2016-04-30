@@ -91,8 +91,7 @@ except ImportError, e:
 
 # ----------------------------------------------------------------------------
 # Version
-#: Release version of the API
-__version__ = "3.0.27.dev"
+__version__ = "3.0.31.dev"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -263,6 +262,8 @@ class _Config(object):
         self.user_password = None
         self.auth_token = None
         self.sudo_as_login = None
+        # Authentication parameters to be folded into final auth_params dict
+        self.extra_auth_params = None
         # uuid as a string
         self.session_uuid = None
         self.scheme = None
@@ -475,8 +476,9 @@ class Shotgun(object):
 
         # foo:bar@123.456.789.012:3456
         if http_proxy:
-            # check if we're using authentication
-            p = http_proxy.split("@", 1)
+            # check if we're using authentication. Start from the end since there might be
+            # @ in the user's password.
+            p = http_proxy.rsplit("@", 1)
             if len(p) > 1:
                 self.config.proxy_user, self.config.proxy_pass = \
                     p[0].split(":", 1)
@@ -887,7 +889,7 @@ class Shotgun(object):
 
         return result
 
-    def update(self, entity_type, entity_id, data):
+    def update(self, entity_type, entity_id, data, multi_entity_update_modes=None):
         """Updates the specified entity with the supplied data.
 
         :param entity_type: Required, entity type (string) to update.
@@ -895,6 +897,16 @@ class Shotgun(object):
         :param entity_id: Required, id of the entity to update.
         
         :param data: Required, dict fields to update on the entity.
+
+        :param multi_entity_update_modes: Optional, dict of what update mode to
+        use when updating a multi-entity link field.  The keys in the dict are
+        the fields to set the mode for and the values from the dict are one
+        of "set", "add", or "remove". The default behavior if mode is not
+        specified for a field is 'set'. For example, on the 'Sequence' entity,
+        to append to the 'shots' field and remove from the 'assets' field, you
+        would specify:
+
+            multi_entity_update_modes={"shots":"add", "assets":"remove"}
 
         :returns: dict of the fields updated, with the entity_type and
             id added.
@@ -915,7 +927,10 @@ class Shotgun(object):
             params = {
                 "type" : entity_type,
                 "id" : entity_id,
-                "fields" : self._dict_to_list(data)
+                "fields" : self._dict_to_list(
+                    data,
+                    extra_data=self._dict_to_extra_data(
+                        multi_entity_update_modes, "multi_entity_update_mode"))
             }
             record = self._call_rpc("update", params)
             result = self._parse_records(record)[0]
@@ -986,7 +1001,7 @@ class Shotgun(object):
             request_type key and also specifies
             
             * create: entity_type, data dict of fields to set
-            * update: entity_type, entity_id, data dict of fields to set
+            * update: entity_type, entity_id, data dict of fields to set, and optionally multi_entity_update_modes
             * delete: entity_type and entity_id
 
         :returns: A list of values for each operation, create and update
@@ -1027,7 +1042,12 @@ class Shotgun(object):
                                ['entity_id', 'data'],
                                req)
                 request_params['id'] = req['entity_id']
-                request_params['fields'] = self._dict_to_list(req["data"])
+                request_params['fields'] = self._dict_to_list(req["data"],
+                    extra_data=self._dict_to_extra_data(
+                        req.get("multi_entity_update_modes"),
+                        "multi_entity_update_mode"))
+                if "multi_entity_update_mode" in req:
+                    request_params['multi_entity_update_mode'] = req["multi_entity_update_mode"]
             elif req["request_type"] == "delete":
                 _required_keys("Batched delete request", ['entity_id'], req)
                 request_params['id'] = req['entity_id']
@@ -1535,7 +1555,8 @@ class Shotgun(object):
         if not os.path.isfile(path):
             raise ShotgunError("Path must be a valid file, got '%s'" % path)
 
-        is_thumbnail = (field_name == "thumb_image" or field_name == "filmstrip_thumb_image")
+        is_thumbnail = (field_name in ["thumb_image", "filmstrip_thumb_image", "image",
+                                       "filmstrip_image"])
 
         params = {
             "entity_type" : entity_type,
@@ -1548,7 +1569,7 @@ class Shotgun(object):
             url = urlparse.urlunparse((self.config.scheme, self.config.server,
                 "/upload/publish_thumbnail", None, None, None))
             params["thumb_image"] = open(path, "rb")
-            if field_name == "filmstrip_thumb_image":
+            if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
                 params["filmstrip"] = True
 
         else:
@@ -1674,6 +1695,8 @@ class Shotgun(object):
             raise ShotgunFileDownloadError(err)
         else:
             if file_path:
+                if not fp.closed:
+                    fp.close()
                 return file_path
             else:
                 return attachment
@@ -2203,6 +2226,9 @@ class Shotgun(object):
                     "higher, server is %s" % (self.server_caps.version,))
             auth_params["sudo_as_login"] = self.config.sudo_as_login
 
+        if self.config.extra_auth_params:
+            auth_params.update(self.config.extra_auth_params)
+
         return auth_params
 
     def _sanitize_auth_params(self, params):
@@ -2643,18 +2669,30 @@ class Shotgun(object):
         # Comments in prev version said we can get this sometimes.
         raise RuntimeError("Unknown code %s %s" % (code, thumb_url))
 
-    def _dict_to_list(self, d, key_name="field_name", value_name="value"):
+    def _dict_to_list(self, d, key_name="field_name", value_name="value", extra_data=None):
         """Utility function to convert a dict into a list dicts using the
         key_name and value_name keys.
 
-        e.g. d {'foo' : 'bar'} changed to [{'field_name':'foo, 'value':'bar'}]
+        e.g. d {'foo' : 'bar'} changed to [{'field_name':'foo', 'value':'bar'}]
+
+        Any dictionary passed in via extra_data will be merged into the resulting dictionary.
+        e.g. d as above and extra_data of {'foo': {'thing1': 'value1'}} changes into
+        [{'field_name': 'foo', 'value': 'bar', 'thing1': 'value1'}]
         """
+        ret = []
+        for k, v in (d or {}).iteritems():
+            d = {key_name: k, value_name: v}
+            d.update((extra_data or {}).get(k, {}))
+            ret.append(d)
+        return ret
 
-        return [
-            {key_name : k, value_name : v }
-            for k, v in (d or {}).iteritems()
-        ]
+    def _dict_to_extra_data(self, d, key_name="value"):
+        """Utility function to convert a dict into a dict compatible with the extra_data arg
+        of _dict_to_list
 
+        e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
+        """
+        return dict([(k, {key_name: v}) for (k,v) in (d or {}).iteritems()])
 
 # Helpers from the previous API, left as is.
 

@@ -16,7 +16,7 @@ packages = find_packages(exclude=['tests'])
 
 setup(
     name='shotgun-api3',
-    version='3.0.26.2',
+    version='3.0.30',
     description='Shotgun Python API',
     long_description=long_description,
     url='https://github.com/shotgunsoftware/python-api',

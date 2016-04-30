@@ -89,6 +89,26 @@ class TestShotgunClient(base.MockTestBase):
         sc.version = (2,5,0)
         sc._ensure_json_supported()
 
+    def test_extra_auth_params(self):
+        """test_extra_auth_params tests provided auth_params are included in request"""
+        # ok for the mock server to just return an error, we want to look at
+        # what's in the request
+        self._mock_http({ "message":"Go BANG",
+                          "exception":True })
+
+        def auth_args():
+            args = self.sg._http_request.call_args[0]
+            body = args[2]
+            body = json.loads(body)
+            return body["params"][0]
+
+        self.sg.config.extra_auth_params = None
+        self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
+        self.assertTrue("product" not in auth_args())
+
+        self.sg.config.extra_auth_params = {"product":"rv"}
+        self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
+        self.assertEqual("rv", auth_args()["product"])
 
     def test_session_uuid(self):
         """test_session_uuid tests session UUID is included in request"""

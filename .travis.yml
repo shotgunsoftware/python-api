@@ -12,3 +12,13 @@ script: nosetests -v
 notifications:
   email:
     - api@shotgunsoftware.com
+  hipchat:
+    rooms:
+      secure: Fn5h3NWccsKeXrH/wP/WcfIMco1xCxJsqnEgzSguAIo2DlQX8UprmbyDPoZTOmKF3Tl1HMSZzgLDr2CWQua5IR8IfFum5rfvkckUCeN+PkihL8aJ+1kqXe1GZc0+rRY8iDjAUyX8i+lupnsF0RGmg/eS9QfqblM83VBKskiSsDs=
+    template:
+      - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
+    format: html
+    on_pull_requests: false
+  slack:
+    rooms:
+      secure: NgcVxptQji2OL7EKx5owh21tOl4rRg51ydYhLPHpBIpBVzlqPxi1jbMHpcbl8mG+GuhU6y1D6kVQgQfuAfIWx5YOc4FodhOFZgeS+eol5RTmEepl1OT6XmAVgEclSZUYQmK25OkcxnFnOV/31RuDPXWcgCvSBZqTy6lAbOZ5VwQ=
