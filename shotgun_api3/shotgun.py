@@ -105,7 +105,7 @@ class ShotgunFileDownloadError(ShotgunError):
     pass
 
 class Fault(ShotgunError):
-    """Exception when server side exception detected."""
+    """Exception when server-side exception detected."""
     pass
 
 class AuthenticationFault(Fault):
@@ -164,7 +164,7 @@ class ServerCapabilities(object):
 
         :param feature: dict supported version and human label { 'version': (int, int, int), 'label': str }
 
-        :raises ShotgunError: The current server version does not [feature]
+        :raises: :class:`ShotgunError`: The current server version does not [feature]
         """
 
         if not self.version or self.version < feature['version']:
@@ -315,81 +315,68 @@ class Shotgun(object):
                  auth_token=None):
         """Initializes a new instance of the Shotgun client.
 
-        :param base_url: http or https url of the Shotgun server. Do not include the trailing slash. 
-            Example:: 
+        :param str base_url: http or https url of the Shotgun server. Do not include the trailing
+            slash::
                 https://example.shotgunstudio.com
-
-        :param script_name: name of the Script entity used to authenticate to the server.
+        :param str script_name: name of the Script entity used to authenticate to the server.
             If provided, then ``api_key`` must be as well, and neither ``login`` nor ``password`` 
             can be provided.
 
             .. seealso:: :ref:`authentication`
-
-        :param api_key: API key for the provided ``script_name``. Used to authenticate to the 
+        :param str api_key: API key for the provided ``script_name``. Used to authenticate to the
             server.  If provided, then ``script_name`` must be as well, and neither ``login`` nor 
             ``password`` can be provided.
 
             .. seealso:: :ref:`authentication`
-
-        :param convert_datetimes_to_utc: (optional) When ``True``, datetime values are converted 
+        :param bool convert_datetimes_to_utc: (optional) When ``True``, datetime values are converted
             from local time to UTC time before being sent to the server. Datetimes received from 
             the server are then converted back to local time. When ``False`` the client should use 
             UTC date time values. Default is ``True``.
-
-        :param http_proxy: (optional) URL for a proxy server to use for all connections. The
+        :param str http_proxy: (optional) URL for a proxy server to use for all connections. The
             expected str format is ``[username:password@]111.222.333.444[:8080]``. Examples::
                 192.168.0.1
                 192.168.0.1:8888
                 joe:user@192.168.0.1:8888
-
-        :param connect: (optional) When ``True``, as soon as the :class:`~shotgun_api3.Shotgun` 
+        :param bool connect: (optional) When ``True``, as soon as the :class:`~shotgun_api3.Shotgun`
             instance is created, a connection will be made to the Shotgun server to determine the 
             server capabilities and confirm this version of the client is compatible with the server 
             version. This is mostly used for testing. Default is ``True``.
-        
-        :param ca_certs: (optional) path to an external SSL certificates file. By default, the 
+        :param str ca_certs: (optional) path to an external SSL certificates file. By default, the
             Shotgun API will use its own built-in certificates file which stores root certificates 
             for the most common Certificate Authorities (CAs). If you are using a corporate or 
             internal CA, or are packaging an application into an executable, it may be necessary to 
             point to your own certificates file. You can do this by passing in the full path to the 
             file via this parameter or by setting the environment variable ``SHOTGUN_API_CACERTS``. 
-            In the case both are set, this parameter will take precedence. 
-
-        :param login: The user login str to use to authenticate to the server when using user-based
+            In the case both are set, this parameter will take precedence.
+        :param str login: The user login str to use to authenticate to the server when using user-based
             authentication. If provided, then ``password`` must be as well, and neither 
             ``script_name`` nor ``api_key`` can be provided.
-            
-            .. seealso:: :ref:`authentication`
 
-        :param password: The password str to use to authenticate to the server when using user-based
+            .. seealso:: :ref:`authentication`
+        :param str password: The password str to use to authenticate to the server when using user-based
             authentication. If provided, then ``login`` must be as well and neither ``script_name`` 
             nor ``api_key`` can be provided.
 
             .. seealso:: :ref:`authentication`
-        
-        :param sudo_as_login: A user login string for the user whose permissions will be applied 
+        :param str sudo_as_login: A user login string for the user whose permissions will be applied
             to all actions. Event log entries will be generated showing this user performing all 
-            actions with an additional extra meta-data parameter 'sudo_actual_user' indicating the 
+            actions with an additional extra meta-data parameter ``sudo_actual_user`` indicating the
             script or user that is actually authenticated.
-        
-        :param session_token: The session token to use to authenticate to the server. This
+        :param str session_token: The session token to use to authenticate to the server. This
             can be used as an alternative to authenticating with a script user or regular user.
             You can retrieve the session token by running the 
             :meth:`~shotgun_api3.Shotgun.get_session_token()` method.
 
-            .. todo: Add this info to the Authentication section of the docs     
-
-        :param auth_token: The authentication token required to authenticate to a server with 
+            .. todo: Add this info to the Authentication section of the docs
+        :param str auth_token: The authentication token required to authenticate to a server with
             two-factor authentication turned on. If provided, then ``login`` and ``password`` must 
-            be provided as well, and neither ``script_name`` nor ``api_key`` can be provided. 
+            be provided as well, and neither ``script_name`` nor ``api_key`` can be provided.
 
-            .. note:: These tokens can be short lived so a session is established right away if an 
+            .. note:: These tokens can be short lived so a session is established right away if an
                 ``auth_token`` is provided. A 
                 :class:`~shotgun_api3.MissingTwoFactorAuthenticationFault` will be raised if the 
                 ``auth_token`` is invalid.
-
-            .. todo: Add this info to the Authentication section of the docs     
-
+            .. todo: Add this info to the Authentication section of the docs
         .. note:: A note about proxy connections: If you are using Python <= v2.6.2, HTTPS 
             connections through a proxy server will not work due to a bug in the :mod:`urllib2` 
             library (see http://bugs.python.org/issue1424152). This will affect upload and 
@@ -547,11 +534,10 @@ class Shotgun(object):
         return self._server_caps
 
     def connect(self):
-        """Forces the client to connect to the server if it is not already
-        connected.
+        """Connect client to the server if it is not already connected.
 
-        NOTE: The client will automatically connect to the server. Only
-        call this function if you wish to confirm the client can connect.
+        .. note:: The client will automatically connect to the server on demand. You only need to
+            call this function if you wish to confirm the client can connect.
         """
         self._get_connection()
         self.info()
@@ -566,40 +552,48 @@ class Shotgun(object):
         return
 
     def info(self):
-        """Calls the Info function on the Shotgun API to get the server meta.
+        """Get API-related metadata from the Shotgun server.
 
-        :returns: dict of the server meta data.
+        >>> sg.info()
+        {'s3_uploads_enabled': True, 'full_version': [6, 3, 15, 0], 'version': [6, 3, 15]}
+
+        :returns: dict of the server metadata.
+        :rtype: dict
         """
         return self._call_rpc("info", None, include_auth_params=False)
 
     def find_one(self, entity_type, filters, fields=None, order=None,
         filter_operator=None, retired_only=False, include_archived_projects=True):
-        """Calls the find() method and returns the first result, or None.
+        """Shortcut for :meth:`~shotgun_api3.Shotgun.find` with ``limit=1`` so it just returns the
+        a single result.
 
-        :param entity_type: Required, entity type (string) to find.
+            >>> sg.find_one("Asset", [["id", "is", 32]], ["id", "code", "sg_status_list"])
+            {'code': 'Gopher', 'id': 32, 'sg_status_list': 'ip', 'type': 'Asset'}
 
-        :param filters: Required, list of filters to apply.
+        :param str entity_type: Shotgun entity type as a string to find.
+        :param list filters: list of filters to apply to the query.
 
-        :param fields: Optional list of fields from the matched entities to
-            return. Defaults to id.
+            .. seealso:: :ref:`filter_syntax`
 
-        :param order: Optional list of fields to order the results by, list
-            has the form [{'field_name':'foo','direction':'asc or desc'},]
+        :param list fields: Optional list of fields to include in each entity record returned.
+            Defaults to ``["id"]``.
+        :param int order: Optional list of fields to order the results by. List has the format::
 
-        :param filter_operator: Optional operator to apply to the filters,
-            supported values are 'all' and 'any'. Defaults to 'all'.
+            [{'field_name':'foo', 'direction':'asc'}, {'field_name':'bar', 'direction':'desc'}]
 
-        :param limit: Optional, number of entities to return per page.
-            Defaults to 0 which returns all entities that match.
-
-        :param page: Optional, page of results to return. By default all
-            results are returned. Use together with limit.
-
-        :param retired_only: Optional, flag to return only entities that have
-            been retried. Defaults to False which returns only entities which
-            have not been retired.
-        
-        :returns: Dictionary of requested Shotgun fields and values.
+            Defaults to sorting by ``id`` in ascending order.
+        :param str filter_operator: Operator to apply to the filters. Supported values are ``"all"``
+            and ``"any"``. These are just another way of defining if the query is
+            an AND or OR query. Defaults to ``"all"``.
+        :param bool retired_only: Optional boolean when ``True`` will return only entities that have
+            been retried. Defaults to ``False`` which returns only entities which have not been
+            retired. There is no option to return both retired and non-retired entities in the
+            same query.
+        :param bool include_archived_projects: Optional boolean flag to include entities whose projects
+            have been archived. Defaults to ``True``.
+        :returns: Dictionary representing a single matching entity with the requested fields,
+            and the defaults ``"id"`` and ``"type"`` which are always included.
+        :rtype: dict
         """
 
         results = self.find(entity_type, filters, fields, order,
@@ -614,34 +608,77 @@ class Shotgun(object):
             include_archived_projects=True):
         """Find entities matching the given filters.
 
-        :param entity_type: Required, entity type (string) to find.
+            >>> # Find Character Assets in Sequence 100_FOO
+            >>> # -------------
+            >>> fields = ['id', 'code', 'sg_asset_type']
+            >>> sequence_id = 2 # Sequence "100_FOO"
+            >>> project_id = 4 # Demo Project
+            >>> filters = [
+            ...     ['project', 'is', {'type': 'Project', 'id': project_id}],
+            ...     ['sg_asset_type', 'is', 'Character'],
+            ...     ['sequences', 'is', {'type': 'Sequence', 'id': sequence_id}]
+            ... ]
+            >>> assets= sg.find("Asset",filters,fields)
+            [{'code': 'Gopher', 'id': 32, 'sg_asset_type': 'Character', 'type': 'Asset'},
+             {'code': 'Cow', 'id': 33, 'sg_asset_type': 'Character', 'type': 'Asset'},
+             {'code': 'Bird_1', 'id': 35, 'sg_asset_type': 'Character', 'type': 'Asset'},
+             {'code': 'Bird_2', 'id': 36, 'sg_asset_type': 'Character', 'type': 'Asset'},
+             {'code': 'Bird_3', 'id': 37, 'sg_asset_type': 'Character', 'type': 'Asset'},
+             {'code': 'Raccoon', 'id': 45, 'sg_asset_type': 'Character', 'type': 'Asset'},
+             {'code': 'Wet Gopher', 'id': 149, 'sg_asset_type': 'Character', 'type': 'Asset'}]
 
-        :param filters: Required, list of filters to apply.
-        
-        :param fields: Optional list of fields from the matched entities to
-            return. Defaults to id.
-        
-        :param order: Optional list of fields to order the results by, list
-            has the form [{'field_name':'foo','direction':'asc or desc'},]
-        
-        :param filter_operator: Optional operator to apply to the filters,
-            supported values are 'all' and 'any'. Defaults to 'all'.
-        
-        :param limit: Optional, number of entities to return per page.
-            Defaults to 0 which returns all entities that match.
-        
-        :param page: Optional, page of results to return. By default all
-            results are returned. Use together with limit.
-        
-        :param retired_only: Optional, flag to return only entities that have
-            been retried. Defaults to False which returns only entities which
-            have not been retired.
-        
-        :param include_archived_projects: Optional, flag to include entities
-            whose projects have been archived
+        You can drill through single entity links to filter on fields or display linked fields.
+        This is often called "deep linking" or using "dot syntax".
 
-        :returns: list of the dicts for each entity with the requested fields,
-            and their id and type.
+            .. seealso:: :ref:`filter_syntax`
+
+            >>> # Find Versions created by Tasks in the Animation Pipeline Step
+            >>> # -------------
+            >>> fields = ['id', 'code']
+            >>> pipeline_step_id = 2 # Animation Step ID
+            >>> project_id = 4 # Demo Project
+            >>> # you can drill through single-entity link fields
+            >>> filters = [
+            ...     ['project','is', {'type': 'Project','id': project_id}],
+            ...     ['sg_task.Task.step.Step.id', 'is', pipeline_step_id]
+            >>> ]
+            >>> sg.find("Version", filters, fields)
+            [{'code': 'scene_010_anim_v001', 'id': 42, 'type': 'Version'},
+             {'code': 'scene_010_anim_v002', 'id': 134, 'type': 'Version'},
+             {'code': 'bird_v001', 'id': 137, 'type': 'Version'},
+             {'code': 'birdAltBlue_v002', 'id': 236, 'type': 'Version'}]
+
+        :param str entity_type: Shotgun entity type to find.
+        :param list filters: list of filters to apply to the query.
+
+            .. seealso:: :ref:`filter_syntax`
+        
+        :param list fields: Optional list of fields to include in each entity record returned.
+            Defaults to ``["id"]``.
+        :param list order: Optional list of dictionaries defining how to order the results of the
+            query. Each dictionary contains the ``field_name`` to order by and  the ``direction``
+            to sort::
+
+                [{'field_name':'foo', 'direction':'asc'}, {'field_name':'bar', 'direction':'desc'}]
+
+            Defaults to sorting by ``id`` in ascending order.
+        :param str filter_operator: Operator to apply to the filters. Supported values are ``"all"``
+            and ``"any"``. These are just another way of defining if the query is
+            an AND or OR query. Defaults to ``"all"``.
+        :param int limit: Optional limit to the number of entities to return. Defaults to ``0`` which
+            returns all entities that match.
+        :param int page: Optional page of results to return. Use this together with the ``limit``
+            parameter to control how your query results are paged. Defaults to ``0`` which returns
+            the first page of results.
+        :param bool retired_only: Optional boolean when ``True`` will return only entities that have
+            been retried. Defaults to ``False`` which returns only entities which have not been
+            retired. There is no option to return both retired and non-retired entities in the
+            same query.
+        :param bool include_archived_projects: Optional boolean flag to include entities whose projects
+            have been archived. Defaults to ``True``.
+        :returns: list of dictionaries representing each entity with the requested fields, and the
+            defaults ``"id"`` and ``"type"`` which are always included.
+        :rtype: list
         """
 
         if not isinstance(limit, int) or limit < 0:
@@ -653,7 +690,7 @@ class Shotgun(object):
         if isinstance(filters, (list, tuple)):
             filters = _translate_filters(filters, filter_operator)
         elif filter_operator:
-            #TODO:Not sure if this test is correct, replicated from prev api
+            # TODO: Not sure if this test is correct, replicated from prev api
             raise ShotgunError("Deprecated: Use of filter_operator for find()"
                 " is not valid any more. See the documentation on find()")
 
@@ -837,16 +874,33 @@ class Shotgun(object):
         return records
 
     def create(self, entity_type, data, return_fields=None):
-        """Create a new entity of the specified entity_type.
+        """Create a new entity of the specified ``entity_type``.
 
-        :param entity_type: Required, entity type (string) to create.
-        
-        :param data: Required, dict fields to set on the new entity.
-        
-        :param return_fields: Optional list of fields from the new entity
-            to return. Defaults to 'id' field.
+            >>> data = {
+            ...     "project": {"type": "Project", "id": 161},
+            ...     "sg_sequence": {"type": "Sequence", "id": 109},
+            ...     "code": "001_100",
+            ...     'sg_status_list': "ip"
+            ... }
+            >>> sg.create('Shot', data)
+            {'code': '001_100',
+             'id': 2557,
+             'project': {'id': 161, 'name': 'Pied Piper', 'type': 'Project'},
+             'sg_sequence': {'id': 109, 'name': 'Sequence 001', 'type': 'Sequence'},
+             'sg_status_list': 'ip',
+             'type': 'Shot'}
 
-        :returns: dict of the requested fields.
+        :param str entity_type: Shotgun entity type to create.
+        :param dict data: Dictionary of fields and corresponding values to set on the new entity. If
+            ``image`` or ``filmstrip_image`` fields are provided, the file path will be uploaded
+            to the server automatically.
+        :param list return_fields: Optional list of additional field values to return from the new
+            entity. Defaults to ``id`` field.
+        :returns: Shotgun entity dictionary containing the field/value pairs of all of the fields
+            set from the ``data`` parameter as well as the defaults ``type`` and ``id``. If any
+            additional fields were provided using the ``return_fields`` parameter, these would be
+            included as well.
+        :rtype: dict
         """
 
         data = data.copy()
@@ -956,15 +1010,21 @@ class Shotgun(object):
     def delete(self, entity_type, entity_id):
         """Retire the specified entity.
 
-        The entity can be brought back to life using the revive function.
+        Entities in Shotgun are not "deleted" destructively, they are instead, "retired". This
+        means they are placed in the trash where they are no longer accessible to users.
 
-        :param entity_type: Required, entity type (string) to delete.
-        
-        :param entity_id: Required, id of the entity to delete.
+        The entity can be brought back to life using :meth:`~shotgun_api3.Shotgun.revive`.
 
-        :returns: True if the entity was deleted, False otherwise e.g. if the
-            entity has previously been deleted.
-        """
+            >>> sg.delete("Shot", 2557)
+            True
+
+        :param str entity_type: Shotgun entity type to delete.
+        :param id entity_id: ``id`` of the entity to delete.
+        :returns: ``True`` if the entity was deleted, ``False`` otherwise (for example, if the
+            entity was already deleted).
+        :rtype: bool
+        :raises: :class:`Fault` if entity does not exist (deleted or not).
+       """
 
         params = {
             "type" : entity_type,
@@ -976,12 +1036,16 @@ class Shotgun(object):
     def revive(self, entity_type, entity_id):
         """Revive an entity that has previously been deleted.
 
-        :param entity_type: Required, entity type (string) to revive.
-        
-        :param entity_id: Required, id of the entity to revive.
+        >>> sg.revive("Shot", 860)
+        True
 
-        :returns: True if the entity was revived, False otherwise e.g. if the
-            entity has previously been revived (or was not deleted).
+        :param str entity_type: Shotgun entity type to revive.
+        
+        :param int entity_id: id of the entity to revive.
+
+        :returns: ``True`` if the entity was revived, ``False`` otherwise (e.g. if the
+            entity is not currently retired).
+        :rtype: bool
         """
 
         params = {
@@ -992,21 +1056,60 @@ class Shotgun(object):
         return self._call_rpc("revive", params)
 
     def batch(self, requests):
-        """Make a batch request  of several create, update and delete calls.
+        """Make a batch request of several :meth:`~shotgun_api3.Shotgun.create`,
+        :meth:`shotgun_api3.Shotgun.update`, and :meth:`~shotgun_api3.Shotgun.delete` calls.
 
-        All requests are performed within a transaction, so either all will
-        complete or none will.
+        All requests are performed within a transaction, so either all will complete or none will.
 
-        :param requests: A list of dict's of the form which have a
+        Ex. Make a bunch of shots::
+
+            batch_data = []
+            for i in range(1,100):
+                data = {
+                    "code": "shot_%04d" % i,
+                    "project": project
+                }
+                batch_data.append({"request_type": "create", "entity_type": "Shot", "data": data})
+            sg.batch(batch_data)
+
+        Example output::
+
+             [{'code': 'shot_0001',
+               'type': 'Shot',
+               'id': 3624,
+               'project': {'id': 4, 'name': 'Demo Project', 'type': 'Project'}},
+              ...
+              ... and a bunch more ...
+              ...
+              {'code': 'shot_0099',
+               'type': 'Shot',
+               'id': 3722,
+               'project': {'id': 4, 'name': 'Demo Project', 'type': 'Project'}}]
+
+        Ex. All three types of requests in one batch::
+
+            batch_data = [
+              {"request_type": "create", "entity_type": "Shot", "data": {"code": "New Shot 1", "project": project}},
+              {"request_type": "update", "entity_type": "Shot", "entity_id": 3624, "data": {"code": "Changed 1"}},
+              {"request_type": "delete", "entity_type": "Shot", "entity_id": 3624}
+            ]
+            sg.batch(batch_data)
+
+        Example output::
+
+             [{'code': 'New Shot 1', 'type': 'Shot', 'id': 3723, 'project': {'id': 4, 'name': 'Demo Project', 'type': 'Project'}},
+              {'code': 'Changed 1', 'type': 'Shot', 'id': 3624},
+              True]
+
+        :param list requests: A list of dict's of the form which have a
             request_type key and also specifies
             
-            * create: entity_type, data dict of fields to set
-            * update: entity_type, entity_id, data dict of fields to set, and optionally multi_entity_update_modes
-            * delete: entity_type and entity_id
-
-        :returns: A list of values for each operation, create and update
-            requests return a dict of the fields updated. Delete requests
-            return True if the entity was deleted.
+            * create: ``entity_type``, data dict of fields to set
+            * update: ``entity_type``, ``entity_id``, data dict of fields to set, and optionally ``multi_entity_update_modes``
+            * delete: ``entity_type`` and entity_id
+        :returns: A list of values for each operation. Create and update requests return a dict of
+            the fields updated. Delete requests return ``True`` if the entity was deleted.
+        :rtype: list
         """
 
         if not isinstance(requests, list):
@@ -1134,13 +1237,18 @@ class Shotgun(object):
         return self._call_rpc('work_schedule_update', params)
 
     def follow(self, user, entity):
-        """Adds the entity to the user's followed entities (or does nothing if the user is already following the entity)
-        
-        :param dict user: User entity to follow the entity
-        
-        :param dict entity: Entity to be followed
-        
-        :returns: dict with 'followed'=true, and dicts for the 'user' and 'entity' that were passed in
+        """Adds the entity to the user's followed entities. If the user is already following the
+        entity, the method will succeed but nothing will be changed on the server-side.
+
+            >>> sg.follow({"type": "HumanUser", "id": 42}, {"type": "Shot", "id": 2050})
+            {'followed': True, 'user': {'type': 'HumanUser', 'id': 42},
+             'entity': {'type': 'Shot', 'id': 2050}}
+
+        :param dict user: User entity that will follow the entity.
+        :param dict entity: Shotgun entity to be followed.
+        :returns: dict with ``"followed": True`` as well as key/values for the params that were
+            passed in.
+        :rtype: dict
         """
 
         if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
@@ -1176,11 +1284,17 @@ class Shotgun(object):
         return self._call_rpc('unfollow', params)
 
     def followers(self, entity):
-        """Gets all followers of the entity.
-        
-        :param dict entity: Find all followers of this entity
-        
-        :returns list of dicts for all the users following the entity
+        """Returns all followers for an entity.
+
+            >>> sg.followers({"type": "Shot", "id": 2050})
+            [{'status': 'act', 'valid': 'valid', 'type': 'HumanUser', 'name': 'Richard Hendriks', 'id': 42},
+             {'status': 'act', 'valid': 'valid', 'type': 'HumanUser', 'name': 'Bertram Gilfoyle', 'id': 33},
+             {'status': 'act', 'valid': 'valid', 'type': 'HumanUser', 'name': 'Dinesh Chugtai', 'id': 57}]
+
+        :param dict entity: Entity to find followers of.
+        :returns: list of dicts representing each user following the entity
+        :rtype: list
+        :versionadded:
         """
 
         if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
@@ -1194,13 +1308,30 @@ class Shotgun(object):
         return self._call_rpc('followers', params)
 
     def schema_entity_read(self, project_entity=None):
-        """Gets all active entities defined in the schema.
+        """Returns all active entities defined in the schema and their details.
+
+        >>> sg.schema_entity_read()
+        {'ActionMenuItem': {'name': {'editable': False, 'value': 'Action Menu Item'},
+                            'visible': {'editable': False, 'value': True}},
+         'ApiUser': {'name': {'editable': False, 'value': 'Script'},
+                     'visible': {'editable': False, 'value': True}},
+         'AppWelcomeUserConnection': {'name': {'editable': False,
+                                               'value': 'App Welcome User Connection'},
+                                      'visible': {'editable': False, 'value': True}},
+         'Asset': {'name': {'editable': False, 'value': 'Asset'},
+                   'visible': {'editable': False, 'value': True}},
+         'AssetAssetConnection': {'name': {'editable': False,
+                                           'value': 'Asset Asset Connection'},
+                                  'visible': {'editable': False, 'value': True}},
+         '...'
+        }
 
         :param dict project_entity: Optional, if set, each field's visibility is reported 
-            accordingly to the specified project's current visibility settings. If None, all 
+            as defined in the specified project's visibility settings. If ``None``, all
             fields are reported as visible.
 
         :returns: dict of Entity Type to dict containing the display name.
+        :rtype: dict
         """
 
         params = {}
@@ -1334,12 +1465,14 @@ class Shotgun(object):
 
         Appends agent to the user-agent string sent with every API request.
 
-        :param agent: string to append to user-agent.
+        >>> sg.add_user_agent("my_tool 1.0")
+
+        :param str agent: string to append to user-agent.
         """
         self._user_agents.append(agent)
 
     def reset_user_agent(self):
-        """Reset user agent to the default.
+        """Reset user agent to the default value.
 
         Example default user-agent::
 
@@ -1613,31 +1746,36 @@ class Shotgun(object):
                             attachment_id=None):
         """Downloads the file associated with a Shotgun Attachment.
 
-        NOTE: On older (< v5.1.0) Shotgun versions, non-downloadable files 
-        on Shotgun don't raise exceptions, they cause a server error which 
-        returns a 200 with the page content.
+            >>> version = sg.find_one("Version", [["id", "is", 7115]], ["sg_uploaded_movie"])
+            >>> local_file_path = "/var/tmp/%s" % version["sg_uploaded_movie"]["name"]
+            >>> sg.download_attachment(version["sg_uploaded_movie"], file_path=local_file_path)
+            /var/tmp/100b_scene_output_v032.mov
 
-        :param attachment: (mixed) Usually a dict representing an Attachment.
-            The dict should have a 'url' key that specifies the download url. 
-            Optionally, the dict can be a standard entity hash format with 'id' and
-            'type' keys as long as 'type'=='Attachment'. This is only supported for
+        .. warning::
+
+            On older (< v5.1.0) Shotgun versions, non-downloadable files
+            on Shotgun don't raise exceptions, they cause a server error which
+            returns a 200 with the page content.
+
+        :param dict attachment: Usually a dictionary representing an Attachment entity.
+            The dictionary should have a ``url`` key that specifies the download url.
+            Optionally, the dictionary can be a standard entity hash format with ``id`` and
+            ``type`` keys as long as ``"type"=="Attachment"``. This is only supported for
             backwards compatibility (#22150).
             
-            If an int value is passed in, the Attachment with the matching id will
+            If an int value is passed in, the Attachment entity with the matching id will
             be downloaded from the Shotgun server.
+        :param str file_path: Optional file path to write the data directly to local disk. This avoids
+            loading all of the data in memory and saves the file locally at the given path.
+        :param id attachment_id: (deprecated) Optional ``id`` of the Attachment entity in Shotgun to
+            download.
 
-        :param file_path: (str) Optional. If provided, write the data directly
-            to local disk using the file_path. This avoids loading all of the data 
-            in memory and saves the file locally which is probably what is desired
-            anyway. 
-
-        :param attachment_id: (int) Optional. Deprecated in favor of passing in 
-            Attachment hash to attachment param. This attachment_id exists only for
-            backwards compatibility for scripts specifying the parameter with
-            keywords.
-
-        :returns: (str) If file_path is None, returns data of the Attachment 
-            file as a string. If file_path is provided, returns file_path.
+            .. note:
+                This parameter exists only for backwards compatibility for scripts specifying
+                the parameter with keywords.
+        :returns: If ``file_path`` is provided, returns the path to the file on disk.  If
+            ``file_path`` is ``None``, returns the actual data of the file as a string.
+        :rtype: str
         """
         # backwards compatibility when passed via keyword argument 
         if attachment is False:
@@ -1716,21 +1854,25 @@ class Shotgun(object):
         urllib2.install_opener(opener)
 
     def get_attachment_download_url(self, attachment):
-        """Returns the URL for downloading provided Attachment.
+        """Return the URL for downloading provided Attachment.
 
-        :param attachment: (mixed) If type is an int, construct url to download
-            Attachment with id from Shotgun. 
-            If type is a dict, and a url key is present, use that url. 
-            If type is a dict, and url key is not present, check if we have
-            an id and type keys and the type is 'Attachment' in which case we 
-            construct url to download Attachment with id from Shotgun as if just
-            the id has been passed in. 
+        :param mixed attachment: Usually a dict representing An Attachment entity in Shotgun to
+            return the download url for. If the ``url`` key is present, it will be used as-is for
+            the download url. If the ``url`` key is not present, a url will be constructed pointing
+            at the current Shotgun server for downloading the Attachment entity using the ``id``.
 
-        :todo: Support for a standard entity hash should be removed: #22150
+            If ``None`` is passed in, it is silently ignored in order to avoid raising an error when
+            results from a :meth:`~shotgun_api3.Shotgun.find` are passed off to
+            :meth:`~shotgun_api3.Shotgun.download_attachment`
 
-        :returns: (str) the download URL for the Attachment or None if None was
-            passed to attachment param. This avoids raising an error when results
-            from a find() are passed off to a download_attachment() call.
+        .. note::
+            Support for passing in an int representing the Attachment ``id`` is deprecated
+
+        .. todo:: Support for a standard entity hash should be removed: #22150
+
+        :returns: the download URL for the Attachment or ``None`` if ``None`` was passed to
+            ``attachment`` parameter.
+        :rtype: str
         """
         attachment_id = None
         if isinstance(attachment, int):
@@ -1759,16 +1901,20 @@ class Shotgun(object):
     def authenticate_human_user(self, user_login, user_password, auth_token=None):
         """Authenticate Shotgun HumanUser. 
         
-        Note that HumanUser must be an active account.
-        
-        :param user_login: Login name of Shotgun HumanUser
-        
-        :param user_password: Password for Shotgun HumanUser
-        
-        :param auth_token: One-time token required to authenticate Shotgun HumanUser
-            when two factor authentication is turned on.
+        Authenticates a user given the login, password, and optionally, one-time auth token (when
+        two-factor authentication is required). The user must be a ``HumanUser`` entity and the
+        account must be active.
 
-        :return: Dictionary of HumanUser including ID if authenticated, None if unauthorized.
+        >>> sg.authenticate_human_user("rhendriks", "c0mPre$Hi0n", None)
+        {"type": "HumanUser", "id": 123, "name": "Richard Hendriks"}
+
+        :param str user_login: Login name of Shotgun HumanUser
+        :param str user_password: Password for Shotgun HumanUser
+        :param str auth_token: One-time token required to authenticate Shotgun HumanUser
+            when two factor authentication is turned on.
+        :returns: Standard Shotgun dictionary representing the HumanUser if authentication
+            succeeded. ``None`` if authentication failed for any reason.
+        :rtype: dict
         """
         if not user_login:
             raise ValueError('Please supply a username to authenticate.')
@@ -1834,8 +1980,7 @@ class Shotgun(object):
 
 
     def note_thread_read(self, note_id, entity_fields=None):
-        """Returns the full conversation for a given note, including 
-        replies and attachments.
+        """Returns the full conversation for a given note, including Replies and Attachments.
         
         Returns a complex data structure on the following form::
         
@@ -1870,7 +2015,7 @@ class Shotgun(object):
         
         If you wish to include additional fields beyond the ones that are 
         returned by default, you can specify these in an entity_fields 
-        dictionary. This dictonary should be keyed by entity type and each
+        dictionary. This dictionary should be keyed by entity type and each
         key should contain a list of fields to retrieve, for example::
         
             { "Note":       ["created_by.HumanUser.image", 
@@ -1884,12 +2029,13 @@ class Shotgun(object):
                             "image"]
             }
         
-        :param note_id: The id for the note to be retrieved
+        :param int note_id: The id for the note to be retrieved
         
-        :param entity_fields: Additional fields to retrieve as part 
+        :param dict entity_fields: Additional fields to retrieve as part
                               of the request. See above for details.
                               
-        :returns: A list of dictionaries. See above for example. 
+        :returns: A list of dictionaries. See above for example.
+        :rtype: list
         """        
 
         if self.server_caps.version and self.server_caps.version < (6, 2, 0):
@@ -2051,25 +2197,20 @@ class Shotgun(object):
         Deep queries can be used in this syntax if you want to 
         traverse into connected data.
         
-        :param entity_type: Entity type to retrieve activity stream for
-        
-        :param entity_id: Entity id to retrieve activity stream for
-        
-        :param entity_fields: List of additional fields to include. 
+        :param str entity_type: Entity type to retrieve activity stream for
+        :param int entity_id: Entity id to retrieve activity stream for
+        :param list entity_fields: List of additional fields to include.
                               See above for details
-        
-        :param max_id: Do not retrieve ids greater than this id. 
+        :param int max_id: Do not retrieve ids greater than this id.
                        This is useful when implementing paging.
-        
-        :param min_id: Do not retrieve ids lesser than this id. 
+        :param int min_id: Do not retrieve ids lesser than this id.
                        This is useful when implementing caching of 
                        the event stream data and you want to 
                        "top up" an existing cache.
-        
-        :param limit: Limit the number of returned records. If not specified, 
+        :param int limit: Limit the number of returned records. If not specified,
                       the system default will be used.
-
-        :returns: A complex activity stream data structure. See above for details 
+        :returns: A complex activity stream data structure. See above for details.
+        :rtype: dict
         """
         if self.server_caps.version and self.server_caps.version < (6, 2, 0):
                 raise ShotgunError("activity_stream requires server version 6.2.0 or "\
@@ -2095,10 +2236,15 @@ class Shotgun(object):
 
     def get_session_token(self):
         """Get the session token associated with the current session.
-        If a session token has already been established, this is returned, 
-        otherwise a new one is generated on the server and returned.
+
+        If a session token has already been established, this is returned, otherwise a new one is
+        generated on the server and returned.
+
+        >>> sg.get_session_token()
+        dd638be7d07c39fa73d935a775558a50
         
-        :returns: String containing a session token
+        :returns: String containing a session token.
+        :rtype: str
         """
         if self.config.session_token:
             return self.config.session_token
@@ -2131,10 +2277,18 @@ class Shotgun(object):
 
     # Deprecated methods from old wrapper
     def schema(self, entity_type):
+        """
+        .. deprecated:: 3.0.0
+           Use :meth:`~shotgun_api3.Shotgun.schema_field_read` instead.
+        """
         raise ShotgunError("Deprecated: use schema_field_read('type':'%s') "
             "instead" % entity_type)
 
     def entity_types(self):
+        """
+        .. deprecated:: 3.0.0
+           Use :meth:`~shotgun_api3.Shotgun.schema_entity_read` instead.
+        """
         raise ShotgunError("Deprecated: use schema_entity_read() instead")
     # ========================================================================
     # RPC Functions
