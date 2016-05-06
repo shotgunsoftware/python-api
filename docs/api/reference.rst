@@ -1,11 +1,12 @@
 .. _apireference:
 
-*************
+#############
 API Reference
-*************
+#############
 
-Module attributes
-=================
+*************************
+shotgun Module attributes
+*************************
 
 The :mod:`shotgun_api3.shotgun` module is a container for the :class:`~shotgun_api3.Shotgun` 
 class. There are a couple of useful attributes to note.
@@ -13,8 +14,9 @@ class. There are a couple of useful attributes to note.
 .. automodule:: shotgun_api3.shotgun
     :members: NO_SSL_VALIDATION, LOG, __version__
 
+*********
 Shotgun()
-=========
+*********
 
 The majority of functionality is contained within the :class:`~shotgun_api3.Shotgun` class. 
 The documentation for all of the methods you'll need in your scripts lives in here.
@@ -25,8 +27,9 @@ The documentation for all of the methods you'll need in your scripts lives in he
     :members:
 
 
+**********
 Exceptions
-==========
+**********
 
 These are the various exceptions that the Shotgun API will raise. 
 
@@ -56,8 +59,9 @@ These are the various exceptions that the Shotgun API will raise.
     :members:
 
 
+******************
 ServerCapabilities
-==================
+******************
 
 This is a container for the server's capabilities, such as version and paging. Used internally to 
 determine whether there is support on the server-side for certain features.
@@ -68,8 +72,9 @@ determine whether there is support on the server-side for certain features.
     :special-members: [__str__]
 
 
+******************
 ClientCapabilities
-==================
+******************
 
 This is a container for the client capabilities. It detects the current client platform and works 
 out the SG field used for local data paths.

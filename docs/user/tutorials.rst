@@ -1,12 +1,13 @@
-********
+########
 Examples
-********
+########
 
 Here's a list of various tutorials to walk through that should provide you with a good base 
 understanding of how to use the Shotgun API and what you can do with it.
 
+********
 Beginner
-========
+********
 
 .. toctree::
     :maxdepth: 1
@@ -20,8 +21,9 @@ Beginner
     examples/basic_create_version_link_shot
     examples/basic_upload_thumbnail_version
 
+********
 Advanced
-========
+********
 
 .. toctree::
     :maxdepth: 1

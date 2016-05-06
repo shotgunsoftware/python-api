@@ -1,6 +1,6 @@
-**************
+##############
 API Usage Tips
-**************
+##############
 
 Below is a list of helpful tips when using the Shotgun API. We have tried to make the API very 
 simple to use with predictable results while remaining a powerful tool to integrate with your 
@@ -8,8 +8,9 @@ pipeline. However, there's always a couple of things that crop up that our users
 aware of. Those are the types of things you'll find below. We'll be adding to this document over 
 time as new questions come up from our users that exhibit these types of cases.
 
+*************
 Entity Fields
-=============
+*************
 
 When you do a :meth:`~shotgun_api3.Shotgun.find` call that returns a field of type entity or 
 multi-entity (for example the 'assets' column on Shot), the entities are returned in a standard 
@@ -26,21 +27,22 @@ consistent way to represent entities returned via the API.
   field but not always. For example, on the Ticket and Delivery entities the ``name`` key would 
   contain the value of the ``title`` field.
 
+*******************************************
 Shotgun UI fields not available via the API
-===========================================
+*******************************************
 
 Summary type fields like Query Fields and Pipeline Step summary fields are currently only available 
 via the UI. Some other fields may not work as expected through the API because they are "display 
 only" fields made available for convenience and are only available in the browser UI.
 
 HumanUser
----------
+=========
 
 - ``name``: This is a UI-only field that is a combination of the ``firstname`` + ``' '`` + 
   ``lastname``.
 
 Shot
-----
+====
 
 **Smart Cut Fields**: These fields are available only in the browser UI. You can read more about 
 smart cut fields and the API in the Smart Cut Fields doc (link TK)::
@@ -60,21 +62,21 @@ smart cut fields and the API in the Smart Cut Fields doc (link TK)::
 
 
 Pipeline Step summary fields on entities
-----------------------------------------
+========================================
 
 The Pipeline Step summary fields on entities that have Tasks aren't currently available via the API 
 and are calculated on the client side in the UI. These fields are like ``step_0``, or ``step_13``. 
 Note that the Pipeline Step entity itself is available via the API as the entity type ``Step``.
 
 Query Fields
-------------
+============
 
 Query fields are also summary fields like Pipeline Steps, the query is run from the client side UI 
 and therefore is not currently supported in the API.
 
-
+************
 Audit Fields
-============
+************
 You can set the ``created_by`` and ``created_at`` fields via the API at creation time. This is 
 often useful for when you're importing or migrating data from another source and want to keep the 
 history in tact. However, you cannot set the ``updated_by`` and ``updated_at`` fields. These are 
@@ -82,8 +84,9 @@ automatically set whenever an entity is created or updated.
 
 .. _logging: 
 
+*****************************
 Logging Messages from the API
-=============================
+*****************************
 
 The API uses standard python logging but does not define a handler.
 
@@ -107,8 +110,9 @@ Shotgun logger to a higher level::
     sg_log = logging.getLogger('shotgun_api3')
     sg_log.setLevel(logging.ERROR)
 
+**********
 IronPython
-==========
+**********
 
 We do not test against IronPython and cannot be sure that we won't introduce breaking changes or 
 that we will be compatible with future releases of IronPython. While we don't officially support 
@@ -134,7 +138,6 @@ v3.0.20 can be used with IronPython with a little bit of added work:
   encountered some intermittent issues with. Set ``NO_SSL_VALIDATION = True`` for either case. 
   See :const:`shotgun_api3.shotgun.NO_SSL_VALIDATION`
   
-
 - If you encounter ``LookupError: unknown encoding: idna``, you can force utf-8 by changing 
   iri2uri.py ~ln 71 from ``authority = authority.encode('idna')`` to 
   ``authority = authority.encode('utf-8')``

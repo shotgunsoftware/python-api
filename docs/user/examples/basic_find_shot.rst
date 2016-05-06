@@ -15,7 +15,7 @@ Pretty simple right? Well here's a little more insight into what's going on.
 - ``filters`` is an list of filter conditions. In this example we are filtering for Shots where 
   the ``id`` column is **40435**.
 - ``sg`` is the Shotgun API instance. 
-- ``find_one()`` is the :meth:`shotgun_api3.Shotgun.find_one` API method we are calling. We 
+- ``find_one()`` is the :meth:`~shotgun_api3.Shotgun.find_one` API method we are calling. We
   provide it with the entity type we're searching for and our filters.
 
 
