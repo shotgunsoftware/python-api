@@ -122,23 +122,29 @@ class MissingTwoFactorAuthenticationFault(Fault):
 # API
 
 class ServerCapabilities(object):
-    """Container for the servers capabilities, such as version and paging.
+    """Container for the servers capabilities, such as version enabled features.
     """
 
     def __init__(self, host, meta):
         """ServerCapabilities.__init__
         
-        :param host: Host name for the server excluding protocol.
+        :param str host: Host name for the server excluding protocol.
+        :param dict meta: dict of meta data for the server returned from the info() api method.
 
-        :param meta: dict of meta data for the server returned from the
-            info api method.
+        :ivar str host:
+        :ivar dict server_info:
+        :ivar tuple version: Simple version of the Shotgun server. ``(major, minor, rev)``
+        :ivar tuple full_version: Complete version of the Shotgun server including patch level.
+            ``(major, minor, rev, patch)``
+        :ivar bool is_dev: ``True`` if server is running a development version of the Shotgun
+            codebase.
         """
-        #Server host name
+        # Server host name
         self.host = host
         self.server_info = meta
 
-        #Version from server is major.minor.rev or major.minor.rev."Dev"
-        #Store version as triple and check dev flag
+        # Version from server is major.minor.rev or major.minor.rev."dev"
+        # Store version as tuple and check dev flag
         try:
             self.version = meta.get("version", None)
         except AttributeError:
@@ -149,22 +155,38 @@ class ServerCapabilities(object):
                                "Shotgun against a more recent version of the Shotgun API. "
                                "For more information, please contact Shotgun Support.")
 
-        if len(self.version) > 3 and self.version[3] == "Dev":
+        if len(self.version) > 3 and self.version[3] == "dev":
             self.is_dev = True
         else:
             self.is_dev = False
 
         self.version = tuple(self.version[:3])
+
+        # Full Version from server is major.minor.rev.patch or major.minor.rev.patch."dev"
+        # Store full_version as tuple. If it doesn't exist, use version and add .0 to it.
+        try:
+            self.full_version = meta.get("full_version", None)
+        except AttributeError:
+            self.full_version = None
+
+        if self.full_version:
+            self.full_version = tuple(self.full_version[:4])
+        else:
+            self.full_version = tuple(self.version[:3] + [0])
+
         self._ensure_json_supported()
 
 
     def _ensure_support(self, feature, raise_hell=True):
-        """Checks the server version supports a given feature, raises an
-        exception if it does not.
+        """Checks the server version supports a given feature, raises an exception if it does not.
 
-        :param feature: dict supported version and human label { 'version': (int, int, int), 'label': str }
+        :param dict feature: dict where **version** key contains a 3 integer tuple indicating the
+            supported server version and **label** key contains a human-readable label str::
 
-        :raises: :class:`ShotgunError`: The current server version does not [feature]
+                { 'version': (5, 4, 4), 'label': 'project parameter }
+        :param bool raise_hell: Whether to raise an exception if the feature is not supported.
+            Defaults to ``True``
+        :raises: :class:`ShotgunError` if the current server version does not support ``feature``
         """
 
         if not self.version or self.version < feature['version']:
@@ -177,7 +199,6 @@ class ServerCapabilities(object):
         else:
             return True
 
-
     def _ensure_json_supported(self):
         """Wrapper for ensure_support"""
         self._ensure_support({
@@ -186,19 +207,18 @@ class ServerCapabilities(object):
         })
 
     def ensure_include_archived_projects(self):
-        """Wrapper for ensure_support"""
+        """Ensures server has support for archived Projects feature added in v5.3.14"""
         self._ensure_support({
             'version': (5, 3, 14),
             'label': 'include_archived_projects parameter'
         })
 
     def ensure_per_project_customization(self):
-        """Wrapper for ensure_support"""
+        """Ensures server has support for per-project customization feature added in v5.4.4"""
         return self._ensure_support({
             'version': (5, 4, 4),
             'label': 'project parameter'
         }, True)
-
 
     def __str__(self):
         return "ServerCapabilities: host %s, version %s, is_dev %s"\
@@ -207,8 +227,14 @@ class ServerCapabilities(object):
 class ClientCapabilities(object):
     """Container for the client capabilities.
 
-    Detects the current client platform and works out the SG field
-    used for local data paths.
+    :ivar str platform: The current client platform. Valid values are ``mac``, ``linux``,
+        ``windows``, or ``None`` (if the current platform couldn't be determined).
+    :ivar str local_path_field: The SG field used for local file paths. This is calculated using
+        the value of ``platform``. Ex. ``local_path_mac``.
+    :ivar str py_version: Simple version of Python executable as a string. Eg. ``2.7``.
+    :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``. This
+        info is only available in Python 2.7+ if the ssl module was imported successfully.
+        Defaults to ``unknown``
     """
 
     def __init__(self):
@@ -317,6 +343,7 @@ class Shotgun(object):
 
         :param str base_url: http or https url of the Shotgun server. Do not include the trailing
             slash::
+
                 https://example.shotgunstudio.com
         :param str script_name: name of the Script entity used to authenticate to the server.
             If provided, then ``api_key`` must be as well, and neither ``login`` nor ``password`` 
@@ -334,6 +361,7 @@ class Shotgun(object):
             UTC date time values. Default is ``True``.
         :param str http_proxy: (optional) URL for a proxy server to use for all connections. The
             expected str format is ``[username:password@]111.222.333.444[:8080]``. Examples::
+
                 192.168.0.1
                 192.168.0.1:8888
                 joe:user@192.168.0.1:8888
@@ -357,7 +385,7 @@ class Shotgun(object):
             authentication. If provided, then ``login`` must be as well and neither ``script_name`` 
             nor ``api_key`` can be provided.
 
-            .. seealso:: :ref:`authentication`
+            See :ref:`authentication` for more info.
         :param str sudo_as_login: A user login string for the user whose permissions will be applied
             to all actions. Event log entries will be generated showing this user performing all 
             actions with an additional extra meta-data parameter ``sudo_actual_user`` indicating the
@@ -377,6 +405,7 @@ class Shotgun(object):
                 :class:`~shotgun_api3.MissingTwoFactorAuthenticationFault` will be raised if the 
                 ``auth_token`` is invalid.
             .. todo: Add this info to the Authentication section of the docs
+
         .. note:: A note about proxy connections: If you are using Python <= v2.6.2, HTTPS 
             connections through a proxy server will not work due to a bug in the :mod:`urllib2` 
             library (see http://bugs.python.org/issue1424152). This will affect upload and 
@@ -799,7 +828,6 @@ class Shotgun(object):
 
         return params
 
-
     def summarize(self,
                   entity_type,
                   filters,
@@ -1107,6 +1135,7 @@ class Shotgun(object):
             the mode for, and the values from the dict are one of ``set``, ``add``, or ``remove``.
             Defaults to ``set``.
             ::
+
                 multi_entity_update_modes={"shots": "add", "assets": "remove"}
 
         :returns: Dictionary of the fields updated, with the default keys `type` and `id` added as well.
@@ -1813,7 +1842,10 @@ class Shotgun(object):
     def share_thumbnail(self, entities, thumbnail_path=None, source_entity=None,
         filmstrip_thumbnail=False, **kwargs):
         """Associate a thumbnail with more than one Shotgun entity.
-    
+
+        .. versionadded:: 3.0.9
+            Requires Shotgun server v4.0.0+
+
         Share the thumbnail from between entities without requiring uploading the thumbnail file
         multiple times. You can use this in two ways:
         
@@ -1835,6 +1867,7 @@ class Shotgun(object):
 
         :param list entities: The entities to update to point to the shared  thumbnail provided in
             standard entity dict format::
+
                 [{'type': 'Version', 'id': 123},
                  {'type': 'Version', 'id': 456}]
         :param str thumbnail_path: The full path to the local thumbnail file to upload and share.
@@ -1845,9 +1878,6 @@ class Shotgun(object):
             share the static thumbnail. Defaults to ``False``.
         :returns: ``id`` of the Attachment entity representing the source thumbnail that is shared.
         :rtype: int
-
-        .. versionadded:: 3.0.9
-            Requires Shotgun server v4.0.0+
         """
         if not self.server_caps.version or self.server_caps.version < (4, 0, 0):
             raise ShotgunError("Thumbnail sharing support requires server "\
@@ -2214,7 +2244,8 @@ class Shotgun(object):
         .. note::
             Support for passing in an int representing the Attachment ``id`` is deprecated
 
-        .. todo:: Support for a standard entity hash should be removed: #22150
+        .. todo::
+            Support for a standard entity hash should be removed: #22150
 
         :returns: the download URL for the Attachment or ``None`` if ``None`` was passed to
             ``attachment`` parameter.
