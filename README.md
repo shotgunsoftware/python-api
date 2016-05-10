@@ -22,7 +22,7 @@ The latest version can always be found at http://github.com/shotgunsoftware/pyth
 
 #### PyPI
 
-The Shotgun API is available in the Python Package Index as `shotgun-api` (note the dash instead of underscore) starting with version 3.0.27.
+The Shotgun API is available in the Python Package Index as `shotgun-api` (note the dash instead of underscore) starting with version 3.0.31.
 
 ```
 pip install shotgun-api
@@ -59,7 +59,7 @@ Integration and unit tests are provided in the packages installed from Github.
 
 - All tests require the "nose" unit testing tools (http://nose.readthedocs.org), and a "tests/config" file (copy from "tests/example_config").
 - Tests can be run individually like this: `nosetest tests/test_client.py`
-- test_client and tests_unit use mock server interaction and do not require a shotgun instance to be available (no modifacations to tests/config necessary).
+- test_client and tests_unit use mock server interaction and do not require a shotgun instance to be available (no modifications to tests/config necessary).
 - test_api and test_api_long do require a shotgun instance, with a script key available for the tests. The server and script user values must be supplied in the tests/config file. The tests will set up test data on the server based on the data set forth in the config. This data will be manipulated by the tests, and should not be used for other purposes.
 - To run all of the tests, use the shell script run-tests.
 
