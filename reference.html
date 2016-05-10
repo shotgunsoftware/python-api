@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; python-api pypi documentation</title>
+  <title>API Reference &mdash; python-api sphinx documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api pypi documentation" href="index.html"/>
+    <link rel="top" title="python-api sphinx documentation" href="index.html"/>
         <link rel="next" title="Filter Syntax" href="filter_syntax.html"/>
         <link rel="prev" title="Upload a Thumbnail for a Version" href="examples/basic_upload_thumbnail_version.html"/> 
 
@@ -131,7 +131,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> pypi.<br>
+    <b>python-api</b> sphinx.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -498,8 +498,8 @@ succeeded. <code class="docutils literal"><span class="pre">None</span></code> i
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>requests</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; <p>A list of dict&#8217;s of the form which have a
-request_type key and also specifies</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>requests</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; <p>A list of dict&#8217;s of the form which have a request_type key and also
+specifies:</p>
 <ul class="simple">
 <li>create: <code class="docutils literal"><span class="pre">entity_type</span></code>, data dict of fields to set</li>
 <li>update: <code class="docutils literal"><span class="pre">entity_type</span></code>, <code class="docutils literal"><span class="pre">entity_id</span></code>, data dict of fields to set, and optionally <code class="docutils literal"><span class="pre">multi_entity_update_modes</span></code></li>
@@ -2203,8 +2203,6 @@ determine whether there is support on the server-side for certain features.</p>
 <li><strong>host</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; </li>
 <li><a class="reference internal" href="#shotgun_api3.Shotgun.server_info" title="shotgun_api3.Shotgun.server_info"><strong>server_info</strong></a> (<a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; </li>
 <li><strong>version</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; Simple version of the Shotgun server. <code class="docutils literal"><span class="pre">(major,</span> <span class="pre">minor,</span> <span class="pre">rev)</span></code></li>
-<li><strong>full_version</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) &#8211; Complete version of the Shotgun server including patch level.
-<code class="docutils literal"><span class="pre">(major,</span> <span class="pre">minor,</span> <span class="pre">rev,</span> <span class="pre">patch)</span></code></li>
 <li><strong>is_dev</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; <code class="docutils literal"><span class="pre">True</span></code> if server is running a development version of the Shotgun
 codebase.</li>
 </ul>
@@ -2298,7 +2296,7 @@ Defaults to <code class="docutils literal"><span class="pre">unknown</span></cod
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'pypi',
+            VERSION:'sphinx',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

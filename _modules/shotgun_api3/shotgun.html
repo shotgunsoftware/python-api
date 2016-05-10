@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>shotgun_api3.shotgun &mdash; python-api pypi documentation</title>
+  <title>shotgun_api3.shotgun &mdash; python-api sphinx documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api pypi documentation" href="../../index.html"/>
+    <link rel="top" title="python-api sphinx documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -123,7 +123,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> pypi.<br>
+    <b>python-api</b> sphinx.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -175,7 +175,8 @@
   <h1>Source code for shotgun_api3.shotgun</h1><div class="highlight"><pre>
 <span class="c">#!/usr/bin/env python</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd"> Copyright (c) 2009-2016, Shotgun Software Inc</span>
+<span class="sd"> -----------------------------------------------------------------------------</span>
+<span class="sd"> Copyright (c) 2009-2016, Shotgun Software Inc.</span>
 
 <span class="sd"> Redistribution and use in source and binary forms, with or without</span>
 <span class="sd"> modification, are permitted provided that the following conditions are met:</span>
@@ -309,8 +310,6 @@
 <span class="sd">        :ivar str host:</span>
 <span class="sd">        :ivar dict server_info:</span>
 <span class="sd">        :ivar tuple version: Simple version of the Shotgun server. ``(major, minor, rev)``</span>
-<span class="sd">        :ivar tuple full_version: Complete version of the Shotgun server including patch level.</span>
-<span class="sd">            ``(major, minor, rev, patch)``</span>
 <span class="sd">        :ivar bool is_dev: ``True`` if server is running a development version of the Shotgun</span>
 <span class="sd">            codebase.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -318,7 +317,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_info</span> <span class="o">=</span> <span class="n">meta</span>
 
-        <span class="c"># Version from server is major.minor.rev or major.minor.rev.&quot;dev&quot;</span>
+        <span class="c"># Version from server is major.minor.rev or major.minor.rev.&quot;Dev&quot;</span>
         <span class="c"># Store version as tuple and check dev flag</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;version&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
@@ -330,25 +329,12 @@
                                <span class="s">&quot;Shotgun against a more recent version of the Shotgun API. &quot;</span>
                                <span class="s">&quot;For more information, please contact Shotgun Support.&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;dev&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;Dev&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_dev</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_dev</span> <span class="o">=</span> <span class="bp">False</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
-
-        <span class="c"># Full Version from server is major.minor.rev.patch or major.minor.rev.patch.&quot;dev&quot;</span>
-        <span class="c"># Store full_version as tuple. If it doesn&#39;t exist, use version and add .0 to it.</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">full_version</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;full_version&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">full_version</span> <span class="o">=</span> <span class="bp">None</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_version</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">full_version</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">full_version</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">full_version</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_json_supported</span><span class="p">()</span>
 
 
@@ -1451,8 +1437,8 @@
 <span class="sd">              {&#39;code&#39;: &#39;Changed 1&#39;, &#39;type&#39;: &#39;Shot&#39;, &#39;id&#39;: 3624},</span>
 <span class="sd">              True]</span>
 
-<span class="sd">        :param list requests: A list of dict&#39;s of the form which have a</span>
-<span class="sd">            request_type key and also specifies</span>
+<span class="sd">        :param list requests: A list of dict&#39;s of the form which have a request_type key and also</span>
+<span class="sd">            specifies:</span>
 <span class="sd">            </span>
 <span class="sd">            - create: ``entity_type``, data dict of fields to set</span>
 <span class="sd">            - update: ``entity_type``, ``entity_id``, data dict of fields to set, and optionally ``multi_entity_update_modes``</span>
@@ -3557,7 +3543,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'pypi',
+            VERSION:'sphinx',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
