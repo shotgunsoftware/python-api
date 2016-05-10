@@ -172,7 +172,7 @@ class ServerCapabilities(object):
         if self.full_version:
             self.full_version = tuple(self.full_version[:4])
         else:
-            self.full_version = tuple(self.version[:3] + [0])
+            self.full_version = tuple(self.version[:3] + (0,))
 
         self._ensure_json_supported()
 
