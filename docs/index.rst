@@ -4,6 +4,44 @@ Shotgun Python API3
 Release v\ |version|. (:ref:`Installation <installation>`)
 
 Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools.
+The Shotgun API allows users to integrate their tools with Shotgun very easily. Using this simple
+but powerful python module , you can quickly get your scripts integrated with Shotgun's CRUD-based
+API.
+
+Because the needs of every studio can prove to be very different, we don't include a lot of
+"automation" or "smarts" in our API. We have kept it pretty low-level and leave most of those
+decisions to you. The API is powerful enough you can write your own "smarts" in a wrapper on top
+of the Shotgun API.
+
+In addition to basic metadata, the API contains methods for managing media including thumbnails,
+filmstrip thumbnails, images, uploaded, and both locally and remotely linked media like
+Quicktimes, etc.
+
+**Example**::
+
+    sg = shotgun_api3.Shotgun("https://piedpiper.shotgunstudio.com",
+                              login="rhendriks",
+                              password="c0mPre$Hi0n")
+    sg.find("Shot", filters=[["sg_status_list", "is", "ip"]], fields=["code", "sg_status_list])
+
+**Output**::
+
+    [{'code': 'bunny_020_0170',
+      'id': 896,
+      'sg_sequence': {'id': 5, 'name': 'bunny_020', 'type': 'Sequence'},
+      'sg_status_list': 'ip',
+      'type': 'Shot'},
+     {'code': 'bunny_020_0200',
+      'id': 899,
+      'sg_sequence': {'id': 5, 'name': 'bunny_020', 'type': 'Sequence'},
+      'sg_status_list': 'ip',
+      'type': 'Shot'},
+     {'code': 'bunny_030_0080',
+      'id': 907,
+      'sg_sequence': {'id': 6, 'name': 'bunny_030', 'type': 'Sequence'},
+      'sg_status_list': 'ip',
+      'type': 'Shot'}]
+
 
 **********
 User Guide
@@ -11,77 +49,24 @@ User Guide
 .. toctree::
     :maxdepth: 2
 
-    user/intro
-    user/usage_tips
-    user/tutorials
+    installation
+    authentication
+    usage_tips
+    tutorials
 
-*************
-Developer API
-*************
+*******************
+Developer Reference
+*******************
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 2
 
-    api/reference
-    api/data_types
-    api/filter_syntax
+    reference
+    filter_syntax
+    data_types
+    attachments
+    local_files
+    packaging
     server_changelog
-
-
-Minimum Requirements
-====================
-
-- Shotgun server v5.4.14 or higher for API v3.0.16.
-- Shotgun server v2.4.12 or higher for API v3.0.8.
-- Shotgun server v1.8 or higher for API v3.0.7.
-- Python v2.4 - v2.7. (We do not currently support Python 3)
-
-.. _installation:
-
-Installation
-============
-
-Installing with `pip`
----------------------
-PyPI
-~~~~
-The Shotgun API is available in the Python Package Index as ``shotgun-api`` (note the dash instead
-of underscore) starting with version 3.0.27.::
-
-    pip install shotgun-api
-
-
-Master
-~~~~~~
-If you wish to install the current master, use the following command::
-
-    pip install git+git://github.com/shotgunsoftware/python-api.git
-
-.. note:: that master contains the latest revisions and while largely considered "stable"  it is
-    not an official packaged release.
-
-Specific Versions from Github
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-To install a specific version of the package from Github, run the following command
-(This example installs the v3.0.26 tag. Replace the version tag with the one you want).::
-
-    pip install git+git://github.com/shotgunsoftware/python-api.git@v3.0.26
-
-
-requirements.txt
-~~~~~~~~~~~~~~~~
-If you're using pip with `requirements.txt`, add the following line::
-
-    git+git://github.com/shotgunsoftware/python-api.git
-
-Installing manually
--------------------
-If you're not using ``pip`` to install the Shotgun Python API (eg. you've forked it or downloaded
-it directly from Github), you'll need to save it somewhere your python installation can find it.
-
-
-.. seealso:: For more information on ``PYTHONPATH`` and using modules in Python, see
-    http://docs.python.org/tutorial/modules.html
-
 
 
 Indices and tables

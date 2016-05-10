@@ -9,7 +9,7 @@ Data Types
 addressing
 **********
 
-:value: :func:`list`
+:value: :obj:`list`
 
 List of dicts::
 
@@ -27,13 +27,13 @@ List of dicts::
 checkbox
 ********
 
-:value: :func:`bool` (``True`` | ``False``)
+:value: :obj:`bool` (``True`` | ``False``)
 
 *****
 color
 *****
 
-:value: :func:`str`
+:value: :obj:`str`
 :example: ``255,0,0`` | ``pipeline_step``
 
 ``pipeline_step`` indicates the Task color inherits from the Pipeline Step color.
@@ -42,14 +42,14 @@ color
 currency
 ********
 
-:value: :func:`double` | :func:`None`
+:value: :obj:`float` | :obj:`None`
 :range: ``-9999999999999.99``, ``9999999999999.99``
 
 ****
 date
 ****
 
-:value: :func:`str` | :func:`None`
+:value: :obj:`str` | :obj:`None`
 :range: Year must be >= 1970
 :example: ``YYYY-MM-DD``
 
@@ -57,7 +57,7 @@ date
 date_time
 *********
 
-:value: :mod:`datetime` | :func:`None`
+:value: :mod:`datetime` | :obj:`None`
 :range: Year must be >= 1970
 
     .. note::
@@ -68,7 +68,7 @@ date_time
 duration
 ********
 
-:value: :func:`int` | :func:`None`
+:value: :obj:`int` | :obj:`None`
 :range: ``-2147483648``, ``2147483647``
 
 Length of time, in minutes
@@ -77,7 +77,7 @@ Length of time, in minutes
 entity
 ******
 
-:value: :func:`dict` | :func:`None`
+:value: :obj:`dict` | :obj:`None`
 
 ::
 
@@ -91,14 +91,14 @@ entity
 float
 *****
 
-:value: :func:`double` | :func:`None`
+:value: :obj:`float` | :obj:`None`
 :range: ``-999999999.999999``, ``999999999.999999``
 
 *******
 footage
 *******
 
-:value: :func:`str` | :func:`None` ``FF-ff``
+:value: :obj:`str` | :obj:`None` ``FF-ff``
 :range: Frames must be < Preferences value for "Advanced > Number of frames per foot of film"
 
     .. note::
@@ -109,19 +109,19 @@ footage
 image (read-only)
 *****************
 
-:value: :func:`str` | :func:`None`
+:value: :obj:`str` | :obj:`None`
 
 ****
 list
 ****
 
-:value: :func:`str` | :func:`None`
+:value: :obj:`str` | :obj:`None`
 
 ************
 multi_entity
 ************
 
-:value: :func:`list`
+:value: :obj:`list`
 
 List of dicts
 
@@ -140,14 +140,14 @@ List of dicts
 number
 ******
 
-:value: :func:`int` | ``None``
+:value: :obj:`int` | ``None``
 :range: ``-2147483648``, ``2147483647``
 
 ********
 password
 ********
 
-:value: :func:`string` | ``None``
+:value: :obj:`string` | ``None``
 
 Returned values of password fields are replaced with ``*******`` for security
 
@@ -155,44 +155,44 @@ Returned values of password fields are replaced with ``*******`` for security
 percent
 *******
 
-:value: :func:`int` | ``None``
+:value: :obj:`int` | ``None``
 :range: ``-2147483648``, ``2147483647``
 
 ************
 serializable
 ************
 
-:value: :func:`dict` | ``None``
+:value: :obj:`dict` | ``None``
 
 ***********
 status_list
 ***********
 
-:value: :func:`str` | ``None``
+:value: :obj:`str` | ``None``
 
 *****************************
 system_task_type (deprecated)
 *****************************
 
-:value: :func:`str` | ``None``
+:value: :obj:`str` | ``None``
 
 ********
 tag_list
 ********
 
-:value: :func:`list`
+:value: :obj:`list`
 
 ********
 text
 ********
 
-:value: :func:`str` | ``None``
+:value: :obj:`str` | ``None``
 
 ********
 timecode
 ********
 
-:value: :func:`int` | ``None``
+:value: :obj:`int` | ``None``
 :range: ``-2147483648``, ``2147483647``
 
 Length of time, in milliseconds (1000 = 1 second)
@@ -201,7 +201,7 @@ Length of time, in milliseconds (1000 = 1 second)
 url (file/link field)
 *********************
 
-:value: :func:`dict` | ``None``
+:value: :obj:`dict` | ``None``
 
 ::
 
@@ -217,7 +217,7 @@ Local Files
 
 Additional keys exist for local file links
 
-:value: :func:`dict` | ``None``
+:value: :obj:`dict` | ``None``
 
 ::
 

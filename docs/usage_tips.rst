@@ -8,6 +8,23 @@ pipeline. However, there's always a couple of things that crop up that our users
 aware of. Those are the types of things you'll find below. We'll be adding to this document over 
 time as new questions come up from our users that exhibit these types of cases.
 
+*********
+Importing
+*********
+
+We strongly recommend you import the entire `shotgun_api3` module instead of just importing the
+:class:`shotgun_api3.Shotgun` class from the module. There is other important functionality that
+is managed at the module level which may not work as expected if you only import the
+:class:`shotgun_api3.Shotgun` object.
+
+Do::
+
+    import shotgun_api3
+
+Don't::
+
+    from shotgun_api3 import Shotgun
+
 *************
 Entity Fields
 *************
@@ -26,6 +43,42 @@ consistent way to represent entities returned via the API.
 - ``name``: the display name of the entity. For most entity types this is the value of the ``code``
   field but not always. For example, on the Ticket and Delivery entities the ``name`` key would 
   contain the value of the ``title`` field.
+
+***************************
+CustomEntities from the API
+***************************
+Entity types are always referenced by their original names. So if you enable CustomEntity01 and
+call it **Widget**. When you access it via the API, you'll still use CustomEntity01 as the
+``entity_type``.
+
+If you want to be able to remember what all of your CustomEntities represent in a way where you
+don't need to go look it up all the time when you're writing a new script, we'd suggest creating
+a mapping table or something similar and dumping it in a shared module that your studio uses.
+Something like the following::
+
+    # studio_globals.py
+
+    entity_type_map = {
+      'Widget': 'CustomEntity01',
+      'Foobar': 'CustomEntity02',
+      'Baz': 'CustomNonProjectEntity01,
+    }
+
+    # or even simpler, you could use a global like this
+    ENTITY_WIDGET = 'CustomEntity01'
+    ENTITY_FOOBAR = 'CustomEntity02'
+    ENTITY_BAZ = 'CustomNonProjectEntity01'
+
+Then when you're writing scripts, you don't need to worry about remembering which Custom Entity
+"Foobars" are, you just use your global::
+
+    import shotgun_api3
+    import studio_globals
+
+    sg = Shotgun('https://mystudio.shotgunstudio.com', 'script_name', '0123456789abcdef0123456789abcdef0123456')
+    result = sg.find(studio_globals.ENTITY_WIDGET,
+                     filters=[['sg_status_list', 'is', 'ip']],
+                     fields=['code', 'sg_shot'])
 
 *******************************************
 Shotgun UI fields not available via the API
@@ -110,40 +163,47 @@ Shotgun logger to a higher level::
     sg_log = logging.getLogger('shotgun_api3')
     sg_log.setLevel(logging.ERROR)
 
-**********
-IronPython
-**********
+*************
+Optimizations
+*************
 
-We do not test against IronPython and cannot be sure that we won't introduce breaking changes or 
-that we will be compatible with future releases of IronPython. While we don't officially support 
-IronPython, we certainly will do our best to figure out any issues that come up while using it and 
-how to avoid them.
+Combining Related Queries
+=========================
+Reducing round-trips for data via the API can significantly improve the speed of your application.
+Much like "Bubble Fields" / "Field Hopping" in the UI, we can poll Shotgun for data on the fields
+of entities linked to our main query, both as a part of the query parameters as well as in the
+data returned.
 
-As of July 9, 2015 you can look at this fork of the repo to see what changes were needed as of that 
-date to make things work. The original fork was as of v3.0.20 of the API. Big thanks to our awesome 
-clients Pixomondo for making their work public and letting us refer to it:
+Starting with a simple and common example, many queries require knowing what project your data is
+associated with. Without using "field hopping" in an API call, you would first get the project and
+then use that data for your follow up query, like so::
 
-https://github.com/Pixomondo/python-api/tree/v3.0.20.ipy
+    # Get the project
+    project_name = 'Big Buck Bunny'
+    sg_project = sg.find("Project", [['name', 'is', project_name]])
 
-v3.0.20 can be used with IronPython with a little bit of added work:
+    # Use project result to get associated shots
+    sg_shots = sg.find("Shot", [['project', 'is', sg_project]], ['code'])
 
-- The Python API uses the zlib module to handle decompressing the gzipped response from the server. 
-  There's no built-in zlib module in IronPython, but there's a potential solution from Jeff Hardy at 
-  https://bitbucket.org/jdhardy/ironpythonzlib/src/. And the blog post about it here 
-  http://blog.jdhardy.ca/2008/12/solving-zlib-problem-ironpythonzlib.html
+With "field hopping" you can combine these queries into::
 
-- If you encounter any SSL errors like 
-  ``unknown field: SERIALNUMBER=0123456789`` or ``:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed``. 
-  For now you can workaround this problem by disabling ssl certificate validation which we've 
-  encountered some intermittent issues with. Set ``NO_SSL_VALIDATION = True`` for either case. 
-  See :const:`shotgun_api3.shotgun.NO_SSL_VALIDATION`
-  
-- If you encounter ``LookupError: unknown encoding: idna``, you can force utf-8 by changing 
-  iri2uri.py ~ln 71 from ``authority = authority.encode('idna')`` to 
-  ``authority = authority.encode('utf-8')``
+    # Get all shots on 'Big Buck Bunny' project
+    project_name = 'Big Buck Bunny'
+    sg_shots = sg.find("Shot", [['project.Project.name', 'is', project_name]], ['code'])
 
-- If you encounter an SSL error such as ``SSL3_READ_BYTES:sslv3 alert handshake failure``, then the 
-  lower level SSL library backing python's network infrastructure is attempting to connect to our 
-  servers via SSLv3, which is no longer supported. You can use the code from this gist to force the 
-  SSL connections to use a specific protocol. The forked repo linked above has an example of how to 
-  do that to force the use of TLSv1.
+As you can see above, the syntax is to use "``.``" dot notation, joining field names to entity
+types in a chain. In this example we start with the field ``project`` on the Shot entity, then
+specify we're looking for the "name" field on the Project entity by specifying ``Project.name``.
+
+Now that we've demonstrated querying using dot notation, let's take a look at returning linked data
+by adding the status of each Sequence entity associated with each Shot in our previous query::
+
+    # Get shot codes and sequence status all in one query
+    project_name = 'Big Buck Bunny'
+    sg_shots = sg.find("Shot", [['project.Project.name', 'is', project_name]],
+                       ['code', 'sg_sequence.Sequence.sg_status_list'])
+
+.. note::
+    Due to performance concerns with deep linking, we only support using dot syntax chains for
+    single-entity relationships. This means that if you try to pull data through a multi-entity
+    field you will not get the desired result.

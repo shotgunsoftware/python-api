@@ -114,7 +114,7 @@ class AuthenticationFault(Fault):
 
 class MissingTwoFactorAuthenticationFault(Fault):
     """Exception when the server side reports an error related to missing
-    two factor authentication credentials
+    two-factor authentication credentials
     """
     pass
 
@@ -849,8 +849,8 @@ class Shotgun(object):
         ...              summary_fields=[{'field':'id', 'type':'count'}])
         {'groups': [], 'summaries': {'id': 15}}
 
-        * ``summaries`` contains the total summary for the query. Each key is the field summarized
-          and the value is the result of the summary operation for the entire result set.
+        ``summaries`` contains the total summary for the query. Each key is the field summarized
+        and the value is the result of the summary operation for the entire result set.
 
         .. note::
             You cannot perform more than one summary on a field at a time, but you can summarize
@@ -869,15 +869,15 @@ class Shotgun(object):
                     {'group_name': 'Vehicle', 'group_value': 'Vehicle', 'summaries': {'id': 4}}],
          'summaries': {'id': 15}}
 
-        * ``summaries`` contains the total summary for the query.
-        * ``groups`` contains the summary for each group.
+        - ``summaries`` contains the total summary for the query.
+        - ``groups`` contains the summary for each group.
 
-            * ``group_name`` is the display name for the group.
-            * ``group_value`` is the actual value of the grouping value. This is often the same as
+            - ``group_name`` is the display name for the group.
+            - ``group_value`` is the actual value of the grouping value. This is often the same as
               ``group_name`` but in the case when grouping by entity, the ``group_name`` may be
               ``PuppyA`` and the group_value would be
               ``{'type':'Asset','id':922,'name':'PuppyA'}``.
-            * ``summaries`` contains the summary calculation dict for each field requested.
+            - ``summaries`` contains the summary calculation dict for each field requested.
 
         **Example: Count all Tasks for a Sequence and find the latest due_date**
 
@@ -980,7 +980,7 @@ class Shotgun(object):
         
         :param str entity_type: The entity type to summarize
         :param list filters: A list of conditions used to filter the find query. Uses the same
-            syntax as :ref:`~shotgun_api3.Shotgun.find` method.
+            syntax as :meth:`~shotgun_api3.Shotgun.find` method.
         :param list summary_fields: A list of dictionaries with the following keys:
 
             :field: The internal Shotgun field name you are summarizing.
@@ -1007,7 +1007,6 @@ class Shotgun(object):
 
         :returns: dictionary containing grouping and summaries keys.
         :rtype: dict
-
         """
 
         if not isinstance(grouping, list) and grouping is not None:
@@ -1280,9 +1279,9 @@ class Shotgun(object):
         :param list requests: A list of dict's of the form which have a
             request_type key and also specifies
             
-            * create: ``entity_type``, data dict of fields to set
-            * update: ``entity_type``, ``entity_id``, data dict of fields to set, and optionally ``multi_entity_update_modes``
-            * delete: ``entity_type`` and entity_id
+            - create: ``entity_type``, data dict of fields to set
+            - update: ``entity_type``, ``entity_id``, data dict of fields to set, and optionally ``multi_entity_update_modes``
+            - delete: ``entity_type`` and entity_id
         :returns: A list of values for each operation. Create and update requests return a dict of
             the fields updated. Delete requests return ``True`` if the entity was deleted.
         :rtype: list
@@ -1352,12 +1351,12 @@ class Shotgun(object):
         :description: the description entered into the work day rule exception if applicable.
         :reason: one of six options:
 
-            * STUDIO_WORK_WEEK: standard studio schedule applies
-            * STUDIO_EXCEPTION: studio-wide exception applies
-            * PROJECT_WORK_WEEK: standard project schedule applies
-            * PROJECT_EXCEPTION: project-specific exception applies
-            * USER_WORK_WEEK: standard user work week applies
-            * USER_EXCEPTION: user-specific exception applies
+            - STUDIO_WORK_WEEK: standard studio schedule applies
+            - STUDIO_EXCEPTION: studio-wide exception applies
+            - PROJECT_WORK_WEEK: standard project schedule applies
+            - PROJECT_EXCEPTION: project-specific exception applies
+            - USER_WORK_WEEK: standard user work week applies
+            - USER_EXCEPTION: user-specific exception applies
 
         :working: boolean indicating whether it is a "working" day or not.
 
@@ -2288,7 +2287,7 @@ class Shotgun(object):
         :param str user_login: Login name of Shotgun HumanUser
         :param str user_password: Password for Shotgun HumanUser
         :param str auth_token: One-time token required to authenticate Shotgun HumanUser
-            when two factor authentication is turned on.
+            when two-factor authentication is turned on.
         :returns: Standard Shotgun dictionary representing the HumanUser if authentication
             succeeded. ``None`` if authentication failed for any reason.
         :rtype: dict
@@ -2452,10 +2451,10 @@ class Shotgun(object):
         
         Several ways to limit the results of the query are available: 
         
-        * Using the ``project_ids`` parameter, you can provide a list of Project ids to search
+        -Using the ``project_ids`` parameter, you can provide a list of Project ids to search
           across. Leaving this at its default value of ``None`` will search across all Shotgun data.
         
-        * You need to define which subset of entity types to search using the ``entity_types``
+        - You need to define which subset of entity types to search using the ``entity_types``
           parameter. Each of these entity types can be associated with a filter query to further
           reduce the list of matches. The filter list is using the standard filter syntax used by
           for example the :meth:`~shotgun_api3.Shotgun.find` method.
@@ -3012,8 +3011,8 @@ class Shotgun(object):
         """Transforms data types or values before they are sent by the
         client.
 
-        * changes timezones
-        * converts dates and times to strings
+        - changes timezones
+        - converts dates and times to strings
         """
 
         if self.config.convert_datetimes_to_utc:
@@ -3124,9 +3123,9 @@ class Shotgun(object):
     def _parse_records(self, records):
         """Parses 'records' returned from the api to do local modifications:
 
-        * Insert thumbnail urls
-        * Insert local file paths.
-        * Revert &lt; html entities that may be the result of input sanitization
+        - Insert thumbnail urls
+        - Insert local file paths.
+        - Revert &lt; html entities that may be the result of input sanitization
           mechanisms back to a litteral < character.
 
         :param records: List of records (dicts) to process or a single record.

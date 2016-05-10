@@ -4,15 +4,18 @@
 API Reference
 #############
 
-*************************
-shotgun Module attributes
-*************************
 
-The :mod:`shotgun_api3.shotgun` module is a container for the :class:`~shotgun_api3.Shotgun` 
+*****************************
+``shotgun`` Module Attributes
+*****************************
+
+The :mod:`shotgun_api3.shotgun` module is a container for the :class:`~shotgun_api3.Shotgun`
 class. There are a couple of useful attributes to note.
 
 .. automodule:: shotgun_api3.shotgun
-    :members: NO_SSL_VALIDATION, LOG, __version__
+    :members: NO_SSL_VALIDATION, LOG
+    :private-members:
+    :special-members:
 
 *********
 Shotgun()

@@ -11,7 +11,7 @@ Basic Filters
 Filters are represented as a list of conditions that will be combined using the supplied
 filter_operator (``any`` or ``all``). Each condition follows the basic simple form::
 
-    [ <field>, <relation>, <value(s)> ]
+    [<field>, <relation>, <value(s)>]
 
 Example
 =======
@@ -33,7 +33,7 @@ Complex Filters
 
 Complex filters can be a dictionary that represents a complex sub-condition of the form::
 
-    { "filter_operator": "any", "filters": [ <list of conditions> ] }
+    {"filter_operator": "any", "filters": [<list of conditions>]}
 
 Example
 =======
