@@ -40,10 +40,9 @@ setup(
     keywords='shotgun api development vfx animation games',
     packages=packages,
     package_data={
-        '': ['LICENSE', 'NOTICE'], 
+        '': ['LICENSE', 'NOTICE'],
         'lib/httplib2': ['cacerts.txt']
     },
     include_package_data=True,
     zip_safe=False,
 )
-
