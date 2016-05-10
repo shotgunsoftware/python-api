@@ -1,23 +1,32 @@
-Tutorials
-######################################
+########
+Examples
+########
 
-Here's a list of various tutorials to walk through that should provide you with a good base understanding of how to use the Shotgun API and what you can do with it.
+Here's a list of various tutorials to walk through that should provide you with a good base 
+understanding of how to use the Shotgun API and what you can do with it.
 
+********
 Beginner
-========
+********
 
-- Create the Server Connection
-- Create a Shot
-- Find a Shot
-- Update a Shot
-- Delete a Shot
-- Create a Shot with a Task Template
-- Create a Version and link it to a Shot
-- Upload a Thumbnail to a Version
-- Examples + Advanced Usage
+.. toctree::
+    :maxdepth: 1
 
+    examples/basic_sg_instance
+    examples/basic_create_shot
+    examples/basic_find_shot
+    examples/basic_update_shot
+    examples/basic_delete_shot
+    examples/basic_create_shot_task_template
+    examples/basic_create_version_link_shot
+    examples/basic_upload_thumbnail_version
+
+********
 Advanced
-========
+********
+
+.. toctree::
+    :maxdepth: 1
 
 - Accessing CustomEntities via the API
 - Task Dependencies
