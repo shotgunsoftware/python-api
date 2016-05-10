@@ -5,6 +5,7 @@ test_api_long for other tests.
 """
 
 import datetime
+import sys
 import os
 import re
 from mock import patch, Mock, MagicMock
@@ -15,7 +16,7 @@ import urlparse
 import urllib2
 
 import shotgun_api3
-from shotgun_api3.lib.httplib2 import Http
+from shotgun_api3.lib.httplib2 import Http, SSLHandshakeError
 
 import base
 
@@ -317,7 +318,19 @@ class TestShotgunApi(base.LiveTestBase):
             self.version['id'], {'image': None})
         expected_clear_thumbnail = {'id': self.version['id'], 'image': None, 'type': 'Version'}
         self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
+        
+    def test_upload_thumbnail_with_upload_function(self):
+        """Upload thumbnail via upload function test"""
+        path = os.path.abspath(os.path.expanduser(os.path.join(os.path.dirname(__file__), "sg_logo.jpg")))
 
+        # upload thumbnail
+        thumb_id = self.sg.upload("Task", self.task['id'], path, 'image')
+        self.assertTrue(isinstance(thumb_id, int))
+        
+        #upload filmstrip thumbnail
+        f_thumb_id = self.sg.upload("Task", self.task['id'], path, 'filmstrip_image')
+        self.assertTrue(isinstance(f_thumb_id, int))
+        
     def test_linked_thumbnail_url(self):
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
@@ -626,7 +639,7 @@ class TestDataTypes(base.LiveTestBase):
     '''Test fields representing the different data types mapped on the server side.
 
      Untested data types:  password, percent, pivot_column, serializable, image, currency
-                           multi_entity, system_task_type, timecode, url, uuid, url_template
+                           system_task_type, timecode, url, uuid, url_template
     '''
     def setUp(self):
         super(TestDataTypes, self).setUp()
@@ -726,6 +739,61 @@ class TestDataTypes(base.LiveTestBase):
         self.assertEqual(expected, actual)
 
 
+    def test_set_multi_entity(self):
+        sg = shotgun_api3.Shotgun( self.config.server_url,
+                                   self.config.script_name,
+                                   self.config.api_key )
+        keys = ['project','user','code']
+        data = {'project':self.project,
+                'user':self.human_user,
+                'code':'Alpha'}
+        version_1 = base._find_or_create_entity(sg, 'Version', data, keys)
+        data = {'project':self.project,
+                'user':self.human_user,
+                'code':'Beta'}
+        version_2 = base._find_or_create_entity(sg, 'Version', data, keys)
+
+        entity = 'Playlist'
+        entity_id = self.playlist['id']
+        field_name = 'versions'
+
+        # Default set behaviour
+        pos_values = [[version_1, version_2]]
+        expected, actual = self.assert_set_field(entity, entity_id,
+            field_name, pos_values)
+        self.assertEqual(len(expected), len(actual))
+        self.assertEqual(
+            sorted([x['id'] for x in expected]),
+            sorted([x['id'] for x in actual])
+        )
+
+        # Multi-entity remove mode
+        pos_values = [[version_1]]
+        expected, actual = self.assert_set_field(entity, entity_id,
+            field_name, pos_values, multi_entity_update_mode='remove')
+        self.assertEqual(1, len(actual))
+        self.assertEqual(len(expected), len(actual))
+        self.assertNotEqual(expected[0]['id'],actual[0]['id'])
+        self.assertEqual(version_2['id'], actual[0]['id'])
+
+        # Multi-entity add mode
+        pos_values = [[version_1]]
+        expected, actual = self.assert_set_field(entity, entity_id,
+            field_name, pos_values, multi_entity_update_mode='add')
+        self.assertEqual(2, len(actual))
+        self.assertTrue(version_1['id'] in [x['id'] for x in actual])
+
+        # Multi-entity set mode
+        pos_values = [[version_1, version_2]]
+        expected, actual = self.assert_set_field(entity, entity_id,
+            field_name, pos_values, multi_entity_update_mode='set')
+        self.assertEqual(len(expected), len(actual))
+        self.assertEqual(
+            sorted([x['id'] for x in expected]),
+            sorted([x['id'] for x in actual])
+        )
+
+
     def test_set_number(self):
         entity = 'Shot'
         entity_id = self.shot['id']
@@ -792,13 +860,17 @@ class TestDataTypes(base.LiveTestBase):
                                                  pos_values)
         self.assertEqual(expected, actual)
 
-    def assert_set_field(self, entity, entity_id, field_name, pos_values):
+    def assert_set_field(self, entity, entity_id, field_name, pos_values, multi_entity_update_mode=None):
         query_result = self.sg.find_one(entity,
                                          [['id', 'is', entity_id]],
                                          [field_name])
         initial_value = query_result[field_name]
         new_value = (initial_value == pos_values[0] and pos_values[1]) or pos_values[0]
-        self.sg.update(entity, entity_id, {field_name:new_value})
+        if multi_entity_update_mode:
+            self.sg.update(entity, entity_id, {field_name:new_value},
+                multi_entity_update_modes={field_name:multi_entity_update_mode})
+        else:
+            self.sg.update(entity, entity_id, {field_name:new_value})
         new_values = self.sg.find_one(entity,
                                      [['id', 'is', entity_id]],
                                      [field_name])
@@ -1470,6 +1542,73 @@ class TestErrors(base.TestBase):
         mock_request.return_value = (response, {})
         self.assertRaises(shotgun_api3.ProtocolError, self.sg.find_one, 'Shot', [])
 
+    @patch('shotgun_api3.shotgun.Http.request')
+    def test_sha2_error(self, mock_request):
+        # Simulate the SSLHandshakeError raised with SHA-2 errors
+        mock_request.side_effect = SSLHandshakeError("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
+                                    "encoding routines:ASN1_item_verify: unknown message digest "
+                                    "algorithm")
+
+        # save the original state
+        original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
+
+        # ensure we're starting with the right values
+        self.sg.reset_user_agent()
+
+        # ensure the initial settings are correct. These will be different depending on whether
+        # the ssl module imported successfully or not.
+        if "ssl" in sys.modules:
+            self.assertFalse(self.sg.config.no_ssl_validation)
+            self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
+            self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
+            self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
+        else:
+            self.assertTrue(self.sg.config.no_ssl_validation)
+            self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
+            self.assertFalse("(validate)" in " ".join(self.sg._user_agents))
+            self.assertTrue("(no-validate)" in " ".join(self.sg._user_agents))
+
+        try:
+            result = self.sg.info()
+        except SSLHandshakeError:
+            # ensure the api has reset the values in the correct fallback behavior
+            self.assertTrue(self.sg.config.no_ssl_validation)
+            self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
+            self.assertFalse("(validate)" in " ".join(self.sg._user_agents))
+            self.assertTrue("(no-validate)" in " ".join(self.sg._user_agents))
+
+        if original_env_val is not None:
+            os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
+
+    @patch('shotgun_api3.shotgun.Http.request')
+    def test_sha2_error_with_strict(self, mock_request):
+        # Simulate the SSLHandshakeError raised with SHA-2 errors
+        mock_request.side_effect = SSLHandshakeError("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
+                                    "encoding routines:ASN1_item_verify: unknown message digest "
+                                    "algorithm")
+
+        # save the original state
+        original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
+        os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = "1"
+        
+        # ensure we're starting with the right values
+        self.sg.config.no_ssl_validation = False
+        shotgun_api3.shotgun.NO_SSL_VALIDATION = False
+        self.sg.reset_user_agent()
+
+        try:
+            result = self.sg.info()
+        except SSLHandshakeError:
+            # ensure the api has NOT reset the values in the fallback behavior because we have
+            # set the env variable to force validation
+            self.assertFalse(self.sg.config.no_ssl_validation)
+            self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
+            self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
+            self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
+
+        if original_env_val is not None:
+            os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
+
     @patch.object(urllib2.OpenerDirector, 'open')
     def test_sanitized_auth_params(self, mock_open):
         # Simulate the server blowing up and giving us a 500 error
@@ -1546,14 +1685,15 @@ class TestHumanUserSudoAuth(base.TestBase):
                     http_proxy=self.config.http_proxy,
                     sudo_as_login="blah" )
         self.assertRaises(shotgun_api3.Fault, x.find_one, 'Shot', [])
+        expected = "The user does not have permission to 'sudo':"
         try :
             x.find_one('Shot',[])
         except shotgun_api3.Fault, e:
             # py24 exceptions don't have message attr
             if hasattr(e, 'message'):
-                self.assertEquals("The user does not have permission to 'sudo': ", e.message)
+                self.assert_(e.message.startswith(expected))
             else:
-                self.assertEquals("The user does not have permission to 'sudo': ", e.args[0])
+                self.assert_(e.args[0].startswith(expected))
 
 
 

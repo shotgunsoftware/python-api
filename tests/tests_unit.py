@@ -84,6 +84,23 @@ class TestShotgunInit(unittest.TestCase):
         self.assertEquals(sg.config.proxy_port, proxy_port)
         self.assertEquals(sg.config.proxy_user, proxy_user)
         self.assertEquals(sg.config.proxy_pass, proxy_pass)
+
+    def test_http_proxy_with_at_in_password(self):
+        proxy_server = "someserver.com"
+        proxy_port = 1234
+        proxy_user = "user"
+        proxy_pass = "p@ssword"
+        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server, 
+                                      proxy_port)
+        sg = api.Shotgun(self.server_path, 
+                         self.script_name, 
+                         self.api_key, 
+                         http_proxy=http_proxy,
+                         connect=False)
+        self.assertEquals(sg.config.proxy_server, proxy_server)
+        self.assertEquals(sg.config.proxy_port, proxy_port)
+        self.assertEquals(sg.config.proxy_user, proxy_user)
+        self.assertEquals(sg.config.proxy_pass, proxy_pass)
  
     def test_malformatted_proxy_info(self):
         proxy_server = "someserver.com"

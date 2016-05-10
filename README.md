@@ -47,16 +47,56 @@ Integration and unit tests are provided.
 
 [![Build Status](https://secure.travis-ci.org/shotgunsoftware/python-api.png?branch=master)](http://travis-ci.org/shotgunsoftware/python-api)
 
-- test_client and tests_unit mock server interaction and do not require a shotgun instance to be available.
-- test_api and test_api_long do require a shotgun instance, with a script key available for the tests. These tests rely on a tests/config file, which can be created by renaming example_config and supplying the server and script user values. The tests will set up test data on the server based on the data set forth in the config. This data will be manipulated by the tests, and should not be used for other purposes.
-- To run all of the tests, use the shell script run-tests. This script require nose to be installed.
+- All tests require the "nose" unit testing tools (http://nose.readthedocs.org), and a "tests/config" file (copy from "tests/example_config").
+- Tests can be run individually like this: `nosetest tests/test_client.py`
+- test_client and tests_unit use mock server interaction and do not require a shotgun instance to be available (no modifacations to tests/config necessary).
+- test_api and test_api_long do require a shotgun instance, with a script key available for the tests. The server and script user values must be supplied in the tests/config file. The tests will set up test data on the server based on the data set forth in the config. This data will be manipulated by the tests, and should not be used for other purposes.
+- To run all of the tests, use the shell script run-tests.
 
 ## Changelog
 
-**v3.0.24 - TBD**
+**v3.0.31.dev - TBD**
 
    + TBD
 
+**v3.0.30 - 2016 Apr 25**
+
+   + Add option to use add/remove/set modes when updating multi-entity fields
+   + Add explicit file handler close to download_attachment
+   + Add basic find() ordering support to mockgun
+   + Allow for product specific authorization parameters
+
+**v3.0.29 - 2016 Mar 7**
+
+   + Reverted the change to the default field names for image uploading.
+
+**v3.0.28 - 2016 Mar 3**
+
+   + Refactored nested classing of sgtimezone library to allow for serializable timestamps.
+
+**v3.0.27 - 2016 Feb 18**
+
+   + Make sure HTTP proxy authentication works with the @ character in a password.
+   + Make sure sudo authentication test works with Shotgun versions after 6.3.10
+   + Smarter uploading of thumbnails and filmstrips with the upload() method.
+   + Improve Travis build integration of the Python-API to run the full suite of
+   API tests instead of just the unit and client tests.
+
+**v3.0.26 - 2016 Feb 1**
+
+   + Updating testing framework to use environment variables inconjunction with existing example_config file so that commits and pull requests are automatically run on travis-ci.
+   + Fix to prevent stripping out case-sensitivity of a URL if the user passes their credentials to config.server as an authrization header.
+
+**v3.0.25 - 2016 Jan 12**
+
+   + Add handling for Python versions incompatible with SHA-2 (see http://blog.shotgunsoftware.com/2016/01/important-ssl-certificate-renewal-and.html).
+   + Add SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable to prevent disabling certficate validation when SHA-2 validation is not available.
+   + Add SSL info to user-agent header.
+
+**v3.0.24 - 2016 Jan 08**
+
+   + Not released.
+     
 **v3.0.23 - 2015 Oct 26**
 
    + Fix for python bug on Windows loading mimetypes module (http://bugs.python.org/issue23371) thanks to @patrickwolf.

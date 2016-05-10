@@ -48,6 +48,8 @@ class TestShotgunClient(base.MockTestBase):
         self.assertTrue(str(client_caps).startswith("ClientCapabilities"))
         self.assertTrue(client_caps.py_version.startswith(str(sys.version_info[0])))
         self.assertTrue(client_caps.py_version.endswith(str(sys.version_info[1])))
+        self.assertTrue(client_caps.ssl_version is not None)
+        # todo test for version string (eg. "1.2.3ng") or "unknown"
 
     def test_detect_server_caps(self):
         '''test_detect_server_caps tests that ServerCapabilities object is made
@@ -87,6 +89,26 @@ class TestShotgunClient(base.MockTestBase):
         sc.version = (2,5,0)
         sc._ensure_json_supported()
 
+    def test_extra_auth_params(self):
+        """test_extra_auth_params tests provided auth_params are included in request"""
+        # ok for the mock server to just return an error, we want to look at
+        # what's in the request
+        self._mock_http({ "message":"Go BANG",
+                          "exception":True })
+
+        def auth_args():
+            args = self.sg._http_request.call_args[0]
+            body = args[2]
+            body = json.loads(body)
+            return body["params"][0]
+
+        self.sg.config.extra_auth_params = None
+        self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
+        self.assertTrue("product" not in auth_args())
+
+        self.sg.config.extra_auth_params = {"product":"rv"}
+        self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
+        self.assertEqual("rv", auth_args()["product"])
 
     def test_session_uuid(self):
         """test_session_uuid tests session UUID is included in request"""
@@ -158,12 +180,17 @@ class TestShotgunClient(base.MockTestBase):
         # test default user agent
         self.sg.info()
         client_caps = self.sg.client_caps
+        config = self.sg.config
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s)" % (api.__version__, 
-                                                          client_caps.py_version,
-                                                          client_caps.platform.capitalize()
-                                                          )
+        ssl_validate_lut = {True: "no-validate", False: "validate"}
+        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s)" % (
+                        api.__version__, 
+                        client_caps.py_version,
+                        client_caps.platform.capitalize(),
+                        client_caps.ssl_version,
+                        ssl_validate_lut[config.no_ssl_validation]
+                        )
         self.assertEqual(expected, headers.get("user-agent"))
 
         # test adding to user agent
@@ -171,10 +198,12 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.info()
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s); test-agent" % (
+        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s); test-agent" % (
                         api.__version__, 
                         client_caps.py_version,
-                        client_caps.platform.capitalize()
+                        client_caps.platform.capitalize(),
+                        client_caps.ssl_version,
+                        ssl_validate_lut[config.no_ssl_validation]
                         )
         self.assertEqual(expected, headers.get("user-agent"))
 
@@ -183,10 +212,13 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.info()
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s)" % (api.__version__, 
-                                                          client_caps.py_version,
-                                                          client_caps.platform.capitalize(),
-                                                          )
+        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s)" % (
+                        api.__version__, 
+                        client_caps.py_version,
+                        client_caps.platform.capitalize(),
+                        client_caps.ssl_version,
+                        ssl_validate_lut[config.no_ssl_validation]
+                        )
         self.assertEqual(expected, headers.get("user-agent"))
 
     def test_connect_close(self):
