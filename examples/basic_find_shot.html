@@ -1,0 +1,339 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Find a Shot &mdash; python-api pypi documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="python-api pypi documentation" href="../index.html"/>
+        <link rel="up" title="Examples" href="../tutorials.html"/>
+        <link rel="next" title="Update A Shot" href="basic_update_shot.html"/>
+        <link rel="prev" title="Create A Shot" href="basic_create_shot.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='../_static/logo_sg@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../index.html" class="icon icon-home"> python-api
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage_tips.html">API Usage Tips</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../tutorials.html#beginner">Beginner</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="basic_sg_instance.html">Create a Shotgun API instance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic_create_shot.html">Create A Shot</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="">Find a Shot</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#building-the-query">Building the Query</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#seeing-the-result">Seeing the Result</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-complete-example">The Complete Example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="basic_update_shot.html">Update A Shot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic_delete_shot.html">Delete A Shot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic_create_shot_task_template.html">Create a Shot with a Task Template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic_create_version_link_shot.html">Create a Version Linked to a Shot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic_upload_thumbnail_version.html">Upload a Thumbnail for a Version</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials.html#advanced">Advanced</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter_syntax.html">Filter Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_types.html">Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../attachments.html">Working With Files (Attachments)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../local_files.html">Working With Local Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../packaging.html">Packaging an application with py2app (or py2exe)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server_changelog.html">Shotgun Server API Changelog</a></li>
+</ul>
+
+            
+          
+       
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>python-api</b> pypi.<br>
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
+
+    </div>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">python-api</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../tutorials.html">Examples</a> &raquo;</li>
+      
+    <li>Find a Shot</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="find-a-shot">
+<span id="example-find-shot"></span><h1>Find a Shot<a class="headerlink" href="#find-a-shot" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="building-the-query">
+<h2>Building the Query<a class="headerlink" href="#building-the-query" title="Permalink to this headline">¶</a></h2>
+<p>We are going to assume we know the &#8216;id&#8217; of the Shot we&#8217;re looking for in this example.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="mi">40435</span><span class="p">]]</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Pretty simple right? Well here&#8217;s a little more insight into what&#8217;s going on.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">filters</span></code> is an list of filter conditions. In this example we are filtering for Shots where
+the <code class="docutils literal"><span class="pre">id</span></code> column is <strong>40435</strong>.</li>
+<li><code class="docutils literal"><span class="pre">sg</span></code> is the Shotgun API instance.</li>
+<li><code class="docutils literal"><span class="pre">find_one()</span></code> is the <a class="reference internal" href="../reference.html#shotgun_api3.Shotgun.find_one" title="shotgun_api3.Shotgun.find_one"><code class="xref py py-meth docutils literal"><span class="pre">find_one()</span></code></a> API method we are calling. We
+provide it with the entity type we&#8217;re searching for and our filters.</li>
+</ul>
+</div>
+<div class="section" id="seeing-the-result">
+<h2>Seeing the Result<a class="headerlink" href="#seeing-the-result" title="Permalink to this headline">¶</a></h2>
+<p>So what does this return? The variable result now contains:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Shot&#39;</span><span class="p">,</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">40435</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>By default, <a class="reference internal" href="../reference.html#shotgun_api3.Shotgun.find_one" title="shotgun_api3.Shotgun.find_one"><code class="xref py py-meth docutils literal"><span class="pre">find_one()</span></code></a> returns a single dictionary object with
+the <code class="docutils literal"><span class="pre">type</span></code> and <code class="docutils literal"><span class="pre">id</span></code> fields. So in this example, we found a Shot matching that id, and Shotgun
+returned it as a dictionary object with <code class="docutils literal"><span class="pre">type</span></code> and <code class="docutils literal"><span class="pre">id</span></code> keys .</p>
+<p>How do we know that result contains the Shot dictionary object? You can trust us... but just to be
+sure, the <a class="reference external" href="http://docs.python.org/library/pprint.html#module-pprint" title="(in Python v2.7)"><code class="xref py py-mod docutils literal"><span class="pre">pprint</span></code></a> (PrettyPrint) module from the Python standard library is a really good tool
+to help with debugging. It will print out objects in a nicely formatted way that makes things
+easier to read. So we&#8217;ll add that to the import section of our script.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">shotgun_api3</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span> <span class="c"># useful for debugging</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-complete-example">
+<h2>The Complete Example<a class="headerlink" href="#the-complete-example" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="c"># --------------------------------------</span>
+<span class="c"># Imports</span>
+<span class="c"># --------------------------------------</span>
+<span class="kn">import</span> <span class="nn">shotgun_api3</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span> <span class="c"># useful for debugging</span>
+
+<span class="c"># --------------------------------------</span>
+<span class="c"># Globals</span>
+<span class="c"># --------------------------------------</span>
+<span class="c"># make sure to change this to match your Shotgun server and auth credentials.</span>
+<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s">&quot;https://mystudio.shotgunstudio.com&quot;</span>
+<span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="s">&#39;my_script&#39;</span>
+<span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s">&#39;27b65d7063f46b82e670fe807bd2b6f3fd1676c1&#39;</span>
+
+<span class="c"># --------------------------------------</span>
+<span class="c"># Main</span>
+<span class="c"># --------------------------------------</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="n">SERVER_PATH</span><span class="p">,</span> <span class="n">SCRIPT_NAME</span><span class="p">,</span> <span class="n">SCRIPT_KEY</span><span class="p">)</span>
+
+    <span class="c"># --------------------------------------</span>
+    <span class="c"># Find a Shot by id</span>
+    <span class="c"># --------------------------------------</span>
+    <span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="mi">40435</span><span class="p">]]</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+    <span class="n">pprint</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And here is the output:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Shot&#39;</span><span class="p">,</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">40435</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="basic_update_shot.html" class="btn btn-neutral float-right" title="Update A Shot" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="basic_create_shot.html" class="btn btn-neutral" title="Create A Shot" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'pypi',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

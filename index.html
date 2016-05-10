@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Shotgun Python API3 &mdash; python-api sphinx documentation</title>
+  <title>Shotgun Python API3 &mdash; python-api pypi documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
 
   
-    <link rel="top" title="python-api sphinx documentation" href="#"/>
-        <link rel="next" title="Getting Started" href="getting_started.html"/> 
+    <link rel="top" title="python-api pypi documentation" href="#"/>
+        <link rel="next" title="Installation" href="installation.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -49,13 +49,16 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search">
           
+    <a href='http://developer.shotgunsoftware.com'>
     
         <img style='width: 191px;
                 height: 60px;
+                margin: 2px;
                 border-radius: 0px;
                 padding: 0px;'
-            src='./_static/logo_sg@2x.png'/>
+            src='_static/logo_sg@2x.png'/>
     
+    </a>
     
 
           
@@ -86,9 +89,19 @@
             
             
                 <ul>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Developer Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files (Attachments)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="local_files.html">Working With Local Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packaging.html">Packaging an application with py2app (or py2exe)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server_changelog.html">Shotgun Server API Changelog</a></li>
 </ul>
 
             
@@ -110,7 +123,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx.<br>
+    <b>python-api</b> pypi.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -159,41 +172,160 @@
             
   <div class="section" id="shotgun-python-api3">
 <h1>Shotgun Python API3<a class="headerlink" href="#shotgun-python-api3" title="Permalink to this headline">¶</a></h1>
-<p>Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools.</p>
-<div class="section" id="minimum-requirements">
-<h2>Minimum Requirements<a class="headerlink" href="#minimum-requirements" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Shotgun server v5.4.14 or higher for API v3.0.16.</li>
-<li>Shotgun server v2.4.12 or higher for API v3.0.8.</li>
-<li>Shotgun server v1.8 or higher for API v3.0.7.</li>
-<li>Python v2.4 - v2.7. (We do not currently support Python 3)</li>
-</ul>
+<p>Release vvx.x.x. (<a class="reference internal" href="installation.html#installation"><span>Installation</span></a>)</p>
+<p>Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools.
+The Shotgun API allows users to integrate their tools with Shotgun very easily. Using this simple
+but powerful python module , you can quickly get your scripts integrated with Shotgun&#8217;s CRUD-based
+API.</p>
+<p>Because the needs of every studio can prove to be very different, we don&#8217;t include a lot of
+&#8220;automation&#8221; or &#8220;smarts&#8221; in our API. We have kept it pretty low-level and leave most of those
+decisions to you. The API is powerful enough you can write your own &#8220;smarts&#8221; in a wrapper on top
+of the Shotgun API.</p>
+<p>In addition to basic metadata, the API contains methods for managing media including thumbnails,
+filmstrip thumbnails, images, uploaded, and both locally and remotely linked media like
+Quicktimes, etc.</p>
+<p><strong>Example</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre>sg = shotgun_api3.Shotgun(&quot;https://piedpiper.shotgunstudio.com&quot;,
+                          login=&quot;rhendriks&quot;,
+                          password=&quot;c0mPre$Hi0n&quot;)
+sg.find(&quot;Shot&quot;, filters=[[&quot;sg_status_list&quot;, &quot;is&quot;, &quot;ip&quot;]], fields=[&quot;code&quot;, &quot;sg_status_list])
+</pre></div>
 </div>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>To use Shotgun&#8217;s Python API module, you need to place it in one of the directories specified by the environment variable <code class="docutils literal"><span class="pre">PYTHONPATH</span></code>. For more information on <code class="docutils literal"><span class="pre">PYTHONPATH</span></code> and using modules in Python, see <a class="reference external" href="http://docs.python.org/tutorial/modules.html">http://docs.python.org/tutorial/modules.html</a></p>
-<p>Contents:</p>
+<p><strong>Output</strong>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[{</span><span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;bunny_020_0170&#39;</span><span class="p">,</span>
+  <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">896</span><span class="p">,</span>
+  <span class="s">&#39;sg_sequence&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;bunny_020&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Sequence&#39;</span><span class="p">},</span>
+  <span class="s">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s">&#39;ip&#39;</span><span class="p">,</span>
+  <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Shot&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;bunny_020_0200&#39;</span><span class="p">,</span>
+  <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">899</span><span class="p">,</span>
+  <span class="s">&#39;sg_sequence&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;bunny_020&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Sequence&#39;</span><span class="p">},</span>
+  <span class="s">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s">&#39;ip&#39;</span><span class="p">,</span>
+  <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Shot&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;bunny_030_0080&#39;</span><span class="p">,</span>
+  <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">907</span><span class="p">,</span>
+  <span class="s">&#39;sg_sequence&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;bunny_030&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Sequence&#39;</span><span class="p">},</span>
+  <span class="s">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s">&#39;ip&#39;</span><span class="p">,</span>
+  <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Shot&#39;</span><span class="p">}]</span>
+</pre></div>
+</div>
+<div class="section" id="user-guide">
+<h2>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#setting-up-shotgun-for-api-access">Setting Up Shotgun for API Access</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#api-usage-tips">API Usage Tips</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#shotgun-server-api-changelog">Shotgun Server API Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#minimum-requirements">Minimum Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-with-pip">Installing with <code class="docutils literal"><span class="pre">pip</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-manually">Installing manually</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="authentication.html#user-based-authentication">User-based Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authentication.html#script-based-authentication">Script-based Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="authentication.html#permissions">Permissions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#importing">Importing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#entity-fields">Entity Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#customentities-from-the-api">CustomEntities from the API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#shotgun-ui-fields-not-available-via-the-api">Shotgun UI fields not available via the API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#audit-fields">Audit Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#logging-messages-from-the-api">Logging Messages from the API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#optimizations">Optimizations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorials.html#beginner">Beginner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials.html#advanced">Advanced</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Developer Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#shotgun">Shotgun</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="developer-reference">
+<h2>Developer Reference<a class="headerlink" href="#developer-reference" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#shotgun-module-attributes"><code class="docutils literal"><span class="pre">shotgun</span></code> Module Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#shotgun">Shotgun()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#exceptions">Exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#servercapabilities">ServerCapabilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#clientcapabilities">ClientCapabilities</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#basic-filters">Basic Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#complex-filters">Complex Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#operators-and-arguments">Operators and Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#valid-operators-by-data-type">Valid Operators By Data Type</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#addressing">addressing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#checkbox">checkbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#color">color</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#currency">currency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#date">date</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#date-time">date_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#duration">duration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#entity">entity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#float">float</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#footage">footage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#image-read-only">image (read-only)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#list">list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#multi-entity">multi_entity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#number">number</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#password">password</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#percent">percent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#serializable">serializable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#status-list">status_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#system-task-type-deprecated">system_task_type (deprecated)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#tag-list">tag_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#text">text</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#timecode">timecode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_types.html#url-file-link-field">url (file/link field)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files (Attachments)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="attachments.html#default-structure">Default structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="attachments.html#creating-attachments">Creating Attachments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="attachments.html#updating-attachments">Updating Attachments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="attachments.html#deleting-attachments">Deleting Attachments</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="local_files.html">Working With Local Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="local_files.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local_files.html#structure-of-local-file-values">Structure of Local File Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local_files.html#reading-local-file-fields">Reading Local File Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local_files.html#creating-updating-local-file-fields">Creating &amp; Updating Local file Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local_files.html#un-setting-local-file-field-values">Un-setting local file field values</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="packaging.html">Packaging an application with py2app (or py2exe)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="packaging.html#https-validation-and-cacerts-txt">HTTPS Validation and cacerts.txt</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server_changelog.html">Shotgun Server API Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id1">5.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id2">5.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id3">3.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id4">2.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id5">2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id6">2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id7">2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id8">2.0</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="indices-and-tables">
+<h3>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
 </ul>
 </div>
 </div>
@@ -206,7 +338,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
@@ -216,7 +348,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015, Autodesk.
+        &copy; Copyright 2016, Autodesk.
 
     </p>
   </div> 
@@ -237,7 +369,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'sphinx',
+            VERSION:'pypi',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
