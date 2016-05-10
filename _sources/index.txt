@@ -1,7 +1,12 @@
 ###################
 Shotgun Python API3
 ###################
-Release v\ |version|. (:ref:`Installation <installation>`)
+Release |version|. (:ref:`Installation <installation>`)
+
+.. image:: https://img.shields.io/badge/shotgun-api-blue.svg?style=flat-square
+.. image:: https://img.shields.io/travis/shotgunsoftware/python-api.svg?style=flat-square
+
+
 
 Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools.
 The Shotgun API allows users to integrate their tools with Shotgun very easily. Using this simple
