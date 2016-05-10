@@ -66,7 +66,7 @@ class TestShotgunClient(base.MockTestBase):
         self.assertTrue(str(self.sg.server_caps).startswith( "ServerCapabilities"))
         self.assertEqual(server_info, self.sg.server_info)
 
-        self._mock_http({ "version" : [9,9,9, "Dev"] })
+        self._mock_http({ "version" : [9,9,9, "dev"] })
         self.sg._server_caps = None
         self.assertTrue(self.sg.server_caps.is_dev)
 

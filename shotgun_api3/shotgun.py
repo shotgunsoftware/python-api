@@ -155,10 +155,13 @@ class ServerCapabilities(object):
                                "Shotgun against a more recent version of the Shotgun API. "
                                "For more information, please contact Shotgun Support.")
 
-        if len(self.version) > 3 and self.version[3] == "dev":
-            self.is_dev = True
-        else:
-            self.is_dev = False
+        self.is_dev = False
+        try:
+            if len(self.version) > 3 and self.version[3].lower() == "dev":
+                self.is_dev = True
+        except AttributeError:
+            # version key isn't a string so we're not on a dev version
+            pass
 
         self.version = tuple(self.version[:3])
 
