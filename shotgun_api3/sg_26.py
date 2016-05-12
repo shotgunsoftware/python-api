@@ -26,12 +26,18 @@ except ImportError:
         sys.path.pop()
 
 
-import mimetypes    # used for attachment upload
-try:
-    mimetypes.add_type('video/webm','.webm') # try adding to test for unicode error
-except (UnicodeDecodeError, TypeError):
-    # Ticket #25579: python bug on windows with unicode
-    # Ticket #23371: mimetypes initialization fails on Windows because of TypeError 
-    #               (http://bugs.python.org/issue23371)
-    # Use patched version of mimetypes
+def _is_mimetypes_broken():
+    """
+    Checks if this version of Python ships with a broken version of mimetypes
+
+    :returns: True if the version of mimetypes is broken, False otherwise.
+    """
+    # mimetypes is broken on Windows only and for Python 2.7 to 2.7.7 inclusively.
+    return (sys.platform == "win32" and
+            sys.version_info[0] == 2 and sys.version_info[1] == 7 and
+            sys.version_info[2] >= 0 and sys.version_info[2] <= 7)
+
+if _is_mimetypes_broken():
     from .lib import mimetypes as mimetypes
+else:
+    import mimetypes
