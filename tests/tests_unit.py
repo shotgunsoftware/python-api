@@ -415,7 +415,7 @@ class TestMimetypesFix(unittest.TestCase):
         Makes sure fix is imported for only for Python 2.7.0 to 2.7.7 on win32
         """
         self._test_mimetypes_import("win32", 2, 6, 9, False)
-        for patch in range(0, 8):
+        for patch in range(0, 7):
             self._test_mimetypes_import("win32", 2, 7, patch, True)
         self._test_mimetypes_import("win32", 2, 7, 8, False)
         self._test_mimetypes_import("win32", 3, 0, 0, False)

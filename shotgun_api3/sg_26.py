@@ -35,7 +35,7 @@ def _is_mimetypes_broken():
     # mimetypes is broken on Windows only and for Python 2.7 to 2.7.7 inclusively.
     return (sys.platform == "win32" and
             sys.version_info[0] == 2 and sys.version_info[1] == 7 and
-            sys.version_info[2] >= 0 and sys.version_info[2] <= 7)
+            sys.version_info[2] >= 0 and sys.version_info[2] <= 6)
 
 if _is_mimetypes_broken():
     from .lib import mimetypes as mimetypes
