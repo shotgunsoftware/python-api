@@ -186,6 +186,12 @@ class ServerCapabilities(object):
             'label': 'project parameter'
         }, True)
 
+    def ensure_support_for_additional_filter_presets(self):
+        """Wrapper for ensure_support"""
+        return self._ensure_support({
+            'version': (7, 0, 0),
+            'label': 'additional_filter_presets parameter'
+        }, True)
 
     def __str__(self):
         return "ServerCapabilities: host %s, version %s, is_dev %s"\
@@ -528,7 +534,8 @@ class Shotgun(object):
         return self._call_rpc("info", None, include_auth_params=False)
 
     def find_one(self, entity_type, filters, fields=None, order=None,
-        filter_operator=None, retired_only=False, include_archived_projects=True):
+        filter_operator=None, retired_only=False, include_archived_projects=True,
+        additional_filter_presets=None):
         """Calls the find() method and returns the first result, or None.
 
         :param entity_type: Required, entity type (string) to find.
@@ -553,12 +560,24 @@ class Shotgun(object):
         :param retired_only: Optional, flag to return only entities that have
         been retried. Defaults to False which returns only entities which
         have not been retired.
-        
+
+        :param additional_filter_presets: Optional list of presets to
+        further filter the result set, list has the form:
+        [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
+
+        Note that these filters are ANDed together and ANDed with the 'filter'
+        argument.
+
+        For details on supported presets and the format of this parameter,
+        please consult the API documentation:
+        https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax
+
         :returns: Dictionary of requested Shotgun fields and values.
         """
 
         results = self.find(entity_type, filters, fields, order,
-            filter_operator, 1, retired_only, include_archived_projects=include_archived_projects)
+            filter_operator, 1, retired_only, include_archived_projects=include_archived_projects,
+            additional_filter_presets=additional_filter_presets)
 
         if results:
             return results[0]
@@ -566,7 +585,7 @@ class Shotgun(object):
 
     def find(self, entity_type, filters, fields=None, order=None,
             filter_operator=None, limit=0, retired_only=False, page=0,
-            include_archived_projects=True):
+            include_archived_projects=True, additional_filter_presets=None):
         """Find entities matching the given filters.
 
         :param entity_type: Required, entity type (string) to find.
@@ -593,7 +612,18 @@ class Shotgun(object):
         have not been retired.
 
         :param include_archived_projects: Optional, flag to include entities
-        whose projects have been archived
+        whose projects have been archived.
+
+        :param additional_filter_presets: Optional list of presets to
+        further filter the result set, list has the form:
+        [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
+
+        Note that these filters are ANDed together and ANDed with the 'filter'
+        argument.
+
+        For details on supported presets and the format of this parameter,
+        please consult the API documentation:
+        https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax
 
         :returns: list of the dicts for each entity with the requested fields,
         and their id and type.
@@ -617,13 +647,16 @@ class Shotgun(object):
             # So we only need to check the server version if it is False
             self.server_caps.ensure_include_archived_projects()
 
+        if additional_filter_presets:
+            self.server_caps.ensure_support_for_additional_filter_presets()
 
         params = self._construct_read_parameters(entity_type,
                                                  fields,
                                                  filters,
                                                  retired_only,
                                                  order,
-                                                 include_archived_projects)
+                                                 include_archived_projects,
+                                                 additional_filter_presets)
 
         if limit and limit <= self.config.records_per_page:
             params["paging"]["entities_per_page"] = limit
@@ -667,7 +700,8 @@ class Shotgun(object):
                                    filters,
                                    retired_only,
                                    order,
-                                   include_archived_projects):
+                                   include_archived_projects,
+                                   additional_filter_presets):
         params = {}
         params["type"] = entity_type
         params["return_fields"] = fields or ["id"]
@@ -676,6 +710,9 @@ class Shotgun(object):
         params["return_paging_info"] = True
         params["paging"] = { "entities_per_page": self.config.records_per_page,
                              "current_page": 1 }
+
+        if additional_filter_presets:
+            params["additional_filter_presets"] = additional_filter_presets;
 
         if include_archived_projects is False:
             # Defaults to True on the server, so only pass it if it's False
@@ -694,7 +731,6 @@ class Shotgun(object):
                 })
             params['sorts'] = sort_list
         return params
-
 
     def _add_project_param(self, params, project_entity):
 
@@ -1909,8 +1945,7 @@ class Shotgun(object):
         
         api_entity_types = {}
         for (entity_type, filter_list) in entity_types.iteritems():
-            
-            
+
             if isinstance(filter_list, (list, tuple)):
                 resolved_filters = _translate_filters(filter_list, filter_operator=None)
                 api_entity_types[entity_type] = resolved_filters      
