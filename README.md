@@ -57,6 +57,7 @@ Integration and unit tests are provided.
 
 **v3.0.31.dev - TBD**
 
+   + Add optional "additional_filter_presets" argument to find() and find_one()
    + TBD
 
 **v3.0.30 - 2016 Apr 25**
