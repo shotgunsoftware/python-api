@@ -33,13 +33,13 @@ If you're using pip with `requirements.txt`, add the following line:
 `git+git://github.com/shotgunsoftware/python-api.git`
 
 ## Documentation
-Tutorials and detailed documentation about the Python API are available on the [Python API Wiki](https://github.com/shotgunsoftware/python-api/wiki). There is also some additional related documentation on the [Shotgun Support Website](https://support.shotgunsoftware.com/forums/48807-developer-api-info).
+Tutorials and detailed documentation about the Python API are available on at http://developer.shotgunsoftware.com/python-api). There is also some additional related documentation on the [Shotgun Support Website](https://support.shotgunsoftware.com/forums/48807-developer-api-info).
 Some useful direct links in each are below:
 
 * [Introduction and Video Tour](https://www.youtube.com/watch?v=QdL5E9XbdJQ)
-* [Reference: Methods](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Methods)
-* [Reference: Data Types](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Data-Types)
-* [Reference: Filter Syntax](https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax)
+* [API Reference](http://developer.shotgunsoftware.com/python-api/reference.html)
+* [Data Types](http://developer.shotgunsoftware.com/python-api/data_types.html)
+* [Filter Syntax](http://developer.shotgunsoftware.com/python-api/filter_syntax.html)
 
 ## Tests 
 
@@ -178,7 +178,7 @@ Integration and unit tests are provided.
 
 **v3.0.11 - 2013 Jan 31**
 
-  + added: nested filter syntax, see https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax
+  + added: nested filter syntax, see http://developer.shotgunsoftware.com/python-api/filter_syntax.html
 
 **v3.0.10 - 2013 Jan 25**
 
