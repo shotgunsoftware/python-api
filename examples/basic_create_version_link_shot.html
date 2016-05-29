@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Create a Version Linked to a Shot &mdash; python-api sphinx documentation</title>
+  <title>Create a Version Linked to a Shot &mdash; python-api sphinx_docs documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api sphinx documentation" href="../index.html"/>
+    <link rel="top" title="python-api sphinx_docs documentation" href="../index.html"/>
         <link rel="up" title="Examples" href="../tutorials.html"/>
         <link rel="next" title="Upload a Thumbnail for a Version" href="basic_upload_thumbnail_version.html"/>
         <link rel="prev" title="Create a Shot with a Task Template" href="basic_create_shot_task_template.html"/> 
@@ -102,7 +102,7 @@
 <li class="toctree-l3"><a class="reference internal" href="basic_update_shot.html">Update A Shot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="basic_delete_shot.html">Delete A Shot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="basic_create_shot_task_template.html">Create a Shot with a Task Template</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Create a Version Linked to a Shot</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Create a Version Linked to a Shot</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#find-the-shot">Find the Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#find-the-task">Find the Task</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#create-the-version">Create the Version</a></li>
@@ -145,7 +145,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx.<br>
+    <b>python-api</b> sphinx_docs.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -172,7 +172,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -202,9 +202,9 @@ new <code class="docutils literal"><span class="pre">Version</span></code> entit
 <h2>Find the Shot<a class="headerlink" href="#find-the-shot" title="Permalink to this headline">¶</a></h2>
 <p>First we need to find the Shot since we&#8217;ll need to know know its <code class="docutils literal"><span class="pre">id</span></code> in order to link our Version
 to it.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s">&#39;project&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Project&#39;</span><span class="p">,</span> <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}],</span>
-            <span class="p">[</span><span class="s">&#39;code&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="s">&#39;100_010&#39;</span><span class="p">]</span> <span class="p">]</span>
-<span class="n">shot</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}],</span>
+            <span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;100_010&#39;</span><span class="p">]</span> <span class="p">]</span>
+<span class="n">shot</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -213,10 +213,10 @@ to it.</p>
 <p>Now we find the Task that the Version relates to, again so we can use the <code class="docutils literal"><span class="pre">id</span></code> to link it to the
 Version we&#8217;re creating. For this search we&#8217;ll use the Shot <code class="docutils literal"><span class="pre">id</span></code> (which we have now in the <code class="docutils literal"><span class="pre">shot</span></code>
 variable from the previous search) and the Task Name, which maps to the <code class="docutils literal"><span class="pre">content</span></code> field.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s">&#39;project&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Project&#39;</span><span class="p">,</span> <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}],</span>
-            <span class="p">[</span><span class="s">&#39;entity&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,{</span><span class="s">&#39;type&#39;</span><span class="p">:</span><span class="s">&#39;Shot&#39;</span><span class="p">,</span> <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="n">shot</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]}],</span>
-            <span class="p">[</span><span class="s">&#39;content&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="s">&#39;Animation&#39;</span><span class="p">]</span> <span class="p">]</span>
-<span class="n">task</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s">&#39;Task&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}],</span>
+            <span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">shot</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]}],</span>
+            <span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;Animation&#39;</span><span class="p">]</span> <span class="p">]</span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -229,15 +229,15 @@ in Shotgun. We highly recommend doing this whenever possible.</p>
 <div class="section" id="create-the-version">
 <h2>Create the Version<a class="headerlink" href="#create-the-version" title="Permalink to this headline">¶</a></h2>
 <p>Now we can create the Version with the link to the Shot and the Task:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="p">{</span> <span class="s">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Project&#39;</span><span class="p">,</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
-         <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;100_010_anim_v1&#39;</span><span class="p">,</span>
-         <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;first pass at opening shot with bunnies&#39;</span><span class="p">,</span>
-         <span class="s">&#39;sg_path_to_frames&#39;</span><span class="p">:</span> <span class="s">&#39;/v1/gun/s100/010/frames/anim/100_010_animv1_jack.#.jpg&#39;</span><span class="p">,</span>
-         <span class="s">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s">&#39;rev&#39;</span><span class="p">,</span>
-         <span class="s">&#39;entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Shot&#39;</span><span class="p">,</span> <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="n">shot</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]},</span>
-         <span class="s">&#39;sg_task&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Task&#39;</span><span class="p">,</span> <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="n">task</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">]},</span>
-         <span class="s">&#39;user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;HumanUser&#39;</span><span class="p">,</span> <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">165</span><span class="p">}</span> <span class="p">}</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;Version&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+         <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010_anim_v1&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;first pass at opening shot with bunnies&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;sg_path_to_frames&#39;</span><span class="p">:</span> <span class="s1">&#39;/v1/gun/s100/010/frames/anim/100_010_animv1_jack.#.jpg&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;rev&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">shot</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]},</span>
+         <span class="s1">&#39;sg_task&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">task</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]},</span>
+         <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">165</span><span class="p">}</span> <span class="p">}</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This will create a new Version named &#8216;100_010_anim_v1&#8217; linked to the &#8216;Animation&#8217; Task for Shot
@@ -263,14 +263,14 @@ same entity format as the Shot link, but pointing to the Task entity this time.<
 <li><p class="first"><code class="docutils literal"><span class="pre">user</span></code> is another entity column where we set the artist responsible for this masterpiece. In
 this example, I know the &#8216;id&#8217; that corresponds to this user, but if you don&#8217;t know the id you can
 look it up by searching on any of the fields, similar to what we did for the Shot above, like:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&#39;login&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="s">&#39;jschmoe&#39;</span><span class="p">]]</span>
-<span class="n">user</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;HumanUser&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;jschmoe&#39;</span><span class="p">]]</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;HumanUser&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 </ul>
 <p>The <code class="docutils literal"><span class="pre">result</span></code> variable now contains the <code class="docutils literal"><span class="pre">id</span></code> of the new Version that was created:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="mi">214</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">214</span>
 </pre></div>
 </div>
 </div>
@@ -329,7 +329,7 @@ Play button that will appear on the Version&#8217;s thumbnail.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'sphinx',
+            VERSION:'sphinx_docs',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

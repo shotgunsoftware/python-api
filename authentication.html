@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Authentication &mdash; python-api sphinx documentation</title>
+  <title>Authentication &mdash; python-api sphinx_docs documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api sphinx documentation" href="index.html"/>
+    <link rel="top" title="python-api sphinx_docs documentation" href="index.html"/>
         <link rel="next" title="API Usage Tips" href="usage_tips.html"/>
         <link rel="prev" title="Installation" href="installation.html"/> 
 
@@ -91,7 +91,7 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Authentication</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Authentication</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#user-based-authentication">User-based Authentication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#script-based-authentication">Script-based Authentication</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#adding-script-users">Adding Script Users</a></li>
@@ -137,7 +137,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx.<br>
+    <b>python-api</b> sphinx_docs.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -164,7 +164,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -185,23 +185,23 @@
            <div itemprop="articleBody">
             
   <div class="section" id="authentication">
-<span id="id1"></span><h1>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h1>
+<h1>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h1>
 <p>In order to communicate with your Shotgun server via the API, you must provide valid authentication credentials. The API allows you to authenticate with user-based, or script-based credentials.</p>
 <div class="section" id="user-based-authentication">
 <h2>User-based Authentication<a class="headerlink" href="#user-based-authentication" title="Permalink to this headline">¶</a></h2>
 <p>When authenticating as a user, you provide your normal login and password when instantiating your <a class="reference internal" href="reference.html#shotgun_api3.Shotgun" title="shotgun_api3.Shotgun"><code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code></a> object. The actions performed by this instance will be limited to your permission level just as they are in the Shotgun web application.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
-                          <span class="n">login</span><span class="o">=</span><span class="s">&quot;rhendriks&quot;</span><span class="p">,</span>
-                          <span class="n">password</span><span class="o">=</span><span class="s">&quot;c0mPre$Hi0n&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
+                          <span class="n">login</span><span class="o">=</span><span class="s2">&quot;rhendriks&quot;</span><span class="p">,</span>
+                          <span class="n">password</span><span class="o">=</span><span class="s2">&quot;c0mPre$Hi0n&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="script-based-authentication">
 <h2>Script-based Authentication<a class="headerlink" href="#script-based-authentication" title="Permalink to this headline">¶</a></h2>
-<p>In order to authenticate as a script, your script must be <a class="reference internal" href="#setting-up-shotgun"><span>registered with Shotgun and have a valid API key</span></a>. When creating your <a class="reference internal" href="reference.html#shotgun_api3.Shotgun" title="shotgun_api3.Shotgun"><code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code></a> object, provide the <code class="docutils literal"><span class="pre">script_name</span></code> and <code class="docutils literal"><span class="pre">api_key</span></code>.:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
-                          <span class="n">script_name</span><span class="o">=</span><span class="s">&quot;compress&quot;</span><span class="p">,</span>
-                          <span class="n">api_key</span><span class="o">=</span><span class="s">&quot;0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef&quot;</span><span class="p">)</span>
+<p>In order to authenticate as a script, your script must be <a class="reference internal" href="#setting-up-shotgun"><span class="std std-ref">registered with Shotgun and have a valid API key</span></a>. When creating your <a class="reference internal" href="reference.html#shotgun_api3.Shotgun" title="shotgun_api3.Shotgun"><code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code></a> object, provide the <code class="docutils literal"><span class="pre">script_name</span></code> and <code class="docutils literal"><span class="pre">api_key</span></code>.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
+                          <span class="n">script_name</span><span class="o">=</span><span class="s2">&quot;compress&quot;</span><span class="p">,</span>
+                          <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -284,7 +284,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'sphinx',
+            VERSION:'sphinx_docs',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

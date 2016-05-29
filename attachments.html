@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Working With Files (Attachments) &mdash; python-api sphinx documentation</title>
+  <title>Working With Files (Attachments) &mdash; python-api sphinx_docs documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api sphinx documentation" href="index.html"/>
+    <link rel="top" title="python-api sphinx_docs documentation" href="index.html"/>
         <link rel="next" title="Working With Local Files" href="local_files.html"/>
         <link rel="prev" title="Data Types" href="data_types.html"/> 
 
@@ -99,7 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Working With Files (Attachments)</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Working With Files (Attachments)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#default-structure">Default structure</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#file-type-structures-this-file">File type structures (<code class="docutils literal"><span class="pre">this_file</span></code>)</a></li>
 </ul>
@@ -138,7 +138,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx.<br>
+    <b>python-api</b> sphinx_docs.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -165,7 +165,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -220,7 +220,7 @@ descriptions of each field.</p>
 <dt><strong>this_file</strong> (<a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">dict</span></code></a>):</dt>
 <dd><p class="first last">The actual file reference. Within the dictionary is a <code class="docutils literal"><span class="pre">link_type</span></code> key which designates the
 Attachment as an uploaded file, a url link, or a local file. There are additional keys
-returned for <a class="reference internal" href="local_files.html#local-files"><span>Working With Local Files</span></a>. You cannot modify this field after you have created an
+returned for <a class="reference internal" href="local_files.html#local-files"><span class="std std-ref">Working With Local Files</span></a>. You cannot modify this field after you have created an
 Attachment. See below for examples of this field.</p>
 </dd>
 </dl>
@@ -316,10 +316,10 @@ will vary.</p>
 <dd><p class="first">Designated by <code class="docutils literal"><span class="pre">link_type:</span> <span class="pre">'upload'</span></code>, this represents a file that was uploaded to Shotgun.
 Uploading files to Shotgun can be done using the <a class="reference internal" href="reference.html#shotgun_api3.Shotgun.upload" title="shotgun_api3.Shotgun.upload"><code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code></a> method.
 You cannot create an Attachment with an uploaded file directly.</p>
-<div class="last highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&#39;content_type&#39;</span><span class="p">:</span> <span class="s">&#39;image/jpeg&#39;</span><span class="p">,</span>
- <span class="s">&#39;link_type&#39;</span><span class="p">:</span> <span class="s">&#39;upload&#39;</span><span class="p">,</span>
- <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;western1FULL.jpg&#39;</span><span class="p">,</span>
- <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="s">&#39;https://superdeathcarracer.shotgunstudio.com/file_serve/attachment/538&#39;</span><span class="p">}</span>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;image/jpeg&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;upload&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;western1FULL.jpg&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://superdeathcarracer.shotgunstudio.com/file_serve/attachment/538&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
 </dd>
@@ -330,10 +330,10 @@ You cannot create an Attachment with an uploaded file directly.</p>
 <dd><p class="first">Designated by <code class="docutils literal"><span class="pre">link_type:</span> <span class="pre">'web'</span></code>, this is represents a url link. Examples include an
 <code class="docutils literal"><span class="pre">http://</span></code> link to another server or a custom protocol used to launch a local application
 like <code class="docutils literal"><span class="pre">rvlink://</span></code> or <code class="docutils literal"><span class="pre">cinesync://</span></code></p>
-<div class="last highlight-python"><div class="highlight"><pre><span class="p">{</span><span class="s">&#39;content_type&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
- <span class="s">&#39;link_type&#39;</span><span class="p">:</span> <span class="s">&#39;web&#39;</span><span class="p">,</span>
- <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Join GUN12158&#39;</span><span class="p">,</span>
- <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="s">&#39;cinesync://session/GUN12158&#39;</span><span class="p">}</span>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;web&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Join GUN12158&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;cinesync://session/GUN12158&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
 </dd>
@@ -345,19 +345,19 @@ like <code class="docutils literal"><span class="pre">rvlink://</span></code> or
 are provided in order to give access to the relative path information on other platforms.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="local_files.html#local-files"><span>Working With Local Files</span></a></p>
+<p class="last"><a class="reference internal" href="local_files.html#local-files"><span class="std std-ref">Working With Local Files</span></a></p>
 </div>
-<div class="last highlight-python"><div class="highlight"><pre>{ &#39;content_type&#39;: &#39;video/quicktime&#39;,
-  &#39;link_type&#39;: &#39;local&#39;,
-  &#39;name&#39;: &#39;my_test_movie.mov&#39;,
-  &#39;local_path&#39;: &#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;
-  &#39;local_path_linux&#39;: &#39;/home/users/macusers/kp/Movies/testing/test_movie_002.mov&#39;
-  &#39;local_path_mac&#39;: &#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;
-  &#39;local_path_windows&#39;: &#39;M:\\macusers\kp\Movies\testing\test_movie_002.mov&#39;
-  &#39;local_storage&#39;: {&#39;id&#39;: 1,
-                    &#39;name&#39;: &#39;Dailies Directories&#39;,
-                    &#39;type&#39;: &#39;LocalStorage&#39;},
-  &#39;url&#39;: &#39;file:///Users/kp/Movies/testing/test_movie_002.mov&#39;}
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;video/quicktime&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_test_movie.mov&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
+  <span class="s1">&#39;local_path_linux&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/users/macusers/kp/Movies/testing/test_movie_002.mov&#39;</span>
+  <span class="s1">&#39;local_path_mac&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
+  <span class="s1">&#39;local_path_windows&#39;</span><span class="p">:</span> <span class="s1">&#39;M:</span><span class="se">\\</span><span class="s1">macusers\kp\Movies</span><span class="se">\t</span><span class="s1">esting</span><span class="se">\t</span><span class="s1">est_movie_002.mov&#39;</span>
+  <span class="s1">&#39;local_storage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dailies Directories&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;LocalStorage&#39;</span><span class="p">},</span>
+  <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_002.mov&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
 </dd>
@@ -370,15 +370,15 @@ are provided in order to give access to the relative path information on other p
 <h2>Creating Attachments<a class="headerlink" href="#creating-attachments" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="web-links">
 <h3>Web Links<a class="headerlink" href="#web-links" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">myurl</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="s">&#39;http://apple.com/itunes&#39;</span><span class="p">,</span>
-  <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Apple: iTunes&#39;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">myurl</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://apple.com/itunes&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Apple: iTunes&#39;</span>
 <span class="p">}</span>
 <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s">&#39;this_file&#39;</span><span class="p">:</span> <span class="n">myurl</span><span class="p">,</span>
-    <span class="s">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;type&#39;</span><span class="p">:</span><span class="s">&#39;Project&#39;</span><span class="p">,</span><span class="s">&#39;id&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">}</span>
+    <span class="s1">&#39;this_file&#39;</span><span class="p">:</span> <span class="n">myurl</span><span class="p">,</span>
+    <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">}</span>
 <span class="p">}</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;Attachment&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Attachment&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -389,7 +389,7 @@ are provided in order to give access to the relative path information on other p
 </div>
 <div class="section" id="local-files">
 <h3>Local Files<a class="headerlink" href="#local-files" title="Permalink to this headline">¶</a></h3>
-<p>See <a class="reference internal" href="local_files.html#creating-local-files"><span>Creating &amp; Updating Local file Fields</span></a>.</p>
+<p>See <a class="reference internal" href="local_files.html#creating-local-files"><span class="std std-ref">Creating &amp; Updating Local file Fields</span></a>.</p>
 </div>
 </div>
 <div class="section" id="updating-attachments">
@@ -446,7 +446,7 @@ Attachment types. See <a class="reference internal" href="reference.html#shotgun
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'sphinx',
+            VERSION:'sphinx_docs',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

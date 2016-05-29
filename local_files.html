@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Working With Local Files &mdash; python-api sphinx documentation</title>
+  <title>Working With Local Files &mdash; python-api sphinx_docs documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api sphinx documentation" href="index.html"/>
+    <link rel="top" title="python-api sphinx_docs documentation" href="index.html"/>
         <link rel="next" title="Packaging an application with py2app (or py2exe)" href="packaging.html"/>
         <link rel="prev" title="Working With Files (Attachments)" href="attachments.html"/> 
 
@@ -100,7 +100,7 @@
 <li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files (Attachments)</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Working With Local Files</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Working With Local Files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#structure-of-local-file-values">Structure of Local File Values</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reading-local-file-fields">Reading Local File Fields</a></li>
@@ -131,7 +131,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx.<br>
+    <b>python-api</b> sphinx_docs.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -158,7 +158,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -260,24 +260,24 @@ is set)</p>
 </div>
 <div class="section" id="reading-local-file-fields">
 <h2>Reading Local File Fields<a class="headerlink" href="#reading-local-file-fields" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;sg_uploaded_movie&#39;</span><span class="p">]</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;Version&#39;</span><span class="p">,</span> <span class="p">[[</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">]],</span> <span class="n">fields</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">]</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">]],</span> <span class="n">fields</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-python"><div class="highlight"><pre>{&#39;id&#39;:123,
- &#39;sg_uploaded_movie&#39;: { &#39;content_type&#39;: None,
-                        &#39;link_type&#39;: &#39;local&#39;,
-                        &#39;name&#39;: &#39;my_test_movie.mov&#39;,
-                        &#39;local_path&#39;: &#39;/Users/kp/Movies/testing/test_movie_001_.mov&#39;
-                        &#39;local_path_linux&#39;: &#39;/home/users/macusers/kp/Movies/testing/test_movie_001_.mov&#39;
-                        &#39;local_path_mac&#39;: &#39;/Users/kp/Movies/testing/test_movie_001_.mov&#39;
-                        &#39;local_path_windows&#39;: &#39;M:\\macusers\kp\Movies\testing\test_movie_001_.mov&#39;
-                        &#39;local_storage&#39;: {&#39;id&#39;: 1,
-                                          &#39;name&#39;: &#39;Dailies Directories&#39;,
-                                          &#39;type&#39;: &#39;LocalStorage&#39;},
-                        &#39;url&#39;: &#39;file:///Users/kp/Movies/testing/test_movie_001_.mov&#39;},
- &#39;type&#39;: &#39;Version&#39;}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">,</span>
+ <span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_test_movie.mov&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_001_.mov&#39;</span>
+                        <span class="s1">&#39;local_path_linux&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/users/macusers/kp/Movies/testing/test_movie_001_.mov&#39;</span>
+                        <span class="s1">&#39;local_path_mac&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_001_.mov&#39;</span>
+                        <span class="s1">&#39;local_path_windows&#39;</span><span class="p">:</span> <span class="s1">&#39;M:</span><span class="se">\\</span><span class="s1">macusers\kp\Movies</span><span class="se">\t</span><span class="s1">esting</span><span class="se">\t</span><span class="s1">est_movie_001_.mov&#39;</span>
+                        <span class="s1">&#39;local_storage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                          <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dailies Directories&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;LocalStorage&#39;</span><span class="p">},</span>
+                        <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_001_.mov&#39;</span><span class="p">},</span>
+ <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -317,25 +317,25 @@ the file.</p>
 </dl>
 </li>
 </ul>
-<div class="highlight-python"><div class="highlight"><pre>data = {&#39;sg_uploaded_movie&#39;: {&#39;local_path&#39;: &#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;,
-                              &#39;name&#39;: &#39;Better Movie&#39;}
-result = sg.update(&#39;Version&#39;, 123, data)
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Better Movie&#39;</span><span class="p">}</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-python"><div class="highlight"><pre>{&#39;id&#39;:123,
- &#39;sg_uploaded_movie&#39;: { &#39;content_type&#39;: &#39;video/quicktime&#39;,
-                        &#39;link_type&#39;: &#39;local&#39;,
-                        &#39;name&#39;: &#39;my_test_movie.mov&#39;,
-                        &#39;local_path&#39;: &#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;
-                        &#39;local_path_linux&#39;: &#39;/home/users/macusers/kp/Movies/testing/test_movie_002.mov&#39;
-                        &#39;local_path_mac&#39;: &#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;
-                        &#39;local_path_windows&#39;: &#39;M:\\macusers\kp\Movies\testing\test_movie_002.mov&#39;
-                        &#39;local_storage&#39;: {&#39;id&#39;: 1,
-                                          &#39;name&#39;: &#39;Dailies Directories&#39;,
-                                          &#39;type&#39;: &#39;LocalStorage&#39;},
-                        &#39;url&#39;: &#39;file:///Users/kp/Movies/testing/test_movie_002.mov&#39;},
- &#39;type&#39;: &#39;Version&#39;}]
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">,</span>
+ <span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;video/quicktime&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_test_movie.mov&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
+                        <span class="s1">&#39;local_path_linux&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/users/macusers/kp/Movies/testing/test_movie_002.mov&#39;</span>
+                        <span class="s1">&#39;local_path_mac&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
+                        <span class="s1">&#39;local_path_windows&#39;</span><span class="p">:</span> <span class="s1">&#39;M:</span><span class="se">\\</span><span class="s1">macusers\kp\Movies</span><span class="se">\t</span><span class="s1">esting</span><span class="se">\t</span><span class="s1">est_movie_002.mov&#39;</span>
+                        <span class="s1">&#39;local_storage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                          <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dailies Directories&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;LocalStorage&#39;</span><span class="p">},</span>
+                        <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_002.mov&#39;</span><span class="p">},</span>
+ <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">}]</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal"><span class="pre">content_type</span></code> was assigned a best-guess value based on the file extension. Shotgun selected
@@ -344,14 +344,14 @@ the most appropriate specific LocalStorage match and assigned it to local_storag
 <div class="section" id="un-setting-local-file-field-values">
 <h2>Un-setting local file field values<a class="headerlink" href="#un-setting-local-file-field-values" title="Permalink to this headline">¶</a></h2>
 <p>Removing a a local file field value is simple. Just set the value to <code class="docutils literal"><span class="pre">None</span></code>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s">&#39;Version&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-python"><div class="highlight"><pre>{&#39;id&#39;:123,
- &#39;sg_uploaded_movie&#39;: None,
- &#39;type&#39;: &#39;Version&#39;}]
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">,</span>
+ <span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">}]</span>
 </pre></div>
 </div>
 </div>
@@ -397,7 +397,7 @@ the most appropriate specific LocalStorage match and assigned it to local_storag
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'sphinx',
+            VERSION:'sphinx_docs',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

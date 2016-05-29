@@ -212,8 +212,8 @@ url (file/link field)
       'url': "string"
     }
 
-Local Files
-===========
+Local File Links
+================
 
 Additional keys exist for local file links
 

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Data Types &mdash; python-api sphinx documentation</title>
+  <title>Data Types &mdash; python-api sphinx_docs documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api sphinx documentation" href="index.html"/>
+    <link rel="top" title="python-api sphinx_docs documentation" href="index.html"/>
         <link rel="next" title="Working With Files (Attachments)" href="attachments.html"/>
         <link rel="prev" title="Filter Syntax" href="filter_syntax.html"/> 
 
@@ -98,7 +98,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Data Types</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data Types</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#addressing">addressing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#checkbox">checkbox</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#color">color</a></li>
@@ -122,7 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#text">text</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#timecode">timecode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#url-file-link-field">url (file/link field)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#local-files">Local Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#local-file-links">Local File Links</a></li>
 </ul>
 </li>
 </ul>
@@ -152,7 +152,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx.<br>
+    <b>python-api</b> sphinx_docs.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -179,7 +179,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -212,14 +212,14 @@
 </tbody>
 </table>
 <p>List of dicts:</p>
-<div class="highlight-python"><div class="highlight"><pre>[
-  {
-    &#39;type&#39;: &#39;HumanUser&#39; | &#39;Group&#39;,
-    &#39;id&#39;: int,
-    ...
-  },
-  ...
-]
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span> <span class="o">|</span> <span class="s1">&#39;Group&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="o">...</span>
+  <span class="p">},</span>
+  <span class="o">...</span>
+<span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -320,11 +320,11 @@ convert between client local time and UTC. This can be overridden.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-python"><div class="highlight"><pre>{
-  &#39;type&#39;: &quot;string&quot;,
-  &#39;id&#39;: int,
-  ...
-}
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+  <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+  <span class="o">...</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -394,14 +394,14 @@ Example above is default.F=Feet f=Frames.</p>
 </tbody>
 </table>
 <p>List of dicts</p>
-<div class="highlight-python"><div class="highlight"><pre>[
-  {
-    &#39;type&#39;: &quot;string&quot;,
-    &#39;id&#39;: int,
-    ...
-  },
-  ...
-]
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="o">...</span>
+  <span class="p">},</span>
+  <span class="o">...</span>
+<span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -522,16 +522,16 @@ Example above is default.F=Feet f=Frames.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
-  <span class="s">&#39;content_type&#39;</span><span class="p">:</span> <span class="s">&quot;string&quot;</span><span class="p">,</span>
-  <span class="s">&#39;link_type&#39;</span><span class="p">:</span> <span class="s">&quot;local&quot;</span> <span class="o">|</span> <span class="s">&quot;url&quot;</span> <span class="o">|</span> <span class="s">&quot;upload&quot;</span><span class="p">,</span>
-  <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&quot;string&quot;</span><span class="p">,</span>
-  <span class="s">&#39;url&#39;</span><span class="p">:</span> <span class="s">&quot;string&quot;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+  <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s2">&quot;local&quot;</span> <span class="o">|</span> <span class="s2">&quot;url&quot;</span> <span class="o">|</span> <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
+  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+  <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="section" id="local-files">
-<h3>Local Files<a class="headerlink" href="#local-files" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="local-file-links">
+<h3>Local File Links<a class="headerlink" href="#local-file-links" title="Permalink to this headline">¶</a></h3>
 <p>Additional keys exist for local file links</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -541,24 +541,24 @@ Example above is default.F=Feet f=Frames.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-python"><div class="highlight"><pre>{
-  &#39;content_type&#39;: &quot;string&quot;,
-  &#39;link_type&#39;: &quot;local&quot;,
-  &#39;local_path&#39;: &quot;string&quot; | None,
-  &#39;local_path_linux&#39;: &quot;string&quot; | None,
-  &#39;local_path_mac&#39;: &quot;string&quot; | None,
-  &#39;local_path_windows&#39;: &quot;string&quot; | None,
-  &#39;local_storage&#39;: {dictionary},
-  &#39;name&#39;: &quot;string&quot;,
-  &#39;url&#39;: &quot;string&quot;,
-}
-API versions &lt; v3.0.3:
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+  <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s2">&quot;local&quot;</span><span class="p">,</span>
+  <span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+  <span class="s1">&#39;local_path_linux&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+  <span class="s1">&#39;local_path_mac&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+  <span class="s1">&#39;local_path_windows&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+  <span class="s1">&#39;local_storage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">dictionary</span><span class="p">},</span>
+  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+  <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">API</span> <span class="n">versions</span> <span class="o">&lt;</span> <span class="n">v3</span><span class="o">.</span><span class="mf">0.3</span><span class="p">:</span>
 
-{
-  &#39;url&#39;: &quot;string&quot;,
-  &#39;name&#39;: &quot;string&quot;,
-  &#39;content_type&#39;: &quot;string&quot;
-}
+<span class="p">{</span>
+  <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+  <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -605,7 +605,7 @@ API versions &lt; v3.0.3:
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'sphinx',
+            VERSION:'sphinx_docs',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

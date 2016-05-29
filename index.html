@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Shotgun Python API3 &mdash; python-api sphinx documentation</title>
+  <title>Shotgun Python API3 &mdash; python-api sphinx_docs documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api sphinx documentation" href="#"/>
+    <link rel="top" title="python-api sphinx_docs documentation" href="#"/>
         <link rel="next" title="Installation" href="installation.html"/> 
 
   
@@ -123,7 +123,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx.<br>
+    <b>python-api</b> sphinx_docs.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -150,7 +150,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -172,7 +172,7 @@
             
   <div class="section" id="shotgun-python-api3">
 <h1>Shotgun Python API3<a class="headerlink" href="#shotgun-python-api3" title="Permalink to this headline">¶</a></h1>
-<p>Release vx.x.x. (<a class="reference internal" href="installation.html#installation"><span>Installation</span></a>)</p>
+<p>Release sphinx_docs. (<a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a>)</p>
 <img alt="https://img.shields.io/badge/shotgun-api-blue.svg?style=flat-square" src="https://img.shields.io/badge/shotgun-api-blue.svg?style=flat-square" />
 <img alt="https://img.shields.io/travis/shotgunsoftware/python-api.svg?style=flat-square" src="https://img.shields.io/travis/shotgunsoftware/python-api.svg?style=flat-square" />
 <p>Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools.
@@ -187,28 +187,28 @@ of the Shotgun API.</p>
 filmstrip thumbnails, images, uploaded, and both locally and remotely linked media like
 Quicktimes, etc.</p>
 <p><strong>Example</strong>:</p>
-<div class="highlight-python"><div class="highlight"><pre>sg = shotgun_api3.Shotgun(&quot;https://piedpiper.shotgunstudio.com&quot;,
-                          login=&quot;rhendriks&quot;,
-                          password=&quot;c0mPre$Hi0n&quot;)
-sg.find(&quot;Shot&quot;, filters=[[&quot;sg_status_list&quot;, &quot;is&quot;, &quot;ip&quot;]], fields=[&quot;code&quot;, &quot;sg_status_list])
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
+                          <span class="n">login</span><span class="o">=</span><span class="s2">&quot;rhendriks&quot;</span><span class="p">,</span>
+                          <span class="n">password</span><span class="o">=</span><span class="s2">&quot;c0mPre$Hi0n&quot;</span><span class="p">)</span>
+<span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Shot&quot;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;sg_status_list&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="s2">&quot;ip&quot;</span><span class="p">]],</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="s2">&quot;sg_status_list])</span>
 </pre></div>
 </div>
 <p><strong>Output</strong>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">[{</span><span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;bunny_020_0170&#39;</span><span class="p">,</span>
-  <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">896</span><span class="p">,</span>
-  <span class="s">&#39;sg_sequence&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;bunny_020&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Sequence&#39;</span><span class="p">},</span>
-  <span class="s">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s">&#39;ip&#39;</span><span class="p">,</span>
-  <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Shot&#39;</span><span class="p">},</span>
- <span class="p">{</span><span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;bunny_020_0200&#39;</span><span class="p">,</span>
-  <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">899</span><span class="p">,</span>
-  <span class="s">&#39;sg_sequence&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;bunny_020&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Sequence&#39;</span><span class="p">},</span>
-  <span class="s">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s">&#39;ip&#39;</span><span class="p">,</span>
-  <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Shot&#39;</span><span class="p">},</span>
- <span class="p">{</span><span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;bunny_030_0080&#39;</span><span class="p">,</span>
-  <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">907</span><span class="p">,</span>
-  <span class="s">&#39;sg_sequence&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;bunny_030&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Sequence&#39;</span><span class="p">},</span>
-  <span class="s">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s">&#39;ip&#39;</span><span class="p">,</span>
-  <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Shot&#39;</span><span class="p">}]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0170&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">896</span><span class="p">,</span>
+  <span class="s1">&#39;sg_sequence&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Sequence&#39;</span><span class="p">},</span>
+  <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0200&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">899</span><span class="p">,</span>
+  <span class="s1">&#39;sg_sequence&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Sequence&#39;</span><span class="p">},</span>
+  <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_030_0080&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">907</span><span class="p">,</span>
+  <span class="s1">&#39;sg_sequence&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_030&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Sequence&#39;</span><span class="p">},</span>
+  <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">}]</span>
 </pre></div>
 </div>
 <div class="section" id="user-guide">
@@ -325,9 +325,9 @@ sg.find(&quot;Shot&quot;, filters=[[&quot;sg_status_list&quot;, &quot;is&quot;, 
 <div class="section" id="indices-and-tables">
 <h3>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
 </div>
 </div>
@@ -371,7 +371,7 @@ sg.find(&quot;Shot&quot;, filters=[[&quot;sg_status_list&quot;, &quot;is&quot;, 
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'sphinx',
+            VERSION:'sphinx_docs',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

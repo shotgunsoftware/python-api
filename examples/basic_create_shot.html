@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Create A Shot &mdash; python-api sphinx documentation</title>
+  <title>Create A Shot &mdash; python-api sphinx_docs documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api sphinx documentation" href="../index.html"/>
+    <link rel="top" title="python-api sphinx_docs documentation" href="../index.html"/>
         <link rel="up" title="Examples" href="../tutorials.html"/>
         <link rel="next" title="Find a Shot" href="basic_find_shot.html"/>
         <link rel="prev" title="Create a Shotgun API instance" href="basic_sg_instance.html"/> 
@@ -97,7 +97,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Examples</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../tutorials.html#beginner">Beginner</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="basic_sg_instance.html">Create a Shotgun API instance</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Create A Shot</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Create A Shot</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#building-the-data-and-calling-create">Building the data and calling <code class="docutils literal"><span class="pre">create()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#result">Result</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#the-complete-example">The Complete Example</a></li>
@@ -144,7 +144,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx.<br>
+    <b>python-api</b> sphinx_docs.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -171,7 +171,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -205,20 +205,20 @@
 <li>optionally any other info you want to provide</li>
 </ul>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="s">&quot;Project&quot;</span><span class="p">,</span><span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
-    <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;100_010&#39;</span><span class="p">,</span>
-    <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
-    <span class="s">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s">&#39;ip&#39;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Project&quot;</span><span class="p">,</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+    <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span>
 <span class="p">}</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This will create a new Shot named &#8220;100_010&#8221; in the Project &#8220;Gunslinger&#8221; (which has an <code class="docutils literal"><span class="pre">id</span></code> of 4).</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value
 is the the value to set.</li>
-<li><code class="docutils literal"><span class="pre">sg</span></code> is the Shotgun API instance you created in <a class="reference internal" href="basic_sg_instance.html#example-sg-instance"><span>Create a Shotgun API instance</span></a>.</li>
+<li><code class="docutils literal"><span class="pre">sg</span></code> is the Shotgun API instance you created in <a class="reference internal" href="basic_sg_instance.html#example-sg-instance"><span class="std std-ref">Create a Shotgun API instance</span></a>.</li>
 <li><code class="docutils literal"><span class="pre">create()</span></code> is the <a class="reference internal" href="../reference.html#shotgun_api3.Shotgun.create" title="shotgun_api3.Shotgun.create"><code class="xref py py-meth docutils literal"><span class="pre">shotgun_api3.Shotgun.create()</span></code></a> API method we are calling. We pass in the
 entity type we&#8217;re searching for and the data we&#8217;re setting.</li>
 </ul>
@@ -226,13 +226,13 @@ entity type we&#8217;re searching for and the data we&#8217;re setting.</li>
 <div class="section" id="result">
 <h2>Result<a class="headerlink" href="#result" title="Permalink to this headline">¶</a></h2>
 <p>The variable <code class="docutils literal"><span class="pre">result</span></code> now contains a dictionary hash with the Shot information you created.:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
-    <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;100_010&#39;</span><span class="p">,</span>
-    <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
-    <span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">40435</span><span class="p">,</span>
-    <span class="s">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="s">&#39;Demo Project&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Project&#39;</span><span class="p">},</span>
-    <span class="s">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s">&#39;ip&#39;</span><span class="p">,</span>
-    <span class="s">&#39;type&#39;</span><span class="p">:</span> <span class="s">&#39;Shot&#39;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">40435</span><span class="p">,</span>
+    <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Demo Project&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -244,51 +244,51 @@ representing an entity.</p>
 </div>
 <div class="section" id="the-complete-example">
 <h2>The Complete Example<a class="headerlink" href="#the-complete-example" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
-<span class="c"># --------------------------------------</span>
-<span class="c"># Imports</span>
-<span class="c"># --------------------------------------</span>
+<span class="c1"># --------------------------------------</span>
+<span class="c1"># Imports</span>
+<span class="c1"># --------------------------------------</span>
 <span class="kn">import</span> <span class="nn">shotgun_api3</span>
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span> <span class="c"># useful for debugging</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pprint</span> <span class="c1"># useful for debugging</span>
 
-<span class="c"># --------------------------------------</span>
-<span class="c"># Globals</span>
-<span class="c"># --------------------------------------</span>
-<span class="c"># make sure to change this to match your Shotgun server and auth credentials.</span>
-<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s">&quot;https://mystudio.shotgunstudio.com&quot;</span>
-<span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="s">&#39;my_script&#39;</span>
-<span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s">&#39;27b65d7063f46b82e670fe807bd2b6f3fd1676c1&#39;</span>
+<span class="c1"># --------------------------------------</span>
+<span class="c1"># Globals</span>
+<span class="c1"># --------------------------------------</span>
+<span class="c1"># make sure to change this to match your Shotgun server and auth credentials.</span>
+<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">&quot;https://mystudio.shotgunstudio.com&quot;</span>
+<span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="s1">&#39;my_script&#39;</span>
+<span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">&#39;27b65d7063f46b82e670fe807bd2b6f3fd1676c1&#39;</span>
 
-<span class="c"># --------------------------------------</span>
-<span class="c"># Main</span>
-<span class="c"># --------------------------------------</span>
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="c1"># --------------------------------------</span>
+<span class="c1"># Main</span>
+<span class="c1"># --------------------------------------</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
 
     <span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="n">SERVER_PATH</span><span class="p">,</span> <span class="n">SCRIPT_NAME</span><span class="p">,</span> <span class="n">SCRIPT_KEY</span><span class="p">)</span>
 
-    <span class="c"># --------------------------------------</span>
-    <span class="c"># Create a Shot with data</span>
-    <span class="c"># --------------------------------------</span>
+    <span class="c1"># --------------------------------------</span>
+    <span class="c1"># Create a Shot with data</span>
+    <span class="c1"># --------------------------------------</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="s">&quot;Project&quot;</span><span class="p">,</span><span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
-        <span class="s">&#39;code&#39;</span><span class="p">:</span> <span class="s">&#39;100_010&#39;</span><span class="p">,</span>
-        <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="s">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
-        <span class="s">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s">&#39;ip&#39;</span>
+        <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Project&quot;</span><span class="p">,</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+        <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span>
     <span class="p">}</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-    <span class="k">print</span> <span class="s">&quot;The id of the </span><span class="si">%s</span><span class="s"> is </span><span class="si">%d</span><span class="s">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">])</span>
+    <span class="nb">print</span> <span class="s2">&quot;The id of the </span><span class="si">%s</span><span class="s2"> is </span><span class="si">%d</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>And here is the output:</p>
-<div class="highlight-python"><div class="highlight"><pre>{&#39;code&#39;: &#39;100_010&#39;,
- &#39;description&#39;: &#39;Open on a beautiful field with fuzzy bunnies&#39;,
- &#39;id&#39;: 40435,
- &#39;project&#39;: {&#39;id&#39;: 4, &#39;name&#39;: &#39;Demo Project&#39;, &#39;type&#39;: &#39;Project&#39;},
- &#39;sg_status_list&#39;: &#39;ip&#39;,
- &#39;type&#39;: &#39;Shot&#39;}
-The id of the Shot is 40435.
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">40435</span><span class="p">,</span>
+ <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Demo Project&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">},</span>
+ <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">}</span>
+<span class="n">The</span> <span class="nb">id</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Shot</span> <span class="ow">is</span> <span class="mf">40435.</span>
 </pre></div>
 </div>
 </div>
@@ -334,7 +334,7 @@ The id of the Shot is 40435.
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'sphinx',
+            VERSION:'sphinx_docs',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

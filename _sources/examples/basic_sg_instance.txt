@@ -5,7 +5,8 @@ Create a Shotgun API instance
 
 This example shows you how to establish your initial connection to Shotgun using script-based 
 authentication. ``sg`` represents your Shotgun API instance. Be sure you've read 
-:ref:`Setting Up Shotgun for API Access <setting_up_shotgun>`.::
+:ref:`Setting Up Shotgun for API Access <setting_up_shotgun>`.
+::
 
     import pprint # Useful for debugging
 

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Packaging an application with py2app (or py2exe) &mdash; python-api sphinx documentation</title>
+  <title>Packaging an application with py2app (or py2exe) &mdash; python-api sphinx_docs documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api sphinx documentation" href="index.html"/>
+    <link rel="top" title="python-api sphinx_docs documentation" href="index.html"/>
         <link rel="next" title="Shotgun Server API Changelog" href="server_changelog.html"/>
         <link rel="prev" title="Working With Local Files" href="local_files.html"/> 
 
@@ -101,7 +101,7 @@
 <li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files (Attachments)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="local_files.html">Working With Local Files</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Packaging an application with py2app (or py2exe)</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Packaging an application with py2app (or py2exe)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#https-validation-and-cacerts-txt">HTTPS Validation and cacerts.txt</a></li>
 </ul>
 </li>
@@ -127,7 +127,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx.<br>
+    <b>python-api</b> sphinx_docs.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -154,7 +154,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -188,21 +188,21 @@ file is located at <code class="docutils literal"><span class="pre">shotgun_api3
 file imported by your application, py2app will not know to include it in your package, it will
 need to be explicitly specified in your <code class="docutils literal"><span class="pre">setup.py</span></code> file (edit the path based on the location
 where your <code class="docutils literal"><span class="pre">shotgun_api3</span></code> package is located):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">DATA_FILES</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">(</span><span class="s">&#39;shotgun_api3&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;/shotgun/src/python-api/shotgun_api3/lib/httplib2/cacerts.txt&#39;</span><span class="p">])</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">DATA_FILES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;shotgun_api3&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;/shotgun/src/python-api/shotgun_api3/lib/httplib2/cacerts.txt&#39;</span><span class="p">])</span>
 <span class="p">]</span>
 </pre></div>
 </div>
 <p>Once you create your py2app package its contents should include two files (among others) in the
 following structure:</p>
-<div class="highlight-python"><div class="highlight"><pre>./Contents/Resources/shotgun_api3/cacerts.txt
-./Contents/Resources/my_script.py
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">Contents</span><span class="o">/</span><span class="n">Resources</span><span class="o">/</span><span class="n">shotgun_api3</span><span class="o">/</span><span class="n">cacerts</span><span class="o">.</span><span class="n">txt</span>
+<span class="o">./</span><span class="n">Contents</span><span class="o">/</span><span class="n">Resources</span><span class="o">/</span><span class="n">my_script</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 <p>Where in <code class="docutils literal"><span class="pre">my_script.py</span></code> you can access the <code class="docutils literal"><span class="pre">cacerts.txt</span></code> file using a relative path to pass it
 into the Shotgun connection&#8217;s constructor:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">ca_certs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s">&#39;shotgun_api3&#39;</span><span class="p">,</span> <span class="s">&#39;cacerts.txt&#39;</span><span class="p">)</span>
-<span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s">&#39;https://yoursite.shotgunstudio.com&#39;</span><span class="p">,</span> <span class="s">&#39;script_name&#39;</span><span class="p">,</span> <span class="s">&#39;script_key&#39;</span><span class="p">,</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ca_certs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s1">&#39;shotgun_api3&#39;</span><span class="p">,</span> <span class="s1">&#39;cacerts.txt&#39;</span><span class="p">)</span>
+<span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s1">&#39;https://yoursite.shotgunstudio.com&#39;</span><span class="p">,</span> <span class="s1">&#39;script_name&#39;</span><span class="p">,</span> <span class="s1">&#39;script_key&#39;</span><span class="p">,</span>
                           <span class="n">ca_certs</span><span class="o">=</span><span class="n">ca_certs</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -250,7 +250,7 @@ into the Shotgun connection&#8217;s constructor:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'sphinx',
+            VERSION:'sphinx_docs',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Upload a Thumbnail for a Version &mdash; python-api sphinx documentation</title>
+  <title>Upload a Thumbnail for a Version &mdash; python-api sphinx_docs documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api sphinx documentation" href="../index.html"/>
+    <link rel="top" title="python-api sphinx_docs documentation" href="../index.html"/>
         <link rel="up" title="Examples" href="../tutorials.html"/>
         <link rel="next" title="API Reference" href="../reference.html"/>
         <link rel="prev" title="Create a Version Linked to a Shot" href="basic_create_version_link_shot.html"/> 
@@ -103,7 +103,7 @@
 <li class="toctree-l3"><a class="reference internal" href="basic_delete_shot.html">Delete A Shot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="basic_create_shot_task_template.html">Create a Shot with a Task Template</a></li>
 <li class="toctree-l3"><a class="reference internal" href="basic_create_version_link_shot.html">Create a Version Linked to a Shot</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="">Upload a Thumbnail for a Version</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Upload a Thumbnail for a Version</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#upload-the-image-using-upload-thumbnail">Upload the Image using <code class="docutils literal"><span class="pre">upload_thumbnail()</span></code></a></li>
 </ul>
 </li>
@@ -142,7 +142,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx.<br>
+    <b>python-api</b> sphinx_docs.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -169,7 +169,7 @@
         <div class="rst-content">
           
 
-
+ 
 
 
 
@@ -207,7 +207,7 @@ necessary.</p>
 </div>
 <div class="section" id="upload-the-image-using-upload-thumbnail">
 <h2>Upload the Image using <a class="reference internal" href="../reference.html#shotgun_api3.Shotgun.upload_thumbnail" title="shotgun_api3.Shotgun.upload_thumbnail"><code class="xref py py-meth docutils literal"><span class="pre">upload_thumbnail()</span></code></a><a class="headerlink" href="#upload-the-image-using-upload-thumbnail" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">sg</span><span class="o">.</span><span class="n">upload_thumbnail</span><span class="p">(</span><span class="s">&quot;Version&quot;</span><span class="p">,</span> <span class="mi">214</span><span class="p">,</span> <span class="s">&quot;/v1/gun/s100/010/beauties/anim/100_010_animv1.jpg&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">upload_thumbnail</span><span class="p">(</span><span class="s2">&quot;Version&quot;</span><span class="p">,</span> <span class="mi">214</span><span class="p">,</span> <span class="s2">&quot;/v1/gun/s100/010/beauties/anim/100_010_animv1.jpg&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Shotgun will take care of resizing the thumbnail for you. If something does go wrong, an exception
@@ -261,7 +261,7 @@ is beyond the scope of this example. :)</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'sphinx',
+            VERSION:'sphinx_docs',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
