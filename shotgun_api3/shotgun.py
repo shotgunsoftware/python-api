@@ -2029,8 +2029,8 @@ class Shotgun(object):
         result = self._parse_records(record)[0]
         return result
 
-    def nav_read(self, path, view=None, entity_fields=None):
-        return self._call_rpc('nav', {'path':path, 'view': view, 'entity_fields': entity_fields})
+    def nav_read(self, path, seed_entity_field=None, entity_fields=None):
+        return self._call_rpc('nav', {'path':path, 'seed_entity_field': seed_entity_field, 'entity_fields': entity_fields})
 
     def get_session_token(self):
         """Get the session token associated with the current session.
