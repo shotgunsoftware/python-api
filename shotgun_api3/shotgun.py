@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
  -----------------------------------------------------------------------------
- Copyright (c) 2009-2015, Shotgun Software Inc
+ Copyright (c) 2009-2016, Shotgun Software Inc
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
@@ -66,17 +66,19 @@ LOG.setLevel(logging.WARN)
 
 SG_TIMEZONE = SgTimezone()
 
-
+NO_SSL_VALIDATION = False
 try:
-    import ssl
-    NO_SSL_VALIDATION = False
-except ImportError:
+    import ssl        
+except ImportError, e:
+    if "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
+        raise ImportError("%s. SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable prevents "
+                          "disabling SSL certificate validation." % e)
     LOG.debug("ssl not found, disabling certificate validation")
     NO_SSL_VALIDATION = True
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.0.22"
+__version__ = "3.0.31"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -184,6 +186,12 @@ class ServerCapabilities(object):
             'label': 'project parameter'
         }, True)
 
+    def ensure_support_for_additional_filter_presets(self):
+        """Wrapper for ensure_support"""
+        return self._ensure_support({
+            'version': (7, 0, 0),
+            'label': 'additional_filter_presets parameter'
+        }, True)
 
     def __str__(self):
         return "ServerCapabilities: host %s, version %s, is_dev %s"\
@@ -215,10 +223,18 @@ class ClientCapabilities(object):
 
         self.py_version = ".".join(str(x) for x in sys.version_info[:2])
 
+        # extract the OpenSSL version if we can. The version is only available in Python 2.7 and
+        # only if we successfully imported ssl
+        self.ssl_version = "unknown"
+        try:
+            self.ssl_version = ssl.OPENSSL_VERSION
+        except (AttributeError, NameError):
+            pass
+
     def __str__(self):
         return "ClientCapabilities: platform %s, local_path_field %s, "\
-            "py_verison %s" % (self.platform, self.local_path_field,
-            self.py_version)
+            "py_verison %s, ssl version %s" % (self.platform, self.local_path_field,
+            self.py_version, self.ssl_version)
 
 class _Config(object):
     """Container for the client configuration."""
@@ -239,6 +255,8 @@ class _Config(object):
         self.user_password = None
         self.auth_token = None
         self.sudo_as_login = None
+        # Authentication parameters to be folded into final auth_params dict
+        self.extra_auth_params = None
         # uuid as a string
         self.session_uuid = None
         self.scheme = None
@@ -412,15 +430,16 @@ class Shotgun(object):
         # if the service contains user information strip it out
         # copied from the xmlrpclib which turned the user:password into
         # and auth header
-        auth, self.config.server = urllib.splituser(self.config.server)
+        auth, self.config.server = urllib.splituser(urlparse.urlsplit(base_url).netloc)
         if auth:
             auth = base64.encodestring(urllib.unquote(auth))
             self.config.authorization = "Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
         if http_proxy:
-            # check if we're using authentication
-            p = http_proxy.split("@", 1)
+            # check if we're using authentication. Start from the end since there might be
+            # @ in the user's password.
+            p = http_proxy.rsplit("@", 1)
             if len(p) > 1:
                 self.config.proxy_user, self.config.proxy_pass = \
                     p[0].split(":", 1)
@@ -515,7 +534,8 @@ class Shotgun(object):
         return self._call_rpc("info", None, include_auth_params=False)
 
     def find_one(self, entity_type, filters, fields=None, order=None,
-        filter_operator=None, retired_only=False, include_archived_projects=True):
+        filter_operator=None, retired_only=False, include_archived_projects=True,
+        additional_filter_presets=None):
         """Calls the find() method and returns the first result, or None.
 
         :param entity_type: Required, entity type (string) to find.
@@ -540,12 +560,24 @@ class Shotgun(object):
         :param retired_only: Optional, flag to return only entities that have
         been retried. Defaults to False which returns only entities which
         have not been retired.
-        
+
+        :param additional_filter_presets: Optional list of presets to
+        further filter the result set, list has the form:
+        [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
+
+        Note that these filters are ANDed together and ANDed with the 'filter'
+        argument.
+
+        For details on supported presets and the format of this parameter,
+        please consult the API documentation:
+        https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax
+
         :returns: Dictionary of requested Shotgun fields and values.
         """
 
         results = self.find(entity_type, filters, fields, order,
-            filter_operator, 1, retired_only, include_archived_projects=include_archived_projects)
+            filter_operator, 1, retired_only, include_archived_projects=include_archived_projects,
+            additional_filter_presets=additional_filter_presets)
 
         if results:
             return results[0]
@@ -553,7 +585,7 @@ class Shotgun(object):
 
     def find(self, entity_type, filters, fields=None, order=None,
             filter_operator=None, limit=0, retired_only=False, page=0,
-            include_archived_projects=True):
+            include_archived_projects=True, additional_filter_presets=None):
         """Find entities matching the given filters.
 
         :param entity_type: Required, entity type (string) to find.
@@ -580,7 +612,18 @@ class Shotgun(object):
         have not been retired.
 
         :param include_archived_projects: Optional, flag to include entities
-        whose projects have been archived
+        whose projects have been archived.
+
+        :param additional_filter_presets: Optional list of presets to
+        further filter the result set, list has the form:
+        [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
+
+        Note that these filters are ANDed together and ANDed with the 'filter'
+        argument.
+
+        For details on supported presets and the format of this parameter,
+        please consult the API documentation:
+        https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax
 
         :returns: list of the dicts for each entity with the requested fields,
         and their id and type.
@@ -604,13 +647,16 @@ class Shotgun(object):
             # So we only need to check the server version if it is False
             self.server_caps.ensure_include_archived_projects()
 
+        if additional_filter_presets:
+            self.server_caps.ensure_support_for_additional_filter_presets()
 
         params = self._construct_read_parameters(entity_type,
                                                  fields,
                                                  filters,
                                                  retired_only,
                                                  order,
-                                                 include_archived_projects)
+                                                 include_archived_projects,
+                                                 additional_filter_presets)
 
         if limit and limit <= self.config.records_per_page:
             params["paging"]["entities_per_page"] = limit
@@ -654,7 +700,8 @@ class Shotgun(object):
                                    filters,
                                    retired_only,
                                    order,
-                                   include_archived_projects):
+                                   include_archived_projects,
+                                   additional_filter_presets):
         params = {}
         params["type"] = entity_type
         params["return_fields"] = fields or ["id"]
@@ -663,6 +710,9 @@ class Shotgun(object):
         params["return_paging_info"] = True
         params["paging"] = { "entities_per_page": self.config.records_per_page,
                              "current_page": 1 }
+
+        if additional_filter_presets:
+            params["additional_filter_presets"] = additional_filter_presets;
 
         if include_archived_projects is False:
             # Defaults to True on the server, so only pass it if it's False
@@ -681,7 +731,6 @@ class Shotgun(object):
                 })
             params['sorts'] = sort_list
         return params
-
 
     def _add_project_param(self, params, project_entity):
 
@@ -830,7 +879,7 @@ class Shotgun(object):
 
         return result
 
-    def update(self, entity_type, entity_id, data):
+    def update(self, entity_type, entity_id, data, multi_entity_update_modes=None):
         """Updates the specified entity with the supplied data.
 
         :param entity_type: Required, entity type (string) to update.
@@ -838,6 +887,16 @@ class Shotgun(object):
         :param entity_id: Required, id of the entity to update.
 
         :param data: Required, dict fields to update on the entity.
+
+        :param multi_entity_update_modes: Optional, dict of what update mode to
+        use when updating a multi-entity link field.  The keys in the dict are
+        the fields to set the mode for and the values from the dict are one
+        of "set", "add", or "remove". The default behavior if mode is not
+        specified for a field is 'set'. For example, on the 'Sequence' entity,
+        to append to the 'shots' field and remove from the 'assets' field, you
+        would specify:
+
+            multi_entity_update_modes={"shots":"add", "assets":"remove"}
 
         :returns: dict of the fields updated, with the entity_type and
         id added.
@@ -858,7 +917,10 @@ class Shotgun(object):
             params = {
                 "type" : entity_type,
                 "id" : entity_id,
-                "fields" : self._dict_to_list(data)
+                "fields" : self._dict_to_list(
+                    data,
+                    extra_data=self._dict_to_extra_data(
+                        multi_entity_update_modes, "multi_entity_update_mode"))
             }
             record = self._call_rpc("update", params)
             result = self._parse_records(record)[0]
@@ -928,7 +990,7 @@ class Shotgun(object):
         :param requests: A list of dict's of the form which have a
             request_type key and also specifies:
             - create: entity_type, data dict of fields to set
-            - update: entity_type, entity_id, data dict of fields to set
+            - update: entity_type, entity_id, data dict of fields to set, optionally multi_entity_update_modes
             - delete: entity_type and entity_id
 
         :returns: A list of values for each operation, create and update
@@ -969,7 +1031,12 @@ class Shotgun(object):
                                ['entity_id', 'data'],
                                req)
                 request_params['id'] = req['entity_id']
-                request_params['fields'] = self._dict_to_list(req["data"])
+                request_params['fields'] = self._dict_to_list(req["data"],
+                    extra_data=self._dict_to_extra_data(
+                        req.get("multi_entity_update_modes"),
+                        "multi_entity_update_mode"))
+                if "multi_entity_update_mode" in req:
+                    request_params['multi_entity_update_mode'] = req["multi_entity_update_mode"]
             elif req["request_type"] == "delete":
                 _required_keys("Batched delete request", ['entity_id'], req)
                 request_params['id'] = req['entity_id']
@@ -1257,13 +1324,22 @@ class Shotgun(object):
     def reset_user_agent(self):
         """Reset user agent to the default.
 
-        Eg. shotgun-json (3.0.17); Python 2.6 (Mac)
+        Eg. "shotgun-json (3.0.17); Python 2.6 (Mac); ssl OpenSSL 1.0.2d 9 Jul 2015 (validate)"
         """
         ua_platform = "Unknown"
         if self.client_caps.platform is not None:
             ua_platform = self.client_caps.platform.capitalize()
+        
+
+        # create ssl validation string based on settings
+        validation_str = "validate"
+        if self.config.no_ssl_validation:
+            validation_str = "no-validate"
+        
         self._user_agents = ["shotgun-json (%s)" % __version__,
-                             "Python %s (%s)" % (self.client_caps.py_version, ua_platform)]
+                             "Python %s (%s)" % (self.client_caps.py_version, ua_platform),
+                             "ssl %s (%s)" % (self.client_caps.ssl_version, validation_str)]
+
 
     def set_session_uuid(self, session_uuid):
         """Sets the browser session_uuid for this API session.
@@ -1379,7 +1455,7 @@ class Shotgun(object):
         except urllib2.HTTPError, e:
             if e.code == 500:
                 raise ShotgunError("Server encountered an internal error. "
-                    "\n%s\n(%s)\n%s\n\n" % (url, params, e))
+                    "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
             else:
                 raise ShotgunError("Unanticipated error occurred %s" % (e))
         else:
@@ -1518,7 +1594,8 @@ class Shotgun(object):
             raise ShotgunError('Unsupported call for semi private Shotgun')
 
 
-        is_thumbnail = (field_name == "thumb_image" or field_name == "filmstrip_thumb_image")
+        is_thumbnail = (field_name in ["thumb_image", "filmstrip_thumb_image", "image",
+                                       "filmstrip_image"])
 
         params = {
             "entity_type" : entity_type,
@@ -1531,7 +1608,7 @@ class Shotgun(object):
             url = urlparse.urlunparse((self.config.scheme, self.config.server,
                 "/upload/publish_thumbnail", None, None, None))
             params["thumb_image"] = open(path, "rb")
-            if field_name == "filmstrip_thumb_image":
+            if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
                 params["filmstrip"] = True
 
         else:
@@ -1558,7 +1635,7 @@ class Shotgun(object):
         except urllib2.HTTPError, e:
             if e.code == 500:
                 raise ShotgunError("Server encountered an internal error. "
-                    "\n%s\n(%s)\n%s\n\n" % (url, params, e))
+                    "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
             else:
                 raise ShotgunError("Unanticipated error occurred uploading "
                     "%s: %s" % (path, e))
@@ -1656,6 +1733,8 @@ class Shotgun(object):
             raise ShotgunFileDownloadError(err)
         else:
             if file_path:
+                if not fp.closed:
+                    fp.close()
                 return file_path
             else:
                 return attachment
@@ -1933,8 +2012,7 @@ class Shotgun(object):
         
         api_entity_types = {}
         for (entity_type, filter_list) in entity_types.iteritems():
-            
-            
+
             if isinstance(filter_list, (list, tuple)):
                 resolved_filters = _translate_filters(filter_list, filter_operator=None)
                 api_entity_types[entity_type] = resolved_filters      
@@ -2065,6 +2143,16 @@ class Shotgun(object):
             opener = urllib2.build_opener(handler)
         return opener
 
+    def _turn_off_ssl_validation(self):
+        """Turn off SSL certificate validation."""
+        global NO_SSL_VALIDATION
+        self.config.no_ssl_validation = True
+        NO_SSL_VALIDATION = True
+        # reset ssl-validation in user-agents
+        self._user_agents = ["ssl %s (no-validate)" % self.client_caps.ssl_version 
+                             if ua.startswith("ssl ") else ua 
+                             for ua in self._user_agents] 
+
     # Deprecated methods from old wrapper
     def schema(self, entity_type):
         raise ShotgunError("Deprecated: use schema_field_read('type':'%s') "
@@ -2162,7 +2250,21 @@ class Shotgun(object):
                     "higher, server is %s" % (self.server_caps.version,))
             auth_params["sudo_as_login"] = self.config.sudo_as_login
 
+        if self.config.extra_auth_params:
+            auth_params.update(self.config.extra_auth_params)
+
         return auth_params
+
+    def _sanitize_auth_params(self, params):
+        """
+        Given an authentication parameter dictionary, sanitize any sensitive
+        information and return the sanitized dict copy.
+        """
+        sanitized_params = copy.copy(params)
+        for k in ['user_password', 'script_key', 'session_token']:
+            if k in sanitized_params:
+                sanitized_params[k] = '********'
+        return sanitized_params
 
     def _build_payload(self, method, params, include_auth_params=True):
         """Builds the payload to be send to the rpc endpoint.
@@ -2203,9 +2305,8 @@ class Shotgun(object):
         """
 
         attempt = 0
-        req_headers = {
-            "user-agent": "; ".join(self._user_agents),
-        }
+        req_headers = {}
+        req_headers["user-agent"] = "; ".join(self._user_agents)
         if self.config.authorization:
             req_headers["Authorization"] = self.config.authorization
 
@@ -2218,6 +2319,38 @@ class Shotgun(object):
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
+            except SSLHandshakeError, e:
+                # Test whether the exception is due to the fact that this is an older version of
+                # Python that cannot validate certificates encrypted with SHA-2. If it is, then 
+                # fall back on disabling the certificate validation and try again - unless the
+                # SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable has been set by the 
+                # user. In that case we simply raise the exception. Any other exceptions simply 
+                # get raised as well. 
+                #
+                # For more info see:
+                # http://blog.shotgunsoftware.com/2016/01/important-ssl-certificate-renewal-and.html
+                #
+                # SHA-2 errors look like this: 
+                #   [Errno 1] _ssl.c:480: error:0D0C50A1:asn1 encoding routines:ASN1_item_verify:
+                #   unknown message digest algorithm
+                # 
+                # Any other exceptions simply get raised.
+                if not str(e).endswith("unknown message digest algorithm") or \
+                   "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
+                    raise
+                
+                if self.config.no_ssl_validation is False:
+                    LOG.warning("SSLHandshakeError: this Python installation is incompatible with "
+                                "certificates signed with SHA-2. Disabling certificate validation. "
+                                "For more information, see http://blog.shotgunsoftware.com/2016/01/"
+                                "important-ssl-certificate-renewal-and.html")
+                    self._turn_off_ssl_validation()
+                    # reload user agent to reflect that we have turned off ssl validation
+                    req_headers["user-agent"] = "; ".join(self._user_agents)
+                
+                self._close_connection()
+                if attempt == max_rpc_attempts:
+                    raise
             except Exception:
                 #TODO: LOG ?
                 self._close_connection()
@@ -2560,18 +2693,30 @@ class Shotgun(object):
         # Comments in prev version said we can get this sometimes.
         raise RuntimeError("Unknown code %s %s" % (code, thumb_url))
 
-    def _dict_to_list(self, d, key_name="field_name", value_name="value"):
+    def _dict_to_list(self, d, key_name="field_name", value_name="value", extra_data=None):
         """Utility function to convert a dict into a list dicts using the
         key_name and value_name keys.
 
-        e.g. d {'foo' : 'bar'} changed to [{'field_name':'foo, 'value':'bar'}]
+        e.g. d {'foo' : 'bar'} changed to [{'field_name':'foo', 'value':'bar'}]
+
+        Any dictionary passed in via extra_data will be merged into the resulting dictionary.
+        e.g. d as above and extra_data of {'foo': {'thing1': 'value1'}} changes into
+        [{'field_name': 'foo', 'value': 'bar', 'thing1': 'value1'}]
         """
+        ret = []
+        for k, v in (d or {}).iteritems():
+            d = {key_name: k, value_name: v}
+            d.update((extra_data or {}).get(k, {}))
+            ret.append(d)
+        return ret
 
-        return [
-            {key_name : k, value_name : v }
-            for k, v in (d or {}).iteritems()
-        ]
+    def _dict_to_extra_data(self, d, key_name="value"):
+        """Utility function to convert a dict into a dict compatible with the extra_data arg
+        of _dict_to_list
 
+        e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
+        """
+        return dict([(k, {key_name: v}) for (k,v) in (d or {}).iteritems()])
 
 # Helpers from the previous API, left as is.
 
