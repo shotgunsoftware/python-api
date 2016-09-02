@@ -2049,6 +2049,25 @@ class Shotgun(object):
         result = self._parse_records(record)[0]
         return result
 
+    def nav_expand(self, path, seed_entity_field=None, entity_fields=None):
+        """
+        Expand the navigation hierarchy for the supplied path.
+
+        .. warning::
+
+            This is an experimental method that is not officially part of the
+            python-api. Usage of this method is discouraged. This method's name,
+            arguments, and argument types may change at any point.
+
+        """
+        return self._call_rpc(
+            'nav_expand',
+            {
+                'path':path,
+                'seed_entity_field': seed_entity_field,
+                'entity_fields': entity_fields
+            }
+        )
 
     def get_session_token(self):
         """Get the session token associated with the current session.
