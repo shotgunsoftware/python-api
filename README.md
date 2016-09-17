@@ -57,7 +57,8 @@ Integration and unit tests are provided.
 
 **v3.0.32.dev - TBD**
 
-   + TBD
+   + Optimized import speed of the API on Python 2.7.
+   + Integrated the latest fixes to the `mimetypes` module.
 
 **v3.0.31 - 2016 May 18**
 
