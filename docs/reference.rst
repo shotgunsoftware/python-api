@@ -1,15 +1,17 @@
 .. _apireference:
+.. currentmodule:: shotgun_api3
 
 #############
 API Reference
 #############
 
 
+
 *****************************
 ``shotgun`` Module Attributes
 *****************************
 
-The :mod:`shotgun_api3.shotgun` module is a container for the :class:`~shotgun_api3.Shotgun`
+The :mod:`~shotgun_api3.shotgun` module is a container for the :class:`~shotgun_api3.Shotgun`
 class. There are a couple of useful attributes to note.
 
 .. automodule:: shotgun_api3.shotgun
@@ -24,10 +26,15 @@ Shotgun()
 The majority of functionality is contained within the :class:`~shotgun_api3.Shotgun` class. 
 The documentation for all of the methods you'll need in your scripts lives in here.
 
-.. autoclass:: shotgun_api3.Shotgun
+.. autoclass:: Shotgun
     :show-inheritance:
     :inherited-members:
     :members:
+
+    .. rubric:: Methods
+
+    .. autoautosummary:: shotgun_api3.Shotgun 
+        :methods:
 
 
 **********
