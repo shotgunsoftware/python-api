@@ -251,3 +251,110 @@ Valid Operators By Data Type
                                 'not_in'
 
     url                         ** Filtering by this data type field is not supported
+
+
+
+*************************
+Additional Filter Presets
+*************************
+
+
+As of Shotgun version 7.0 it is possible to also use filter presets. These presets provide a simple 
+way to specify powerful query filters that would otherwise be costly and difficult to craft using 
+traditional filters.
+
+Multiple presets can be specified in cases where it makes sense.
+
+Also, these presets can be used alongside normal filters. The result returned is an AND operation 
+between the specified filters.
+
+Example Uses
+============
+
+The following query will return the Version with the name 'ABC' that is linked to the latest entity 
+created::
+
+    additional_filter_presets = [
+        {
+            "preset_name": "LATEST",
+            "latest_by":   "ENTITIES_CREATED_AT"
+        }
+    ]
+
+    filters = [['code', 'is', 'ABC']]
+
+    result = sg.find('Version', filters = filters, additional_filter_presets = additional_filter_presets)
+
+
+The following query will find all CutItems associated to Cut #1 and return all Versions associated 
+to the Shot linked to each of these CutItems::
+
+    additional_filter_presets = [
+        {
+            "preset_name": "CUT_SHOT_VERSIONS",
+            "cut_id":       1
+        }
+    ]
+
+    result = sg.find('Version', additional_filter_presets = additional_filter_presets)
+
+Available Filter Presets by Entity Type
+=======================================
+
+Allowed filter presets (and preset parameter values) depend on the entity type being searched.
+
+The table bellow gives the details about which filter preset can be used on each entity type and 
+with which parameters.
+
+::
+
+    Entity Type Preset Name       Preset Parameters   Allowed Preset Parameter Values
+    ----------- -----------       -----------------   -------------------------------
+    Cut         LATEST            [string] latest_by  'REVISION_NUMBER':
+                                                        Returns the cuts that have the
+                                                        highest revision number.
+                                                        This is typically used with a query
+                                                        filter that returns cuts with the
+                                                        same value for a given field
+                                                        (e.g. code field). This preset
+                                                        therefore allows to get
+                                                        the Cut of that set that has
+                                                        the highest revision_number value.
+
+    Version     CUT_SHOT_VERSIONS [int] cut_id        Valid Cut entity id.
+                                                        Returns all Version entities
+                                                        associated to the Shot entity
+                                                        associated to the CutItems
+                                                        of the given Cut.
+                                                        This basically allows to find all
+                                                        Versions associated to the given
+                                                        Cut, via its CutItems.
+
+                LATEST            [string] latest_by  'ENTITIES_CREATED_AT':
+                                                        When dealing with multiple
+                                                        Versions associated to a group
+                                                        of entities, returns only the
+                                                        last Version created for each
+                                                        entity.
+                                                        For example, when dealing with a
+                                                        set of Shots, this preset allows
+                                                        to find the latest Version created
+                                                        for each of these Shots.
+
+                                                      'BY_PIPELINE_STEP_NUMBER_AND_ENTITIES_CREATED_AT':
+                                                        When dealing with multiple versions
+                                                        associated to the same entity *and*
+                                                        to Tasks, returns the Version
+                                                        associated to the Task with highest
+                                                        step.list_order.
+                                                        If multiple Versions are found for
+                                                        that step.list_order, only the
+                                                        latest Version is returned.
+                                                        This allows to isolate the Version
+                                                        entity that is the farthest along
+                                                        in the pipeline for a given entity.
+                                                        For example, when dealing with a Shot
+                                                        with multiple Versions, this preset
+                                                        will return the Version associated
+                                                        to the Task with the highest
+                                                        step.list_order value.
