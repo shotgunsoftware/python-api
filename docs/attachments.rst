@@ -1,8 +1,8 @@
 .. _attachments:
 
-################################
-Working With Files (Attachments)
-################################
+##################
+Working With Files
+##################
 
 The Shotgun web application stores Files as Attachment entities. You can see these on a Files page,
 or a Files tab on a detail page, for example. You can access Attachments via the API to create and
