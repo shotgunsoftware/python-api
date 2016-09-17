@@ -25,6 +25,12 @@ Don't::
 
     from shotgun_api3 import Shotgun
 
+***************
+Multi-threading
+***************
+The Shotgun API is not thread-safe. If you want to do threading we strongly suggest that you use 
+one connection object per thread and not share the connection.
+
 *************
 Entity Fields
 *************
