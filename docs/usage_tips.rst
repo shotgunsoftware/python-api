@@ -98,7 +98,7 @@ Shot
 ====
 
 **Smart Cut Fields**: These fields are available only in the browser UI. You can read more about 
-smart cut fields and the API in the Smart Cut Fields doc (link TK)::
+smart cut fields and the API in the :ref:`Smart Cut Fields doc <smart_cut_fields>`::
 
     smart_cut_in
     smart_cut_out
