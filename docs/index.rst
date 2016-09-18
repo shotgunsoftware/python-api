@@ -65,10 +65,9 @@ User Guide
 
     attachments
     local_files
-
-    updating_tasks
-    split_tasks
+    tasks
     smart_cut_fields
+    event_types
 
     packaging
     server_changelog
