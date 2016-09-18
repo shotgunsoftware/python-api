@@ -62,13 +62,13 @@ Integration and unit tests are provided.
 
 **v3.0.31 - 2016 May 18**
 
-   + Add optional "additional_filter_presets" argument to find() and find_one()
+   + Add optional `additional_filter_presets` argument to `find()` and `find_one()`
 
 **v3.0.30 - 2016 Apr 25**
 
    + Add option to use add/remove/set modes when updating multi-entity fields
    + Add explicit file handler close to download_attachment
-   + Add basic find() ordering support to mockgun
+   + Add basic `find()` ordering support to mockgun
    + Allow for product specific authorization parameters
 
 **v3.0.29 - 2016 Mar 7**
@@ -77,20 +77,20 @@ Integration and unit tests are provided.
 
 **v3.0.28 - 2016 Mar 3**
 
-   + Refactored nested classing of sgtimezone library to allow for serializable timestamps.
+   + Refactored nested classing of `sgtimezone` library to allow for serializable timestamps.
 
 **v3.0.27 - 2016 Feb 18**
 
-   + Make sure HTTP proxy authentication works with the @ character in a password.
+   + Make sure HTTP proxy authentication works with the `@` character in a password.
    + Make sure sudo authentication test works with Shotgun versions after 6.3.10
-   + Smarter uploading of thumbnails and filmstrips with the upload() method.
+   + Smarter uploading of thumbnails and filmstrips with the `upload()` method.
    + Improve Travis build integration of the Python-API to run the full suite of
    API tests instead of just the unit and client tests.
 
 **v3.0.26 - 2016 Feb 1**
 
    + Updating testing framework to use environment variables inconjunction with existing example_config file so that commits and pull requests are automatically run on travis-ci.
-   + Fix to prevent stripping out case-sensitivity of a URL if the user passes their credentials to config.server as an authrization header.
+   + Fix to prevent stripping out case-sensitivity of a URL if the user passes their credentials to config.server as an authorization header.
 
 **v3.0.25 - 2016 Jan 12**
 
