@@ -1,3 +1,5 @@
+.. _split_tasks:
+
 ###########
 Split Tasks
 ###########
