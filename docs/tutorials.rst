@@ -2,12 +2,8 @@
 Examples
 ########
 
-Here's a list of various tutorials to walk through that should provide you with a good base 
+Here's a list of various simple tutorials to walk through that should provide you with a good base 
 understanding of how to use the Shotgun API and what you can do with it.
-
-********
-Beginner
-********
 
 .. toctree::
     :maxdepth: 1
@@ -28,15 +24,6 @@ Advanced
 .. toctree::
     :maxdepth: 1
 
-- Accessing CustomEntities via the API
-- Task Dependencies
-- Task Status Triggers
-- Updating Task Dates: How Shotgun Thinks
-- Split Tasks
-- Event Types
-- Subversion (SVN) Integration
-- Handling ActionMenuItems
-- Using an ActionMenuItem to Package Versions for a Client
-- Smart Cut Fields
-- Connection Entities
-- Packaging an application with py2app (or py2exe)
+    examples/ami_handler
+    examples/ami_version_packager
+    examples/svn_integration
