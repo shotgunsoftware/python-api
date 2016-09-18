@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Usage Tips &mdash; python-api sphinx_docs documentation</title>
+  <title>API Usage Tips &mdash; python-api v3.0.32.dev_sphinx documentation</title>
   
 
   
@@ -32,9 +32,9 @@
   
 
   
-    <link rel="top" title="python-api sphinx_docs documentation" href="index.html"/>
-        <link rel="next" title="Examples" href="tutorials.html"/>
-        <link rel="prev" title="Authentication" href="authentication.html"/> 
+    <link rel="top" title="python-api v3.0.32.dev_sphinx documentation" href="index.html"/>
+        <link rel="next" title="Working With Files" href="attachments.html"/>
+        <link rel="prev" title="Subversion (SVN) Integration" href="examples/svn_integration.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -92,10 +92,16 @@
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Usage Tips</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#importing">Importing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multi-threading">Multi-threading</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#entity-fields">Entity Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#customentities-from-the-api">CustomEntities from the API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#customentities">CustomEntities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#connectionentities">ConnectionEntities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#shotgun-ui-fields-not-available-via-the-api">Shotgun UI fields not available via the API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#humanuser">HumanUser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#shot">Shot</a></li>
@@ -111,14 +117,11 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files (Attachments)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="local_files.html">Working With Local Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Working With Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smart_cut_fields.html">Smart Cut Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="event_types.html">Event Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="server_changelog.html">Shotgun Server API Changelog</a></li>
 </ul>
@@ -142,7 +145,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx_docs.<br>
+    <b>python-api</b> v3.0.32.dev_sphinx.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -199,9 +202,9 @@ time as new questions come up from our users that exhibit these types of cases.<
 <div class="section" id="importing">
 <h2>Importing<a class="headerlink" href="#importing" title="Permalink to this headline">¶</a></h2>
 <p>We strongly recommend you import the entire <cite>shotgun_api3</cite> module instead of just importing the
-<a class="reference internal" href="reference.html#shotgun_api3.Shotgun" title="shotgun_api3.Shotgun"><code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code></a> class from the module. There is other important functionality that
+<a class="reference external" href="http://developer.shotgunsoftware.com/python-api/reference.html#shotgun_api3.Shotgun" title="(in python-api vsphinx_docs)"><code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code></a> class from the module. There is other important functionality that
 is managed at the module level which may not work as expected if you only import the
-<a class="reference internal" href="reference.html#shotgun_api3.Shotgun" title="shotgun_api3.Shotgun"><code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code></a> object.</p>
+<a class="reference external" href="http://developer.shotgunsoftware.com/python-api/reference.html#shotgun_api3.Shotgun" title="(in python-api vsphinx_docs)"><code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code></a> object.</p>
 <p>Do:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shotgun_api3</span>
 </pre></div>
@@ -211,9 +214,14 @@ is managed at the module level which may not work as expected if you only import
 </pre></div>
 </div>
 </div>
+<div class="section" id="multi-threading">
+<h2>Multi-threading<a class="headerlink" href="#multi-threading" title="Permalink to this headline">¶</a></h2>
+<p>The Shotgun API is not thread-safe. If you want to do threading we strongly suggest that you use
+one connection object per thread and not share the connection.</p>
+</div>
 <div class="section" id="entity-fields">
 <h2>Entity Fields<a class="headerlink" href="#entity-fields" title="Permalink to this headline">¶</a></h2>
-<p>When you do a <a class="reference internal" href="reference.html#shotgun_api3.Shotgun.find" title="shotgun_api3.Shotgun.find"><code class="xref py py-meth docutils literal"><span class="pre">find()</span></code></a> call that returns a field of type entity or
+<p>When you do a <a class="reference external" href="http://developer.shotgunsoftware.com/python-api/reference.html#shotgun_api3.Shotgun.find" title="(in python-api vsphinx_docs)"><code class="xref py py-meth docutils literal"><span class="pre">find()</span></code></a> call that returns a field of type entity or
 multi-entity (for example the &#8216;assets&#8217; column on Shot), the entities are returned in a standard
 dictionary:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Asset&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;redBall&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
@@ -229,8 +237,8 @@ field but not always. For example, on the Ticket and Delivery entities the <code
 contain the value of the <code class="docutils literal"><span class="pre">title</span></code> field.</li>
 </ul>
 </div>
-<div class="section" id="customentities-from-the-api">
-<h2>CustomEntities from the API<a class="headerlink" href="#customentities-from-the-api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="customentities">
+<span id="custom-entities"></span><h2>CustomEntities<a class="headerlink" href="#customentities" title="Permalink to this headline">¶</a></h2>
 <p>Entity types are always referenced by their original names. So if you enable CustomEntity01 and
 call it <strong>Widget</strong>. When you access it via the API, you&#8217;ll still use CustomEntity01 as the
 <code class="docutils literal"><span class="pre">entity_type</span></code>.</p>
@@ -264,6 +272,84 @@ Something like the following:</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="connectionentities">
+<span id="connection-entities"></span><h2>ConnectionEntities<a class="headerlink" href="#connectionentities" title="Permalink to this headline">¶</a></h2>
+<p>Connection entities exist behind the scenes for any many-to-many relationship. Most of the time
+you won&#8217;t need to pay any attention to them. But in some cases, you may need to track information
+on the instance of one entity&#8217;s relationship to another.</p>
+<p>For example, when viewing a list of Versions on a Playlist, the Sort Order (<code class="docutils literal"><span class="pre">sg_sort_order</span></code>) field is an
+example of a field that resides on the connection entity between Playlists and Versions. This
+connection entity is appropriately called <cite>PlaylistVersionConnection</cite>. Because any Version can
+exist in multiple Playlists, the sort order isn&#8217;t specific to the Version, it&#8217;s specific to
+each _instance_ of the Version in a Playlist. These instances are tracked using connection
+entities in Shtogun and are accessible just like any other entity type in Shotgun.</p>
+<p>To find information about your Versions in the Playlist &#8220;Director Review&#8221; (let&#8217;s say it has an
+<code class="docutils literal"><span class="pre">id</span></code> of 4). We&#8217;d run a query like so:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;playlist&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Playlist&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">}]]</span>
+<span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;playlist.Playlist.code&#39;</span><span class="p">,</span> <span class="s1">&#39;sg_sort_order&#39;</span><span class="p">,</span> <span class="s1">&#39;version.Version.code&#39;</span><span class="p">,</span> <span class="s1">&#39;version.Version.user&#39;</span><span class="p">,</span> <span class="s1">&#39;version.Version.entity&#39;</span><span class="p">]</span>
+<span class="n">order</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;column&#39;</span><span class="p">:</span><span class="s1">&#39;sg_sort_order&#39;</span><span class="p">,</span><span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;asc&#39;</span><span class="p">}]</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;PlaylistVersionConnection&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Which returns the following:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">28</span><span class="p">,</span>
+  <span class="s1">&#39;playlist.Playlist.code&#39;</span><span class="p">:</span> <span class="s1">&#39;Director Review&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;sg_sort_order&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;PlaylistVersionConnection&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;version.Version.code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0010_comp_v003&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;version.Version.entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">880</span><span class="p">,</span>
+                             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0010&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
+  <span class="s1">&#39;version.Version.user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Artist 1&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span><span class="p">}},</span>
+ <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">29</span><span class="p">,</span>
+  <span class="s1">&#39;playlist.Playlist.code&#39;</span><span class="p">:</span> <span class="s1">&#39;Director Review&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;sg_sort_order&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;PlaylistVersionConnection&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;version.Version.code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0020_comp_v003&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;version.Version.entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">881</span><span class="p">,</span>
+                             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0020&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
+  <span class="s1">&#39;version.Version.user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Artist 8&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span><span class="p">}},</span>
+ <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+  <span class="s1">&#39;playlist.Playlist.code&#39;</span><span class="p">:</span> <span class="s1">&#39;Director Review&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;sg_sort_order&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>
+  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;PlaylistVersionConnection&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;version.Version.code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0030_comp_v003&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;version.Version.entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">882</span><span class="p">,</span>
+                             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0030&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
+  <span class="s1">&#39;version.Version.user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Admin 5&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span><span class="p">}},</span>
+ <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
+  <span class="s1">&#39;playlist.Playlist.code&#39;</span><span class="p">:</span> <span class="s1">&#39;Director Review&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;sg_sort_order&#39;</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>
+  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;PlaylistVersionConnection&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;version.Version.code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0040_comp_v003&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;version.Version.entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">883</span><span class="p">,</span>
+                             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0040&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
+  <span class="s1">&#39;version.Version.user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Artist 2&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span><span class="p">}},</span>
+ <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+  <span class="s1">&#39;playlist.Playlist.code&#39;</span><span class="p">:</span> <span class="s1">&#39;Director Review&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;sg_sort_order&#39;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;PlaylistVersionConnection&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;version.Version.code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0050_comp_v003&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;version.Version.entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">884</span><span class="p">,</span>
+                             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0050&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
+  <span class="s1">&#39;version.Version.user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Artist 5&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span><span class="p">}}]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">version</span></code> is the Version record for this connection instance.</li>
+<li><code class="docutils literal"><span class="pre">playlist</span></code> is the Playlist record for this connection instance.</li>
+<li><code class="docutils literal"><span class="pre">sg_sort_order</span></code> is the sort order field on the connection instance.</li>
+</ul>
+<p>We can pull in field values from the linked Playlist and Version entities using dot notation like
+<code class="docutils literal"><span class="pre">version.Version.code</span></code>. The syntax is <code class="docutils literal"><span class="pre">fieldname.EntityType.fieldname</span></code>. In this example,
+<code class="docutils literal"><span class="pre">PlaylistVersionConnection</span></code> has a field named <code class="docutils literal"><span class="pre">version</span></code>. That field contains a <code class="docutils literal"><span class="pre">Version</span></code>
+entity. The field we are interested on the Version is <code class="docutils literal"><span class="pre">code</span></code>. Put those together with our f
+riend the dot and we have <code class="docutils literal"><span class="pre">version.Version.code</span></code>.</p>
+</div>
 <div class="section" id="shotgun-ui-fields-not-available-via-the-api">
 <h2>Shotgun UI fields not available via the API<a class="headerlink" href="#shotgun-ui-fields-not-available-via-the-api" title="Permalink to this headline">¶</a></h2>
 <p>Summary type fields like Query Fields and Pipeline Step summary fields are currently only available
@@ -279,7 +365,7 @@ only&#8221; fields made available for convenience and are only available in the 
 <div class="section" id="shot">
 <h3>Shot<a class="headerlink" href="#shot" title="Permalink to this headline">¶</a></h3>
 <p><strong>Smart Cut Fields</strong>: These fields are available only in the browser UI. You can read more about
-smart cut fields and the API in the Smart Cut Fields doc (link TK):</p>
+smart cut fields and the API in the <a class="reference internal" href="smart_cut_fields.html#smart-cut-fields"><span class="std std-ref">Smart Cut Fields doc</span></a>:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">smart_cut_in</span>
 <span class="n">smart_cut_out</span>
 <span class="n">smart_cut_duration</span>
@@ -391,10 +477,10 @@ field you will not get the desired result.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="tutorials.html" class="btn btn-neutral float-right" title="Examples" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="attachments.html" class="btn btn-neutral float-right" title="Working With Files" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="authentication.html" class="btn btn-neutral" title="Authentication" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="examples/svn_integration.html" class="btn btn-neutral" title="Subversion (SVN) Integration" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -424,7 +510,7 @@ field you will not get the desired result.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'sphinx_docs',
+            VERSION:'v3.0.32.dev_sphinx',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -448,7 +534,19 @@ field you will not get the desired result.</p>
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
-   
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
 
 </body>
 </html>

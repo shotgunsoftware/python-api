@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Shotgun Python API3 &mdash; python-api sphinx_docs documentation</title>
+  <title>Shotgun Python API3 &mdash; python-api v3.0.32.dev_sphinx documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api sphinx_docs documentation" href="#"/>
+    <link rel="top" title="python-api v3.0.32.dev_sphinx documentation" href="#"/>
         <link rel="next" title="Installation" href="installation.html"/> 
 
   
@@ -91,15 +91,16 @@
                 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a></li>
-</ul>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files (Attachments)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="local_files.html">Working With Local Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Working With Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smart_cut_fields.html">Smart Cut Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="event_types.html">Event Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="server_changelog.html">Shotgun Server API Changelog</a></li>
 </ul>
@@ -123,7 +124,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx_docs.<br>
+    <b>python-api</b> v3.0.32.dev_sphinx.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -172,7 +173,7 @@
             
   <div class="section" id="shotgun-python-api3">
 <h1>Shotgun Python API3<a class="headerlink" href="#shotgun-python-api3" title="Permalink to this headline">¶</a></h1>
-<p>Release sphinx_docs. (<a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a>)</p>
+<p>Release v3.0.32.dev_sphinx. (<a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a>)</p>
 <img alt="https://img.shields.io/badge/shotgun-api-blue.svg?style=flat-square" src="https://img.shields.io/badge/shotgun-api-blue.svg?style=flat-square" />
 <img alt="https://img.shields.io/travis/shotgunsoftware/python-api.svg?style=flat-square" src="https://img.shields.io/travis/shotgunsoftware/python-api.svg?style=flat-square" />
 <p>Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools.
@@ -227,28 +228,6 @@ Quicktimes, etc.</p>
 <li class="toctree-l2"><a class="reference internal" href="authentication.html#permissions">Permissions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#importing">Importing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#entity-fields">Entity Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#customentities-from-the-api">CustomEntities from the API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#shotgun-ui-fields-not-available-via-the-api">Shotgun UI fields not available via the API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#audit-fields">Audit Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#logging-messages-from-the-api">Logging Messages from the API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#optimizations">Optimizations</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#beginner">Beginner</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#advanced">Advanced</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
-<div class="section" id="developer-reference">
-<h2>Developer Reference<a class="headerlink" href="#developer-reference" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#shotgun-module-attributes"><code class="docutils literal"><span class="pre">shotgun</span></code> Module Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#shotgun">Shotgun()</a></li>
@@ -262,6 +241,7 @@ Quicktimes, etc.</p>
 <li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#complex-filters">Complex Filters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#operators-and-arguments">Operators and Arguments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#valid-operators-by-data-type">Valid Operators By Data Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#additional-filter-presets">Additional Filter Presets</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a><ul>
@@ -290,7 +270,31 @@ Quicktimes, etc.</p>
 <li class="toctree-l2"><a class="reference internal" href="data_types.html#url-file-link-field">url (file/link field)</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files (Attachments)</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_sg_instance.html">Create a Shotgun API instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_create_shot.html">Create A Shot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_find_shot.html">Find a Shot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_update_shot.html">Update A Shot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_delete_shot.html">Delete A Shot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_create_shot_task_template.html">Create a Shot with a Task Template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_create_version_link_shot.html">Create a Version Linked to a Shot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_upload_thumbnail_version.html">Upload a Thumbnail for a Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#advanced">Advanced</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#importing">Importing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#multi-threading">Multi-threading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#entity-fields">Entity Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#customentities">CustomEntities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#connectionentities">ConnectionEntities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#shotgun-ui-fields-not-available-via-the-api">Shotgun UI fields not available via the API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#audit-fields">Audit Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#logging-messages-from-the-api">Logging Messages from the API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#optimizations">Optimizations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="attachments.html#default-structure">Default structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="attachments.html#creating-attachments">Creating Attachments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="attachments.html#updating-attachments">Updating Attachments</a></li>
@@ -303,6 +307,25 @@ Quicktimes, etc.</p>
 <li class="toctree-l2"><a class="reference internal" href="local_files.html#reading-local-file-fields">Reading Local File Fields</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_files.html#creating-updating-local-file-fields">Creating &amp; Updating Local file Fields</a></li>
 <li class="toctree-l2"><a class="reference internal" href="local_files.html#un-setting-local-file-field-values">Un-setting local file field values</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Working With Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tasks/updating_tasks.html">Updating Task Dates: How Shotgun Thinks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks/task_dependencies.html">Task Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks/split_tasks.html">Split Tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="smart_cut_fields.html">Smart Cut Fields</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="smart_cut_fields.html#smart-fields">Smart Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="smart_cut_fields.html#raw-fields">Raw Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="event_types.html">Event Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="event_types.html#structure-of-event-types">Structure of Event Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event_types.html#standard-event-types">Standard Event Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event_types.html#additional-event-types">Additional Event Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event_types.html#custom-event-types">Custom Event Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event_types.html#performance">Performance</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="packaging.html">Packaging an application with py2app (or py2exe)</a><ul>
@@ -371,7 +394,7 @@ Quicktimes, etc.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'sphinx_docs',
+            VERSION:'v3.0.32.dev_sphinx',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -395,7 +418,19 @@ Quicktimes, etc.</p>
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
-   
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
 
 </body>
 </html>

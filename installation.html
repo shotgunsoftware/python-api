@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; python-api sphinx_docs documentation</title>
+  <title>Installation &mdash; python-api v3.0.32.dev_sphinx documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api sphinx_docs documentation" href="index.html"/>
+    <link rel="top" title="python-api v3.0.32.dev_sphinx documentation" href="index.html"/>
         <link rel="next" title="Authentication" href="authentication.html"/>
         <link rel="prev" title="Shotgun Python API3" href="index.html"/> 
 
@@ -96,7 +96,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-with-pip">Installing with <code class="docutils literal"><span class="pre">pip</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pypi">PyPI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#installing-the-master-branch-from-github">Installing the Master Branch From Github</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#installing-a-specific-version-from-github">Installing A specific Version From Github</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#requirements-txt">requirements.txt</a></li>
@@ -108,15 +107,16 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a></li>
-</ul>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files (Attachments)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="local_files.html">Working With Local Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Working With Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smart_cut_fields.html">Smart Cut Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="event_types.html">Event Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="server_changelog.html">Shotgun Server API Changelog</a></li>
 </ul>
@@ -140,7 +140,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx_docs.<br>
+    <b>python-api</b> v3.0.32.dev_sphinx.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -239,14 +239,6 @@ do that to force the use of TLSv1.</li>
 </div>
 <div class="section" id="installing-with-pip">
 <h2>Installing with <code class="docutils literal"><span class="pre">pip</span></code><a class="headerlink" href="#installing-with-pip" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="pypi">
-<h3>PyPI<a class="headerlink" href="#pypi" title="Permalink to this headline">¶</a></h3>
-<p>The Shotgun API is available in the Python Package Index as <code class="docutils literal"><span class="pre">shotgun-api</span></code> (note the dash instead
-of underscore) starting with version 3.0.31:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">shotgun</span><span class="o">-</span><span class="n">api</span>
-</pre></div>
-</div>
-</div>
 <div class="section" id="installing-the-master-branch-from-github">
 <h3>Installing the Master Branch From Github<a class="headerlink" href="#installing-the-master-branch-from-github" title="Permalink to this headline">¶</a></h3>
 <p>If you wish to install the current master, use the following command:</p>
@@ -328,7 +320,7 @@ You&#8217;ll need to save it somewhere your local Python installation can find i
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'sphinx_docs',
+            VERSION:'v3.0.32.dev_sphinx',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -352,7 +344,19 @@ You&#8217;ll need to save it somewhere your local Python installation can find i
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
-   
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
 
 </body>
 </html>

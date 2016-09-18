@@ -1,0 +1,642 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Updating Task Dates: How Shotgun Thinks &mdash; python-api v3.0.32.dev_sphinx documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="python-api v3.0.32.dev_sphinx documentation" href="../index.html"/>
+        <link rel="up" title="Working With Tasks" href="../tasks.html"/>
+        <link rel="next" title="Task Dependencies" href="task_dependencies.html"/>
+        <link rel="prev" title="Working With Tasks" href="../tasks.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='../_static/logo_sg@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../index.html" class="icon icon-home"> python-api
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filter_syntax.html">Filter Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_types.html">Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage_tips.html">API Usage Tips</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../attachments.html">Working With Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../local_files.html">Working With Local Files</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tasks.html">Working With Tasks</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Updating Task Dates: How Shotgun Thinks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general-rules">General Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#universal">Universal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#task-has-start-date-only">Task has start_date only</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#task-has-due-date-only">Task has due_date only</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#task-has-duration-only">Task has duration only</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#task-has-start-date-and-due-date-no-duration">Task has start_date and due_date (no duration)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#task-has-start-date-and-duration-no-due-date">Task has start_date and duration (no due_date)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#task-has-due-date-and-duration-no-start-date">Task has due_date and duration (no start_date)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#task-has-start-date-due-date-and-duration">Task has start_date ,due_date, and duration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="task_dependencies.html">Task Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split_tasks.html">Split Tasks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../smart_cut_fields.html">Smart Cut Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../event_types.html">Event Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../packaging.html">Packaging an application with py2app (or py2exe)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server_changelog.html">Shotgun Server API Changelog</a></li>
+</ul>
+
+            
+          
+       
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>python-api</b> v3.0.32.dev_sphinx.<br>
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
+
+    </div>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">python-api</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../tasks.html">Working With Tasks</a> &raquo;</li>
+      
+    <li>Updating Task Dates: How Shotgun Thinks</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="updating-task-dates-how-shotgun-thinks">
+<span id="updating-tasks"></span><h1>Updating Task Dates: How Shotgun Thinks<a class="headerlink" href="#updating-task-dates-how-shotgun-thinks" title="Permalink to this headline">¶</a></h1>
+<p>When updating Task dates in an API update() request, there is no specified order to the values that
+are passed in. Shotgun also does automatic calculation of the``start_date``,``due_date``, and <code class="docutils literal"><span class="pre">duration</span></code> fields for convenience. In order to clarify how updates are handled by Shotgun we are
+providing some general rules below and examples of what will happen when you make updates to your
+Tasks.</p>
+<div class="section" id="general-rules">
+<h2>General Rules<a class="headerlink" href="#general-rules" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Updating the <code class="docutils literal"><span class="pre">start_date</span></code> automatically updates the <code class="docutils literal"><span class="pre">due_date</span></code> (<code class="docutils literal"><span class="pre">duration</span></code> remains constant)</li>
+<li>Updating the <code class="docutils literal"><span class="pre">due_date</span></code> automatically updates the <code class="docutils literal"><span class="pre">duration</span></code> (<code class="docutils literal"><span class="pre">start_date</span></code> remains constant)</li>
+<li>Updating the <code class="docutils literal"><span class="pre">duration</span></code> automatically updates the <code class="docutils literal"><span class="pre">due_date</span></code> (<code class="docutils literal"><span class="pre">start_date</span></code> remains constant)</li>
+<li>When updating Task values, Shotgun sets schedule fields (<code class="docutils literal"><span class="pre">milestone</span></code>, <code class="docutils literal"><span class="pre">duration</span></code>,
+<code class="docutils literal"><span class="pre">start_date</span></code>, <code class="docutils literal"><span class="pre">due_date</span></code>) after all other fields, because the Project and Task Assignees
+affect schedule calculations.</li>
+<li>If <code class="docutils literal"><span class="pre">start_date</span></code> and <code class="docutils literal"><span class="pre">due_date</span></code> are both set, <code class="docutils literal"><span class="pre">duration</span></code> is ignored (<code class="docutils literal"><span class="pre">duration</span></code> can often
+be wrong since it&#8217;s easy to calculate scheduling incorrectly).</li>
+<li>If both <code class="docutils literal"><span class="pre">start_date</span></code> and <code class="docutils literal"><span class="pre">due_date</span></code> are provided, Shotgun sets <code class="docutils literal"><span class="pre">start_date</span></code> before
+<code class="docutils literal"><span class="pre">due_date</span></code>.</li>
+<li>Set <code class="docutils literal"><span class="pre">milestone</span></code> before other schedule fields (because <code class="docutils literal"><span class="pre">start_date</span></code>, <code class="docutils literal"><span class="pre">due_date</span></code>, and
+<code class="docutils literal"><span class="pre">duration</span></code> get lost if <code class="docutils literal"><span class="pre">milestone</span></code> is not set to <code class="docutils literal"><span class="pre">False</span></code> first)</li>
+<li>If <code class="docutils literal"><span class="pre">milestone</span></code> is being set to <code class="docutils literal"><span class="pre">True</span></code>, <code class="docutils literal"><span class="pre">duration</span></code> is ignored.</li>
+<li>If <code class="docutils literal"><span class="pre">milestone</span></code> is set to <code class="docutils literal"><span class="pre">True</span></code> and <code class="docutils literal"><span class="pre">start_date</span></code> and <code class="docutils literal"><span class="pre">due_date</span></code> are also being set to
+conflicting values, an Exception is raised.</li>
+<li>If <code class="docutils literal"><span class="pre">due_date</span></code> and <code class="docutils literal"><span class="pre">duration</span></code> are set together (without <code class="docutils literal"><span class="pre">start_date</span></code>), <code class="docutils literal"><span class="pre">duration</span></code> is set
+first, then <code class="docutils literal"><span class="pre">due_date</span></code> (otherwise setting <code class="docutils literal"><span class="pre">duration</span></code> will change <code class="docutils literal"><span class="pre">due_date</span></code> after it is
+set).</li>
+</ul>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The following examples show what the resulting Task object will look like after being run on the
+initial Task object listed under the header of each section.</p>
+<p>The <code class="docutils literal"><span class="pre">duration</span></code> values in the following examples assume your Shotgun instance is set to
+10-hour work days. If your server is configured with a different setting, the <code class="docutils literal"><span class="pre">duration</span></code> values
+will vary.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <code class="docutils literal"><span class="pre">duration</span></code> field stores <code class="docutils literal"><span class="pre">duration</span></code> values in minutes</p>
+</div>
+<div class="section" id="universal">
+<h3>Universal<a class="headerlink" href="#universal" title="Permalink to this headline">¶</a></h3>
+<p>Regardless of current values on the Task, this behavior rules:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Task</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2011-05-20&#39;</span><span class="p">,</span> <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2011-05-25&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">2400</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="update-start-date-and-due-date">
+<h4>Update start_date and due_date<a class="headerlink" href="#update-start-date-and-due-date" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal"><span class="pre">duration</span></code> is ignored if also provided. It is instead set automatically as (<code class="docutils literal"><span class="pre">due_date</span></code> -
+<code class="docutils literal"><span class="pre">start_date</span></code>)</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">,</span> <span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">1200</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">duration</span></code> is calculated as (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>)</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The value provided in the update() is ignored (and in this case was also incorrect).</p>
+</div>
+</div>
+<div class="section" id="update-start-date-and-duration">
+<h4>Update start_date and duration<a class="headerlink" href="#update-start-date-and-duration" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: &#39;2011-06-01&#39;, &#39;duration&#39;: 3600, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>).</li>
+</ul>
+</div>
+<div class="section" id="update-due-date-and-duration">
+<h4>Update due_date and duration<a class="headerlink" href="#update-due-date-and-duration" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2011-05-20&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-20&#39;, &#39;duration&#39;: 600, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">duration</span></code> is calculated as (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>)</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This means the <code class="docutils literal"><span class="pre">duration</span></code> provided is overwritten.</p>
+</div>
+</div>
+</div>
+<div class="section" id="task-has-start-date-only">
+<h3>Task has start_date only<a class="headerlink" href="#task-has-start-date-only" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Task</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2011-05-20&#39;</span><span class="p">,</span> <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="update-start-date">
+<h4>Update start_date<a class="headerlink" href="#update-start-date" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: None, &#39;duration&#39;: None, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Only <code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
+</ul>
+</div>
+<div class="section" id="update-due-date">
+<h4>Update due_date<a class="headerlink" href="#update-due-date" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>).</li>
+</ul>
+</div>
+<div class="section" id="update-duration">
+<h4>Update duration<a class="headerlink" href="#update-duration" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">2400</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is set to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="task-has-due-date-only">
+<h3>Task has due_date only<a class="headerlink" href="#task-has-due-date-only" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: None, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<div class="section" id="id1">
+<h4>Update start_date<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-20&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>).</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h4>Update due_date<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-20&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: &#39;2011-05-20&#39;, &#39;duration&#39;: None, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>only <code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h4>Update duration<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">2400</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">start_date</span></code> is set to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="task-has-duration-only">
+<h3>Task has duration only<a class="headerlink" href="#task-has-duration-only" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: None, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<div class="section" id="id4">
+<h4>Update start_date<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-20&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>).</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h4>Update due_date<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+</ul>
+</div>
+<div class="section" id="id6">
+<h4>Update duration<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: None, &#39;duration&#39;: 3600, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>only <code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="task-has-start-date-and-due-date-no-duration">
+<h3>Task has start_date and due_date (no duration)<a class="headerlink" href="#task-has-start-date-and-due-date-no-duration" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: None, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<div class="section" id="id7">
+<h4>Update start_date<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 600, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>).</li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h4>Update due_date<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 4200, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>)</li>
+</ul>
+</div>
+<div class="section" id="id9">
+<h4>Update duration<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-27&#39;, &#39;duration&#39;: 3600, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="task-has-start-date-and-duration-no-due-date">
+<h3>Task has start_date and duration (no due_date)<a class="headerlink" href="#task-has-start-date-and-duration-no-due-date" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: None, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<div class="section" id="id10">
+<h4>Update start_date<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> +``duration``).</li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h4>Update due_date<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 4200, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>).</li>
+</ul>
+</div>
+<div class="section" id="id12">
+<h4>Update duration<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-27&#39;, &#39;duration&#39;: 3600, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="task-has-due-date-and-duration-no-start-date">
+<h3>Task has due_date and duration (no start_date)<a class="headerlink" href="#task-has-due-date-and-duration-no-start-date" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<div class="section" id="id13">
+<h4>Update start_date<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>).</li>
+</ul>
+</div>
+<div class="section" id="id14">
+<h4>Update due_date<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">duration</span></code>).</li>
+</ul>
+</div>
+<div class="section" id="id15">
+<h4>Update duration<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-18&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 3600, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="task-has-start-date-due-date-and-duration">
+<h3>Task has start_date ,due_date, and duration<a class="headerlink" href="#task-has-start-date-due-date-and-duration" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<div class="section" id="id16">
+<h4>Update start_date<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>).</li>
+</ul>
+</div>
+<div class="section" id="id17">
+<h4>Update due_date<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 4200, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>)</li>
+</ul>
+</div>
+<div class="section" id="id18">
+<h4>Update duration<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-27&#39;, &#39;duration&#39;: 3600, &#39;id&#39;:123}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="task_dependencies.html" class="btn btn-neutral float-right" title="Task Dependencies" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../tasks.html" class="btn btn-neutral" title="Working With Tasks" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'v3.0.32.dev_sphinx',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

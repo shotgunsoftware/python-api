@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Examples &mdash; python-api sphinx_docs documentation</title>
+  <title>Examples &mdash; python-api v3.0.32.dev_sphinx documentation</title>
   
 
   
@@ -32,9 +32,9 @@
   
 
   
-    <link rel="top" title="python-api sphinx_docs documentation" href="index.html"/>
+    <link rel="top" title="python-api v3.0.32.dev_sphinx documentation" href="index.html"/>
         <link rel="next" title="Create a Shotgun API instance" href="examples/basic_sg_instance.html"/>
-        <link rel="prev" title="API Usage Tips" href="usage_tips.html"/> 
+        <link rel="prev" title="Data Types" href="data_types.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -92,31 +92,32 @@
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#beginner">Beginner</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="examples/basic_sg_instance.html">Create a Shotgun API instance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="examples/basic_create_shot.html">Create A Shot</a></li>
-<li class="toctree-l3"><a class="reference internal" href="examples/basic_find_shot.html">Find a Shot</a></li>
-<li class="toctree-l3"><a class="reference internal" href="examples/basic_update_shot.html">Update A Shot</a></li>
-<li class="toctree-l3"><a class="reference internal" href="examples/basic_delete_shot.html">Delete A Shot</a></li>
-<li class="toctree-l3"><a class="reference internal" href="examples/basic_create_shot_task_template.html">Create a Shot with a Task Template</a></li>
-<li class="toctree-l3"><a class="reference internal" href="examples/basic_create_version_link_shot.html">Create a Version Linked to a Shot</a></li>
-<li class="toctree-l3"><a class="reference internal" href="examples/basic_upload_thumbnail_version.html">Upload a Thumbnail for a Version</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#advanced">Advanced</a><ul class="simple">
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files (Attachments)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_sg_instance.html">Create a Shotgun API instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_create_shot.html">Create A Shot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_find_shot.html">Find a Shot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_update_shot.html">Update A Shot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_delete_shot.html">Delete A Shot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_create_shot_task_template.html">Create a Shot with a Task Template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_create_version_link_shot.html">Create a Version Linked to a Shot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/basic_upload_thumbnail_version.html">Upload a Thumbnail for a Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced">Advanced</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="examples/ami_handler.html">Handling Action Menu Item Calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples/ami_version_packager.html">Using an ActionMenuItem to Package Versions for a Client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples/svn_integration.html">Subversion (SVN) Integration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="local_files.html">Working With Local Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Working With Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smart_cut_fields.html">Smart Cut Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="event_types.html">Event Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="server_changelog.html">Shotgun Server API Changelog</a></li>
 </ul>
@@ -140,7 +141,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx_docs.<br>
+    <b>python-api</b> v3.0.32.dev_sphinx.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -189,10 +190,8 @@
             
   <div class="section" id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
-<p>Here&#8217;s a list of various tutorials to walk through that should provide you with a good base
+<p>Here&#8217;s a list of various simple tutorials to walk through that should provide you with a good base
 understanding of how to use the Shotgun API and what you can do with it.</p>
-<div class="section" id="beginner">
-<h2>Beginner<a class="headerlink" href="#beginner" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="examples/basic_sg_instance.html">Create a Shotgun API instance</a></li>
@@ -205,27 +204,15 @@ understanding of how to use the Shotgun API and what you can do with it.</p>
 <li class="toctree-l1"><a class="reference internal" href="examples/basic_upload_thumbnail_version.html">Upload a Thumbnail for a Version</a></li>
 </ul>
 </div>
-</div>
 <div class="section" id="advanced">
 <h2>Advanced<a class="headerlink" href="#advanced" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
-<ul class="simple">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/ami_handler.html">Handling Action Menu Item Calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/ami_version_packager.html">Using an ActionMenuItem to Package Versions for a Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/svn_integration.html">Subversion (SVN) Integration</a></li>
 </ul>
 </div>
-<ul class="simple">
-<li>Accessing CustomEntities via the API</li>
-<li>Task Dependencies</li>
-<li>Task Status Triggers</li>
-<li>Updating Task Dates: How Shotgun Thinks</li>
-<li>Split Tasks</li>
-<li>Event Types</li>
-<li>Subversion (SVN) Integration</li>
-<li>Handling ActionMenuItems</li>
-<li>Using an ActionMenuItem to Package Versions for a Client</li>
-<li>Smart Cut Fields</li>
-<li>Connection Entities</li>
-<li>Packaging an application with py2app (or py2exe)</li>
-</ul>
 </div>
 </div>
 
@@ -239,7 +226,7 @@ understanding of how to use the Shotgun API and what you can do with it.</p>
         <a href="examples/basic_sg_instance.html" class="btn btn-neutral float-right" title="Create a Shotgun API instance" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="usage_tips.html" class="btn btn-neutral" title="API Usage Tips" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="data_types.html" class="btn btn-neutral" title="Data Types" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -269,7 +256,7 @@ understanding of how to use the Shotgun API and what you can do with it.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'sphinx_docs',
+            VERSION:'v3.0.32.dev_sphinx',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -293,7 +280,19 @@ understanding of how to use the Shotgun API and what you can do with it.</p>
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
-   
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
 
 </body>
 </html>

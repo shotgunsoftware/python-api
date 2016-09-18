@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Authentication &mdash; python-api sphinx_docs documentation</title>
+  <title>Authentication &mdash; python-api v3.0.32.dev_sphinx documentation</title>
   
 
   
@@ -32,8 +32,8 @@
   
 
   
-    <link rel="top" title="python-api sphinx_docs documentation" href="index.html"/>
-        <link rel="next" title="API Usage Tips" href="usage_tips.html"/>
+    <link rel="top" title="python-api v3.0.32.dev_sphinx documentation" href="index.html"/>
+        <link rel="next" title="API Reference" href="reference.html"/>
         <link rel="prev" title="Installation" href="installation.html"/> 
 
   
@@ -105,15 +105,16 @@
 <li class="toctree-l2"><a class="reference internal" href="#permissions">Permissions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a></li>
-</ul>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files (Attachments)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files</a></li>
 <li class="toctree-l1"><a class="reference internal" href="local_files.html">Working With Local Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Working With Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smart_cut_fields.html">Smart Cut Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="event_types.html">Event Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="server_changelog.html">Shotgun Server API Changelog</a></li>
 </ul>
@@ -137,7 +138,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> sphinx_docs.<br>
+    <b>python-api</b> v3.0.32.dev_sphinx.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -189,7 +190,7 @@
 <p>In order to communicate with your Shotgun server via the API, you must provide valid authentication credentials. The API allows you to authenticate with user-based, or script-based credentials.</p>
 <div class="section" id="user-based-authentication">
 <h2>User-based Authentication<a class="headerlink" href="#user-based-authentication" title="Permalink to this headline">¶</a></h2>
-<p>When authenticating as a user, you provide your normal login and password when instantiating your <a class="reference internal" href="reference.html#shotgun_api3.Shotgun" title="shotgun_api3.Shotgun"><code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code></a> object. The actions performed by this instance will be limited to your permission level just as they are in the Shotgun web application.</p>
+<p>When authenticating as a user, you provide your normal login and password when instantiating your <a class="reference external" href="http://developer.shotgunsoftware.com/python-api/reference.html#shotgun_api3.Shotgun" title="(in python-api vsphinx_docs)"><code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code></a> object. The actions performed by this instance will be limited to your permission level just as they are in the Shotgun web application.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
                           <span class="n">login</span><span class="o">=</span><span class="s2">&quot;rhendriks&quot;</span><span class="p">,</span>
                           <span class="n">password</span><span class="o">=</span><span class="s2">&quot;c0mPre$Hi0n&quot;</span><span class="p">)</span>
@@ -198,7 +199,7 @@
 </div>
 <div class="section" id="script-based-authentication">
 <h2>Script-based Authentication<a class="headerlink" href="#script-based-authentication" title="Permalink to this headline">¶</a></h2>
-<p>In order to authenticate as a script, your script must be <a class="reference internal" href="#setting-up-shotgun"><span class="std std-ref">registered with Shotgun and have a valid API key</span></a>. When creating your <a class="reference internal" href="reference.html#shotgun_api3.Shotgun" title="shotgun_api3.Shotgun"><code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code></a> object, provide the <code class="docutils literal"><span class="pre">script_name</span></code> and <code class="docutils literal"><span class="pre">api_key</span></code>.:</p>
+<p>In order to authenticate as a script, your script must be <a class="reference internal" href="#setting-up-shotgun"><span class="std std-ref">registered with Shotgun and have a valid API key</span></a>. When creating your <a class="reference external" href="http://developer.shotgunsoftware.com/python-api/reference.html#shotgun_api3.Shotgun" title="(in python-api vsphinx_docs)"><code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code></a> object, provide the <code class="docutils literal"><span class="pre">script_name</span></code> and <code class="docutils literal"><span class="pre">api_key</span></code>.:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
                           <span class="n">script_name</span><span class="o">=</span><span class="s2">&quot;compress&quot;</span><span class="p">,</span>
                           <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef&quot;</span><span class="p">)</span>
@@ -251,7 +252,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="usage_tips.html" class="btn btn-neutral float-right" title="API Usage Tips" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="reference.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -284,7 +285,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'sphinx_docs',
+            VERSION:'v3.0.32.dev_sphinx',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -308,7 +309,19 @@
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
-   
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
 
 </body>
 </html>

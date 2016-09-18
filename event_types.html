@@ -1,0 +1,329 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Event Types &mdash; python-api v3.0.32.dev_sphinx documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="python-api v3.0.32.dev_sphinx documentation" href="index.html"/>
+        <link rel="next" title="Packaging an application with py2app (or py2exe)" href="packaging.html"/>
+        <link rel="prev" title="Smart Cut Fields" href="smart_cut_fields.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='_static/logo_sg@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="index.html" class="icon icon-home"> python-api
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="local_files.html">Working With Local Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tasks.html">Working With Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="smart_cut_fields.html">Smart Cut Fields</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Event Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#structure-of-event-types">Structure of Event Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#standard-event-types">Standard Event Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#additional-event-types">Additional Event Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-event-types">Custom Event Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance">Performance</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="packaging.html">Packaging an application with py2app (or py2exe)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server_changelog.html">Shotgun Server API Changelog</a></li>
+</ul>
+
+            
+          
+       
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>python-api</b> v3.0.32.dev_sphinx.<br>
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
+
+    </div>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">python-api</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Event Types</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="event-types">
+<span id="id1"></span><h1>Event Types<a class="headerlink" href="#event-types" title="Permalink to this headline">¶</a></h1>
+<p>Shotgun generates read-only EventLogEntries for every destructive action performed by a user. And
+by &#8220;destructive&#8221;, we simply mean an action that updates the database somehow, not some tantrum
+that a user has (hopefully). Shotgun also logs some additional useful events that to help keep
+track of activity on your Shotgun instance.</p>
+<div class="section" id="structure-of-event-types">
+<h2>Structure of Event Types<a class="headerlink" href="#structure-of-event-types" title="Permalink to this headline">¶</a></h2>
+<p>The basic structure of event types is broken into 3 parts:</p>
+<p><code class="docutils literal"><span class="pre">Application_EntityType_Action</span></code></p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">Application</span></code>: Is always &#8220;Shotgun&#8221; for events automatically created by the Shotgun server.
+Other Shotgun products may use their name in here, for example, Toolkit has its own events
+that it logs and the application portion is identified by &#8220;Toolkit&#8221;. If you decide to use the
+EventLogEntry entity to log events for your scripts or tools, you would use your tool name here.</li>
+<li><code class="docutils literal"><span class="pre">EntityType</span></code>: This is the entity type in Shotgun that was acted upon (eg. Shot, Asset, etc.)</li>
+<li><code class="docutils literal"><span class="pre">Action</span></code>: The general action that was taken. (eg. New, Change, Retirement, Revival)</li>
+</ul>
+</div>
+<div class="section" id="standard-event-types">
+<h2>Standard Event Types<a class="headerlink" href="#standard-event-types" title="Permalink to this headline">¶</a></h2>
+<p>Each entity type has a standard set of events associated with it when it&#8217;s created, updated,
+deleted, and revived. They follow this pattern:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">Shotgun_EntityType_New</span></code>: a new entity was created. Example: <code class="docutils literal"><span class="pre">Shotgun_Task_New</span></code></li>
+<li><code class="docutils literal"><span class="pre">Shotgun_EntityType_Change</span></code>: an entity was modified. Example: <code class="docutils literal"><span class="pre">Shotgun_HumanUser_Change</span></code></li>
+<li><code class="docutils literal"><span class="pre">Shotgun_EntityType_Retirement</span></code>: an entity was deleted. Example: <code class="docutils literal"><span class="pre">Shotgun_Ticket_Retirement</span></code></li>
+<li><code class="docutils literal"><span class="pre">Shotgun_EntityType_Revival</span></code>: an entity was revived. Example: <code class="docutils literal"><span class="pre">Shotgun_CustomEntity03_Revival</span></code></li>
+</ul>
+</div>
+<div class="section" id="additional-event-types">
+<h2>Additional Event Types<a class="headerlink" href="#additional-event-types" title="Permalink to this headline">¶</a></h2>
+<p>These are _some_ of the additional event types that are logged by Shotgun:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">Shotgun_Attachment_View</span></code>: an Attachment (file) was viewed by a user.</li>
+<li><code class="docutils literal"><span class="pre">Shotgun_Reading_Change</span></code>: a threaded entity has been marked read or unread. For example, a
+Note was read by a user. The readings are unique to the entity&lt;-&gt;user connection so when a
+Note is read by user &#8220;joe&#8221; it may still be unread by user &#8220;jane&#8221;.</li>
+<li><code class="docutils literal"><span class="pre">Shotgun_User_Login</span></code>: a user logged in to Shotgun.</li>
+<li><code class="docutils literal"><span class="pre">Shotgun_User_Logout</span></code>: a user logged out of Shotgun.</li>
+</ul>
+</div>
+<div class="section" id="custom-event-types">
+<h2>Custom Event Types<a class="headerlink" href="#custom-event-types" title="Permalink to this headline">¶</a></h2>
+<p>Since <code class="docutils literal"><span class="pre">EventLogEntries</span></code> are entities themselves, you can create them using the API just like any
+other entity type. As mentioned previously, if you&#8217;d like to have your scripts or tools log to
+the Shotgun event log, simply devise a thoughtful naming structure for your event types and
+create the EventLogEntry as needed following the usual methods for creating entities via the API.</p>
+<p>Again, other Shotgun products like Toolkit use event logs this way.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">EventLogEntries cannot be updated or deleted (that would defeat the purpose of course).</p>
+</div>
+</div>
+<div class="section" id="performance">
+<h2>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
+<p>Event log database tables can get large very quickly. While Shotgun does very well with event logs
+that get into the millions of records, there&#8217;s an inevitable degradation of performance for pages
+that display them in the web application as well as any API queries for events when they get too
+big. This volume of events is not the norm, but can be reached if your server expereinces high
+usage.</p>
+<p>This <strong>does not</strong> mean your Shotgun server performance will suffer in general, just any pages that
+are specifically displaying EventLogEntries in the web application, or API queries on the event
+log that are run. We are always looking for ways to improve this in the future. If you have any
+immediate concerns, please <a class="reference external" href="https://support.shotgunsoftware.com">reach out to our support team</a></p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="packaging.html" class="btn btn-neutral float-right" title="Packaging an application with py2app (or py2exe)" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="smart_cut_fields.html" class="btn btn-neutral" title="Smart Cut Fields" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'v3.0.32.dev_sphinx',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

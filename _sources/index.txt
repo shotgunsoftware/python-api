@@ -56,20 +56,19 @@ User Guide
 
     installation
     authentication
-    usage_tips
-    tutorials
-
-*******************
-Developer Reference
-*******************
-.. toctree::
-    :maxdepth: 2
-
     reference
     filter_syntax
     data_types
+
+    tutorials
+    usage_tips
+
     attachments
     local_files
+    tasks
+    smart_cut_fields
+    event_types
+
     packaging
     server_changelog
 
