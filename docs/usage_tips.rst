@@ -50,9 +50,11 @@ consistent way to represent entities returned via the API.
   field but not always. For example, on the Ticket and Delivery entities the ``name`` key would 
   contain the value of the ``title`` field.
 
-***************************
-CustomEntities from the API
-***************************
+.. _custom_entities:
+
+**************
+CustomEntities
+**************
 Entity types are always referenced by their original names. So if you enable CustomEntity01 and
 call it **Widget**. When you access it via the API, you'll still use CustomEntity01 as the
 ``entity_type``.
@@ -85,6 +87,91 @@ Then when you're writing scripts, you don't need to worry about remembering whic
     result = sg.find(studio_globals.ENTITY_WIDGET,
                      filters=[['sg_status_list', 'is', 'ip']],
                      fields=['code', 'sg_shot'])
+
+.. _connection_entities:
+
+******************
+ConnectionEntities
+******************
+
+Connection entities exist behind the scenes for any many-to-many relationship. Most of the time
+you won't need to pay any attention to them. But in some cases, you may need to track information
+on the instance of one entity's relationship to another.
+
+For example, when viewing a list of Versions on a Playlist, the Sort Order (``sg_sort_order``) field is an 
+example of a field that resides on the connection entity between Playlists and Versions. This
+connection entity is appropriately called `PlaylistVersionConnection`. Because any Version can 
+exist in multiple Playlists, the sort order isn't specific to the Version, it's specific to 
+each _instance_ of the Version in a Playlist. These instances are tracked using connection 
+entities in Shtogun and are accessible just like any other entity type in Shotgun.
+
+To find information about your Versions in the Playlist "Director Review" (let's say it has an 
+``id`` of 4). We'd run a query like so::
+
+    filters = [['playlist', 'is', {'type':'Playlist', 'id':4}]]
+    fields = ['playlist.Playlist.code', 'sg_sort_order', 'version.Version.code', 'version.Version.user', 'version.Version.entity']
+    order=[{'column':'sg_sort_order','direction':'asc'}]
+    result = sg.find('PlaylistVersionConnection', filters, fields, order)
+
+
+Which returns the following::
+
+    [{'id': 28,
+      'playlist.Playlist.code': 'Director Review',
+      'sg_sort_order': 1.0,
+      'type': 'PlaylistVersionConnection',
+      'version.Version.code': 'bunny_020_0010_comp_v003',
+      'version.Version.entity': {'id': 880,
+                                 'name': 'bunny_020_0010',
+                                 'type': 'Shot'},
+      'version.Version.user': {'id': 19, 'name': 'Artist 1', 'type': 'HumanUser'}},
+     {'id': 29,
+      'playlist.Playlist.code': 'Director Review',
+      'sg_sort_order': 2.0,
+      'type': 'PlaylistVersionConnection',
+      'version.Version.code': 'bunny_020_0020_comp_v003',
+      'version.Version.entity': {'id': 881,
+                                 'name': 'bunny_020_0020',
+                                 'type': 'Shot'},
+      'version.Version.user': {'id': 12, 'name': 'Artist 8', 'type': 'HumanUser'}},
+     {'id': 30,
+      'playlist.Playlist.code': 'Director Review',
+      'sg_sort_order': 3.0,
+      'type': 'PlaylistVersionConnection',
+      'version.Version.code': 'bunny_020_0030_comp_v003',
+      'version.Version.entity': {'id': 882,
+                                 'name': 'bunny_020_0030',
+                                 'type': 'Shot'},
+      'version.Version.user': {'id': 33, 'name': 'Admin 5', 'type': 'HumanUser'}},
+     {'id': 31,
+      'playlist.Playlist.code': 'Director Review',
+      'sg_sort_order': 4.0,
+      'type': 'PlaylistVersionConnection',
+      'version.Version.code': 'bunny_020_0040_comp_v003',
+      'version.Version.entity': {'id': 883,
+                                 'name': 'bunny_020_0040',
+                                 'type': 'Shot'},
+      'version.Version.user': {'id': 18, 'name': 'Artist 2', 'type': 'HumanUser'}},
+     {'id': 32,
+      'playlist.Playlist.code': 'Director Review',
+      'sg_sort_order': 5.0,
+      'type': 'PlaylistVersionConnection',
+      'version.Version.code': 'bunny_020_0050_comp_v003',
+      'version.Version.entity': {'id': 884,
+                                 'name': 'bunny_020_0050',
+                                 'type': 'Shot'},
+      'version.Version.user': {'id': 15, 'name': 'Artist 5', 'type': 'HumanUser'}}]
+
+
+- ``version`` is the Version record for this connection instance.
+- ``playlist`` is the Playlist record for this connection instance.
+- ``sg_sort_order`` is the sort order field on the connection instance.
+
+We can pull in field values from the linked Playlist and Version entities using dot notation like 
+``version.Version.code``. The syntax is ``fieldname.EntityType.fieldname``. In this example, 
+``PlaylistVersionConnection`` has a field named ``version``. That field contains a ``Version`` 
+entity. The field we are interested on the Version is ``code``. Put those together with our f
+riend the dot and we have ``version.Version.code``.
 
 *******************************************
 Shotgun UI fields not available via the API
