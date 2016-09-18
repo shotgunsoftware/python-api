@@ -61,14 +61,6 @@ v3.0.20 can be used with IronPython with a little bit of added work:
 Installing with ``pip``
 ***********************
 
-PyPI
-====
-The Shotgun API is available in the Python Package Index as ``shotgun-api`` (note the dash instead
-of underscore) starting with version 3.0.31::
-
-    pip install shotgun-api
-
-
 Installing the Master Branch From Github
 ========================================
 If you wish to install the current master, use the following command::
