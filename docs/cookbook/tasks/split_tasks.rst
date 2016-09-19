@@ -93,7 +93,7 @@ start_date, due_date and duration being ignored
 
 Result:
 
-.. image:: images/split_tasks_1.png
+.. image:: /images/split_tasks_1.png
 
 Moving the start_date of a split task
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -115,7 +115,7 @@ Moving the start_date of a split task
 
 Result:
 
-.. image:: images/split_tasks_2.png
+.. image:: /images/split_tasks_2.png
 
 Moving the due_date of a split task
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -137,7 +137,7 @@ Moving the due_date of a split task
 
 Result:
 
-.. image:: images/split_tasks_3.png
+.. image:: /images/split_tasks_3.png
 
 Setting a longer duration
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -160,7 +160,7 @@ Setting a longer duration
 
 Result:
 
-.. image:: images/split_tasks_4.png
+.. image:: /images/split_tasks_4.png
 
 Setting a shorter duration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -183,13 +183,13 @@ Setting a shorter duration
 
 Result:
 
-.. image:: images/split_tasks_5.png
+.. image:: /images/split_tasks_5.png
 
 Another example of shorter duration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 We won't be using the previous result for this example but rather, the following:
 
-.. image:: images/split_tasks_6.png
+.. image:: /images/split_tasks_6.png
 
 who's duration we will shorten past the last split.
 
@@ -211,7 +211,7 @@ who's duration we will shorten past the last split.
 
 Result:
 
-.. image:: images/split_tasks_7.png
+.. image:: /images/split_tasks_7.png
 
 Setting the due_date in a gap
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -221,7 +221,7 @@ a day when work will be done.
 
 For this example let's assume as a starting point the result of the 5th example:
 
-.. image:: images/split_tasks_8.png
+.. image:: /images/split_tasks_8.png
 
 ::
 
@@ -241,7 +241,7 @@ For this example let's assume as a starting point the result of the 5th example:
 
 Result:
 
-.. image:: images/split_tasks_9.png
+.. image:: /images/split_tasks_9.png
 
 
 

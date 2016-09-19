@@ -4,6 +4,10 @@
 Smart Cut Fields
 ################
 
+.. warning::
+    Smart Cut Fields should be considered deprecated. Shotgun v7.0, introduced a new version of 
+    cut support. `Read the Cut Support Documentation here <https://support.shotgunsoftware.com/hc/en-us/articles/222840748>`_.
+
 If you want to work with 'smart' cut fields through the API, your script should use a corresponding
 'raw' fields for all updates. The 'smart_cut_fields' are primarily for display in the UI, the real 
 data is stored in a set of 'raw' fields that have different names.

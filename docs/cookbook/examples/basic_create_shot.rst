@@ -31,8 +31,8 @@ This will create a new Shot named "100_010" in the Project "Gunslinger" (which h
 - ``create()`` is the :meth:`shotgun_api3.Shotgun.create` API method we are calling. We pass in the 
   entity type we're searching for and the data we're setting.
 
-Result
-------
+.. rubric:: Result
+
 The variable ``result`` now contains a dictionary hash with the Shot information you created.::
 
     {

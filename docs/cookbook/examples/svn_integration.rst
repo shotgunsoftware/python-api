@@ -50,12 +50,12 @@ Explanation of selected lines
 
 - lines ``4-5``: After the commit, Subversion leaves us two string objects in the environment: 
   ``REPOS`` and ``REV``  (the repository path and the revision number, respectively).  
-* lines ``7-8``: Here we use the shell command ``export`` to create two more string objects in the 
+- lines ``7-8``: Here we use the shell command ``export`` to create two more string objects in the 
   environment:  ``AUTHOR`` and ``COMMENT``. To get each value, we use the ``svnlook`` command with 
   our ``REPOS`` and ``REV`` values, first with the ``author``, and then with ``log`` subcommand.  
   These are actually the first two original lines of code - everything else to this point was 
   pre-written already in the ``post-commit.tmpl`` file. nice :)  
-* line ``10``: This is the absolute path to our Shotgun API Script.
+- line ``10``: This is the absolute path to our Shotgun API Script.
 
 ******************
 Shotgun API Script
@@ -159,12 +159,12 @@ Troubleshooting
 ***************
 
 My post-commit script is simply not running. I can run it manually, but commits are not triggering it.
-=====================
+======================================================================================================
 
 Make sure that the script is has explicitly been made executable and that all users who will 
 invoke it have appropriate permissions for the script and that folders going back to root. 
 
 My Shotgun API script is not getting called by the post-commit hook. 
-=====================
+====================================================================
 
 Make sure that the script is called using its absolute path.
