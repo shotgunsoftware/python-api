@@ -11,7 +11,7 @@ API Reference
 ``shotgun`` Module Attributes
 *****************************
 
-The :mod:`~shotgun_api3.shotgun` module is a container for the :class:`~shotgun_api3.Shotgun`
+The :mod:`~shotgun_api3.shotgun` module is a container for the :class:`~shotgun.Shotgun`
 class. There are a couple of useful attributes to note.
 
 .. automodule:: shotgun_api3.shotgun
