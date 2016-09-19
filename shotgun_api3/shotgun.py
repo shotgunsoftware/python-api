@@ -134,6 +134,11 @@ class MissingTwoFactorAuthenticationFault(Fault):
 class ServerCapabilities(object):
     """
     Container for the servers capabilities, such as version enabled features.
+
+    .. warning::
+
+        This class is part of the internal API and its interfaces may change at any time in 
+        the future. Therefore, usage of this class is discouraged. 
     """
 
     def __init__(self, host, meta):
@@ -240,6 +245,11 @@ class ServerCapabilities(object):
 class ClientCapabilities(object):
     """
     Container for the client capabilities.
+
+    .. warning::
+
+        This class is part of the internal API and its interfaces may change at any time in 
+        the future. Therefore, usage of this class is discouraged. 
 
     :ivar str platform: The current client platform. Valid values are ``mac``, ``linux``,
         ``windows``, or ``None`` (if the current platform couldn't be determined).
