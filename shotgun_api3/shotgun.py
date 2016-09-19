@@ -679,7 +679,7 @@ class Shotgun(object):
             argument.
 
             For details on supported presets and the format of this parameter see
-            :ref:`filter_syntax`
+            :ref:`additional_filter_presets`
         :returns: Dictionary representing a single matching entity with the requested fields,
             and the defaults ``"id"`` and ``"type"`` which are always included.
         :rtype: dict
@@ -776,7 +776,7 @@ class Shotgun(object):
             argument.
 
             For details on supported presets and the format of this parameter see
-            :ref:`filter_syntax`
+            :ref:`additional_filter_presets`
         :returns: list of dictionaries representing each entity with the requested fields, and the
             defaults ``"id"`` and ``"type"`` which are always included.
         :rtype: list

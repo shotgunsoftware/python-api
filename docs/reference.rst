@@ -387,10 +387,10 @@ Valid Operators By Data Type
     url                         ** Filtering by this data type field is not supported
 
 
+.. _additional_filter_presets:
 
 Additional Filter Presets
 =========================
-
 
 As of Shotgun version 7.0 it is possible to also use filter presets. These presets provide a simple 
 way to specify powerful query filters that would otherwise be costly and difficult to craft using 
