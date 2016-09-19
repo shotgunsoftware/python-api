@@ -1,0 +1,516 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Split Tasks &mdash; python-api v3.0.32.dev_sphinx documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="python-api v3.0.32.dev_sphinx documentation" href="../../index.html"/>
+        <link rel="up" title="Working With Tasks" href="../tasks.html"/>
+        <link rel="next" title="Smart Cut Fields" href="../smart_cut_fields.html"/>
+        <link rel="prev" title="Task Dependencies" href="task_dependencies.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='../../_static/logo_sg@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../../index.html" class="icon icon-home"> python-api
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../cookbook.html">API Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../usage_tips.html">API Usage Tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials.html">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../attachments.html">Details About Working With Files</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../tasks.html">Working With Tasks</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="updating_tasks.html">Updating Task Dates: How Shotgun Thinks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="task_dependencies.html">Task Dependencies</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Split Tasks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-do-splits-influence-dates-and-dates-influence-splits">How Do Splits Influence Dates And Dates Influence Splits</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#start-date-due-date-and-duration-being-ignored">start_date, due_date and duration being ignored</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#moving-the-start-date-of-a-split-task">Moving the start_date of a split task</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#moving-the-due-date-of-a-split-task">Moving the due_date of a split task</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#setting-a-longer-duration">Setting a longer duration</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#setting-a-shorter-duration">Setting a shorter duration</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#another-example-of-shorter-duration">Another example of shorter duration</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#setting-the-due-date-in-a-gap">Setting the due_date in a gap</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../smart_cut_fields.html">Smart Cut Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced.html">Advanced Usage</a></li>
+</ul>
+
+            
+          
+       
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>python-api</b> v3.0.32.dev_sphinx.<br>
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
+
+    </div>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">python-api</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../cookbook.html">API Cookbook</a> &raquo;</li>
+        
+          <li><a href="../tasks.html">Working With Tasks</a> &raquo;</li>
+        
+      <li>Split Tasks</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="split-tasks">
+<span id="id1"></span><h1>Split Tasks<a class="headerlink" href="#split-tasks" title="Permalink to this headline">¶</a></h1>
+<p>Split tasks can be created and edited via the API but must comply to some rules. Before going
+further, a good understanding of <a class="reference internal" href="updating_tasks.html#updating-tasks"><span class="std std-ref">how Shotgun handles task dates is useful</span></a>.</p>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>The Task entity has a field called <code class="docutils literal"><span class="pre">splits</span></code> which is a list of dictionaries. Each dictionary
+in the list has two string keys, <code class="docutils literal"><span class="pre">start</span></code> and <code class="docutils literal"><span class="pre">end</span></code>, who&#8217;s values are strings representing dates
+in the <code class="docutils literal"><span class="pre">YYYY-mm-dd</span></code> format.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-11&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-12&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-18&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-19&#39;</span><span class="p">}]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Splits should be ordered from eldest to newest.</li>
+<li>There should be gaps between each split.<ul>
+<li>Gaps are defined as at least one working day. Non-workdays such as weekends and holidays
+are not gaps.</li>
+</ul>
+</li>
+</ul>
+<p>If there are multiple splits but there between two or more splits there is no gap, an error will be
+raised. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;splits&#39;</span><span class="p">:[{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-10&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-11&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-12&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-14&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-19&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-20&#39;</span><span class="p">}]})</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;/shotgun/src/python-api/shotgun_api3/shotgun.py&quot;</span>, line <span class="m">600</span>, in <span class="n">update</span>
+    <span class="n">record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+  File <span class="nb">&quot;/shotgun/src/python-api/shotgun_api3/shotgun.py&quot;</span>, line <span class="m">1239</span>, in <span class="n">_call_rpc</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_response_errors</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+  File <span class="nb">&quot;/shotgun/src/python-api/shotgun_api3/shotgun.py&quot;</span>, line <span class="m">1435</span>, in <span class="n">_response_errors</span>
+    <span class="s2">&quot;Unknown Error&quot;</span><span class="p">))</span>
+    <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">Fault</span><span class="p">:</span> <span class="n">API</span> <span class="n">update</span><span class="p">()</span> <span class="n">CRUD</span> <span class="n">ERROR</span> <span class="c1">#5: Update failed for [Task.splits]: (task.rb) The start date in split segment 2 is only one calendar day away from  the end date of the previous segment. There must be calendar days between split segments.</span>
+</pre></div>
+</div>
+<p>Alternately, a split value can be set to <code class="docutils literal"><span class="pre">None</span></code> to remove splits (you can also use an empty list).
+This will preserve the <code class="docutils literal"><span class="pre">start_date</span></code> and <code class="docutils literal"><span class="pre">due_date</span></code> values but recalculate the <code class="docutils literal"><span class="pre">duration</span></code> value
+while appropriately considering all workday rules in effect.</p>
+</div>
+<div class="section" id="how-do-splits-influence-dates-and-dates-influence-splits">
+<h2>How Do Splits Influence Dates And Dates Influence Splits<a class="headerlink" href="#how-do-splits-influence-dates-and-dates-influence-splits" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">If splits are specified the supplied <code class="docutils literal"><span class="pre">start_date</span></code>, <code class="docutils literal"><span class="pre">due_date</span></code> and <code class="docutils literal"><span class="pre">duration</span></code> fields will be ignored.</p>
+</li>
+<li><p class="first">The <code class="docutils literal"><span class="pre">start_date</span></code> will be inferred from the earliest split.</p>
+</li>
+<li><p class="first">The <code class="docutils literal"><span class="pre">due_date</span></code> will be inferred from the last split.</p>
+</li>
+<li><p class="first">If the <code class="docutils literal"><span class="pre">start_date</span></code> is changed on a task that has splits the first split will be moved to start
+on the new <code class="docutils literal"><span class="pre">start_date</span></code> and all further splits will be moved while maintaining gap lengths
+between splits and respecting workday rules.</p>
+</li>
+<li><p class="first">If the <code class="docutils literal"><span class="pre">due_date</span></code> is changed on a task that has splits the last split will be moved to end on
+the new <code class="docutils literal"><span class="pre">due_date</span></code> and all prior splits will be moved while maintaining gap lengths between
+splits and respecting workday rules.</p>
+</li>
+<li><p class="first">If the <code class="docutils literal"><span class="pre">duration</span></code> is changed two scenarios are possible</p>
+<blockquote>
+<div><ul class="simple">
+<li>In the case of a longer duration, additional days will be added to the end of the last split</li>
+<li>In the case of a shorter duration splits, starting with the latest ones, will be either
+removed or shortened until the new duration is met.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<p>Throughout the following examples, each successive one will build on the previous.</p>
+<div class="section" id="start-date-due-date-and-duration-being-ignored">
+<h4>start_date, due_date and duration being ignored<a class="headerlink" href="#start-date-due-date-and-duration-being-ignored" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-06&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-23&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
+    <span class="s1">&#39;splits&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-11&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-12&#39;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-18&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-19&#39;</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">})</span>
+
+<span class="c1"># Task = {</span>
+<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-11&#39;,</span>
+<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-19&#39;,</span>
+<span class="c1">#     &#39;duration&#39;: 2400,</span>
+<span class="c1">#     &#39;splits&#39;: [</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-11&#39;, &#39;end&#39;: &#39;2012-12-12&#39;},</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-18&#39;, &#39;end&#39;: &#39;2012-12-19&#39;}</span>
+<span class="c1">#     ]</span>
+<span class="c1"># }</span>
+</pre></div>
+</div>
+<p>Result:</p>
+<img alt="../../_images/split_tasks_1.png" src="../../_images/split_tasks_1.png" />
+</div>
+<div class="section" id="moving-the-start-date-of-a-split-task">
+<h4>Moving the start_date of a split task<a class="headerlink" href="#moving-the-start-date-of-a-split-task" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-10&#39;</span>
+<span class="p">})</span>
+
+<span class="c1"># Task = {</span>
+<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-10&#39;,</span>
+<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-18&#39;,</span>
+<span class="c1">#     &#39;splits&#39;: [</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-10&#39;, &#39;end&#39;: &#39;2012-12-11&#39;},</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-14&#39;, &#39;end&#39;: &#39;2012-12-18&#39;}</span>
+<span class="c1">#     ]</span>
+<span class="c1"># }</span>
+</pre></div>
+</div>
+<p>Result:</p>
+<img alt="../../_images/split_tasks_2.png" src="../../_images/split_tasks_2.png" />
+</div>
+<div class="section" id="moving-the-due-date-of-a-split-task">
+<h4>Moving the due_date of a split task<a class="headerlink" href="#moving-the-due-date-of-a-split-task" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-19&#39;</span>
+<span class="p">})</span>
+
+<span class="c1"># Task = {</span>
+<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-10&#39;,</span>
+<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-19&#39;,</span>
+<span class="c1">#     &#39;splits&#39;: [</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-10&#39;, &#39;end&#39;: &#39;2012-12-11&#39;},</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-14&#39;, &#39;end&#39;: &#39;2012-12-19&#39;}</span>
+<span class="c1">#     ]</span>
+<span class="c1"># }</span>
+</pre></div>
+</div>
+<p>Result:</p>
+<img alt="../../_images/split_tasks_3.png" src="../../_images/split_tasks_3.png" />
+</div>
+<div class="section" id="setting-a-longer-duration">
+<h4>Setting a longer duration<a class="headerlink" href="#setting-a-longer-duration" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">4200</span>
+<span class="p">})</span>
+
+<span class="c1"># Task = {</span>
+<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-10&#39;,</span>
+<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-21&#39;,</span>
+<span class="c1">#     &#39;duration&#39;: 4200,</span>
+<span class="c1">#     &#39;splits&#39;: [</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-10&#39;, &#39;end&#39;: &#39;2012-12-11&#39;},</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-14&#39;, &#39;end&#39;: &#39;2012-12-21&#39;}</span>
+<span class="c1">#     ]</span>
+<span class="c1"># }</span>
+</pre></div>
+</div>
+<p>Result:</p>
+<img alt="../../_images/split_tasks_4.png" src="../../_images/split_tasks_4.png" />
+</div>
+<div class="section" id="setting-a-shorter-duration">
+<h4>Setting a shorter duration<a class="headerlink" href="#setting-a-shorter-duration" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">2400</span>
+<span class="p">})</span>
+
+<span class="c1"># Task = {</span>
+<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-10&#39;,</span>
+<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-18&#39;,</span>
+<span class="c1">#     &#39;duration&#39;: 2400,</span>
+<span class="c1">#     &#39;splits&#39;: [</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-10&#39;, &#39;end&#39;: &#39;2012-12-11&#39;},</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-14&#39;, &#39;end&#39;: &#39;2012-12-18&#39;}</span>
+<span class="c1">#     ]</span>
+<span class="c1"># }</span>
+</pre></div>
+</div>
+<p>Result:</p>
+<img alt="../../_images/split_tasks_5.png" src="../../_images/split_tasks_5.png" />
+</div>
+<div class="section" id="another-example-of-shorter-duration">
+<h4>Another example of shorter duration<a class="headerlink" href="#another-example-of-shorter-duration" title="Permalink to this headline">¶</a></h4>
+<p>We won&#8217;t be using the previous result for this example but rather, the following:</p>
+<img alt="../../_images/split_tasks_6.png" src="../../_images/split_tasks_6.png" />
+<p>who&#8217;s duration we will shorten past the last split.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">1800</span>
+<span class="p">})</span>
+
+<span class="c1"># Task = {</span>
+<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-10&#39;,</span>
+<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-18&#39;,</span>
+<span class="c1">#     &#39;duration&#39;: 2400,</span>
+<span class="c1">#     &#39;splits&#39;: [</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-10&#39;, &#39;end&#39;: &#39;2012-12-11&#39;},</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-14&#39;, &#39;end&#39;: &#39;2012-12-18&#39;}</span>
+<span class="c1">#     ]</span>
+<span class="c1"># }</span>
+</pre></div>
+</div>
+<p>Result:</p>
+<img alt="../../_images/split_tasks_7.png" src="../../_images/split_tasks_7.png" />
+</div>
+<div class="section" id="setting-the-due-date-in-a-gap">
+<h4>Setting the due_date in a gap<a class="headerlink" href="#setting-the-due-date-in-a-gap" title="Permalink to this headline">¶</a></h4>
+<p>When a due date is set in a gap later splits are removed and the day of the due date is considered
+a day when work will be done.</p>
+<p>For this example let&#8217;s assume as a starting point the result of the 5th example:</p>
+<img alt="../../_images/split_tasks_8.png" src="../../_images/split_tasks_8.png" />
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-13&#39;</span>
+<span class="p">})</span>
+
+<span class="c1"># Task = {</span>
+<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-10&#39;,</span>
+<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-13&#39;,</span>
+<span class="c1">#     &#39;duration&#39;: 1800,</span>
+<span class="c1">#     &#39;splits&#39;: [</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-10&#39;, &#39;end&#39;: &#39;2012-12-11&#39;},</span>
+<span class="c1">#         {&#39;start&#39;: &#39;2012-12-13&#39;, &#39;end&#39;: &#39;2012-12-13&#39;}</span>
+<span class="c1">#     ]</span>
+<span class="c1"># }</span>
+</pre></div>
+</div>
+<p>Result:</p>
+<img alt="../../_images/split_tasks_9.png" src="../../_images/split_tasks_9.png" />
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../smart_cut_fields.html" class="btn btn-neutral float-right" title="Smart Cut Fields" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="task_dependencies.html" class="btn btn-neutral" title="Task Dependencies" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'v3.0.32.dev_sphinx',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

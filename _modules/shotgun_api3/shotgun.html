@@ -42,6 +42,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -92,17 +93,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../filter_syntax.html">Filter Syntax</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../data_types.html">Data Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../usage_tips.html">API Usage Tips</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../attachments.html">Working With Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../local_files.html">Working With Local Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tasks.html">Working With Tasks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../smart_cut_fields.html">Smart Cut Fields</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../event_types.html">Event Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packaging.html">Packaging an application with py2app (or py2exe)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../server_changelog.html">Shotgun Server API Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cookbook.html">API Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced.html">Advanced Usage</a></li>
 </ul>
 
             
@@ -141,8 +133,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">python-api</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">python-api</a>
+        
       </nav>
 
 
@@ -155,18 +149,30 @@
 
 
 
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>shotgun_api3.shotgun</li>
+        
+      <li>shotgun_api3.shotgun</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
   <hr/>
 </div>
@@ -307,9 +313,14 @@
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># API</span>
 
-<div class="viewcode-block" id="ServerCapabilities"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.ServerCapabilities">[docs]</a><span class="k">class</span> <span class="nc">ServerCapabilities</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ServerCapabilities</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Container for the servers capabilities, such as version enabled features.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        This class is part of the internal API and its interfaces may change at any time in </span>
+<span class="sd">        the future. Therefore, usage of this class is discouraged. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">meta</span><span class="p">):</span>
@@ -382,40 +393,45 @@
             <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;JSON API&#39;</span>
         <span class="p">})</span>
 
-<div class="viewcode-block" id="ServerCapabilities.ensure_include_archived_projects"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.ServerCapabilities.ensure_include_archived_projects">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_include_archived_projects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">ensure_include_archived_projects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures server has support for archived Projects feature added in v5.3.14.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
             <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span>
             <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;include_archived_projects parameter&#39;</span>
-        <span class="p">})</span></div>
+        <span class="p">})</span>
 
-<div class="viewcode-block" id="ServerCapabilities.ensure_per_project_customization"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.ServerCapabilities.ensure_per_project_customization">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_per_project_customization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">ensure_per_project_customization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures server has support for per-project customization feature added in v5.4.4.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
             <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
             <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;project parameter&#39;</span>
-        <span class="p">},</span> <span class="kc">True</span><span class="p">)</span></div>
+        <span class="p">},</span> <span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ServerCapabilities.ensure_support_for_additional_filter_presets"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.ServerCapabilities.ensure_support_for_additional_filter_presets">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_support_for_additional_filter_presets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">ensure_support_for_additional_filter_presets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures server has support for additional filter presets feature added in v7.0.0.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
             <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
             <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;additional_filter_presets parameter&#39;</span>
-        <span class="p">},</span> <span class="kc">True</span><span class="p">)</span></div>
+        <span class="p">},</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;ServerCapabilities: host </span><span class="si">%s</span><span class="s2">, version </span><span class="si">%s</span><span class="s2">, is_dev </span><span class="si">%s</span><span class="s2">&quot;</span>\
-                 <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dev</span><span class="p">)</span></div>
+                 <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dev</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ClientCapabilities"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.ClientCapabilities">[docs]</a><span class="k">class</span> <span class="nc">ClientCapabilities</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ClientCapabilities</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Container for the client capabilities.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        This class is part of the internal API and its interfaces may change at any time in </span>
+<span class="sd">        the future. Therefore, usage of this class is discouraged. </span>
 
 <span class="sd">    :ivar str platform: The current client platform. Valid values are ``mac``, ``linux``,</span>
 <span class="sd">        ``windows``, or ``None`` (if the current platform couldn&#39;t be determined).</span>
@@ -457,7 +473,7 @@
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;ClientCapabilities: platform </span><span class="si">%s</span><span class="s2">, local_path_field </span><span class="si">%s</span><span class="s2">, &quot;</span>\
             <span class="s2">&quot;py_verison </span><span class="si">%s</span><span class="s2">, ssl version </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_path_field</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_version</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_version</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">_Config</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -845,7 +861,7 @@
 <span class="sd">            argument.</span>
 
 <span class="sd">            For details on supported presets and the format of this parameter see</span>
-<span class="sd">            :ref:`filter_syntax`</span>
+<span class="sd">            :ref:`additional_filter_presets`</span>
 <span class="sd">        :returns: Dictionary representing a single matching entity with the requested fields,</span>
 <span class="sd">            and the defaults ``&quot;id&quot;`` and ``&quot;type&quot;`` which are always included.</span>
 <span class="sd">        :rtype: dict</span>
@@ -942,7 +958,7 @@
 <span class="sd">            argument.</span>
 
 <span class="sd">            For details on supported presets and the format of this parameter see</span>
-<span class="sd">            :ref:`filter_syntax`</span>
+<span class="sd">            :ref:`additional_filter_presets`</span>
 <span class="sd">        :returns: list of dictionaries representing each entity with the requested fields, and the</span>
 <span class="sd">            defaults ``&quot;id&quot;`` and ``&quot;type&quot;`` which are always included.</span>
 <span class="sd">        :rtype: list</span>
@@ -2873,7 +2889,7 @@
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_records</span><span class="p">(</span><span class="n">record</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-<div class="viewcode-block" id="Shotgun.nav_expand"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.nav_expand">[docs]</a>    <span class="k">def</span> <span class="nf">nav_expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">seed_entity_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">entity_fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">nav_expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">seed_entity_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">entity_fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Expand the navigation hierarchy for the supplied path.</span>
 
@@ -2891,7 +2907,7 @@
                 <span class="s1">&#39;seed_entity_field&#39;</span><span class="p">:</span> <span class="n">seed_entity_field</span><span class="p">,</span>
                 <span class="s1">&#39;entity_fields&#39;</span><span class="p">:</span> <span class="n">entity_fields</span>
             <span class="p">}</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="Shotgun.get_session_token"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.get_session_token">[docs]</a>    <span class="k">def</span> <span class="nf">get_session_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

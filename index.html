@@ -42,6 +42,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -92,17 +93,8 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
-<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="local_files.html">Working With Local Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tasks.html">Working With Tasks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="smart_cut_fields.html">Smart Cut Fields</a></li>
-<li class="toctree-l1"><a class="reference internal" href="event_types.html">Event Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="packaging.html">Packaging an application with py2app (or py2exe)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="server_changelog.html">Shotgun Server API Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">API Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced Usage</a></li>
 </ul>
 
             
@@ -141,8 +133,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">python-api</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">python-api</a>
+        
       </nav>
 
 
@@ -151,20 +145,32 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="#">Docs</a> &raquo;</li>
-      
-    <li>Shotgun Python API3</li>
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Shotgun Python API3</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
   <hr/>
 </div>
@@ -218,8 +224,8 @@ Quicktimes, etc.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#minimum-requirements">Minimum Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-with-pip">Installing with <code class="docutils literal"><span class="pre">pip</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#installing-manually">Installing manually</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-with-pip">Installing with <code class="docutils literal"><span class="pre">pip</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a><ul>
@@ -230,117 +236,25 @@ Quicktimes, etc.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#shotgun-module-attributes"><code class="docutils literal"><span class="pre">shotgun</span></code> Module Attributes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#shotgun">Shotgun()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#shotgun-methods">Shotgun Methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference.html#exceptions">Exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#servercapabilities">ServerCapabilities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference.html#clientcapabilities">ClientCapabilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#filter-syntax">Filter Syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#data-types">Data Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#event-types">Event Types</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#basic-filters">Basic Filters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#complex-filters">Complex Filters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#operators-and-arguments">Operators and Arguments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#valid-operators-by-data-type">Valid Operators By Data Type</a></li>
-<li class="toctree-l2"><a class="reference internal" href="filter_syntax.html#additional-filter-presets">Additional Filter Presets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">API Cookbook</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cookbook/usage_tips.html">API Usage Tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook/tutorials.html">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook/attachments.html">Details About Working With Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook/tasks.html">Working With Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cookbook/smart_cut_fields.html">Smart Cut Fields</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#addressing">addressing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#checkbox">checkbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#color">color</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#currency">currency</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#date">date</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#date-time">date_time</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#duration">duration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#entity">entity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#float">float</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#footage">footage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#image-read-only">image (read-only)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#list">list</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#multi-entity">multi_entity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#number">number</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#password">password</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#percent">percent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#serializable">serializable</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#status-list">status_list</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#system-task-type-deprecated">system_task_type (deprecated)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#tag-list">tag_list</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#text">text</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#timecode">timecode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_types.html#url-file-link-field">url (file/link field)</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/basic_sg_instance.html">Create a Shotgun API instance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/basic_create_shot.html">Create A Shot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/basic_find_shot.html">Find a Shot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/basic_update_shot.html">Update A Shot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/basic_delete_shot.html">Delete A Shot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/basic_create_shot_task_template.html">Create a Shot with a Task Template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/basic_create_version_link_shot.html">Create a Version Linked to a Shot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/basic_upload_thumbnail_version.html">Upload a Thumbnail for a Version</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#advanced">Advanced</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#importing">Importing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#multi-threading">Multi-threading</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#entity-fields">Entity Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#customentities">CustomEntities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#connectionentities">ConnectionEntities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#shotgun-ui-fields-not-available-via-the-api">Shotgun UI fields not available via the API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#audit-fields">Audit Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#logging-messages-from-the-api">Logging Messages from the API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_tips.html#optimizations">Optimizations</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="attachments.html#default-structure">Default structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="attachments.html#creating-attachments">Creating Attachments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="attachments.html#updating-attachments">Updating Attachments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="attachments.html#deleting-attachments">Deleting Attachments</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="local_files.html">Working With Local Files</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="local_files.html#requirements">Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_files.html#structure-of-local-file-values">Structure of Local File Values</a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_files.html#reading-local-file-fields">Reading Local File Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_files.html#creating-updating-local-file-fields">Creating &amp; Updating Local file Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="local_files.html#un-setting-local-file-field-values">Un-setting local file field values</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="tasks.html">Working With Tasks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tasks/updating_tasks.html">Updating Task Dates: How Shotgun Thinks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tasks/task_dependencies.html">Task Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tasks/split_tasks.html">Split Tasks</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="smart_cut_fields.html">Smart Cut Fields</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="smart_cut_fields.html#smart-fields">Smart Fields</a></li>
-<li class="toctree-l2"><a class="reference internal" href="smart_cut_fields.html#raw-fields">Raw Fields</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="event_types.html">Event Types</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="event_types.html#structure-of-event-types">Structure of Event Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event_types.html#standard-event-types">Standard Event Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event_types.html#additional-event-types">Additional Event Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event_types.html#custom-event-types">Custom Event Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event_types.html#performance">Performance</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="packaging.html">Packaging an application with py2app (or py2exe)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="packaging.html#https-validation-and-cacerts-txt">HTTPS Validation and cacerts.txt</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="server_changelog.html">Shotgun Server API Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id1">5.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id2">5.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id3">3.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id4">2.4</a></li>
-<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id5">2.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id6">2.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id7">2.1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="server_changelog.html#id8">2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html#packaging-an-application-with-py2app-or-py2exe">Packaging an application with py2app (or py2exe)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html#ironpython">IronPython</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html#shotgun-server-api-changelog">Shotgun Server API Changelog</a></li>
 </ul>
 </li>
 </ul>

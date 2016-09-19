@@ -57,20 +57,8 @@ User Guide
     installation
     authentication
     reference
-    filter_syntax
-    data_types
-
-    tutorials
-    usage_tips
-
-    attachments
-    local_files
-    tasks
-    smart_cut_fields
-    event_types
-
-    packaging
-    server_changelog
+    cookbook
+    advanced
 
 
 Indices and tables

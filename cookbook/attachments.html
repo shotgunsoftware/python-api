@@ -1,0 +1,691 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Details About Working With Files &mdash; python-api v3.0.32.dev_sphinx documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="python-api v3.0.32.dev_sphinx documentation" href="../index.html"/>
+        <link rel="up" title="API Cookbook" href="../cookbook.html"/>
+        <link rel="next" title="Working With Tasks" href="tasks.html"/>
+        <link rel="prev" title="Subversion (SVN) Integration" href="examples/svn_integration.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='../_static/logo_sg@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../index.html" class="icon icon-home"> python-api
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">API Cookbook</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html">Examples</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Details About Working With Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#default-structure">Default structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#file-type-structures-this-file">File type structures (<code class="docutils literal"><span class="pre">this_file</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-attachments">Creating Attachments</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#web-links">Web Links</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#uploads">Uploads</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#local-files">Local Files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#updating-attachments">Updating Attachments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deleting-attachments">Deleting Attachments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-local-file-types">Working With Local File Types</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#requirements">Requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#structure-of-local-file-values">Structure of Local File Values</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reading-local-file-fields">Reading Local File Fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#creating-updating-local-file-fields">Creating &amp; Updating Local file Fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#un-setting-local-file-field-values">Un-setting local file field values</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tasks.html">Working With Tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="smart_cut_fields.html">Smart Cut Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced.html">Advanced Usage</a></li>
+</ul>
+
+            
+          
+       
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>python-api</b> v3.0.32.dev_sphinx.<br>
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
+
+    </div>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">python-api</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../cookbook.html">API Cookbook</a> &raquo;</li>
+        
+      <li>Details About Working With Files</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="details-about-working-with-files">
+<span id="attachments"></span><h1>Details About Working With Files<a class="headerlink" href="#details-about-working-with-files" title="Permalink to this headline">¶</a></h1>
+<p>The Shotgun web application stores Files as Attachment entities. You can see these on a Files page,
+or a Files tab on a detail page, for example. You can access Attachments via the API to create and
+modify uploaded files, url links, and local files, and link them to other entities (Shots,
+Versions, etc). This entity works a lot like other entity types within Shotgun with a few
+exceptions which are detailed below.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you are simply looking for information about how to upload and link things in Shotgun, this
+doc is not for you. Instead look at the <code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code> and
+<code class="xref py py-meth docutils literal"><span class="pre">upload_thumbnail()</span></code> methods.</p>
+<p class="last">This doc describes the detailed structure of the Attachment entities that represent files
+in Shotgun and how to interact with them. If that sounds cool too, then read on!</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 3.0.3: </span>Requires Shotgun Server v2.2.0+</p>
+</div>
+<div class="section" id="default-structure">
+<h2>Default structure<a class="headerlink" href="#default-structure" title="Permalink to this headline">¶</a></h2>
+<p>The following is a list of the default fields that Shotgun creates for Attachments. Your server
+instance may look slightly different depending on your own customizations. Many of these fields are
+optional and some are automatically filled in. These exceptions are listed below in the
+descriptions of each field.</p>
+<ul>
+<li><dl class="first docutils">
+<dt><strong>description</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>):</dt>
+<dd><p class="first last">Optional field to provide descriptive text about the file.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>this_file</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">dict</span></code></a>):</dt>
+<dd><p class="first last">The actual file reference. Within the dictionary is a <code class="docutils literal"><span class="pre">link_type</span></code> key which designates the
+Attachment as an uploaded file, a url link, or a local file. There are additional keys
+returned for <a class="reference external" href="http://developer.shotgunsoftware.com/python-api/local_files.html#local-files" title="(in python-api vv3.0.32.dev_sphinx)"><span>Working With Local Files</span></a>. You cannot modify this field after you have created an
+Attachment. See below for examples of this field.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>):</dt>
+<dd><p class="first last">For uploaded files only. This is automatically assigned when the file is uploaded and stores
+the filename of the file.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>file_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>):</dt>
+<dd><p class="first last">For uploaded files only. This is automatically assigned when the file is uploaded and stores
+the size of the file in bytes.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>id</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>):</dt>
+<dd><p class="first last">The internal Shotgun id for this Attachment entity.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>attachment_links</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></a>):</dt>
+<dd><p class="first last">A list of entity dictionaries used for linking Attachments to multiple entities.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>open_notes</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></a>):</dt>
+<dd><p class="first last">A List of Note entities linked to the current Attachment that have a status that does not
+equal &#8216;clsd&#8217;. <em>Read-only</em></p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>open_notes_count</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a>):</dt>
+<dd><p class="first last">An integer count of the list of Note entities linked to the current Attachment that have a
+status that does not equal &#8216;clsd&#8217;. <em>(Read-only)</em></p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>project</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">dict</span></code></a>):</dt>
+<dd><p class="first last"><em>(Required)</em> The Project entity that this Attachment belongs to. This must be assigned when
+creating an Attachment.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>attachment_reference_links</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></a>):</dt>
+<dd><p class="first last">Similar to <code class="docutils literal"><span class="pre">attachment_links</span></code> but used specifically for linking files to multiple entities as
+reference.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>sg_status_list</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>):</dt>
+<dd><p class="first last">Status value returned as the short code.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>tag_list</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></a>):</dt>
+<dd><p class="first last">List of tags (as strings) that are currently assigned to the Attachment.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>image</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>):</dt>
+<dd><p class="first last">The url location of the thumbnail image assigned to this Attachment. For uploads, Shotgun
+automatically tries to create a thumbnail from the file. Alternatively, you can assign your
+own thumbnail to an Attachment using the <code class="xref py py-meth docutils literal"><span class="pre">upload_thumbnail()</span></code> method.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>sg_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>):</dt>
+<dd><p class="first last">An optional field for designating different types of Attachments</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="section" id="file-type-structures-this-file">
+<h3>File type structures (<code class="docutils literal"><span class="pre">this_file</span></code>)<a class="headerlink" href="#file-type-structures-this-file" title="Permalink to this headline">¶</a></h3>
+<p>Depending on the type of file the Attachment entity is representing, the value of <code class="docutils literal"><span class="pre">this_file</span></code>
+will vary.</p>
+<ul>
+<li><dl class="first docutils">
+<dt><strong>Uploads</strong></dt>
+<dd><p class="first">Designated by <code class="docutils literal"><span class="pre">link_type:</span> <span class="pre">'upload'</span></code>, this represents a file that was uploaded to Shotgun.
+Uploading files to Shotgun can be done using the <code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code> method.
+You cannot create an Attachment with an uploaded file directly.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;image/jpeg&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;upload&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;western1FULL.jpg&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://superdeathcarracer.shotgunstudio.com/file_serve/attachment/538&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Web links</strong></dt>
+<dd><p class="first">Designated by <code class="docutils literal"><span class="pre">link_type:</span> <span class="pre">'web'</span></code>, this is represents a url link. Examples include an
+<code class="docutils literal"><span class="pre">http://</span></code> link to another server or a custom protocol used to launch a local application
+like <code class="docutils literal"><span class="pre">rvlink://</span></code> or <code class="docutils literal"><span class="pre">cinesync://</span></code></p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;web&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Join GUN12158&#39;</span><span class="p">,</span>
+ <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;cinesync://session/GUN12158&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Local Files</strong></dt>
+<dd><p class="first">Designated by <code class="docutils literal"><span class="pre">link_type:</span> <span class="pre">'local'</span></code>, this is represents a local file link. Additional keys
+are provided in order to give access to the relative path information on other platforms.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference external" href="http://developer.shotgunsoftware.com/python-api/local_files.html#local-files" title="(in python-api vv3.0.32.dev_sphinx)"><span>Working With Local Files</span></a></p>
+</div>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;video/quicktime&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_test_movie.mov&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
+  <span class="s1">&#39;local_path_linux&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/users/macusers/kp/Movies/testing/test_movie_002.mov&#39;</span>
+  <span class="s1">&#39;local_path_mac&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
+  <span class="s1">&#39;local_path_windows&#39;</span><span class="p">:</span> <span class="s1">&#39;M:</span><span class="se">\\</span><span class="s1">macusers\kp\Movies</span><span class="se">\t</span><span class="s1">esting</span><span class="se">\t</span><span class="s1">est_movie_002.mov&#39;</span>
+  <span class="s1">&#39;local_storage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dailies Directories&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;LocalStorage&#39;</span><span class="p">},</span>
+  <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_002.mov&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="creating-attachments">
+<h2>Creating Attachments<a class="headerlink" href="#creating-attachments" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="web-links">
+<h3>Web Links<a class="headerlink" href="#web-links" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">myurl</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://apple.com/itunes&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Apple: iTunes&#39;</span>
+<span class="p">}</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;this_file&#39;</span><span class="p">:</span> <span class="n">myurl</span><span class="p">,</span>
+    <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">64</span><span class="p">}</span>
+<span class="p">}</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Attachment&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="uploads">
+<h3>Uploads<a class="headerlink" href="#uploads" title="Permalink to this headline">¶</a></h3>
+<p>Uploads cannot be created directly on Attachments. Instead, you need to use the
+<code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code> method.</p>
+</div>
+<div class="section" id="local-files">
+<h3>Local Files<a class="headerlink" href="#local-files" title="Permalink to this headline">¶</a></h3>
+<p>See <a class="reference internal" href="#creating-local-files"><span class="std std-ref">Creating &amp; Updating Local file Fields</span></a>.</p>
+</div>
+</div>
+<div class="section" id="updating-attachments">
+<h2>Updating Attachments<a class="headerlink" href="#updating-attachments" title="Permalink to this headline">¶</a></h2>
+<p>You cannot modify the <code class="docutils literal"><span class="pre">this_file</span></code> field after you create an Attachment. If you need to provide a
+different file, you will have to create a new Attachment entity. Otherwise, the process for
+updating Attachments is exactly like updating other entity types in Shotgun and is the same for all
+Attachment types. See <code class="xref py py-meth docutils literal"><span class="pre">update()</span></code> for more info.</p>
+</div>
+<div class="section" id="deleting-attachments">
+<h2>Deleting Attachments<a class="headerlink" href="#deleting-attachments" title="Permalink to this headline">¶</a></h2>
+<p>The process of deleting an Attachment is just like other entities in Shotgun. See
+<code class="xref py py-meth docutils literal"><span class="pre">delete()</span></code> for more info.</p>
+</div>
+<div class="section" id="working-with-local-file-types">
+<h2>Working With Local File Types<a class="headerlink" href="#working-with-local-file-types" title="Permalink to this headline">¶</a></h2>
+<p>We added support for linking to local files in the UI in Shotgun Server v2.1. This doc covers how
+to work with these local file links using the API.</p>
+<div class="section" id="requirements">
+<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Python API v3.0.3+</li>
+<li>Shotgun Server v2.1.10+</li>
+</ul>
+</div>
+<div class="section" id="structure-of-local-file-values">
+<h3>Structure of Local File Values<a class="headerlink" href="#structure-of-local-file-values" title="Permalink to this headline">¶</a></h3>
+<p>There is a key in the dictionary that represents file/link fields called <code class="docutils literal"><span class="pre">link_type</span></code> which can be
+one of <code class="docutils literal"><span class="pre">local</span></code>, <code class="docutils literal"><span class="pre">upload</span></code>, <code class="docutils literal"><span class="pre">web</span></code>. This is used to determine what type of link the field value
+contains. For local files this value is always <code class="docutils literal"><span class="pre">local</span></code> and there are additional keys that
+are available:</p>
+<ul>
+<li><dl class="first docutils">
+<dt><strong>content_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>):</dt>
+<dd><p class="first last">The mime-type of the associated local file. This is assigned
+automatically using a best-guess based on the file extension. You can override this by setting
+this explicitly.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>link_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
+<dd><p class="first last">Always &#8216;local&#8217; for local files.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>):</dt>
+<dd><p class="first last">the display name of the local file. This is set to the filename by
+default but can be overridden by setting this explicitly.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>local_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>):</dt>
+<dd><p class="first last">The full path to the file on the current platform. The Python API tries to determine the
+platform it is currently running on and then copies the value from the corresponding key above
+to this field for convenience.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>local_path_linux</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
+<dd><p class="first last">Full path to file on Linux as defined by the LocalStorage (or <code class="docutils literal"><span class="pre">None</span></code> if no Linux path is set)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>local_path_mac</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
+<dd><p class="first last">Full path to file on Mac OS X as defined by the LocalStorage (or <code class="docutils literal"><span class="pre">None</span></code> if no Mac path is set)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>local_path_windows</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
+<dd><p class="first last">Full path to file on Windows as defined by the LocalStorage (or <code class="docutils literal"><span class="pre">None</span></code> if no Windows path
+is set)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>local_storage</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">dict</span></code></a>) <em>read-only</em>:</dt>
+<dd><p class="first last">A dictionary representing which LocalStorage entity is applied for this local file link.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
+<dd><p class="first last">A <a class="reference external" href="file://">file://</a> link provided for convenience pointing to the value in the <code class="docutils literal"><span class="pre">local_path</span></code></p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="reading-local-file-fields">
+<h3>Reading Local File Fields<a class="headerlink" href="#reading-local-file-fields" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">]</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">]],</span> <span class="n">fields</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Returns:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">,</span>
+ <span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_test_movie.mov&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_001_.mov&#39;</span>
+                        <span class="s1">&#39;local_path_linux&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/users/macusers/kp/Movies/testing/test_movie_001_.mov&#39;</span>
+                        <span class="s1">&#39;local_path_mac&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_001_.mov&#39;</span>
+                        <span class="s1">&#39;local_path_windows&#39;</span><span class="p">:</span> <span class="s1">&#39;M:</span><span class="se">\\</span><span class="s1">macusers\kp\Movies</span><span class="se">\t</span><span class="s1">esting</span><span class="se">\t</span><span class="s1">est_movie_001_.mov&#39;</span>
+                        <span class="s1">&#39;local_storage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                          <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dailies Directories&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;LocalStorage&#39;</span><span class="p">},</span>
+                        <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_001_.mov&#39;</span><span class="p">},</span>
+ <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When viewing results that include file/link fields with local file link values, all of the
+keys will be returned regardless of whether there are values in them. So in the above example,
+if there was no Windows path set for the local storage, <code class="docutils literal"><span class="pre">local_path_windows</span></code> would be
+<code class="docutils literal"><span class="pre">None</span></code>.</p>
+</div>
+</div>
+<div class="section" id="creating-updating-local-file-fields">
+<span id="creating-local-files"></span><h3>Creating &amp; Updating Local file Fields<a class="headerlink" href="#creating-updating-local-file-fields" title="Permalink to this headline">¶</a></h3>
+<p>When setting a file/link field value to a local file, only the <code class="docutils literal"><span class="pre">local_path</span></code> is mandatory. Shotgun
+will automatically select the appropriate matching local storage for your file based on the path.
+You can optionally specify the <code class="docutils literal"><span class="pre">name</span></code> and <code class="docutils literal"><span class="pre">content_type</span></code> fields if you wish to override their
+defaults. Any other keys that are provided will be ignored.</p>
+<ul>
+<li><dl class="first docutils">
+<dt><strong>content_type</strong> <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>:</dt>
+<dd><p class="first last">Optionally set the mime-type of the associated local file. This is assigned automatically
+using a best-guess based on the file extension.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>name</strong> <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>:</dt>
+<dd><p class="first last">Optional display name of the local file. This is set to the filename by default.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>local_path</strong> <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>:</dt>
+<dd><p class="first last">The full local path to the file. Shotgun will find the LocalStorage
+that has the most specific match to this path and automatically assign that LocalStorage to
+the file.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Better Movie&#39;</span><span class="p">}</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Returns:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">,</span>
+ <span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;video/quicktime&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_test_movie.mov&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
+                        <span class="s1">&#39;local_path_linux&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/users/macusers/kp/Movies/testing/test_movie_002.mov&#39;</span>
+                        <span class="s1">&#39;local_path_mac&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
+                        <span class="s1">&#39;local_path_windows&#39;</span><span class="p">:</span> <span class="s1">&#39;M:</span><span class="se">\\</span><span class="s1">macusers\kp\Movies</span><span class="se">\t</span><span class="s1">esting</span><span class="se">\t</span><span class="s1">est_movie_002.mov&#39;</span>
+                        <span class="s1">&#39;local_storage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                          <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dailies Directories&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;LocalStorage&#39;</span><span class="p">},</span>
+                        <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_002.mov&#39;</span><span class="p">},</span>
+ <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">}]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">content_type</span></code> was assigned a best-guess value based on the file extension. Shotgun selected
+the most appropriate specific LocalStorage match and assigned it to local_storage automatically.</p>
+</div>
+<div class="section" id="un-setting-local-file-field-values">
+<h3>Un-setting local file field values<a class="headerlink" href="#un-setting-local-file-field-values" title="Permalink to this headline">¶</a></h3>
+<p>Removing a a local file field value is simple. Just set the value to <code class="docutils literal"><span class="pre">None</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Returns:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">,</span>
+ <span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+ <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tasks.html" class="btn btn-neutral float-right" title="Working With Tasks" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="examples/svn_integration.html" class="btn btn-neutral" title="Subversion (SVN) Integration" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'v3.0.32.dev_sphinx',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

@@ -42,6 +42,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -92,17 +93,8 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="filter_syntax.html">Filter Syntax</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_types.html">Data Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_tips.html">API Usage Tips</a></li>
-<li class="toctree-l1"><a class="reference internal" href="attachments.html">Working With Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="local_files.html">Working With Local Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tasks.html">Working With Tasks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="smart_cut_fields.html">Smart Cut Fields</a></li>
-<li class="toctree-l1"><a class="reference internal" href="event_types.html">Event Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="packaging.html">Packaging an application with py2app (or py2exe)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="server_changelog.html">Shotgun Server API Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cookbook.html">API Cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced Usage</a></li>
 </ul>
 
             
@@ -141,8 +133,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">python-api</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">python-api</a>
+        
       </nav>
 
 
@@ -155,16 +149,28 @@
 
 
 
+
+
+
+
+
+
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li></li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li></li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
         
       </li>
+    
   </ul>
   <hr/>
 </div>
@@ -231,19 +237,15 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="reference.html#shotgun_api3.shotgun.ClientCapabilities">ClientCapabilities (class in shotgun_api3.shotgun)</a>
-  </dt>
-
-      
   <dt><a href="reference.html#shotgun_api3.shotgun.Shotgun.close">close() (shotgun_api3.shotgun.Shotgun method)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="reference.html#shotgun_api3.shotgun.Shotgun.connect">connect() (shotgun_api3.shotgun.Shotgun method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="reference.html#shotgun_api3.shotgun.Shotgun.create">create() (shotgun_api3.shotgun.Shotgun method)</a>
   </dt>
@@ -270,20 +272,6 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="reference.html#shotgun_api3.shotgun.ServerCapabilities.ensure_include_archived_projects">ensure_include_archived_projects() (shotgun_api3.shotgun.ServerCapabilities method)</a>
-  </dt>
-
-      
-  <dt><a href="reference.html#shotgun_api3.shotgun.ServerCapabilities.ensure_per_project_customization">ensure_per_project_customization() (shotgun_api3.shotgun.ServerCapabilities method)</a>
-  </dt>
-
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="reference.html#shotgun_api3.shotgun.ServerCapabilities.ensure_support_for_additional_filter_presets">ensure_support_for_additional_filter_presets() (shotgun_api3.shotgun.ServerCapabilities method)</a>
-  </dt>
-
       
   <dt><a href="reference.html#shotgun_api3.shotgun.Shotgun.entity_types">entity_types() (shotgun_api3.shotgun.Shotgun method)</a>
   </dt>
@@ -369,10 +357,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="reference.html#shotgun_api3.shotgun.Shotgun.nav_expand">nav_expand() (shotgun_api3.shotgun.Shotgun method)</a>
-  </dt>
-
-      
   <dt><a href="reference.html#shotgun_api3.shotgun.NO_SSL_VALIDATION">NO_SSL_VALIDATION (in module shotgun_api3.shotgun)</a>
   </dt>
 
@@ -433,23 +417,11 @@
   </dt>
 
       
-  <dt><a href="reference.html#shotgun_api3.shotgun.Shotgun.server_caps">server_caps (shotgun_api3.shotgun.Shotgun attribute)</a>
-  </dt>
-
-      
-  <dt><a href="reference.html#shotgun_api3.shotgun.Shotgun.server_info">server_info (shotgun_api3.shotgun.Shotgun attribute)</a>
+  <dt><a href="reference.html#shotgun_api3.shotgun.Shotgun.set_session_uuid">set_session_uuid() (shotgun_api3.shotgun.Shotgun method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="reference.html#shotgun_api3.shotgun.ServerCapabilities">ServerCapabilities (class in shotgun_api3.shotgun)</a>
-  </dt>
-
-      
-  <dt><a href="reference.html#shotgun_api3.shotgun.Shotgun.set_session_uuid">set_session_uuid() (shotgun_api3.shotgun.Shotgun method)</a>
-  </dt>
-
       
   <dt><a href="reference.html#shotgun_api3.shotgun.Shotgun.set_up_auth_cookie">set_up_auth_cookie() (shotgun_api3.shotgun.Shotgun method)</a>
   </dt>
