@@ -1,0 +1,307 @@
+
+
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Packaging an application with py2app (or py2exe) &mdash; python-api v3.0.32.dev_sphinx documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="python-api v3.0.32.dev_sphinx documentation" href="../index.html"/>
+        <link rel="up" title="Advanced Topics" href="../advanced.html"/>
+        <link rel="next" title="IronPython" href="iron_python.html"/>
+        <link rel="prev" title="Advanced Topics" href="../advanced.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+    <a href='http://developer.shotgunsoftware.com'>
+    
+        <img style='width: 191px;
+                height: 60px;
+                margin: 2px;
+                border-radius: 0px;
+                padding: 0px;'
+            src='../_static/logo_sg@2x.png'/>
+    
+    </a>
+    
+
+          
+            <a href="../index.html" class="icon icon-home"> python-api
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook.html">API Cookbook</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../advanced.html">Advanced Topics</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Packaging an application with py2app (or py2exe)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#https-validation-and-cacerts-txt">HTTPS Validation and cacerts.txt</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="iron_python.html">IronPython</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html">Shotgun Python API Changelog</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+       
+    <div style='margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 10px; 
+                color: #b3b3b3; 
+                font-size: 70%;
+                border-radius: 3px;
+                background-color: #444;
+                line-height: 18px;
+                '>    
+    <style>
+        a.custom_post_menu { display: inline; 
+                             padding: 0px; 
+                             text-decoration: underline; }
+    </style>
+
+    <b>python-api</b> v3.0.32.dev_sphinx.<br>
+    
+    For more information, please visit
+    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    The code associated with this documentation can be found 
+    <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
+
+    </div>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">python-api</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../advanced.html">Advanced Topics</a> &raquo;</li>
+        
+      <li>Packaging an application with py2app (or py2exe)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="packaging-an-application-with-py2app-or-py2exe">
+<span id="packaging"></span><h1>Packaging an application with py2app (or py2exe)<a class="headerlink" href="#packaging-an-application-with-py2app-or-py2exe" title="Permalink to this headline">¶</a></h1>
+<p>You can create standalone applications with Python scripts by using
+<a class="reference external" href="https://pythonhosted.org/py2app/">py2app</a> on OS X or <a class="reference external" href="http://www.py2exe.org/">py2exe</a> on
+Windows. This is often done to more easily distribute applications that have a GUI based on
+toolkits like Tk, Qt or others.</p>
+<p>There are caveats you need to be aware of when creating such an app.</p>
+<div class="section" id="https-validation-and-cacerts-txt">
+<h2>HTTPS Validation and cacerts.txt<a class="headerlink" href="#https-validation-and-cacerts-txt" title="Permalink to this headline">¶</a></h2>
+<p>When creating the connection to Shotgun a file is used to validate the Shotgun certificate. This
+file is located at <code class="docutils literal"><span class="pre">shotgun_api3/lib/httplib2/cacerts.txt</span></code>. Because this file is not a Python
+file imported by your application, py2app will not know to include it in your package, it will
+need to be explicitly specified in your <code class="docutils literal"><span class="pre">setup.py</span></code> file (edit the path based on the location
+where your <code class="docutils literal"><span class="pre">shotgun_api3</span></code> package is located):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">DATA_FILES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">&#39;shotgun_api3&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;/shotgun/src/python-api/shotgun_api3/lib/httplib2/cacerts.txt&#39;</span><span class="p">])</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Once you create your py2app package its contents should include two files (among others) in the
+following structure:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">Contents</span><span class="o">/</span><span class="n">Resources</span><span class="o">/</span><span class="n">shotgun_api3</span><span class="o">/</span><span class="n">cacerts</span><span class="o">.</span><span class="n">txt</span>
+<span class="o">./</span><span class="n">Contents</span><span class="o">/</span><span class="n">Resources</span><span class="o">/</span><span class="n">my_script</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Where in <code class="docutils literal"><span class="pre">my_script.py</span></code> you can access the <code class="docutils literal"><span class="pre">cacerts.txt</span></code> file using a relative path to pass it
+into the Shotgun connection&#8217;s constructor:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ca_certs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s1">&#39;shotgun_api3&#39;</span><span class="p">,</span> <span class="s1">&#39;cacerts.txt&#39;</span><span class="p">)</span>
+<span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s1">&#39;https://yoursite.shotgunstudio.com&#39;</span><span class="p">,</span> <span class="s1">&#39;script_name&#39;</span><span class="p">,</span> <span class="s1">&#39;script_key&#39;</span><span class="p">,</span>
+                          <span class="n">ca_certs</span><span class="o">=</span><span class="n">ca_certs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The process for py2exe should be similar.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="iron_python.html" class="btn btn-neutral float-right" title="IronPython" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../advanced.html" class="btn btn-neutral" title="Advanced Topics" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Autodesk.
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'v3.0.32.dev_sphinx',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+ 
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-2114792-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+</body>
+</html>

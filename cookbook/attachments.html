@@ -125,7 +125,7 @@
 <li class="toctree-l2"><a class="reference internal" href="smart_cut_fields.html">Smart Cut Fields</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../advanced.html">Advanced Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../advanced.html">Advanced Topics</a></li>
 </ul>
 
             
@@ -245,7 +245,7 @@ descriptions of each field.</p>
 <dt><strong>this_file</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">dict</span></code></a>):</dt>
 <dd><p class="first last">The actual file reference. Within the dictionary is a <code class="docutils literal"><span class="pre">link_type</span></code> key which designates the
 Attachment as an uploaded file, a url link, or a local file. There are additional keys
-returned for <span class="xref std std-ref">local_files</span>. You cannot modify this field after you have created an
+returned for <a class="reference internal" href="#id1"><span class="std std-ref">Working With Local File Types</span></a>. You cannot modify this field after you have created an
 Attachment. See below for examples of this field.</p>
 </dd>
 </dl>
@@ -370,7 +370,7 @@ like <code class="docutils literal"><span class="pre">rvlink://</span></code> or
 are provided in order to give access to the relative path information on other platforms.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><span class="xref std std-ref">local_files</span></p>
+<p class="last"><a class="reference internal" href="#id1"><span class="std std-ref">Working With Local File Types</span></a></p>
 </div>
 <div class="last highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;video/quicktime&#39;</span><span class="p">,</span>
   <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span>
@@ -430,7 +430,7 @@ Attachment types. See <code class="xref py py-meth docutils literal"><span class
 <code class="xref py py-meth docutils literal"><span class="pre">delete()</span></code> for more info.</p>
 </div>
 <div class="section" id="working-with-local-file-types">
-<h2>Working With Local File Types<a class="headerlink" href="#working-with-local-file-types" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2>Working With Local File Types<a class="headerlink" href="#working-with-local-file-types" title="Permalink to this headline">¶</a></h2>
 <p>We added support for linking to local files in the UI in Shotgun Server v2.1. This doc covers how
 to work with these local file links using the API.</p>
 <div class="section" id="requirements">
