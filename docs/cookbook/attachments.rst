@@ -176,6 +176,7 @@ Deleting Attachments
 The process of deleting an Attachment is just like other entities in Shotgun. See
 :meth:`~shotgun_api3.Shotgun.delete` for more info.
 
+.. _local_files:
 
 *****************************
 Working With Local File Types

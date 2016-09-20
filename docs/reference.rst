@@ -71,7 +71,7 @@ Working With Files
 
 Methods that handle uploading and downloading files including thumbnails.
 
-.. seealso:: :doc:`attachments`
+.. seealso:: :ref:`attachments`
 
 .. automethod:: Shotgun.upload
 .. automethod:: Shotgun.upload_thumbnail
