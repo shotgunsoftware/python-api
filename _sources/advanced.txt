@@ -9,7 +9,7 @@ something that's missing here, please feel free to contact support at support@sh
 with your suggestions and we'll get it added!
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     advanced/packaging
     advanced/iron_python
