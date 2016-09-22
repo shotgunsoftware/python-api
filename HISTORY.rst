@@ -4,6 +4,11 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.0.33.dev (TBD)
+=================
+
+- TBD
+
 v3.0.32 (2016 Sep 22)
 =====================
 
