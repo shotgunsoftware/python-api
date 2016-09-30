@@ -45,14 +45,17 @@ will vary.
 
 .. note:: The ``duration`` field stores ``duration`` values in minutes
 
-Universal
-=========
+
+----
+
+.. rubric:: Universal
+
 Regardless of current values on the Task, this behavior rules::
 
     Task = {'start_date': '2011-05-20', 'due_date': '2011-05-25', 'duration': 2400, 'id':123}
 
-Update start_date and due_date
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Update start_date and due_date**
+
 ``duration`` is ignored if also provided. It is instead set automatically as (``due_date`` - 
 ``start_date``)
 
@@ -67,8 +70,7 @@ Update start_date and due_date
 
 .. note:: The value provided in the update() is ignored (and in this case was also incorrect).
 
-Update start_date and duration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Update start_date and duration**
 
 ::
 
@@ -79,8 +81,7 @@ Update start_date and duration
 - ``duration`` is updated.
 - ``due_date`` is updated to (``start_date`` + ``duration``).
 
-Update due_date and duration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Update due_date and duration**
 
 ::
 
@@ -93,15 +94,19 @@ Update due_date and duration
 
 .. note:: This means the ``duration`` provided is overwritten.
 
-Task has start_date only
-========================
+
+----
+
+.. rubric:: Task has start_date only
+
+If the Task only has a ``start_date`` value and has no other date values, this is how updates
+will behave.
 
 ::
 
     Task = {'start_date': '2011-05-20', 'due_date': None, 'duration': None, 'id':123}
 
-Update start_date
-~~~~~~~~~~~~~~~~~
+**Update start_date**
 
 ::
 
@@ -110,8 +115,7 @@ Update start_date
 
 - Only ``start_date`` is updated.
 
-Update due_date
-~~~~~~~~~~~~~~~
+**Update due_date**
 
 ::
 
@@ -121,8 +125,7 @@ Update due_date
 - ``due_date`` is updated.
 - ``duration`` is updated to (``due_date`` - ``start_date``).
 
-Update duration
-~~~~~~~~~~~~~~~
+**Update duration**
 
 ::
 
@@ -132,15 +135,19 @@ Update duration
 - ``duration`` is updated.
 - ``due_date`` is set to (``start_date`` + ``duration``)
 
-Task has due_date only
-======================
+
+----
+
+.. rubric:: Task has due_date only
+
+If the Task only has a ``due_date`` value and has no other date values, this is how updates
+will behave.
 
 ::
 
     # Task = {'start_date': None, 'due_date': '2011-05-25', 'duration': None, 'id':123}
 
-Update start_date
-~~~~~~~~~~~~~~~~~
+**Update start_date**
 
 ::
 
@@ -150,8 +157,7 @@ Update start_date
 - ``start_date`` is updated.
 - ``duration`` is updated to (``due_date`` - ``start_date``).
 
-Update due_date 
-~~~~~~~~~~~~~~~
+**Update due_date**
 
 ::
 
@@ -160,8 +166,7 @@ Update due_date
 
 - only ``due_date`` is updated.
 
-Update duration
-~~~~~~~~~~~~~~~
+**Update duration**
 
 ::
 
@@ -171,15 +176,19 @@ Update duration
 - ``duration`` is updated.
 - ``start_date`` is set to (``due_date`` - ``duration``)
 
-Task has duration only
-======================
+
+----
+
+.. rubric:: Task has duration only
+
+If the Task only has a ``duration`` value and has no other date values, this is how updates
+will behave.
 
 ::
 
     # Task = {'start_date': None, 'due_date': None, 'duration': 2400, 'id':123}
 
-Update start_date
-~~~~~~~~~~~~~~~~~
+**Update start_date**
 
 ::
 
@@ -189,8 +198,7 @@ Update start_date
 - ``start_date`` is updated.
 - ``due_date`` is updated to (``start_date`` + ``duration``).
 
-Update due_date
-~~~~~~~~~~~~~~~
+**Update due_date**
 
 ::
 
@@ -200,8 +208,7 @@ Update due_date
 - ``due_date`` is updated.
 - ``start_date`` is updated to (``due_date`` - ``duration``)
 
-Update duration
-~~~~~~~~~~~~~~~
+**Update duration**
 
 ::
 
@@ -210,15 +217,19 @@ Update duration
 
 - only ``duration`` is updated.
 
-Task has start_date and due_date (no duration)
-==============================================
+
+----
+
+.. rubric:: Task has start_date and due_date
+
+If the Task has ``start_date`` and ``due_date`` values but has no ``duration``, this is how updates
+will behave.
 
 ::
     
     # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-25', 'duration': None, 'id':123}
 
-Update start_date
-~~~~~~~~~~~~~~~~~
+**Update start_date**
 
 ::
 
@@ -228,8 +239,7 @@ Update start_date
 - ``start_date`` is updated.
 - ``duration`` is updated to (``due_date`` - ``start_date``).
 
-Update due_date 
-~~~~~~~~~~~~~~~
+**Update due_date**
 
 ::
 
@@ -239,8 +249,7 @@ Update due_date
 - ``due_date`` is updated.
 - ``duration`` is updated to (``due_date`` - ``start_date``)
 
-Update duration
-~~~~~~~~~~~~~~~
+**Update duration**
 
 ::
 
@@ -250,15 +259,19 @@ Update duration
 - ``duration`` is updated.
 - ``due_date`` is updated to (``start_date`` + ``duration``)
 
-Task has start_date and duration (no due_date)
-==============================================
+
+----
+
+.. rubric:: Task has start_date and duration
+
+If the Task has ``start_date`` and ``duration`` values but has no ``due_date``, this is how updates
+will behave.
 
 ::
 
     # Task = {'start_date': '2011-05-20', 'due_date': None, 'duration': 2400, 'id':123}
 
-Update start_date
-~~~~~~~~~~~~~~~~~
+**Update start_date**
 
 ::
 
@@ -268,8 +281,7 @@ Update start_date
 - ``start_date`` is updated.
 - ``due_date`` is updated to (``start_date`` +``duration``).
 
-Update due_date
-~~~~~~~~~~~~~~~
+**Update due_date**
 
 ::
 
@@ -279,8 +291,7 @@ Update due_date
 - ``due_date`` is updated.
 - ``duration`` is updated to (``due_date`` - ``start_date``).
 
-Update duration
-~~~~~~~~~~~~~~~
+**Update duration**
 
 ::
 
@@ -290,15 +301,19 @@ Update duration
 - ``duration`` is updated.
 - ``due_date`` is updated to (``start_date`` + ``duration``)
 
-Task has due_date and duration (no start_date)
-==============================================
+
+----
+
+.. rubric:: Task has due_date and duration
+
+If the Task has ``due_date`` and ``duration`` values but has no ``start_date``, this is how updates
+will behave.
 
 ::
     
     # Task = {'start_date': None, 'due_date': '2011-05-25', 'duration': 2400, 'id':123}
 
-Update start_date
-~~~~~~~~~~~~~~~~~
+**Update start_date**
 
 ::
 
@@ -308,8 +323,7 @@ Update start_date
 - ``start_date`` is updated.
 - ``due_date`` is updated to (``start_date`` + ``duration``).
 
-Update due_date
-~~~~~~~~~~~~~~~
+**Update due_date**
 
 ::
 
@@ -319,8 +333,7 @@ Update due_date
 - ``due_date`` is updated.
 - ``start_date`` is updated to (``due_date`` - ``duration``).
 
-Update duration
-~~~~~~~~~~~~~~~
+**Update duration**
 
 ::
 
@@ -330,15 +343,19 @@ Update duration
 - ``duration`` is updated.
 - ``start_date`` is updated to (``due_date`` - ``duration``)
 
-Task has start_date ,due_date, and duration
-===========================================
+
+----
+
+.. rubric:: Task has start_date ,due_date, and duration
+
+If the Task has ``start_date``, ``due_date``, and ``duration``, this is how updates
+will behave.
 
 ::
 
     # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-25', 'duration': 2400, 'id':123}
 
-Update start_date 
-~~~~~~~~~~~~~~~~~
+**Update start_date**
 
 ::
 
@@ -348,8 +365,7 @@ Update start_date
 - ``start_date`` is updated.
 - ``due_date`` is updated to (``start_date`` + ``duration``).
 
-Update due_date
-~~~~~~~~~~~~~~~
+**Update due_date**
 
 ::
 
@@ -359,8 +375,7 @@ Update due_date
 - ``due_date`` is updated.
 - ``duration`` is updated to (``due_date`` - ``start_date``)
 
-Update duration
-~~~~~~~~~~~~~~~
+**Update duration**
 
 ::
 
