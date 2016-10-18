@@ -95,6 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="authentication.html">Authentication</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#shotgun-module-attributes"><code class="docutils literal"><span class="pre">shotgun</span></code> Module Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#shotgun">Shotgun()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#shotgun-methods">Shotgun Methods</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#connection-authentication">Connection &amp; Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#crud-methods">CRUD Methods</a></li>
@@ -274,10 +275,8 @@ not require the added security provided by enforcing this.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="shotgun-methods">
-<h2>Shotgun Methods<a class="headerlink" href="#shotgun-methods" title="Permalink to this headline">¶</a></h2>
-<p>The majority of functionality is contained within the <code class="xref py py-class docutils literal"><span class="pre">Shotgun</span></code> class.
-The documentation for all of the methods you&#8217;ll need in your scripts lives in here.</p>
+<div class="section" id="shotgun">
+<h2>Shotgun()<a class="headerlink" href="#shotgun" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="shotgun_api3.shotgun.Shotgun">
 <em class="property">class </em><code class="descclassname">shotgun_api3.shotgun.</code><code class="descname">Shotgun</code><span class="sig-paren">(</span><em>base_url</em>, <em>script_name=None</em>, <em>api_key=None</em>, <em>convert_datetimes_to_utc=True</em>, <em>http_proxy=None</em>, <em>ensure_ascii=True</em>, <em>connect=True</em>, <em>ca_certs=None</em>, <em>login=None</em>, <em>password=None</em>, <em>sudo_as_login=None</em>, <em>session_token=None</em>, <em>auth_token=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun" title="Permalink to this definition">¶</a></dt>
@@ -388,6 +387,182 @@ are other patches that were proposed in the bug report that may help you as well
 </div>
 </dd></dl>
 
+</div>
+<div class="section" id="shotgun-methods">
+<h2>Shotgun Methods<a class="headerlink" href="#shotgun-methods" title="Permalink to this headline">¶</a></h2>
+<p>The majority of functionality is contained within the <code class="xref py py-class docutils literal"><span class="pre">Shotgun</span></code> class.
+The documentation for all of the methods you&#8217;ll need in your scripts lives in here.</p>
+<p class="rubric">Connection &amp; Authentication</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.connect" title="shotgun_api3.shotgun.Shotgun.connect"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.connect</span></code></a></td>
+<td>Connect client to the server if it is not already connected.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.close" title="shotgun_api3.shotgun.Shotgun.close"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.close</span></code></a></td>
+<td>Close the current connection to the server.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.authenticate_human_user" title="shotgun_api3.shotgun.Shotgun.authenticate_human_user"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.authenticate_human_user</span></code></a></td>
+<td>Authenticate Shotgun HumanUser.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.get_session_token" title="shotgun_api3.shotgun.Shotgun.get_session_token"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.get_session_token</span></code></a></td>
+<td>Get the session token associated with the current session.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.set_up_auth_cookie" title="shotgun_api3.shotgun.Shotgun.set_up_auth_cookie"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.set_up_auth_cookie</span></code></a></td>
+<td>Set up urllib2 with a cookie for authentication on the Shotgun instance.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.add_user_agent" title="shotgun_api3.shotgun.Shotgun.add_user_agent"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.add_user_agent</span></code></a></td>
+<td>Add agent to the user-agent header.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.reset_user_agent" title="shotgun_api3.shotgun.Shotgun.reset_user_agent"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.reset_user_agent</span></code></a></td>
+<td>Reset user agent to the default value.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.set_session_uuid" title="shotgun_api3.shotgun.Shotgun.set_session_uuid"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.set_session_uuid</span></code></a></td>
+<td>Set the browser session_uuid in the current Shotgun API instance.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.info" title="shotgun_api3.shotgun.Shotgun.info"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.info</span></code></a></td>
+<td>Get API-related metadata from the Shotgun server.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">CRUD Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.create" title="shotgun_api3.shotgun.Shotgun.create"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.create</span></code></a></td>
+<td>Create a new entity of the specified <code class="docutils literal"><span class="pre">entity_type</span></code>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.find" title="shotgun_api3.shotgun.Shotgun.find"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.find</span></code></a></td>
+<td>Find entities matching the given filters.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.find_one" title="shotgun_api3.shotgun.Shotgun.find_one"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.find_one</span></code></a></td>
+<td>Shortcut for <code class="xref py py-meth docutils literal"><span class="pre">find()</span></code> with <code class="docutils literal"><span class="pre">limit=1</span></code> so it returns a single result.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.update" title="shotgun_api3.shotgun.Shotgun.update"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.update</span></code></a></td>
+<td>Update the specified entity with the supplied data.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.delete" title="shotgun_api3.shotgun.Shotgun.delete"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.delete</span></code></a></td>
+<td>Retire the specified entity.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.revive" title="shotgun_api3.shotgun.Shotgun.revive"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.revive</span></code></a></td>
+<td>Revive an entity that has previously been deleted.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.batch" title="shotgun_api3.shotgun.Shotgun.batch"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.batch</span></code></a></td>
+<td>Make a batch request of several <code class="xref py py-meth docutils literal"><span class="pre">create()</span></code>, <code class="xref py py-meth docutils literal"><span class="pre">update()</span></code>, and <code class="xref py py-meth docutils literal"><span class="pre">delete()</span></code> calls.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.summarize" title="shotgun_api3.shotgun.Shotgun.summarize"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.summarize</span></code></a></td>
+<td>Summarize field data returned by a query.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.note_thread_read" title="shotgun_api3.shotgun.Shotgun.note_thread_read"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.note_thread_read</span></code></a></td>
+<td>Return the full conversation for a given note, including Replies and Attachments.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.text_search" title="shotgun_api3.shotgun.Shotgun.text_search"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.text_search</span></code></a></td>
+<td>Search across the specified entity types for the given text.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.update_project_last_accessed" title="shotgun_api3.shotgun.Shotgun.update_project_last_accessed"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.update_project_last_accessed</span></code></a></td>
+<td>Update a Project&#8217;s <code class="docutils literal"><span class="pre">last_accessed_by_current_user</span></code> field to the current timestamp.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.work_schedule_read" title="shotgun_api3.shotgun.Shotgun.work_schedule_read"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.work_schedule_read</span></code></a></td>
+<td>Return the work day rules for a given date range.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.work_schedule_update" title="shotgun_api3.shotgun.Shotgun.work_schedule_update"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.work_schedule_update</span></code></a></td>
+<td>Update the work schedule for a given date.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Working With Files</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.upload</span></code></a></td>
+<td>Upload a file to the specified entity.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.upload_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_thumbnail"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.upload_thumbnail</span></code></a></td>
+<td>Upload a file from a local path and assign it as the thumbnail for the specified entity.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.upload_filmstrip_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_filmstrip_thumbnail"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.upload_filmstrip_thumbnail</span></code></a></td>
+<td>Upload filmstrip thumbnail to specified entity.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.download_attachment" title="shotgun_api3.shotgun.Shotgun.download_attachment"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.download_attachment</span></code></a></td>
+<td>Download the file associated with a Shotgun Attachment.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.get_attachment_download_url" title="shotgun_api3.shotgun.Shotgun.get_attachment_download_url"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.get_attachment_download_url</span></code></a></td>
+<td>Return the URL for downloading provided Attachment.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.share_thumbnail" title="shotgun_api3.shotgun.Shotgun.share_thumbnail"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.share_thumbnail</span></code></a></td>
+<td>Associate a thumbnail with more than one Shotgun entity.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Activity Stream</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.activity_stream_read" title="shotgun_api3.shotgun.Shotgun.activity_stream_read"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.activity_stream_read</span></code></a></td>
+<td>Retrieve activity stream data from Shotgun.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.follow" title="shotgun_api3.shotgun.Shotgun.follow"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.follow</span></code></a></td>
+<td>Add the entity to the user&#8217;s followed entities.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.unfollow" title="shotgun_api3.shotgun.Shotgun.unfollow"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.unfollow</span></code></a></td>
+<td>Remove entity from the user&#8217;s followed entities.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.followers" title="shotgun_api3.shotgun.Shotgun.followers"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.followers</span></code></a></td>
+<td>Return all followers for an entity.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Working with the Shotgun Schema</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.schema_entity_read" title="shotgun_api3.shotgun.Shotgun.schema_entity_read"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.schema_entity_read</span></code></a></td>
+<td>Return all active entity types, their display names, and their visibility.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.schema_field_read" title="shotgun_api3.shotgun.Shotgun.schema_field_read"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.schema_field_read</span></code></a></td>
+<td>Get schema for all fields on the specified entity type or just the field name specified if provided.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.schema_field_create" title="shotgun_api3.shotgun.Shotgun.schema_field_create"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.schema_field_create</span></code></a></td>
+<td>Create a field for the specified entity type.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.schema_field_update" title="shotgun_api3.shotgun.Shotgun.schema_field_update"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.schema_field_update</span></code></a></td>
+<td>Update the properties for the specified field on an entity.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.schema_field_delete" title="shotgun_api3.shotgun.Shotgun.schema_field_delete"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.schema_field_delete</span></code></a></td>
+<td>Delete the specified field from the entity type.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.schema_read" title="shotgun_api3.shotgun.Shotgun.schema_read"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.schema_read</span></code></a></td>
+<td>Get the schema for all fields on all entities.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.schema" title="shotgun_api3.shotgun.Shotgun.schema"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.schema</span></code></a></td>
+<td><div class="deprecated">
+<p><span class="versionmodified">Deprecated since version 3.0.0.</span></p>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.entity_types" title="shotgun_api3.shotgun.Shotgun.entity_types"><code class="xref py py-obj docutils literal"><span class="pre">Shotgun.entity_types</span></code></a></td>
+<td><div class="deprecated">
+<p><span class="versionmodified">Deprecated since version 3.0.0.</span></p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
 <div class="section" id="connection-authentication">
 <h3>Connection &amp; Authentication<a class="headerlink" href="#connection-authentication" title="Permalink to this headline">¶</a></h3>
 <p>These methods are used for connecting and authenticating with your Shotgun server. Most of

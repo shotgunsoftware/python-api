@@ -20,14 +20,89 @@ class. There are a couple of useful attributes to note.
     :special-members:
 
 ***************
+Shotgun()
+***************
+
+.. autoclass:: Shotgun
+    :show-inheritance:
+
+***************
 Shotgun Methods
 ***************
 
 The majority of functionality is contained within the :class:`~shotgun_api3.Shotgun` class. 
 The documentation for all of the methods you'll need in your scripts lives in here.
 
-.. autoclass:: Shotgun
-    :show-inheritance:
+.. rubric:: Connection & Authentication
+
+.. autosummary:: 
+    :nosignatures:
+
+    Shotgun.connect
+    Shotgun.close
+    Shotgun.authenticate_human_user
+    Shotgun.get_session_token
+    Shotgun.set_up_auth_cookie
+    Shotgun.add_user_agent
+    Shotgun.reset_user_agent
+    Shotgun.set_session_uuid
+    Shotgun.info  
+
+.. rubric:: CRUD Methods
+
+.. autosummary:: 
+    :nosignatures:
+
+    Shotgun.create
+    Shotgun.find
+    Shotgun.find_one
+    Shotgun.update
+    Shotgun.delete
+    Shotgun.revive
+    Shotgun.batch
+    Shotgun.summarize
+    Shotgun.note_thread_read
+    Shotgun.text_search
+    Shotgun.update_project_last_accessed
+    Shotgun.work_schedule_read
+    Shotgun.work_schedule_update
+
+.. rubric:: Working With Files
+
+.. autosummary:: 
+    :nosignatures:
+
+    Shotgun.upload
+    Shotgun.upload_thumbnail
+    Shotgun.upload_filmstrip_thumbnail
+    Shotgun.download_attachment
+    Shotgun.get_attachment_download_url
+    Shotgun.share_thumbnail
+
+.. rubric:: Activity Stream
+
+.. autosummary:: 
+    :nosignatures:
+
+    Shotgun.activity_stream_read
+    Shotgun.follow
+    Shotgun.unfollow
+    Shotgun.followers
+
+.. rubric:: Working with the Shotgun Schema
+
+.. autosummary:: 
+    :nosignatures:
+
+    Shotgun.schema_entity_read
+    Shotgun.schema_field_read
+    Shotgun.schema_field_create
+    Shotgun.schema_field_update
+    Shotgun.schema_field_delete
+    Shotgun.schema_read
+    Shotgun.schema
+    Shotgun.entity_types
+
 
 Connection & Authentication
 ===========================
