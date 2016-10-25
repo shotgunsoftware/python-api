@@ -115,6 +115,7 @@ Below is a non-exhaustive list of things that we still need to implement:
 """
 
 import os, datetime
+import math
 import cPickle as pickle
 
 from .. import sg_timezone, ShotgunError
@@ -566,12 +567,56 @@ class Shotgun(object):
             row[field] = default_value
         return row
 
+    def _compare_with_in_calendar_operator(self, lval, operator, rval):
+        """Specialization of the _compare method in the case of in_calendar_* operators.
+
+        :rtype: bool
+        """
+        # Get today as reference.
+        today = datetime.date.today()
+        # from today we find the current week and day to apply the offset to it (the right value)
+        # and to see if once offset it matches the left value.
+        # The month can be extracted directly from the datetime.date object directly.
+        _, current_week, current_day = today.isocalendar()
+        # Getting the year, week and day of the right value. It will helps to
+        _, week, day = lval.isocalendar()
+
+        # in the following conditions, test the given current + the offset to see if it matches
+        # the given value.
+        if operator == "in_calendar_day":
+            # modulo to looping when the offset is more spreading to another week.
+            return (current_day + rval) % 7 == day
+        elif operator == "in_calendar_week":
+            # modulo to looping when the offset is more spreading to another year.
+            week_in_a_year = 52.1429
+            return int(math.ceil((current_week + rval) % week_in_a_year)) == week
+        elif operator == "in_calendar_month":
+            # modulo to looping when the offset is more spreading to another year.
+            return (today.month + rval) % 12 == lval.month
+
+        return False
+
+
     def _compare(self, field_type, lval, operator, rval):
+        """Set of conditional comparaison of the left value against right value depending of the type of
+        the field and the operartor.
+
+        :param str field_type: string describing the type of the field to compare with
+        :param basestring|int|float|datetime.datetime|datetime.date lval: left value
+        :param str operator: name of the operator to use for the comparaison.
+        :param basestring|int|float|datetime.datetime|datetime.date rval: right value
+        :rtype: bool
+        """
         if field_type == "checkbox":
             if operator == "is":
                 return lval == rval
             elif operator == "is_not":
                 return lval != rval
+
+        elif (field_type in ("date", "date_time") and
+                      operator in ('in_calendar_day', 'in_calendar_week', 'in_calendar_month')):
+            return self._compare_with_in_calendar_operator(lval, operator, rval)
+
         elif field_type in ("float", "number", "date", "date_time"):
             if operator == "is":
                 return lval == rval
