@@ -1629,6 +1629,27 @@ class TestErrors(base.TestBase):
         # except above wasn't properly run
         self.assertTrue(False)
 
+    def test_upload_empty_file(self):
+        """
+        Test uploading an empty file raises an error.
+        """
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.expanduser(os.path.join(this_dir,"empty.txt")))
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload, 'Version', 123, path)
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_thumbnail, 'Version', 123, path)
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_filmstrip_thumbnail, 'Version', 
+                          123, path)
+
+    def test_upload_missing_file(self):
+        """
+        Test uploading an missing file raises an error.
+        """
+        path = "/path/to/nowhere/foo.txt"
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload, 'Version', 123, path)
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_thumbnail, 'Version', 123, path)
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_filmstrip_thumbnail, 'Version', 
+                          123, path)
+
 #    def test_malformed_response(self):
 #        #TODO ResponseError
 #        pass
