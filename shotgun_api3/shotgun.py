@@ -2150,8 +2150,7 @@ class Shotgun(object):
         if not os.path.isfile(path):
             raise ShotgunError("Path must be a valid file, got '%s'" % path)
         if os.path.getsize(path) == 0:
-            raise ShotgunError("The file \"%s\" is empty. Please provide a non-empty file "
-                               "to upload" % path)
+            raise ShotgunError("Path cannot be an empty file: '%s'" % path)
 
         is_thumbnail = (field_name in ["thumb_image", "filmstrip_thumb_image", "image",
                                        "filmstrip_image"])
