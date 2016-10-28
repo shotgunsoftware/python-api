@@ -7,6 +7,8 @@ Here you can see the full list of changes between each Python API release.
 v3.0.33.dev (TBD)
 =================
 
+- Raise an exception when uploading an empty file using :meth:`upload`, :meth:`upload_thumbnail` 
+  or :meth:`upload_filmstrip_thumbnail` before calling out to the server.
 - TBD
 
 v3.0.32 (2016 Sep 22)

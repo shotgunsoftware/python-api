@@ -2137,7 +2137,7 @@ class Shotgun(object):
 
         :param str entity_type: Entity type to link the upload to.
         :param int entity_id: Id of the entity to link the upload to.
-        :param str path: Full path to file on disk to upload.
+        :param str path: Full path to an existing non-empty file on disk to upload.
         :param str field_name: The internal Shotgun field name on the entity to store the file in.
             This field must be a File/Link field type.
         :param str display_name: The display name to use for the file. Defaults to the file name.
@@ -2145,9 +2145,12 @@ class Shotgun(object):
         :returns: Id of the Attachment entity that was created for the image.
         :rtype: int
         """
+        # Basic validations of the file to upload.
         path = os.path.abspath(os.path.expanduser(path or ""))
         if not os.path.isfile(path):
             raise ShotgunError("Path must be a valid file, got '%s'" % path)
+        if os.path.getsize(path) == 0:
+            raise ShotgunError("Path cannot be an empty file: '%s'" % path)
 
         is_thumbnail = (field_name in ["thumb_image", "filmstrip_thumb_image", "image",
                                        "filmstrip_image"])
