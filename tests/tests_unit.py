@@ -1,7 +1,9 @@
 #! /opt/local/bin/python
+import datetime
 import unittest
 from mock import patch, Mock
 import shotgun_api3 as api
+from shotgun_api3.lib import mockgun
 from shotgun_api3.sg_26 import _is_mimetypes_broken
 
 class TestShotgunInit(unittest.TestCase):
@@ -420,6 +422,102 @@ class TestMimetypesFix(unittest.TestCase):
         self._test_mimetypes_import("win32", 2, 7, 10, False)
         self._test_mimetypes_import("win32", 3, 0, 0, False)
         self._test_mimetypes_import("darwin", 2, 7, 0, False)
+
+
+class TestMockgunShotgunCompareInCalendar(unittest.TestCase):
+    """Test suite for the case of in_calendar_* in _compare method of mockgun.Shotgun class."""
+    def setUp(self):
+        self.klass = mockgun.Shotgun
+        self.server_path = 'http://server_path'
+        self.script_name = 'script_name'
+        self.api_key = 'api_key'
+        with patch('shotgun_api3.lib.mockgun.Shotgun.__init__') as mock_init:
+            mock_init.return_value = None
+            self.instance = self.klass(self.server_path, script_name=self.script_name, api_key=self.api_key)
+        self.supported_operators = ('in_calendar_day', 'in_calendar_week', 'in_calendar_month')
+
+    def test_compare_case_date_in_calendar(self):
+        """Check in the case of a datetime.date + 'in_calendar_*' operator, _compare_with_in_calendar_operator
+        is called.
+        """
+        for field_type in ('date', 'date_time'):
+            for operator in self.supported_operators:
+                with patch('shotgun_api3.lib.mockgun.Shotgun._compare_with_in_calendar_operator') as mock_method:
+                    self.instance._compare(field_type, '', operator, '')
+                    self.assertEqual(
+                        1, mock_method.call_count,
+                        msg='Mock was not called in the case of "{0}" and "{1}".'.format(field_type, operator)
+                    )
+
+    def _compare(self, date_obj):
+        """Helper to run tests against operators."""
+        method = self.instance._compare_with_in_calendar_operator
+        for operator in self.supported_operators:
+            self.assertIs(
+                True, method(date_obj, operator, 0),
+                msg='Comparison against "{0}" operator failed. (date_obj: {1})'.format(operator, date_obj)
+            )
+
+    def test_compare_today(self):
+        """Check if the operator return the expected values in case of dates."""
+        self._compare(datetime.date.today())
+
+    def test_compare_now(self):
+        """Check if the operator return the expected values in case of datetimes."""
+        self._compare(datetime.datetime.now())
+
+    def _compare_specific_operator(self, operator, offsets, timedelta_offset=1):
+        """Helper to run tests with a given operator for a sequence of offset.
+        The tests are ran against today() and now().
+
+        :param str operator: name of the operator to use.
+        :param list|tuple offsets: sequence of int to use as offset (lval)
+        """
+        method = self.instance._compare_with_in_calendar_operator
+        for rval in (datetime.date.today(), datetime.datetime.now()):
+            for offset in offsets:
+                self.assertIs(
+                    True, method(rval + datetime.timedelta(offset * timedelta_offset), operator, offset),
+                    msg='Comparison with rval: {0}, operator: {1} and offset: {2} failed'.format(
+                        rval, operator, offset
+                    )
+                )
+
+    def test_compare_in_calenday_day(self):
+        """Check the behavior of the operator in_calendar_day.
+
+        Testing for yesterday, tomorrow, offset of a week and offset of a month.
+        """
+        self._compare_specific_operator('in_calendar_day', (-1, 1, 8, -8, 32, 32))
+
+    def test_compare_in_calenday_week(self):
+        """Check the behavior of the operator in_calendar_week.
+        Testing for previous week, next week, previous month and next month and previous year and next year
+        """
+        self._compare_specific_operator('in_calendar_week', (-1, 1, 5, -5, 52, -53), timedelta_offset=7)
+        # self._compare_specific_operator('in_calendar_week', (-53,), timedelta_offset=7)
+
+    def test_compare_in_calenday_month(self):
+        """Check the behavior of the operator in_calendar_month.
+        Testing for previous month and next month and previous year and next year
+        """
+        # force today to be a controlled day to avoid issues with leap years and to evaluate how many
+        # days in the current month.
+        date_ = datetime.date(1980, 4, 5)
+        with patch('shotgun_api3.lib.mockgun.datetime.date') as mock_date:
+            mock_date.today.return_value = date_
+            method = self.instance._compare_with_in_calendar_operator
+            operator = 'in_calendar_month'
+            rval = date_
+            for offset in (-1, 1, 12, -12):
+                self.assertIs(
+                    True,
+                    # 365 / 12 is the good way to do offsets for year in a month.
+                    method(rval + datetime.timedelta(offset * 365 / 12), operator, offset),
+                    msg='Comparison with rval: {0}, operator: {1} and offset: {2} failed'.format(
+                        rval, operator, offset
+                    )
+                )
 
 if __name__ == '__main__':
     unittest.main()
