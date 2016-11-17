@@ -526,6 +526,7 @@ class Shotgun(object):
                                    "serializable": dict,
                                    "date": datetime.date,
                                    "date_time": datetime.datetime,
+                                   "list": basestring,
                                    "status_list": basestring,
                                    "url": dict}[sg_type]
                 except KeyError:
