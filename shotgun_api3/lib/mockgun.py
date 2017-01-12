@@ -526,6 +526,8 @@ class Shotgun(object):
                                    "serializable": dict,
                                    "date": datetime.date,
                                    "date_time": datetime.datetime,
+                                   "list": basestring,
+                                   "status_list": basestring,
                                    "url": dict}[sg_type]
                 except KeyError:
                     raise ShotgunError("Field %s.%s: Handling for Shotgun type %s is not implemented" % (entity_type, field, sg_type)) 
@@ -587,7 +589,7 @@ class Shotgun(object):
                 return lval < rval[0] or lval > rval[1]
             elif operator == "in":
                 return lval in rval
-        elif field_type == "list":
+        elif field_type in ("list", "status_list"):
             if operator == "is":
                 return lval == rval
             elif operator == "is_not":
