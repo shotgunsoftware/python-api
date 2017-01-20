@@ -20,7 +20,7 @@ Tutorials and detailed documentation about the Python API are available at http:
 Some useful direct links:
 
 * [Installing](http://developer.shotgunsoftware.com/python-api/installation.html)
-* [Tutorials](http://developer.shotgunsoftware.com/python-api/cookbok/tutorials.html)
+* [Tutorials](http://developer.shotgunsoftware.com/python-api/cookbook/tutorials.html)
 * [API Reference](http://developer.shotgunsoftware.com/python-api/reference.html)
 * [Data Types](http://developer.shotgunsoftware.com/python-api/reference.html#data-types)
 * [Filter Syntax](http://developer.shotgunsoftware.com/python-api/reference.html#filter-syntax)
