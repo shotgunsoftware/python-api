@@ -57,11 +57,14 @@ def setUpModule():
     )
 
 
+# FIXME: This should probably be refactored into a base class for
+# all test bases
 class TestBaseWithExceptionTests(unittest.TestCase):
     """
-    Assets a Python 2.4 compatible assertRaises like method.
+    Implements a Python 2.4 compatible assertRaisesRegexp like method. This
+    was introduced in Python 2.7.
     """
-    def _assert_raises_regexp(self, exception_type, func, re_msg):
+    def assertRaisesRegexp(self, exception_type, re_msg, func):
         try:
             func()
         except exception_type, exception:
@@ -107,13 +110,13 @@ class TestValidateFilterSyntax(TestBaseWithExceptionTests):
             ]
         )
 
-        self._assert_raises_regexp(
+        self.assertRaisesRegexp(
             ShotgunError,
+            "Filters can only be lists or dictionaries, not int.",
             lambda: self._mockgun.find(
                 "Shot",
                 [1]
-            ),
-            "Filters can only be lists or dictionaries, not int."
+            )
         )
 
 
@@ -232,8 +235,9 @@ class TestFilterOperator(TestBaseWithExceptionTests):
 
     def test_invalid_operator(self):
 
-        self._assert_raises_regexp(
+        self.assertRaisesRegexp(
             ShotgunError,
+            "Unknown filter_operator type: bad",
             lambda: self._mockgun.find(
                 "Shot",
                 [
@@ -241,19 +245,18 @@ class TestFilterOperator(TestBaseWithExceptionTests):
                         "filter_operator": "bad",
                         "filters": []
                     }
-                ]),
-            "Unknown filter_operator type: bad"
+                ])
         )
 
-        self._assert_raises_regexp(
+        self.assertRaisesRegexp(
             ShotgunError,
+            "Bad filter operator, requires keys 'filter_operator' and 'filters',",
             lambda: self._mockgun.find(
                 "Shot",
                 [
                     {
                     }
-                ]),
-            "Bad filter operator, requires keys 'filter_operator' and 'filters',"
+                ])
         )
 
 
