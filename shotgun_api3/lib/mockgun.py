@@ -305,6 +305,8 @@ class Shotgun(object):
         # do not validate custom fields - this makes it hard to mock up a field quickly
         #self._validate_entity_fields(entity_type, fields)
 
+        # FIXME: This should be refactored so that we can use the complex filer
+        # style in nested filter operations.
         if isinstance(filters, dict):
             # complex filter style!
             # {'conditions': [{'path': 'id', 'relation': 'is', 'values': [1]}], 'logical_operator': 'and'}
@@ -701,6 +703,21 @@ class Shotgun(object):
             return self._compare(field_type, lval, operator, rval)
 
     def _rearrange_filters(self, filters):
+        """
+        Modifies the filter syntax to turn it into a list of three items regardless
+        of the actual filter. Most of the filters are list of three elements, so this doesn't change much.
+
+        The filter_operator syntax uses a dictionary with two keys, "filters" and
+        "filter_operator". Filters using this syntax will be turned into
+        [None, filter["filter_operator"], filter["filters"]]
+
+        Filters of the form [field, operator, values....] will be turned into
+        [field, operator, [values...]].
+
+        :param list filters: List of filters to rearrange.
+
+        :returns: A list of three items.
+        """
         rearranged_filters = []
 
         # now translate ["field", "in", 2,3,4] --> ["field", "in", [2, 3, 4]]
@@ -722,7 +739,7 @@ class Shotgun(object):
                         "Bad filter operator, requires keys 'filter_operator' and 'filters', "
                         "found %s" % ", ".join(f.keys())
                     )
-                new_filter = None, f["filter_operator"], f["filters"]
+                new_filter = [None, f["filter_operator"], f["filters"]]
             else:
                 raise ShotgunError(
                     "Filters can only be lists or dictionaries, not %s." % type(f).__name__
