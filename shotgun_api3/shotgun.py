@@ -238,6 +238,15 @@ class ServerCapabilities(object):
             'label': 'additional_filter_presets parameter'
         }, True)
 
+    def ensure_user_following_support(self):
+        """
+        Ensures server has support for listing items a user is following, added in v7.0.12.
+        """
+        return self._ensure_support({
+            'version': (7, 0, 12),
+            'label': 'user_following parameter'
+        }, True)
+
     def __str__(self):
         return "ServerCapabilities: host %s, version %s, is_dev %s"\
                  % (self.host, self.version, self.is_dev)
@@ -1609,6 +1618,39 @@ class Shotgun(object):
         )
         
         return self._call_rpc('followers', params)
+
+    def following(self, user, project=None, entity_type=None):
+        """
+        Return all entity instances a user is following.
+
+        Optionally, a project and/or entity_type can be supplied to restrict returned results.
+
+            >>> user = {"type": "HumanUser", "id": 1234}
+            >>> project = {"type": "Project", "id": 1234}
+            >>> entity_type = "Task"
+            >>> sg.following(user, project=project, entity_type=entity_type)
+            [{"type":"Task", "id":1},
+             {"type":"Task", "id":2},
+             {"type":"Task", "id":3}]
+
+        :param dict user: Find what this person is following.
+        :param dict project: Optional filter to only return results from a specific project.
+        :param str entity_type: Optional filter to only return results from one entity type.
+        :returns: list of dictionaries, each containing entity type & id's being followed.
+        :rtype: list
+        """
+
+        self.server_caps.ensure_user_following_support()
+
+        params = {
+            "user":user
+        }
+        if project:
+            params["project"] = project
+        if entity_type:
+            params["entity_type"] = entity_type
+
+        return self._call_rpc('following', params)
 
     def schema_entity_read(self, project_entity=None):
         """

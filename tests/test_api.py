@@ -1467,7 +1467,13 @@ class TestFollow(base.LiveTestBase):
         super(TestFollow, self).setUp()
         self.sg.update( 'HumanUser', self.human_user['id'], {'projects':[self.project]})
 
-    def test_follow(self):
+        # As the Follow entity isn't exposed directly, we clear out existing
+        # follows for the user before running our tests.
+        if self.sg.server_caps.version and self.sg.server_caps.version >= (7, 0, 12):
+            for entity in self.sg.following(self.human_user):
+                self.sg.unfollow(self.human_user, entity)
+
+    def test_follow_unfollow(self):
         '''Test follow method'''
 
         if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
@@ -1475,12 +1481,6 @@ class TestFollow(base.LiveTestBase):
 
         result = self.sg.follow(self.human_user, self.shot)
         assert(result['followed'])
-
-    def test_unfollow(self):
-        '''Test unfollow method'''
-
-        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
-            return
 
         result = self.sg.unfollow(self.human_user, self.shot)
         assert(result['unfollowed'])
@@ -1497,6 +1497,52 @@ class TestFollow(base.LiveTestBase):
         result = self.sg.followers(self.shot)
         self.assertEqual( 1, len(result) )
         self.assertEqual( self.human_user['id'], result[0]['id'] )
+
+    def test_following(self):
+        '''Test following method'''
+
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (7, 0, 12):
+            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            return
+
+        result = self.sg.follow(self.human_user, self.shot)
+        assert(result['followed'])
+
+        result = self.sg.following(self.human_user)
+        self.assertEqual( 1, len(result) )
+        self.assertEqual( self.shot['id'], result[0]['id'] )
+
+        result = self.sg.follow(self.human_user, self.task)
+        assert(result['followed'])
+
+        result = self.sg.following(self.human_user)
+        self.assertEqual( 2, len(result) )
+        result = self.sg.following(self.human_user, entity_type="Task")
+        self.assertEqual( 1, len(result) )
+        result = self.sg.following(self.human_user, entity_type="Shot")
+        self.assertEqual( 1, len(result) )
+
+        shot_project_id = self.sg.find_one("Shot",
+            [["id","is",self.shot["id"]]],
+            ["project.Project.id"])["project.Project.id"]
+        task_project_id = self.sg.find_one("Task",
+            [["id","is",self.task["id"]]],
+            ["project.Project.id"])["project.Project.id"]
+        project_count = 2 if shot_project_id == task_project_id else 1
+        result = self.sg.following(self.human_user, 
+            project={"type":"Project", "id":shot_project_id})
+        self.assertEqual( project_count, len(result) )
+        result = self.sg.following(self.human_user, 
+            project={"type":"Project", "id":task_project_id})
+        self.assertEqual( project_count, len(result) )
+        result = self.sg.following(self.human_user, 
+            project={"type":"Project", "id":shot_project_id}, 
+            entity_type="Shot")
+        self.assertEqual( 1, len(result) )
+        result = self.sg.following(self.human_user, 
+            project={"type":"Project", "id":task_project_id}, 
+            entity_type="Task")
+        self.assertEqual( 1, len(result) )
 
 class TestErrors(base.TestBase):
     def test_bad_auth(self):
