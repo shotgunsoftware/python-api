@@ -582,6 +582,7 @@ class Shotgun(object):
         >>> sg.server_info
         {'full_version': [6, 3, 15, 0],
          's3_uploads_enabled': True,
+         's3_direct_uploads_enabled': True,
          'version': [6, 3, 15]}
 
         :returns: dict of server information from :class:`ServerCapabilities` object
@@ -2155,6 +2156,132 @@ class Shotgun(object):
         is_thumbnail = (field_name in ["thumb_image", "filmstrip_thumb_image", "image",
                                        "filmstrip_image"])
 
+        # Thumbnails can only be uploaded to SG for now...
+        if self.server_info['s3_direct_uploads_enabled'] \
+                and entity_type == 'Version' and field_name == 'sg_uploaded_movie':
+            return self._upload_to_storage(entity_type, entity_id, path, field_name, display_name,
+                                           tag_list, is_thumbnail)
+        else:
+            return self._upload_to_sg(entity_type, entity_id, path, field_name, display_name,
+                                      tag_list, is_thumbnail)
+
+    def _upload_to_storage(self, entity_type, entity_id, path, field_name, display_name,
+                           tag_list, is_thumbnail):
+        """
+        Internal function to upload a file to S3 and link it to the specified entity.
+
+        :param str entity_type: Entity type to link the upload to.
+        :param int entity_id: Id of the entity to link the upload to.
+        :param str path: Full path to an existing non-empty file on disk to upload.
+        :param str field_name: The internal Shotgun field name on the entity to store the file in.
+            This field must be a File/Link field type.
+        :param str display_name: The display name to use for the file. Defaults to the file name.
+        :param str tag_list: comma-separated string of tags to assign to the file.
+        :param bool is_thumbnail: indicates if the attachment is a thumbnail.
+        :returns: Id of the Attachment entity that was created for the image.
+        :rtype: int
+        """
+
+        filename = os.path.basename(path)
+
+        # Step 1: get the upload url
+
+        upload_info = self._get_attachment_upload_info(is_thumbnail, filename)
+
+        # Step 2: upload the file
+
+        # Get some file info
+        fd = open(path, "rb")
+        content_type = mimetypes.guess_type(filename)[0]
+        content_type = content_type or "application/octet-stream"
+        file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
+
+        # Perform the request
+        opener = urllib2.build_opener(urllib2.HTTPHandler)
+        try:
+            file = open(path, "rb")
+            request = urllib2.Request(upload_info['upload_url'], data=fd)
+            request.add_header("Content-Type", content_type)
+            request.add_header("Content-Length", file_size)
+            request.get_method = lambda: "PUT"
+            result = opener.open(request)
+        except urllib2.HTTPError, e:
+            if e.code == 500:
+                raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (url, e))
+            else:
+                raise ShotgunError("Unanticipated error occurred uploading %s: %s" % (path, e))
+
+        LOG.debug("Completed upload of media to S3 of file: %s", filename)
+
+        # Step 3: create the attachment
+
+        url = urlparse.urlunparse((self.config.scheme, self.config.server,
+                                   "/upload/api_link_file", None, None, None))
+
+        params = {
+            "entity_type" : entity_type,
+            "entity_id" : entity_id,
+            "upload_link_info": upload_info['upload_info']
+        }
+
+        params.update(self._auth_params())
+
+        if is_thumbnail:
+            if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
+                params["filmstrip"] = True
+        else:
+            if display_name is None:
+                display_name = filename
+            # we allow linking to nothing for generic reference use cases
+            if field_name is not None:
+                params["field_name"] = field_name
+            params["display_name"] = display_name
+            # None gets converted to a string and added as a tag...
+            if tag_list:
+                params["tag_list"] = tag_list
+
+        # Create opener with extended form post support
+        opener = self._build_opener(FormPostHandler)
+
+        # Perform the request
+        try:
+            result = opener.open(url, params).read()
+        except urllib2.HTTPError, e:
+            if e.code == 500:
+                raise ShotgunError("Server encountered an internal error. "
+                                   "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
+            else:
+                raise ShotgunError("Unanticipated error occurred uploading "
+                                   "%s: %s" % (path, e))
+        else:
+            if not str(result).startswith("1"):
+                raise ShotgunError("Could not upload file successfully, but " \
+                                   "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
+                                       path, url, str(result)))
+
+        LOG.debug("Attachment linked to S3 media created")
+
+        attachment_id = int(str(result).split(":")[1].split("\n")[0])
+        return attachment_id
+
+    def _upload_to_sg(self, entity_type, entity_id, path, field_name, display_name,
+                      tag_list, is_thumbnail):
+        """
+        Internal function to upload a file to Shotgun and link it to the specified entity.
+
+        :param str entity_type: Entity type to link the upload to.
+        :param int entity_id: Id of the entity to link the upload to.
+        :param str path: Full path to an existing non-empty file on disk to upload.
+        :param str field_name: The internal Shotgun field name on the entity to store the file in.
+            This field must be a File/Link field type.
+        :param str display_name: The display name to use for the file. Defaults to the file name.
+        :param str tag_list: comma-separated string of tags to assign to the file.
+        :param bool is_thumbnail: indicates if the attachment is a thumbnail.
+
+        :returns: Id of the Attachment entity that was created for the image.
+        :rtype: int
+        """
+
         params = {
             "entity_type" : entity_type,
             "entity_id" : entity_id,
@@ -2205,6 +2332,58 @@ class Shotgun(object):
 
         attachment_id = int(str(result).split(":")[1].split("\n")[0])
         return attachment_id
+
+    def _get_attachment_upload_info(self, is_thumbnail, filename):
+        """
+        Internal function to get the information needed to upload a file to Cloud storage.
+
+        :param bool is_thumbnail: indicates if the attachment is a thumbnail.
+        :param str filename: name of the file that will be uploaded.
+
+        :returns: dictionary containing the ulpload_info and the url to upload to.
+        :rtype: dict
+        """
+
+        if is_thumbnail:
+            upload_type = 'Thumbnail'
+        else:
+            upload_type = 'Attachment'
+
+        params = {
+            "upload_type" : upload_type,
+            "filename" : filename
+        }
+
+        params.update(self._auth_params())
+
+        upload_url = "/upload/api_get_upload_link_info"
+        url = urlparse.urlunparse((self.config.scheme, self.config.server,
+                                   upload_url, None, None, None))
+
+        # Create opener with extended form post support
+        opener = self._build_opener(FormPostHandler)
+
+        # Perform the request
+        try:
+            upload_info = opener.open(url, params).read()
+        except urllib2.HTTPError, e:
+            if e.code == 500:
+                raise ShotgunError("Server encountered an internal error. "
+                                   "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
+            else:
+                raise ShotgunError("Unanticipated error occurred uploading "
+                                   "%s: %s" % (path, e))
+        else:
+            if not str(upload_info).startswith("1"):
+                raise ShotgunError("Could not get upload_url but " \
+                                   "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
+                                       path, url, str(upload_info)))
+
+        LOG.debug("Completed rpc call to %s" % (upload_url))
+        return {
+            "upload_url" : str(upload_info).split("\n")[1],
+            "upload_info" : upload_info
+        }
 
     def download_attachment(self, attachment=False, file_path=None, attachment_id=None):
         """
