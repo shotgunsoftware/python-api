@@ -2024,26 +2024,16 @@ class Shotgun(object):
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
             "/upload/share_thumbnail", None, None, None))
 
-        # Perform the request
-        try:
-            resp = opener.open(url, params)
-            result = resp.read()
-            # response headers are in str(resp.info()).splitlines()
-        except urllib2.HTTPError, e:
-            if e.code == 500:
-                raise ShotgunError("Server encountered an internal error. "
-                    "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
-            else:
-                raise ShotgunError("Unanticipated error occurred %s" % (e))
+        result = self._send_form(url, params)
+
+        if not str(result).startswith("1"):
+            raise ShotgunError("Unable to share thumbnail: %s" % result)
         else:
-            if not str(result).startswith("1"):
-                raise ShotgunError("Unable to share thumbnail: %s" % result)
-            else:
-                # clearing thumbnail returns no attachment_id
-                try:
-                    attachment_id = int(str(result).split(":")[1].split("\n")[0])
-                except ValueError:
-                    attachment_id = None
+            # clearing thumbnail returns no attachment_id
+            try:
+                attachment_id = int(str(result).split(":")[1].split("\n")[0])
+            except ValueError:
+                attachment_id = None
 
         return attachment_id
 
@@ -2156,9 +2146,10 @@ class Shotgun(object):
         is_thumbnail = (field_name in ["thumb_image", "filmstrip_thumb_image", "image",
                                        "filmstrip_image"])
 
-        # Thumbnails can only be uploaded to SG for now...
-        if self.server_info['s3_direct_uploads_enabled'] \
-                and entity_type == 'Version' and field_name == 'sg_uploaded_movie':
+        # Version.sg_uploaded_movie is handled as a special case and uploaded
+        # directly to Cloud storage
+        if self.server_info["s3_direct_uploads_enabled"] \
+                and entity_type == "Version" and field_name == "sg_uploaded_movie":
             return self._upload_to_storage(entity_type, entity_id, path, field_name, display_name,
                                            tag_list, is_thumbnail)
         else:
@@ -2168,7 +2159,7 @@ class Shotgun(object):
     def _upload_to_storage(self, entity_type, entity_id, path, field_name, display_name,
                            tag_list, is_thumbnail):
         """
-        Internal function to upload a file to S3 and link it to the specified entity.
+        Internal function to upload a file to the Cloud storage and link it to the specified entity.
 
         :param str entity_type: Entity type to link the upload to.
         :param int entity_id: Id of the entity to link the upload to.
@@ -2190,17 +2181,16 @@ class Shotgun(object):
 
         # Step 2: upload the file
 
-        # Get some file info
         fd = open(path, "rb")
-        content_type = mimetypes.guess_type(filename)[0]
-        content_type = content_type or "application/octet-stream"
-        file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-
-        # Perform the request
-        opener = urllib2.build_opener(urllib2.HTTPHandler)
         try:
-            file = open(path, "rb")
-            request = urllib2.Request(upload_info['upload_url'], data=fd)
+            content_type = mimetypes.guess_type(filename)[0]
+            content_type = content_type or "application/octet-stream"
+            file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
+
+            # Perform the request
+            opener = urllib2.build_opener(urllib2.HTTPHandler)
+
+            request = urllib2.Request(upload_info["upload_url"], data=fd)
             request.add_header("Content-Type", content_type)
             request.add_header("Content-Length", file_size)
             request.get_method = lambda: "PUT"
@@ -2210,8 +2200,10 @@ class Shotgun(object):
                 raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (url, e))
             else:
                 raise ShotgunError("Unanticipated error occurred uploading %s: %s" % (path, e))
+        finally:
+            fd.close()
 
-        LOG.debug("Completed upload of media to S3 of file: %s", filename)
+        LOG.debug("File uploaded to Cloud storage: %s", filename)
 
         # Step 3: create the attachment
 
@@ -2240,26 +2232,13 @@ class Shotgun(object):
             if tag_list:
                 params["tag_list"] = tag_list
 
-        # Create opener with extended form post support
-        opener = self._build_opener(FormPostHandler)
+        result = self._send_form(url, params)
+        if not str(result).startswith("1"):
+            raise ShotgunError("Could not upload file successfully, but " \
+                               "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
+                                   path, url, str(result)))
 
-        # Perform the request
-        try:
-            result = opener.open(url, params).read()
-        except urllib2.HTTPError, e:
-            if e.code == 500:
-                raise ShotgunError("Server encountered an internal error. "
-                                   "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
-            else:
-                raise ShotgunError("Unanticipated error occurred uploading "
-                                   "%s: %s" % (path, e))
-        else:
-            if not str(result).startswith("1"):
-                raise ShotgunError("Could not upload file successfully, but " \
-                                   "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
-                                       path, url, str(result)))
-
-        LOG.debug("Attachment linked to S3 media created")
+        LOG.debug("Attachment linked to content on Cloud storage")
 
         attachment_id = int(str(result).split(":")[1].split("\n")[0])
         return attachment_id
@@ -2311,24 +2290,12 @@ class Shotgun(object):
 
             params["file"] = open(path, "rb")
 
-        # Create opener with extended form post support
-        opener = self._build_opener(FormPostHandler)
+        result = self._send_form(url, params)
 
-        # Perform the request
-        try:
-            result = opener.open(url, params).read()
-        except urllib2.HTTPError, e:
-            if e.code == 500:
-                raise ShotgunError("Server encountered an internal error. "
-                    "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
-            else:
-                raise ShotgunError("Unanticipated error occurred uploading "
-                    "%s: %s" % (path, e))
-        else:
-            if not str(result).startswith("1"):
-                raise ShotgunError("Could not upload file successfully, but "\
-                    "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
-                    path, url, str(result)))
+        if not str(result).startswith("1"):
+            raise ShotgunError("Could not upload file successfully, but "\
+                "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
+                path, url, str(result)))
 
         attachment_id = int(str(result).split(":")[1].split("\n")[0])
         return attachment_id
@@ -2340,14 +2307,15 @@ class Shotgun(object):
         :param bool is_thumbnail: indicates if the attachment is a thumbnail.
         :param str filename: name of the file that will be uploaded.
 
-        :returns: dictionary containing the ulpload_info and the url to upload to.
+        :returns: dictionary containing the upload url and
+            upload_info (passed back to the SG server once the upload is completed).
         :rtype: dict
         """
 
         if is_thumbnail:
-            upload_type = 'Thumbnail'
+            upload_type = "Thumbnail"
         else:
-            upload_type = 'Attachment'
+            upload_type = "Attachment"
 
         params = {
             "upload_type" : upload_type,
@@ -2360,24 +2328,11 @@ class Shotgun(object):
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
                                    upload_url, None, None, None))
 
-        # Create opener with extended form post support
-        opener = self._build_opener(FormPostHandler)
-
-        # Perform the request
-        try:
-            upload_info = opener.open(url, params).read()
-        except urllib2.HTTPError, e:
-            if e.code == 500:
-                raise ShotgunError("Server encountered an internal error. "
-                                   "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
-            else:
-                raise ShotgunError("Unanticipated error occurred uploading "
-                                   "%s: %s" % (path, e))
-        else:
-            if not str(upload_info).startswith("1"):
-                raise ShotgunError("Could not get upload_url but " \
-                                   "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
-                                       path, url, str(upload_info)))
+        upload_info = self._send_form(url, params)
+        if not str(upload_info).startswith("1"):
+            raise ShotgunError("Could not get upload_url but " \
+                               "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
+                                   path, url, str(upload_info)))
 
         LOG.debug("Completed rpc call to %s" % (upload_url))
         return {
@@ -3541,6 +3496,31 @@ class Shotgun(object):
         e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
         """
         return dict([(k, {key_name: v}) for (k,v) in (d or {}).iteritems()])
+
+    def _send_form(self, url, params):
+        """
+        Utility function to send a Form to Shotgun and process any HTTP errors that
+        could occur.
+
+        :param url: endpoint where the form is sent.
+        :param params: form data
+        :returns: result from the server.
+        """
+        opener = self._build_opener(FormPostHandler)
+
+        # Perform the request
+        try:
+            resp = opener.open(url, params)
+            result = resp.read()
+            # response headers are in str(resp.info()).splitlines()
+        except urllib2.HTTPError, e:
+            if e.code == 500:
+                raise ShotgunError("Server encountered an internal error. "
+                                   "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
+            else:
+                raise ShotgunError("Unanticipated error occurred %s" % (e))
+
+        return result
 
 # Helpers from the previous API, left as is.
 
