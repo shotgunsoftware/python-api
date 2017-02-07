@@ -1,6 +1,6 @@
 """
  -----------------------------------------------------------------------------
- Copyright (c) 2009-2015, Shotgun Software Inc
+ Copyright (c) 2009-2017, Shotgun Software Inc
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
@@ -305,6 +305,8 @@ class Shotgun(object):
         # do not validate custom fields - this makes it hard to mock up a field quickly
         #self._validate_entity_fields(entity_type, fields)
 
+        # FIXME: This should be refactored so that we can use the complex filer
+        # style in nested filter operations.
         if isinstance(filters, dict):
             # complex filter style!
             # {'conditions': [{'path': 'id', 'relation': 'is', 'values': [1]}], 'logical_operator': 'and'}
@@ -328,24 +330,13 @@ class Shotgun(object):
             # traditiona style sg filters
             resolved_filters = filters
 
-        # now translate ["field", "in", 2,3,4] --> ["field", "in", [2, 3, 4]]
-        resolved_filters_2 = []
-        for f in resolved_filters:
-
-            if len(f) > 3:
-                # ["field", "in", 2,3,4] --> ["field", "in", [2, 3, 4]]
-                new_filter = [ f[0], f[1], f[2:] ]
-
-            elif f[1] == "in" and not isinstance(f[2], list):
-                # ["field", "in", 2] --> ["field", "in", [2]]
-                new_filter = [ f[0], f[1], [ f[2] ] ]
-
-            else:
-                new_filter = f
-
-            resolved_filters_2.append(new_filter)
-
-        results = [row for row in self._db[entity_type].values() if self._row_matches_filters(entity_type, row, resolved_filters_2, filter_operator, retired_only)]
+        results = [
+            # Apply the filters for every single entities for the given entity type.
+            row for row in self._db[entity_type].values()
+            if self._row_matches_filters(
+                entity_type, row, resolved_filters, filter_operator, retired_only
+            )
+        ]
 
         # handle the ordering of the recordset
         if order:
@@ -688,36 +679,91 @@ class Shotgun(object):
         except ValueError:
             return self._schema[entity_type][field]["data_type"]["value"]
 
-    def _row_matches_filter(self, entity_type, row, filter):
-        
-        
+    def _row_matches_filter(self, entity_type, row, sg_filter, retired_only):
+
         try:
-            field, operator, rval = filter
+            field, operator, rval = sg_filter
         except ValueError:
             raise ShotgunError("Filters must be in the form [lval, operator, rval]")
-        lval = self._get_field_from_row(entity_type, row, field)
-        
-        field_type = self._get_field_type(entity_type, field)
-        
-        # if we're operating on an entity, we'll need to grab the name from the lval's row
-        if field_type == "entity":
-            lval_row = self._db[lval["type"]][lval["id"]]
-            if "name" in lval_row:
-                lval["name"] = lval_row["name"]
-            elif "code" in lval_row:
-                lval["name"] = lval_row["code"]
-        return self._compare(field_type, lval, operator, rval)
+
+        # Special case, field is None when we have a filter operator.
+        if field is None:
+            if operator in ["any", "all"]:
+                return self._row_matches_filters(entity_type, row, rval, operator, retired_only)
+            else:
+                raise ShotgunError("Unknown filter_operator type: %s" % operator)
+        else:
+            lval = self._get_field_from_row(entity_type, row, field)
+
+            field_type = self._get_field_type(entity_type, field)
+
+            # if we're operating on an entity, we'll need to grab the name from the lval's row
+            if field_type == "entity":
+                lval_row = self._db[lval["type"]][lval["id"]]
+                if "name" in lval_row:
+                    lval["name"] = lval_row["name"]
+                elif "code" in lval_row:
+                    lval["name"] = lval_row["code"]
+            return self._compare(field_type, lval, operator, rval)
+
+    def _rearrange_filters(self, filters):
+        """
+        Modifies the filter syntax to turn it into a list of three items regardless
+        of the actual filter. Most of the filters are list of three elements, so this doesn't change much.
+
+        The filter_operator syntax uses a dictionary with two keys, "filters" and
+        "filter_operator". Filters using this syntax will be turned into
+        [None, filter["filter_operator"], filter["filters"]]
+
+        Filters of the form [field, operator, values....] will be turned into
+        [field, operator, [values...]].
+
+        :param list filters: List of filters to rearrange.
+
+        :returns: A list of three items.
+        """
+        rearranged_filters = []
+
+        # now translate ["field", "in", 2,3,4] --> ["field", "in", [2, 3, 4]]
+        for f in filters:
+            if isinstance(f, list):
+                if len(f) > 3:
+                    # ["field", "in", 2,3,4] --> ["field", "in", [2, 3, 4]]
+                    new_filter = [f[0], f[1], f[2:]]
+
+                elif f[1] == "in" and not isinstance(f[2], list):
+                    # ["field", "in", 2] --> ["field", "in", [2]]
+                    new_filter = [f[0], f[1], [f[2]]]
+
+                else:
+                    new_filter = f
+            elif isinstance(f, dict):
+                if "filter_operator" not in f or "filters" not in f:
+                    raise ShotgunError(
+                        "Bad filter operator, requires keys 'filter_operator' and 'filters', "
+                        "found %s" % ", ".join(f.keys())
+                    )
+                new_filter = [None, f["filter_operator"], f["filters"]]
+            else:
+                raise ShotgunError(
+                    "Filters can only be lists or dictionaries, not %s." % type(f).__name__
+                )
+
+            rearranged_filters.append(new_filter)
+
+        return rearranged_filters
 
     def _row_matches_filters(self, entity_type, row, filters, filter_operator, retired_only):
-                
+        filters = self._rearrange_filters(filters)
+
         if retired_only and not row["__retired"] or not retired_only and row["__retired"]:
             # ignore retired rows unless the retired_only flag is set
             # ignore live rows if the retired_only flag is set
             return False
         elif filter_operator in ("all", None):
-            return all(self._row_matches_filter(entity_type, row, filter) for filter in filters)
+            return all(self._row_matches_filter(entity_type, row, filter, retired_only) for filter in filters)
         elif filter_operator == "any":
-            return any(self._row_matches_filter(entity_type, row, filter) for filter in filters)
+            return any(self._row_matches_filter(entity_type, row, filter, retired_only) for filter in filters)
         else:
             raise ShotgunError("%s is not a valid filter operator" % filter_operator)
 
