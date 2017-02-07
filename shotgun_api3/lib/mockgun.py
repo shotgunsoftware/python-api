@@ -1,6 +1,6 @@
 """
  -----------------------------------------------------------------------------
- Copyright (c) 2009-2015, Shotgun Software Inc
+ Copyright (c) 2009-2017, Shotgun Software Inc
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
@@ -330,7 +330,13 @@ class Shotgun(object):
             # traditiona style sg filters
             resolved_filters = filters
 
-        results = [row for row in self._db[entity_type].values() if self._row_matches_filters(entity_type, row, resolved_filters, filter_operator, retired_only)]
+        results = [
+            # Apply the filters for every single entities for the given entity type.
+            row for row in self._db[entity_type].values()
+            if self._row_matches_filters(
+                entity_type, row, resolved_filters, filter_operator, retired_only
+            )
+        ]
 
         # handle the ordering of the recordset
         if order:
@@ -675,10 +681,10 @@ class Shotgun(object):
         except ValueError:
             return self._schema[entity_type][field]["data_type"]["value"]
 
-    def _row_matches_filter(self, entity_type, row, filter, retired_only):
+    def _row_matches_filter(self, entity_type, row, sg_filter, retired_only):
 
         try:
-            field, operator, rval = filter
+            field, operator, rval = sg_filter
         except ValueError:
             raise ShotgunError("Filters must be in the form [lval, operator, rval]")
 

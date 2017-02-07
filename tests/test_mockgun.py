@@ -1,7 +1,7 @@
 #! /opt/local/bin/python
 
 #  -----------------------------------------------------------------------------
-#  Copyright (c) 2009-2015, Shotgun Software Inc
+#  Copyright (c) 2009-2017, Shotgun Software Inc
 #
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions are met:
