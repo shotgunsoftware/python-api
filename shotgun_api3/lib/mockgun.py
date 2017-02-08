@@ -609,8 +609,24 @@ class Shotgun(object):
                 return lval.endswith(rval)
         elif field_type == "entity":
             if operator == "is":
+                # If the field is set to None
+                if lval is None:
+                    # A simply comparison will do the trick.
+                    return lval == rval
+                # If rval is None, we already know lval is None, so 
+                if rval is None:
+                    return False
+                # Both values are set, compare them.
                 return lval["type"] == rval["type"] and lval["id"] == rval["id"]
             elif operator == "is_not":
+                # If the field is set to None
+                if lval is None:
+                    # Do a simple comparison.
+                    return lval != rval
+                # If rval is None, we already know that lval is not None and therefore
+                # the two values are different.
+                if rval is None:
+                    return True
                 return lval["type"] != rval["type"] or lval["id"] != rval["id"]
             elif operator == "in":
                 return all((lval["type"] == sub_rval["type"] and lval["id"] == sub_rval["id"]) for sub_rval in rval)
@@ -701,11 +717,13 @@ class Shotgun(object):
 
             # if we're operating on an entity, we'll need to grab the name from the lval's row
             if field_type == "entity":
-                lval_row = self._db[lval["type"]][lval["id"]]
-                if "name" in lval_row:
-                    lval["name"] = lval_row["name"]
-                elif "code" in lval_row:
-                    lval["name"] = lval_row["code"]
+                # If the entity field is set, we'll retrieve the name of the entity.
+                if lval is not None:
+                    lval_row = self._db[lval["type"]][lval["id"]]
+                    if "name" in lval_row:
+                        lval["name"] = lval_row["name"]
+                    elif "code" in lval_row:
+                        lval["name"] = lval_row["code"]
             return self._compare(field_type, lval, operator, rval)
 
     def _rearrange_filters(self, filters):

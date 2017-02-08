@@ -120,6 +120,36 @@ class TestValidateFilterSyntax(TestBaseWithExceptionTests):
         )
 
 
+class TestEntityFieldComparison(TestBaseWithExceptionTests):
+
+    def setUp(self):
+
+        self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
+
+        self._project_link = self._mockgun.create("Project", {"name": "project"})
+        self._mockgun.create(
+            "PipelineConfiguration",
+            {"code": "with_project", "project": self._project_link}
+        )
+        self._mockgun.create("PipelineConfiguration", {"code": "without_project"})
+
+    def test_searching_for_none_entity_field(self):
+
+        items = self._mockgun.find("PipelineConfiguration", [["project", "is", None]])
+        self.assertEqual(len(items), 1)
+
+        items = self._mockgun.find("PipelineConfiguration", [["project", "is_not", None]])
+        self.assertEqual(len(items), 1)
+
+    def test_searching_for_initialized_entity_field(self):
+
+        items = self._mockgun.find("PipelineConfiguration", [["project", "is", self._project_link]])
+        self.assertEqual(len(items), 1)
+
+        items = self._mockgun.find("PipelineConfiguration", [["project", "is_not", self._project_link]])
+        self.assertEqual(len(items), 1)
+
+
 class TestFilterOperator(TestBaseWithExceptionTests):
     """
     Unit tests for the filter_operator filter syntax.
