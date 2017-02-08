@@ -150,6 +150,57 @@ class TestEntityFieldComparison(TestBaseWithExceptionTests):
         self.assertEqual(len(items), 1)
 
 
+class TestTextFieldOperators(TestBaseWithExceptionTests):
+
+    def setUp(self):
+        self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
+        self._user = self._mockgun.create("HumanUser", {"login": "user"})
+
+    def test_operator_contains(self):
+        item = self._mockgun.find_one("HumanUser", [["login", "contains", "se"]])
+        self.assertIsNotNone(item)
+
+
+class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
+
+    def setUp(self):
+
+        self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
+
+        self._user1 = self._mockgun.create("HumanUser", {"login": "user1"})
+        self._user2 = self._mockgun.create("HumanUser", {"login": "user2"})
+
+        self._mockgun.create(
+            "PipelineConfiguration",
+            {"code": "with_user1", "users": [self._user1]}
+        )
+
+        self._mockgun.create(
+            "PipelineConfiguration",
+            {"code": "with_user2", "users": [self._user2]}
+        )
+
+        self._mockgun.create(
+            "PipelineConfiguration",
+            {"code": "with_both", "users": [self._user2, self._user1]}
+        )
+
+        self._mockgun.create(
+            "PipelineConfiguration",
+            {"code": "with_none", "users": []}
+        )
+
+    def test_look_for_no_users(self):
+        items = self._mockgun.find("PipelineConfiguration", [["users.HumanUser.login", "is", "user1"]])
+        self.assertEqual(len(items), 2)
+
+        items = self._mockgun.find("PipelineConfiguration", [["users.HumanUser.login", "is", "user2"]])
+        self.assertEqual(len(items), 2)
+
+        items = self._mockgun.find("PipelineConfiguration", [["users.HumanUser.login", "contains", "ser"]])
+        self.assertEqual(len(items), 3)
+
+
 class TestFilterOperator(TestBaseWithExceptionTests):
     """
     Unit tests for the filter_operator filter syntax.

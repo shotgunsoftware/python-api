@@ -560,6 +560,13 @@ class Shotgun(object):
         return row
 
     def _compare(self, field_type, lval, operator, rval):
+        # If we have a list of scalar values
+        if isinstance(lval, list) and field_type != "multi_entity":
+            return any((self._compare_value(field_type, sub_val, operator, rval)) for sub_val in lval)
+        else:
+            return self._compare_value(field_type, lval, operator, rval)
+
+    def _compare_value(self, field_type, lval, operator, rval):
         if field_type == "checkbox":
             if operator == "is":
                 return lval == rval
@@ -598,9 +605,9 @@ class Shotgun(object):
             elif operator == "is_not":
                 return lval != rval
             elif operator == "in":
-                return lval in rval            
-            elif operator == "contains":
                 return lval in rval
+            elif operator == "contains":
+                return rval in lval
             elif operator == "not_contains":
                 return lval not in rval
             elif operator == "starts_with":
@@ -651,36 +658,50 @@ class Shotgun(object):
         raise ShotgunError("The %s operator is not supported on the %s type" % (operator, field_type))
 
     def _get_field_from_row(self, entity_type, row, field):
-        # split dotted form fields        
+        # split dotted form fields
         try:
             # is it something like sg_sequence.Sequence.code ?
             field2, entity_type2, field3 = field.split(".", 2)
-            
+
             if field2 in row:
-                
+
                 field_value = row[field2]
-                
-                # all deep links need to be link fields
-                if not isinstance(field_value, dict):                    
+
+                # If we have a list of links, retrieve the subfields one by one.
+                if isinstance(field_value, list):
+                    values = []
+                    for linked_row in field_value:
+                        # Make sure we're actually iterating on links.
+                        if not isinstance(linked_row, dict):
+                            raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
+
+                        # Skips entities that are not of the requested type.
+                        if linked_row["type"] != entity_type2:
+                            continue
+
+                        entity = self._db[linked_row["type"]][linked_row["id"]]
+
+                        sub_field_value = self._get_field_from_row(entity_type2, entity, field3)
+                        values.append(sub_field_value)
+                    return values
+                # not multi entity, must be entity.
+                elif not isinstance(field_value, dict):
                     raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
-                    
+
                 # make sure that types in the query match type in the linked field
                 if entity_type2 != field_value["type"]:
                     raise ShotgunError("Deep query field %s.%s does not match type "
                                        "with data %s" % (entity_type, field, field_value))
-                     
+
                 # ok so looks like the value is an entity link
                 # e.g. db contains: {"sg_sequence": {"type":"Sequence", "id": 123 } }
                 linked_row = self._db[ field_value["type"] ][ field_value["id"] ]
-                if field3 in linked_row:
-                    return linked_row[field3]
-                else:
-                    return None
 
+                return self._get_field_from_row(entity_type2, linked_row, field3)
             else:
                 # sg returns none for unknown stuff
                 return None
-        
+
         except ValueError:
             # this is not a deep-linked field - just something like "code"
             if field in row:
@@ -711,6 +732,7 @@ class Shotgun(object):
             else:
                 raise ShotgunError("Unknown filter_operator type: %s" % operator)
         else:
+
             lval = self._get_field_from_row(entity_type, row, field)
 
             field_type = self._get_field_type(entity_type, field)
@@ -724,6 +746,7 @@ class Shotgun(object):
                         lval["name"] = lval_row["name"]
                     elif "code" in lval_row:
                         lval["name"] = lval_row["code"]
+
             return self._compare(field_type, lval, operator, rval)
 
     def _rearrange_filters(self, filters):
