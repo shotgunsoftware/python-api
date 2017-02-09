@@ -86,7 +86,7 @@ class TestValidateFilterSyntax(TestBaseWithExceptionTests):
 
     def setUp(self):
         """
-        Creates tests data.
+        Creates test data.
         """
         super(TestValidateFilterSyntax, self).setUp()
 
@@ -95,8 +95,10 @@ class TestValidateFilterSyntax(TestBaseWithExceptionTests):
         self._mockgun.create("Shot", {"code": "shot"})
 
     def test_filter_array_or_dict(self):
-        # Should not throw, even though it is pretty much
-        # empty.
+        """
+        Ensure that arrays and dictionaries are supported for filters.
+        """
+        # This should not throw.
         self._mockgun.find(
             "Shot",
             [
@@ -110,6 +112,7 @@ class TestValidateFilterSyntax(TestBaseWithExceptionTests):
             ]
         )
 
+        # We can't have not dict/list values for filters however.
         self.assertRaisesRegexp(
             ShotgunError,
             "Filters can only be lists or dictionaries, not int.",
@@ -121,19 +124,31 @@ class TestValidateFilterSyntax(TestBaseWithExceptionTests):
 
 
 class TestEntityFieldComparison(TestBaseWithExceptionTests):
+    """
+    Checks if entity fields comparison work.
+    """
 
     def setUp(self):
-
+        """
+        Creates test data.
+        """
         self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
 
         self._project_link = self._mockgun.create("Project", {"name": "project"})
+
+        # This entity will ensure that a populated link field will be comparable.
         self._mockgun.create(
             "PipelineConfiguration",
             {"code": "with_project", "project": self._project_link}
         )
+
+        # This entity will ensure that an unpopulated link field will be comparable.
         self._mockgun.create("PipelineConfiguration", {"code": "without_project"})
 
     def test_searching_for_none_entity_field(self):
+        """
+        Ensures that comparison with None work.
+        """
 
         items = self._mockgun.find("PipelineConfiguration", [["project", "is", None]])
         self.assertEqual(len(items), 1)
@@ -142,7 +157,9 @@ class TestEntityFieldComparison(TestBaseWithExceptionTests):
         self.assertEqual(len(items), 1)
 
     def test_searching_for_initialized_entity_field(self):
-
+        """
+        Ensures that comparison with an entity works.
+        """
         items = self._mockgun.find("PipelineConfiguration", [["project", "is", self._project_link]])
         self.assertEqual(len(items), 1)
 
@@ -151,25 +168,41 @@ class TestEntityFieldComparison(TestBaseWithExceptionTests):
 
 
 class TestTextFieldOperators(TestBaseWithExceptionTests):
-
+    """
+    Checks if text field comparison work.
+    """
     def setUp(self):
+        """
+        Creates test data.
+        """
         self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
         self._user = self._mockgun.create("HumanUser", {"login": "user"})
 
     def test_operator_contains(self):
+        """
+        Ensures contains operator works.
+        """
         item = self._mockgun.find_one("HumanUser", [["login", "contains", "se"]])
         self.assertIsNotNone(item)
 
 
 class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
+    """
+    Ensures multi entity field comparison work.
+    """
 
     def setUp(self):
+        """
+        Creates test data.
+        """
 
         self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
 
+        # Create two users to assign to the pipeline configurations.
         self._user1 = self._mockgun.create("HumanUser", {"login": "user1"})
         self._user2 = self._mockgun.create("HumanUser", {"login": "user2"})
 
+        # Create pipeline configurations that are assigned none, one or two users.
         self._mockgun.create(
             "PipelineConfiguration",
             {"code": "with_user1", "users": [self._user1]}
@@ -190,7 +223,10 @@ class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
             {"code": "with_none", "users": []}
         )
 
-    def test_look_for_no_users(self):
+    def test_find_by_sub_entity_field(self):
+        """
+        Ensures that queries on linked entity fields works.
+        """
         items = self._mockgun.find("PipelineConfiguration", [["users.HumanUser.login", "is", "user1"]])
         self.assertEqual(len(items), 2)
 
@@ -199,6 +235,25 @@ class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
 
         items = self._mockgun.find("PipelineConfiguration", [["users.HumanUser.login", "contains", "ser"]])
         self.assertEqual(len(items), 3)
+
+        # Lets get fancy a bit.
+        items = self._mockgun.find("PipelineConfiguration", [{
+            "filter_operator": "any",
+            "filters": [
+                ["users.HumanUser.login", "is", "user1"],
+                ["users.HumanUser.login", "is", "user2"]
+            ]}]
+        )
+        self.assertEqual(len(items), 3)
+
+        items = self._mockgun.find("PipelineConfiguration", [{
+            "filter_operator": "all",
+            "filters": [
+                ["users.HumanUser.login", "is", "user1"],
+                ["users.HumanUser.login", "is", "user2"]
+            ]}]
+        )
+        self.assertEqual(len(items), 1)
 
 
 class TestFilterOperator(TestBaseWithExceptionTests):

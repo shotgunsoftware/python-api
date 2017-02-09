@@ -539,7 +539,7 @@ class Shotgun(object):
                 except ValueError:
                     if field not in valid_fields and field not in ("type", "id"):
                         raise ShotgunError("%s is not a valid field for entity %s" % (field, entity_type))
-            
+
     def _get_default_value(self, entity_type, field):
         field_info = self._schema[entity_type][field]
         if field_info["data_type"]["value"] == "multi_entity":
@@ -560,13 +560,22 @@ class Shotgun(object):
         return row
 
     def _compare(self, field_type, lval, operator, rval):
+        """
+        Compares a field using the operator and value provide by the filter.
+
+        :param str field_type: Type of the field we are operating on.
+        :param lval: Value inside that field. Can be of any type: datetime, date, int, str, bool, etc.
+        :param str operator: Name of the operator to use.
+        :param rval: The value following the operator in a filter.
+
+        :returns: The result of the operator that was applied.
+        :rtype: bool
+        """
         # If we have a list of scalar values
         if isinstance(lval, list) and field_type != "multi_entity":
-            return any((self._compare_value(field_type, sub_val, operator, rval)) for sub_val in lval)
-        else:
-            return self._compare_value(field_type, lval, operator, rval)
+            # Compare each one. If one matches the predicatet we're good!
+            return any((self._compare(field_type, sub_val, operator, rval)) for sub_val in lval)
 
-    def _compare_value(self, field_type, lval, operator, rval):
         if field_type == "checkbox":
             if operator == "is":
                 return lval == rval
@@ -618,21 +627,20 @@ class Shotgun(object):
             if operator == "is":
                 # If the field is set to None
                 if lval is None:
-                    # A simply comparison will do the trick.
-                    return lval == rval
-                # If rval is None, we already know lval is None, so 
+                    # Return true if rval is None too.
+                    return rval is None
                 if rval is None:
+                    # We already know lval is not None, so we know they are not equal.
                     return False
                 # Both values are set, compare them.
                 return lval["type"] == rval["type"] and lval["id"] == rval["id"]
             elif operator == "is_not":
                 # If the field is set to None
                 if lval is None:
-                    # Do a simple comparison.
-                    return lval != rval
-                # If rval is None, we already know that lval is not None and therefore
-                # the two values are different.
+                    # Return true if rval is not None.
+                    return rval is not None
                 if rval is None:
+                    # We already know lval is not None, so we know they are not equal.
                     return True
                 return lval["type"] != rval["type"] or lval["id"] != rval["id"]
             elif operator == "in":
