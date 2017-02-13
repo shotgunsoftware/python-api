@@ -42,19 +42,15 @@ from shotgun_api3.lib.mockgun import Shotgun as Mockgun
 from shotgun_api3 import ShotgunError
 
 
-def setUpModule():
-    """
-    Sets the Shotgun schema for this series of unit tests.
-    """
-    mockgun_schema_folder = os.path.join(
-        os.path.dirname(__file__),
-        "mockgun"
-    )
+mockgun_schema_folder = os.path.join(
+    os.path.dirname(__file__),
+    "mockgun"
+)
 
-    Mockgun.set_schema_paths(
-        os.path.join(mockgun_schema_folder, "schema.pickle"),
-        os.path.join(mockgun_schema_folder, "schema_entity.pickle")
-    )
+Mockgun.set_schema_paths(
+    os.path.join(mockgun_schema_folder, "schema.pickle"),
+    os.path.join(mockgun_schema_folder, "schema_entity.pickle")
+)
 
 
 # FIXME: This should probably be refactored into a base class for
@@ -183,7 +179,7 @@ class TestTextFieldOperators(TestBaseWithExceptionTests):
         Ensures contains operator works.
         """
         item = self._mockgun.find_one("HumanUser", [["login", "contains", "se"]])
-        self.assertIsNotNone(item)
+        self.assertTrue(item)
 
 
 class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
