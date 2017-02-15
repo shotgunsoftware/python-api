@@ -4,6 +4,13 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+- Multiple enhancements and bugfixes to Mockgun:
+   - Added support for filters using the `filter_operator` syntax.
+   - `is` and `is_not` comparison with a field set to `None` are now handled.
+   - Fixed contains operator on strings.
+   - Fixed entity link comparisons with `None`.
+   - Added support for dotted notation in find parameters (e.g. `users.HumanUser.login`) on both entity and multi-entity fields.
+   - Added unit tests for Mockgun in `test_mockgun.py`. The tests currently cover all the fixes and features mentionned above.
 v3.0.32 (2016 Sep 22)
 =====================
 
