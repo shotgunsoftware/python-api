@@ -88,6 +88,11 @@ class SchemaFactory(object):
             fh.close()
 
 
+# Highest protocol that Python 2.4 supports, which is the earliest version of Python we support.
+# Actually, this is the same version that Python 2.7 supports at the moment!
+_HIGHEST_24_PICKLE_PROTOCOL = 2
+
+
 # ----------------------------------------------------------------------------
 # Utility methods
 def generate_schema(shotgun, schema_file_path, schema_entity_file_path):
@@ -107,13 +112,13 @@ def generate_schema(shotgun, schema_file_path, schema_entity_file_path):
     schema = shotgun.schema_read()
     try:
         fh = open(schema_file_path, "w")
-        pickle.dump(schema, fh)
+        pickle.dump(schema, fh, protocol=_HIGHEST_24_PICKLE_PROTOCOL)
     finally:
         fh.close()
 
     schema_entity = shotgun.schema_entity_read()
     try:
         fh = open(schema_entity_file_path, "w")
-        pickle.dump(schema_entity, fh)
+        pickle.dump(schema_entity, fh, protocol=_HIGHEST_24_PICKLE_PROTOCOL)
     finally:
         fh.close()
