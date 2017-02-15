@@ -9,6 +9,13 @@ v3.0.33.dev (TBD)
 
 - Raise an exception when uploading an empty file using :meth:`upload`, :meth:`upload_thumbnail` 
   or :meth:`upload_filmstrip_thumbnail` before calling out to the server.
+- Multiple enhancements and bugfixes to Mockgun:
+   - Added support for filters using the `filter_operator` syntax.
+   - `is` and `is_not` comparison with a field set to `None` are now handled.
+   - Fixed contains operator on strings.
+   - Fixed entity link comparisons with `None`.
+   - Added support for dotted notation in find parameters (e.g. `users.HumanUser.login`) on both entity and multi-entity fields.
+   - Added unit tests for Mockgun in `test_mockgun.py`. The tests currently cover all the fixes and features mentionned above.
 - TBD
 
 v3.0.32 (2016 Sep 22)
