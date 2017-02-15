@@ -75,6 +75,24 @@ class TestBaseWithExceptionTests(unittest.TestCase):
             self.fail("Expected %s was not raised." % exception_type)
 
 
+class TestMockgunModuleInterface(unittest.TestCase):
+    """
+    mockgun.py was turned into a module. Ensure we haven't broken the interface.
+    """
+
+    def test_interface_intact(self):
+        """
+        Ensure everything that was public before still is.
+        """
+
+        from shotgun_api3.lib import mockgun
+        # Try to access everything. If something is missing, it will raise an
+        # error.
+        mockgun.MockgunError
+        mockgun.generate_schema
+        mockgun.Shotgun
+
+
 class TestValidateFilterSyntax(TestBaseWithExceptionTests):
     """
     Tests filter syntax support.
