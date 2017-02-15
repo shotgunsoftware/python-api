@@ -2148,7 +2148,7 @@ class Shotgun(object):
 
         # Version.sg_uploaded_movie is handled as a special case and uploaded
         # directly to Cloud storage
-        if self.server_info["s3_direct_uploads_enabled"] \
+        if self.server_info.get("s3_direct_uploads_enabled", False) \
                 and entity_type == "Version" and field_name == "sg_uploaded_movie":
             return self._upload_to_storage(entity_type, entity_id, path, field_name, display_name,
                                            tag_list, is_thumbnail)
