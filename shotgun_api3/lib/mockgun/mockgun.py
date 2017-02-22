@@ -114,55 +114,18 @@ Below is a non-exhaustive list of things that we still need to implement:
 
 """
 
-import os, datetime
-import cPickle as pickle
+import datetime
 
-from .. import sg_timezone, ShotgunError
-from ..shotgun import _Config
+from ... import sg_timezone, ShotgunError
+from ...shotgun import _Config
+from .errors import MockgunError
+from .schema import SchemaFactory
 
 # ----------------------------------------------------------------------------
 # Version
 __version__ = "0.0.1"
 
-# ----------------------------------------------------------------------------
-# Errors
 
-class MockgunError(Exception):
-    """
-    Base for all Mockgun related API Errors.
-    These are errors that relate to mockgun specifically, for example
-    relating to mockups setup and initialization. For operational errors,
-    mockgun raises ShotgunErrors just like the Shotgun API.
-    """
-    pass
-
-# ----------------------------------------------------------------------------
-# Utility methods
-
-def generate_schema(shotgun, schema_file_path, schema_entity_file_path):
-    """
-    Helper method for mockgun.
-    Generates the schema files needed by the mocker by connecting to a real shotgun
-    and downloading the schema information for that site. Once the generated schema 
-    files are being passed to mockgun, it will mimic the site's schema structure.
-    
-    :param sg_url: Shotgun site url
-    :param sg_script: Script name to connect with
-    :param sg_key: Script key to connect with
-    :param schema_file_path: Path where to write the main schema file to
-    :param schema_entity_file_path: Path where to write the entity schema file to
-    """
-    
-    schema = shotgun.schema_read()
-    fh = open(schema_file_path, "w")
-    pickle.dump(schema, fh)
-    fh.close()
-        
-    schema_entity = shotgun.schema_entity_read()
-    fh = open(schema_entity_file_path, "w")
-    pickle.dump(schema_entity, fh)
-    fh.close()
-    
 # ----------------------------------------------------------------------------
 # API
 
@@ -237,23 +200,7 @@ class Shotgun(object):
                                "Before creating a Mockgun instance, please call Mockgun.set_schema_paths() "
                                "in order to specify which Shotgun schema Mockgun should operate against.")
         
-        if not os.path.exists(schema_path):
-            raise MockgunError("Cannot locate Mockgun schema file '%s'!" % schema_path)
-             
-        if not os.path.exists(schema_entity_path):
-            raise MockgunError("Cannot locate Mockgun schema file '%s'!" % schema_entity_path)
-
-        fh = open(schema_path, "r")
-        try:
-            self._schema = pickle.load(fh)
-        finally:
-            fh.close()
-            
-        fh = open(schema_entity_path, "r")
-        try:
-            self._schema_entity = pickle.load(fh)
-        finally:
-            fh.close() 
+        self._schema, self._schema_entity = SchemaFactory.get_schemas(schema_path, schema_entity_path)
 
         # initialize the "database"
         self._db = dict((entity, {}) for entity in self._schema)
