@@ -11,6 +11,8 @@ Here you can see the full list of changes between each Python API release.
    - Fixed entity link comparisons with `None`.
    - Added support for dotted notation in find parameters (e.g. `users.HumanUser.login`) on both entity and multi-entity fields.
    - Added unit tests for Mockgun in `test_mockgun.py`. The tests currently cover all the fixes and features mentionned above.
+   - Schemas are written using pickle's highest protocol as of Python 2.4's release, which speeds up the loading from disk.
+   - The current schema is cached in memory so it can be reused without having to do back to disk.
 v3.0.32 (2016 Sep 22)
 =====================
 
