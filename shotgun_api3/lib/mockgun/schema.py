@@ -110,15 +110,15 @@ def generate_schema(shotgun, schema_file_path, schema_entity_file_path):
     """
 
     schema = shotgun.schema_read()
+    fh = open(schema_file_path, "w")
     try:
-        fh = open(schema_file_path, "w")
         pickle.dump(schema, fh, protocol=_HIGHEST_24_PICKLE_PROTOCOL)
     finally:
         fh.close()
 
     schema_entity = shotgun.schema_entity_read()
+    fh = open(schema_entity_file_path, "w")
     try:
-        fh = open(schema_entity_file_path, "w")
         pickle.dump(schema_entity, fh, protocol=_HIGHEST_24_PICKLE_PROTOCOL)
     finally:
         fh.close()
