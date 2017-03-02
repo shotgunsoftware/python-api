@@ -2059,10 +2059,6 @@ class Shotgun(object):
             "filmstrip_thumbnail" : filmstrip_thumbnail,
         }
 
-        params.update(self._auth_params())
-
-        # Create opener with extended form post support
-        opener = self._build_opener(FormPostHandler)
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
             "/upload/share_thumbnail", None, None, None))
 
@@ -2219,33 +2215,16 @@ class Shotgun(object):
 
         # Step 1: get the upload url
 
-        upload_info = self._get_attachment_upload_info(is_thumbnail, filename)
+        multipart_upload = (os.path.getsize(path)  > 20000000)
+
+        upload_info = self._get_attachment_upload_info(is_thumbnail, filename, multipart_upload)
 
         # Step 2: upload the file
 
-        fd = open(path, "rb")
-        try:
-            content_type = mimetypes.guess_type(filename)[0]
-            content_type = content_type or "application/octet-stream"
-            file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-
-            # Perform the request
-            opener = urllib2.build_opener(urllib2.HTTPHandler)
-
-            request = urllib2.Request(upload_info["upload_url"], data=fd)
-            request.add_header("Content-Type", content_type)
-            request.add_header("Content-Length", file_size)
-            request.get_method = lambda: "PUT"
-            result = opener.open(request)
-        except urllib2.HTTPError, e:
-            if e.code == 500:
-                raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (url, e))
-            else:
-                raise ShotgunError("Unanticipated error occurred uploading %s: %s" % (path, e))
-        finally:
-            fd.close()
-
-        LOG.debug("File uploaded to Cloud storage: %s", filename)
+        if multipart_upload:
+            self._multipart_upload_file_to_storage(path, upload_info)
+        else:
+            self._upload_file_to_storage(path, upload_info["upload_url"])
 
         # Step 3: create the attachment
 
@@ -2342,12 +2321,13 @@ class Shotgun(object):
         attachment_id = int(str(result).split(":")[1].split("\n")[0])
         return attachment_id
 
-    def _get_attachment_upload_info(self, is_thumbnail, filename):
+    def _get_attachment_upload_info(self, is_thumbnail, filename, multipart_upload):
         """
         Internal function to get the information needed to upload a file to Cloud storage.
 
         :param bool is_thumbnail: indicates if the attachment is a thumbnail.
         :param str filename: name of the file that will be uploaded.
+        :param bool multipart_upload: Indicates if we want multi-part upload information back.
 
         :returns: dictionary containing the upload url and
             upload_info (passed back to the SG server once the upload is completed).
@@ -2364,7 +2344,8 @@ class Shotgun(object):
             "filename" : filename
         }
 
-        params.update(self._auth_params())
+        if multipart_upload:
+            params['multipart_upload'] = True
 
         upload_url = "/upload/api_get_upload_link_info"
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
@@ -2374,11 +2355,17 @@ class Shotgun(object):
         if not str(upload_info).startswith("1"):
             raise ShotgunError("Could not get upload_url but " \
                                "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
-                                   path, url, str(upload_info)))
+                                   filename, url, str(upload_info)))
 
         LOG.debug("Completed rpc call to %s" % (upload_url))
+
+        upload_info_parts = str(upload_info).split("\n")
+
         return {
-            "upload_url" : str(upload_info).split("\n")[1],
+            "upload_url" : upload_info_parts[1],
+            "timestamp" : upload_info_parts[2],
+            "upload_type" : upload_info_parts[3],
+            "upload_id": upload_info_parts[4],
             "upload_info" : upload_info
         }
 
@@ -3539,6 +3526,137 @@ class Shotgun(object):
         """
         return dict([(k, {key_name: v}) for (k,v) in (d or {}).iteritems()])
 
+    def _upload_file_to_storage(self, path, storage_url):
+        """
+        Internal function to upload an entire file to the Cloud storage.
+        
+        :param str path: Full path to an existing non-empty file on disk to upload.
+        :param str storage_url: Target URL for the uploaded file. 
+        """
+        filename = os.path.basename(path)
+
+        fd = open(path, "rb")
+        try:
+            content_type = mimetypes.guess_type(filename)[0]
+            content_type = content_type or "application/octet-stream"
+            file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
+            self._upload_data_to_storage(fd, content_type, file_size, storage_url )
+        finally:
+            fd.close()
+
+        LOG.debug("File uploaded to Cloud storage: %s", filename)
+
+    def _multipart_upload_file_to_storage(self, path, upload_info):
+        """
+        Internal function to upload a file to the Cloud storage in multiple parts.
+
+        :param str path: Full path to an existing non-empty file on disk to upload.
+        :param dict upload_info: Contains details received from the server, about the upload.
+        """
+
+        fd = open(path, "rb")
+        try:
+            content_type = mimetypes.guess_type(path)[0]
+            content_type = content_type or "application/octet-stream"
+            file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
+            filename = os.path.basename(path)
+
+            etags = []
+            part_number = 1
+            bytes_read = 0
+            chunk_size = 20000000
+            while bytes_read < file_size:
+                data = fd.read(chunk_size)
+                bytes_read += len(data)
+                part_url = self._get_upload_part_link(upload_info, filename, part_number)
+                etags.append(self._upload_data_to_storage(data, content_type, len(data), part_url ))
+                part_number += 1
+
+            self._complete_multipart_upload(upload_info, filename, etags)
+        finally:
+            fd.close()
+
+        LOG.debug("File uploaded in multiple parts to Cloud storage: %s", path)
+
+    def _get_upload_part_link(self, upload_info, filename, part_number):
+        """
+        Internal function to get the url to upload the next part of a file to the
+        Cloud storage, in a multi-part upload process.
+
+        :param dict upload_info: Contains details received from the server, about the upload.
+        :param str filename: Name of the file for which we want the link.
+        :param int part_number: Part number for the link.
+        :returns: upload url.
+        :rtype: str
+        """
+        params = {
+            "upload_type": upload_info["upload_type"],
+            "filename": filename,
+            "timestamp": upload_info["timestamp"],
+            "upload_id": upload_info["upload_id"],
+            "part_number": part_number
+        }
+
+        url = urlparse.urlunparse((self.config.scheme, self.config.server,
+                                   "/upload/api_get_upload_link_for_part", None, None, None))
+        result = self._send_form(url, params)
+
+        if not str(result).startswith("1"):
+            raise ShotgunError("Unable get upload part link: %s" % result)
+
+        return str(result).split("\n")[1]
+
+    def _upload_data_to_storage(self, data, content_type, size, storage_url):
+        """
+        Internal function to upload data to Cloud storage.
+        
+        :param stream data: Contains details received from the server, about the upload.
+        :param str content_type: Content type of the data stream.
+        :param int size: Number of bytes in the data stream.
+        :param str storage_url: Target URL for the uploaded file. 
+        :returns: upload url.
+        :rtype: str
+        """
+        try:
+            opener = urllib2.build_opener(urllib2.HTTPHandler)
+
+            request = urllib2.Request(storage_url, data=data)
+            request.add_header("Content-Type", content_type)
+            request.add_header("Content-Length", size)
+            request.get_method = lambda: "PUT"
+            result = opener.open(request)
+            etag = result.info().getheader("ETag")
+        except urllib2.HTTPError, e:
+            if e.code == 500:
+                raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (url, e))
+            else:
+                raise ShotgunError("Unanticipated error occurred uploading %s: %s" % (path, e))
+        return etag
+
+    def _complete_multipart_upload(self, upload_info, filename, etags):
+        """
+        Internal function to complete a multi-part upload to the Cloud storage.
+
+        :param dict upload_info: Contains details received from the server, about the upload.
+        :param str filename: Name of the file for which we want to complete the upload.
+        :param tupple etags: Contains the etag of each uploaded file part.
+        """
+
+        params = {
+            "upload_type": upload_info["upload_type"],
+            "filename": filename,
+            "timestamp": upload_info["timestamp"],
+            "upload_id": upload_info["upload_id"],
+            "etags": ",".join(etags)
+        }
+
+        url = urlparse.urlunparse((self.config.scheme, self.config.server,
+                                   "/upload/api_complete_multipart_upload", None, None, None))
+        result = self._send_form(url, params)
+
+        if not str(result).startswith("1"):
+            raise ShotgunError("Unable get upload part link: %s" % result)
+
     def _send_form(self, url, params):
         """
         Utility function to send a Form to Shotgun and process any HTTP errors that
@@ -3548,6 +3666,9 @@ class Shotgun(object):
         :param params: form data
         :returns: result from the server.
         """
+
+        params.update(self._auth_params())
+        
         opener = self._build_opener(FormPostHandler)
 
         # Perform the request
