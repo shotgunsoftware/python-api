@@ -2217,7 +2217,7 @@ class Shotgun(object):
 
         # Step 1: get the upload url
 
-        is_multipart_upload = (os.path.getsize(path)  > _MULTIPART_UPLOAD_CHUNK_SIZE)
+        is_multipart_upload = (os.path.getsize(path)  > self._MULTIPART_UPLOAD_CHUNK_SIZE)
 
         upload_info = self._get_attachment_upload_info(is_thumbnail, filename, is_multipart_upload)
 
@@ -3566,7 +3566,7 @@ class Shotgun(object):
             etags = []
             part_number = 1
             bytes_read = 0
-            chunk_size = _MULTIPART_UPLOAD_CHUNK_SIZE
+            chunk_size = self._MULTIPART_UPLOAD_CHUNK_SIZE
             while bytes_read < file_size:
                 data = fd.read(chunk_size)
                 bytes_read += len(data)
