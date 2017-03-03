@@ -362,6 +362,8 @@ class Shotgun(object):
         "^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])"\
         "(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?)?$")
 
+    _MULTIPART_UPLOAD_CHUNK_SIZE = 20000000
+    
     def __init__(self,
                  base_url,
                  script_name=None,
@@ -2215,13 +2217,14 @@ class Shotgun(object):
 
         # Step 1: get the upload url
 
-        multipart_upload = (os.path.getsize(path)  > 20000000)
+        is_multipart_upload = (os.path.getsize(path)  > _MULTIPART_UPLOAD_CHUNK_SIZE)
 
-        upload_info = self._get_attachment_upload_info(is_thumbnail, filename, multipart_upload)
+        upload_info = self._get_attachment_upload_info(is_thumbnail, filename, is_multipart_upload)
 
         # Step 2: upload the file
-
-        if multipart_upload:
+        # We upload large files in multiple parts because it is more robust
+        # (and required when using S3 storage)
+        if is_multipart_upload:
             self._multipart_upload_file_to_storage(path, upload_info)
         else:
             self._upload_file_to_storage(path, upload_info["upload_url"])
@@ -2321,16 +2324,16 @@ class Shotgun(object):
         attachment_id = int(str(result).split(":")[1].split("\n")[0])
         return attachment_id
 
-    def _get_attachment_upload_info(self, is_thumbnail, filename, multipart_upload):
+    def _get_attachment_upload_info(self, is_thumbnail, filename, is_multipart_upload):
         """
         Internal function to get the information needed to upload a file to Cloud storage.
 
         :param bool is_thumbnail: indicates if the attachment is a thumbnail.
         :param str filename: name of the file that will be uploaded.
-        :param bool multipart_upload: Indicates if we want multi-part upload information back.
+        :param bool is_multipart_upload: Indicates if we want multi-part upload information back.
 
-        :returns: dictionary containing the upload url and
-            upload_info (passed back to the SG server once the upload is completed).
+        :returns: dictionary containing upload details from the server. 
+            These details are used throughout the upload process.
         :rtype: dict
         """
 
@@ -2344,8 +2347,7 @@ class Shotgun(object):
             "filename" : filename
         }
 
-        if multipart_upload:
-            params['multipart_upload'] = True
+        params["multipart_upload"] = is_multipart_upload
 
         upload_url = "/upload/api_get_upload_link_info"
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
@@ -3564,7 +3566,7 @@ class Shotgun(object):
             etags = []
             part_number = 1
             bytes_read = 0
-            chunk_size = 20000000
+            chunk_size = _MULTIPART_UPLOAD_CHUNK_SIZE
             while bytes_read < file_size:
                 data = fd.read(chunk_size)
                 bytes_read += len(data)
@@ -3601,9 +3603,13 @@ class Shotgun(object):
                                    "/upload/api_get_upload_link_for_part", None, None, None))
         result = self._send_form(url, params)
 
+        # Response is of the form: 1\n<url> (for success) or 0\n (for failure). 
+        # In case of success, we know we the second line of the response contains the 
+        # requested URL.
         if not str(result).startswith("1"):
             raise ShotgunError("Unable get upload part link: %s" % result)
 
+        LOG.debug("Got next upload link from server for multipart upload.")
         return str(result).split("\n")[1]
 
     def _upload_data_to_storage(self, data, content_type, size, storage_url):
@@ -3631,6 +3637,8 @@ class Shotgun(object):
                 raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (url, e))
             else:
                 raise ShotgunError("Unanticipated error occurred uploading %s: %s" % (path, e))
+
+        LOG.debug("Part upload completed successfully.")
         return etag
 
     def _complete_multipart_upload(self, upload_info, filename, etags):
@@ -3654,6 +3662,7 @@ class Shotgun(object):
                                    "/upload/api_complete_multipart_upload", None, None, None))
         result = self._send_form(url, params)
 
+        # Response is of the form: 1\n or 0\n to indicate success or failure of the call.
         if not str(result).startswith("1"):
             raise ShotgunError("Unable get upload part link: %s" % result)
 
