@@ -244,13 +244,22 @@ class Shotgun(object):
 
 
     def find(self, entity_type, filters, fields=None, order=None, filter_operator=None, limit=0, retired_only=False, page=0):
-        
-
         self.finds += 1
 
         self._validate_entity_type(entity_type)
         # do not validate custom fields - this makes it hard to mock up a field quickly
         #self._validate_entity_fields(entity_type, fields)
+
+        # Configure fields
+        if fields is None:
+            fields = set(["type", "id"])
+        else:
+            fields = set(fields) | set(["type", "id"])
+
+        # Include fields from the order argument in the searched fields
+        if order:
+            for o in order:
+                fields.add(o['field_name'])
 
         # FIXME: This should be refactored so that we can use the complex filer
         # style in nested filter operations.
@@ -285,7 +294,10 @@ class Shotgun(object):
             )
         ]
 
-        # handle the ordering of the recordset
+        # Request additional fields from results
+        val = [dict((field, self._get_field_from_row(entity_type, row, field)) for field in fields) for row in results]
+
+        # Handle the ordering of the result after we requested additionel fields from results.
         if order:
             # order: [{"field_name": "code", "direction": "asc"}, ... ]
             for order_entry in order:
@@ -300,23 +312,14 @@ class Shotgun(object):
                 else:
                     raise ValueError("Unknown ordering direction")
 
-                results = sorted(results, key=lambda k: k[order_field], reverse=desc_order)
-
-        if fields is None:
-            fields = set(["type", "id"])
-        else:
-            fields = set(fields) | set(["type", "id"])
-
-        # get the values requested
-        val = [dict((field, self._get_field_from_row(entity_type, row, field)) for field in fields) for row in results]
+                val = sorted(val, key=lambda k: k[order_field], reverse=desc_order)
 
         return val
-    
-    
+
     def find_one(self, entity_type, filters, fields=None, order=None, filter_operator=None, retired_only=False):
         results = self.find(entity_type, filters, fields=fields, order=order, filter_operator=filter_operator, retired_only=retired_only)
         return results[0] if results else None
-    
+
     def batch(self, requests):
         results = []
         for request in requests:
@@ -609,12 +612,25 @@ class Shotgun(object):
     def _get_field_from_row(self, entity_type, row, field):
         # split dotted form fields
         try:
-            # is it something like sg_sequence.Sequence.code ?
-            field2, entity_type2, field3 = field.split(".", 2)
+            tokens = field.split(".")
+            # dotted form fields can have the following form:
+            # - field.EntityType.field
+            # - field.EntityType.field.EntityType.field
+            # - etc
+            num_tokens = len(tokens)
+            if num_tokens % 2 != 1:
+                raise ValueError()
 
-            if field2 in row:
+            current_entity = row
 
-                field_value = row[field2]
+            for i in range(num_tokens / 2):
+                lfield, entity_type, rfield = tokens[i * 2:i * 2 + 3]
+
+                # sg returns none for unknown stuff
+                if lfield not in current_entity:
+                    return None
+
+                field_value = current_entity[lfield]
 
                 # If we have a list of links, retrieve the subfields one by one.
                 if isinstance(field_value, list):
@@ -625,31 +641,29 @@ class Shotgun(object):
                             raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
 
                         # Skips entities that are not of the requested type.
-                        if linked_row["type"] != entity_type2:
+                        if linked_row["type"] != entity_type:
                             continue
 
                         entity = self._db[linked_row["type"]][linked_row["id"]]
 
-                        sub_field_value = self._get_field_from_row(entity_type2, entity, field3)
+                        sub_field_value = self._get_field_from_row(entity_type, entity, rfield)
                         values.append(sub_field_value)
                     return values
                 # not multi entity, must be entity.
+                elif field_value is None:
+                    return None
                 elif not isinstance(field_value, dict):
                     raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
 
                 # make sure that types in the query match type in the linked field
-                if entity_type2 != field_value["type"]:
+                if entity_type != field_value["type"]:
                     raise ShotgunError("Deep query field %s.%s does not match type "
                                        "with data %s" % (entity_type, field, field_value))
 
-                # ok so looks like the value is an entity link
-                # e.g. db contains: {"sg_sequence": {"type":"Sequence", "id": 123 } }
-                linked_row = self._db[ field_value["type"] ][ field_value["id"] ]
+                current_entity = self._db[field_value["type"]][field_value["id"]]
 
-                return self._get_field_from_row(entity_type2, linked_row, field3)
-            else:
-                # sg returns none for unknown stuff
-                return None
+            # Get the value of the last field
+            return current_entity.get(tokens[-1], None)
 
         except ValueError:
             # this is not a deep-linked field - just something like "code"

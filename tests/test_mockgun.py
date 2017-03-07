@@ -216,10 +216,13 @@ class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
         self._user1 = self._mockgun.create("HumanUser", {"login": "user1"})
         self._user2 = self._mockgun.create("HumanUser", {"login": "user2"})
 
+        # Create a project for nested sub entity field
+        self._project1 = self._mockgun.create("Project", {"name": "project1", "users": [self._user1]})
+
         # Create pipeline configurations that are assigned none, one or two users.
         self._mockgun.create(
             "PipelineConfiguration",
-            {"code": "with_user1", "users": [self._user1]}
+            {"code": "with_user1", "users": [self._user1], "project": self._project1}
         )
 
         self._mockgun.create(
@@ -268,6 +271,91 @@ class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
             ]}]
         )
         self.assertEqual(len(items), 1)
+
+    def test_find_by_sub_entity_field_nested(self):
+        """
+        Ensure that queries on nested linked entity fields work.
+        """
+        items = self._mockgun.find("PipelineConfiguration", [
+            ["project.Project.users.HumanUser.login", "is", "user1"]
+        ])
+        self.assertEqual(len(items), 1)
+
+
+class TestFindFields(TestBaseWithExceptionTests):
+    """
+    Ensure that using the 'field' argument in the find method work.
+    """
+
+    def setUp(self):
+        """Creates test data."""
+        self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
+
+        # Create two users to assign to the pipeline configurations.
+        self._user1 = self._mockgun.create("HumanUser", {"login": "user1", "firstname": "firstname1"})
+
+        # Create a project for nested sub entity field
+        self._project1 = self._mockgun.create("Project", {"name": "project1", "users": [self._user1]})
+
+        # Create pipeline configurations that are assigned none, one or two users.
+        self._mockgun.create(
+            "PipelineConfiguration",
+            {"code": "with_user1", "users": [self._user1], "project": self._project1}
+        )
+
+    def test_field(self):
+        item = self._mockgun.find_one("HumanUser", [
+            ["login", "is", "user1"]
+        ], ["firstname"])
+        self.assertIn("firstname",item)
+        self.assertEqual("firstname1", item["firstname"])
+
+    def test_find_field_multi_entity(self):
+        item = self._mockgun.find_one("PipelineConfiguration", [
+            ["project.Project.users.HumanUser.login", "is", "user1"]
+        ], ["project.Project.name"])
+        self.assertIn("project.Project.name", item)
+        self.assertEqual("project1", item["project.Project.name"])
+
+
+class TestFindOrder(TestBaseWithExceptionTests):
+    """
+    Ensure that using the 'order' argument in the find method work.
+    """
+    def setUp(self):
+        self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
+
+        # Create two users to assign to the pipeline configurations.
+        self._user1 = self._mockgun.create("HumanUser", {"login": "user1", "firstname": "firstname1"})
+        self._user2 = self._mockgun.create("HumanUser", {"login": "user2", "firstname": "firstname2"})
+
+        # Create two PipelineConfiguration entities so we can test multi-entity sorting.
+        self._pipeline_configutation_1 = self._mockgun.create("PipelineConfiguration", {"code": "PipelineConfiguration1", "users": [self._user2]})
+        self._pipeline_configutation_2 = self._mockgun.create("PipelineConfiguration", {"code": "PipelineConfiguration2", "users": [self._user1]})
+
+    def test_find_order(self):
+        # Test ascending order
+        item = self._mockgun.find_one("HumanUser", [], order=[{'field_name': 'id', 'direction': 'asc'}])
+        self.assertEqual(self._user1['id'], item['id'])
+
+        # Test descending order
+        item = self._mockgun.find_one("HumanUser", [], order=[{'field_name': 'id', 'direction': 'desc'}])
+        self.assertEqual(self._user2['id'], item['id'])
+
+    def test_find_order_multi_entity(self):
+        """Ensure we are able to sort data using a multi-entity field."""
+        # Test ascending order
+        item = self._mockgun.find_one("PipelineConfiguration", [], order=[{'field_name': 'users.HumanUser.login', 'direction': 'asc'}])
+        self.assertEqual(self._pipeline_configutation_2['id'], item['id'])
+
+        # Test descending order
+        item = self._mockgun.find_one("PipelineConfiguration", [], order=[{'field_name': 'users.HumanUser.login', 'direction': 'desc'}])
+        self.assertEqual(self._pipeline_configutation_1['id'], item['id'])
+
+    def test_find_order_fields(self):
+        """Ensure that additional fields passed through the order argument but NOT via the field argument are added to the resulting fields."""
+        item = self._mockgun.find_one("HumanUser", [], order=[{'field_name': 'login', 'direction': 'asc'}])
+        self.assertIn('login', item)
 
 
 class TestFilterOperator(TestBaseWithExceptionTests):
