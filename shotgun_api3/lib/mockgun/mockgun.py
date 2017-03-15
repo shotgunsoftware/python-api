@@ -252,14 +252,21 @@ class Shotgun(object):
 
         # Configure fields
         if fields is None:
-            fields = set(["type", "id"])
+            requested_fields = set(["type", "id"])
         else:
-            fields = set(fields) | set(["type", "id"])
+            requested_fields = set(fields) | set(["type", "id"])
 
         # Include fields from the order argument in the searched fields
+        order_fields = set()
         if order:
             for o in order:
-                fields.add(o['field_name'])
+                order_fields.add(o['field_name'])
+
+        # Merge the requested fields and the order fields.
+        # We need all those to property order the results but still return only requested fields.
+        all_fields = set()
+        all_fields.update(requested_fields)
+        all_fields.update(order_fields)
 
         # FIXME: This should be refactored so that we can use the complex filer
         # style in nested filter operations.
@@ -283,7 +290,7 @@ class Shotgun(object):
                     resolved_filters.append([ f["path"], f["relation"], f["values"][0] ])
 
         else:
-            # traditiona style sg filters
+            # traditional style sg filters
             resolved_filters = filters
 
         results = [
@@ -295,9 +302,9 @@ class Shotgun(object):
         ]
 
         # Request additional fields from results
-        val = [dict((field, self._get_field_from_row(entity_type, row, field)) for field in fields) for row in results]
+        val = [dict((field, self._get_field_from_row(entity_type, row, field)) for field in all_fields) for row in results]
 
-        # Handle the ordering of the result after we requested additionel fields from results.
+        # Handle the ordering of the result after we requested additional fields from results.
         if order:
             # order: [{"field_name": "code", "direction": "asc"}, ... ]
             for order_entry in order:
@@ -313,6 +320,12 @@ class Shotgun(object):
                     raise ValueError("Unknown ordering direction")
 
                 val = sorted(val, key=lambda k: k[order_field], reverse=desc_order)
+
+        # Remove any fields that was not explicitely requested.
+        fields_to_remove = all_fields - requested_fields
+        for v in val:
+            for field in fields_to_remove:
+                v.pop(field)
 
         return val
 
