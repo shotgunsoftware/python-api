@@ -612,25 +612,12 @@ class Shotgun(object):
     def _get_field_from_row(self, entity_type, row, field):
         # split dotted form fields
         try:
-            tokens = field.split(".")
-            # dotted form fields can have the following form:
-            # - field.EntityType.field
-            # - field.EntityType.field.EntityType.field
-            # - etc
-            num_tokens = len(tokens)
-            if num_tokens % 2 != 1:
-                raise ValueError()
+            # is it something like sg_sequence.Sequence.code ?
+            field2, entity_type2, field3 = field.split(".", 2)
 
-            current_entity = row
+            if field2 in row:
 
-            for i in range(num_tokens / 2):
-                lfield, entity_type, rfield = tokens[i * 2:i * 2 + 3]
-
-                # sg returns none for unknown stuff
-                if lfield not in current_entity:
-                    return None
-
-                field_value = current_entity[lfield]
+                field_value = row[field2]
 
                 # If we have a list of links, retrieve the subfields one by one.
                 if isinstance(field_value, list):
@@ -641,29 +628,33 @@ class Shotgun(object):
                             raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
 
                         # Skips entities that are not of the requested type.
-                        if linked_row["type"] != entity_type:
+                        if linked_row["type"] != entity_type2:
                             continue
 
                         entity = self._db[linked_row["type"]][linked_row["id"]]
 
-                        sub_field_value = self._get_field_from_row(entity_type, entity, rfield)
+                        sub_field_value = self._get_field_from_row(entity_type2, entity, field3)
                         values.append(sub_field_value)
                     return values
-                # not multi entity, must be entity.
                 elif field_value is None:
                     return None
+                # not multi entity, must be entity.
                 elif not isinstance(field_value, dict):
                     raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
 
                 # make sure that types in the query match type in the linked field
-                if entity_type != field_value["type"]:
+                if entity_type2 != field_value["type"]:
                     raise ShotgunError("Deep query field %s.%s does not match type "
                                        "with data %s" % (entity_type, field, field_value))
 
-                current_entity = self._db[field_value["type"]][field_value["id"]]
+                # ok so looks like the value is an entity link
+                # e.g. db contains: {"sg_sequence": {"type":"Sequence", "id": 123 } }
+                linked_row = self._db[ field_value["type"] ][ field_value["id"] ]
 
-            # Get the value of the last field
-            return current_entity.get(tokens[-1], None)
+                return self._get_field_from_row(entity_type2, linked_row, field3)
+            else:
+                # sg returns none for unknown stuff
+                return None
 
         except ValueError:
             # this is not a deep-linked field - just something like "code"
