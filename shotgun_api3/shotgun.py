@@ -3634,9 +3634,9 @@ class Shotgun(object):
             etag = result.info().getheader("ETag")
         except urllib2.HTTPError, e:
             if e.code == 500:
-                raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (url, e))
+                raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (storage_url, e))
             else:
-                raise ShotgunError("Unanticipated error occurred uploading %s: %s" % (path, e))
+                raise ShotgunError("Unanticipated error occurred uploading to %s: %s" % (storage_url, e))
 
         LOG.debug("Part upload completed successfully.")
         return etag
