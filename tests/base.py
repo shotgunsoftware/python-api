@@ -192,7 +192,7 @@ class LiveTestBase(TestBase):
     '''Test base for tests relying on connection to server.'''
     def setUp(self, auth_mode='ApiUser'):
         super(LiveTestBase, self).setUp(auth_mode)
-        self.sg_version = self.sg.info()['version'][:3]
+        self.sg_version = tuple(self.sg.info()['version'][:3])
         self._setup_db(self.config)
         if self.sg.server_caps.version and \
            self.sg.server_caps.version >= (3, 3, 0) and \
