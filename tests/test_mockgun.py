@@ -270,7 +270,9 @@ class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
         self.assertEqual(len(items), 1)
 
     def test_find_with_none(self):
-
+        """
+        Ensures comparison with multi-entity fields and None works.
+        """
         items = self._mockgun.find("PipelineConfiguration", [["users", "is", None]], ["users"])
         self.assertEqual(len(items), 1)
         self.assertListEqual(items[0]["users"], [])
