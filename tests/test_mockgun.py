@@ -275,7 +275,7 @@ class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
         """
         items = self._mockgun.find("PipelineConfiguration", [["users", "is", None]], ["users"])
         self.assertEqual(len(items), 1)
-        self.assertListEqual(items[0]["users"], [])
+        self.assertEqual(items[0]["users"], [])
 
         items = self._mockgun.find("PipelineConfiguration", [["users", "is_not", None]], ["users"])
         self.assertEqual(len(items), 3)
