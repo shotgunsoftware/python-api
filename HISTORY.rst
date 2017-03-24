@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Python API release.
 
 - Multiple enhancements and bugfixes to Mockgun:
    - Added support for filters using the `filter_operator` syntax.
-   - `is` and `is_not` comparison with a field set to `None` are now handled.
+   - `is` and `is_not` comparisons with an entity or multi-entity field set to `None` are now handled.
    - Fixed contains operator on strings.
    - Fixed entity link comparisons with `None`.
    - Added support for dotted notation in find parameters (e.g. `users.HumanUser.login`) on both entity and multi-entity fields.
