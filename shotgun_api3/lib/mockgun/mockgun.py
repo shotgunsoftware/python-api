@@ -600,8 +600,12 @@ class Shotgun(object):
                 return lval["name"].endswith(rval)
         elif field_type == "multi_entity":
             if operator == "is":
+                if rval is None:
+                    return len(lval) == 0
                 return rval["id"] in (sub_lval["id"] for sub_lval in lval)
             elif operator == "is_not":
+                if rval is None:
+                    return len(lval) != 0
                 return rval["id"] not in (sub_lval["id"] for sub_lval in lval)
 
         raise ShotgunError("The %s operator is not supported on the %s type" % (operator, field_type))
