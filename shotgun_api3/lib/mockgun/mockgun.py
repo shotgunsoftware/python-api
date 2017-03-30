@@ -765,17 +765,26 @@ class Shotgun(object):
         else:
             raise ShotgunError("%s is not a valid filter operator" % filter_operator)
 
-
     def _update_row(self, entity_type, row, data):
+        """For a given row of the 'database', update the row with the given data.
+        
+        :param str entity_type: shotgun entity.
+        :param dict row: current definition of the row.
+        :param dict data: data to inject in the row.
+        """
+        cases = {
+            "multi_entity": lambda data: [{"type": item["type"], "id": item["id"]} for item in data[field]],
+            "date": lambda data: data[field].strftime("%Y-%m-%d"),
+        }
+
         for field in data:
             field_type = self._get_field_type(entity_type, field)
             if field_type == "entity" and data[field]:
                 row[field] = {"type": data[field]["type"], "id": data[field]["id"]}
-            elif field_type == "multi_entity":
-                row[field] = [{"type": item["type"], "id": item["id"]} for item in data[field]]
+            elif field_type in cases:
+                row[field] = cases[field_type](data)
             else:
                 row[field] = data[field]
-            
 
     def _validate_entity_exists(self, entity_type, entity_id):
         if entity_id not in self._db[entity_type]:
