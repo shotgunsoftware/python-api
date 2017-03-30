@@ -773,8 +773,8 @@ class Shotgun(object):
         :param dict data: data to inject in the row.
         """
         cases = {
-            "multi_entity": lambda data: [{"type": item["type"], "id": item["id"]} for item in data[field]],
-            "date": lambda data: data[field].strftime("%Y-%m-%d"),
+            "multi_entity": lambda field: [{"type": item["type"], "id": item["id"]} for item in field],
+            "date": lambda field: field.strftime("%Y-%m-%d"),
         }
 
         for field in data:
@@ -782,7 +782,7 @@ class Shotgun(object):
             if field_type == "entity" and data[field]:
                 row[field] = {"type": data[field]["type"], "id": data[field]["id"]}
             elif field_type in cases:
-                row[field] = cases[field_type](data)
+                row[field] = cases[field_type](data[field])
             else:
                 row[field] = data[field]
 
