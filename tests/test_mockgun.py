@@ -202,27 +202,28 @@ class TestTextFieldOperators(TestBaseWithExceptionTests):
         item = self._mockgun.find_one("HumanUser", [["login", "contains", "se"]])
         self.assertTrue(item)
 
-class TestUpdateRow(TestBaseWithExceptionTests):
-    """Test Suite for the behavior of the method _update_row."""
+
+class TestDateDatetimeFields(TestBaseWithExceptionTests):
+    """Test Suite for the behavior of the fields date and datetime."""
 
     def setUp(self):
         """Test data"""
         self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
 
-    def test_whenAnEntityWithDateFieldIsCreated_thenTheDateFieldIsStoredAsString(self):
+    def test_dateDataAreStoredAsString(self):
         """
-        Given the data for a date field is given as a data object
+        Given the data for a date field is given as a string
         When the entity is created
-        Then the data is converted to string like in the api.
+        Then the data is stored as a string.
         """
         project = self._mockgun.create(
-            "Project", {"name": "Death Star", "start_date": datetime.date(1980, 4, 5)}
+            "Project", {"name": "Death Star", "start_date": "1980-04-05"}
         )
         self.assertEqual(
-            "1980-04-05", project["start_date"], msg="At this stage, the date should have been to string."
+            "1980-04-05", project["start_date"], msg="The date should stay a string."
         )
 
-    def test_whenAnEntityWithDatetimeFieldIsCreated_thenTheDatetimeIsStoredAsDatetime(self):
+    def test_datetimeDataAreStoredAsDatetime(self):
         """
         Given the data for a datetime is given as datetime
         When the entity is created
@@ -233,8 +234,7 @@ class TestUpdateRow(TestBaseWithExceptionTests):
             "Project", {"name": "Death Star", "updated_at": datetime_}
         )
         self.assertEqual(
-            datetime_, project["updated_at"],
-            msg="A datetime should have been kept as a datetime."
+            datetime_, project["updated_at"], msg="A datetime should have been kept as a datetime."
         )
 
 
