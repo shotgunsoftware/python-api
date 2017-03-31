@@ -772,17 +772,12 @@ class Shotgun(object):
         :param dict row: current definition of the row.
         :param dict data: data to inject in the row.
         """
-        cases = {
-            "multi_entity": lambda field_: [{"type": item["type"], "id": item["id"]} for item in field_],
-            "date": lambda field_: field_.strftime("%Y-%m-%d"),
-        }
-
         for field in data:
             field_type = self._get_field_type(entity_type, field)
             if field_type == "entity" and data[field]:
                 row[field] = {"type": data[field]["type"], "id": data[field]["id"]}
-            elif field_type in cases:
-                row[field] = cases[field_type](data[field])
+            elif field_type == "multi_entity":
+                row[field] = [{"type": item["type"], "id": item["id"]} for item in data[field]]
             else:
                 row[field] = data[field]
 
