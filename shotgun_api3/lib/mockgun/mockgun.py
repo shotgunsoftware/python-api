@@ -462,7 +462,7 @@ class Shotgun(object):
                                    "checkbox": bool,
                                    "text": basestring,
                                    "serializable": dict,
-                                   "date": str,
+                                   "date": basestring,
                                    "date_time": datetime.datetime,
                                    "list": basestring,
                                    "status_list": basestring,
