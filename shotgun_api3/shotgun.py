@@ -2887,15 +2887,15 @@ class Shotgun(object):
 
         """
         return self._call_rpc(
-            'nav_expand',
+            "nav_expand",
             {
-                'path':path,
-                'seed_entity_field': seed_entity_field,
-                'entity_fields': entity_fields
+                "path":path,
+                "seed_entity_field": seed_entity_field,
+                "entity_fields": entity_fields
             }
         )
 
-    def nav_search_string(self, path_filter, search_string):
+    def nav_search_string(self, root_path, search_string):
         """
         Search function adapted to work with the navigation hierarchy.
 
@@ -2906,14 +2906,14 @@ class Shotgun(object):
             arguments, and argument types may change at any point.
         """
         return self._call_rpc(
-                'nav_search',
+                "nav_search",
                 {
-                    'path_filter':path_filter,
-                    'search_criteria': { 'search_criteria' : { 'search_string': search_string }}
+                    "root_path":root_path,
+                    "search_criteria": { "search_string": search_string }
                 }
         )
 
-    def nav_search_entity(self, path_filter, entity):
+    def nav_search_entity(self, root_path, entity):
         """
         Search function adapted to work with the navigation hierarchy.
 
@@ -2925,10 +2925,10 @@ class Shotgun(object):
 
         """
         return self._call_rpc(
-                'nav_search',
+                "nav_search",
                 {
-                    'path_filter': path_filter,
-                    'search_criteria': { 'search_criteria' : {'entity': entity }}
+                    "root_path": root_path,
+                    "search_criteria": {"entity": entity }
                 }
         )
 
