@@ -2895,7 +2895,7 @@ class Shotgun(object):
             }
         )
 
-    def nav_search_string(self, project_id, search_string):
+    def nav_search_string(self, path_filter, search_string):
         """
         Search function adapted to work with the navigation hierarchy.
 
@@ -2904,27 +2904,16 @@ class Shotgun(object):
             This is an experimental method that is not officially part of the
             python-api. Usage of this method is discouraged. This method's name,
             arguments, and argument types may change at any point.
-
-        :param int project_id: Id of the project in which the search will be done.
-        :param str search_string: String to search for.
-        :rtype: list: Found entries. Each array element is a dict containing the
-                        following keys:
-                        - str label: Name of the found entity
-                        - list incremental_path: List of paths leading to the entity.
-                                            These paths can be passed to the 'nav_expand'
-                                            function.
-                        - str path_label: User-friendly name of the path containing the
-                                            found entity.
         """
         return self._call_rpc(
                 'nav_search',
                 {
-                    'project_id':project_id,
+                    'path_filter':path_filter,
                     'search_criteria': { 'search_criteria' : { 'search_string': search_string }}
                 }
         )
 
-    def nav_search_entity(self, project_id, entity):
+    def nav_search_entity(self, path_filter, entity):
         """
         Search function adapted to work with the navigation hierarchy.
 
@@ -2934,22 +2923,12 @@ class Shotgun(object):
             python-api. Usage of this method is discouraged. This method's name,
             arguments, and argument types may change at any point.
 
-        :param int project_id: Id of the project in which the search will be done.
-        :param dict entity: Reference to the entity to search for.
-        :rtype: list: Found entries. Each array element is a dict containing the
-                        following keys:
-                        - str label: Name of the found entity
-                        - list incremental_path: List of paths leading to the entity.
-                                            These paths can be passed to the 'nav_expand'
-                                            function.
-                        - str path_label: User-friendly name of the path containing the
-                                            found entity.
         """
         return self._call_rpc(
                 'nav_search',
                 {
-                    'project_id':project_id,
-                    'search_criteria':{ 'search_criteria' : {'entity': entity }}
+                    'path_filter': path_filter,
+                    'search_criteria': { 'search_criteria' : {'entity': entity }}
                 }
         )
 
