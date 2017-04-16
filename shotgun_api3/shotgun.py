@@ -2887,12 +2887,49 @@ class Shotgun(object):
 
         """
         return self._call_rpc(
-            'nav_expand',
+            "nav_expand",
             {
-                'path':path,
-                'seed_entity_field': seed_entity_field,
-                'entity_fields': entity_fields
+                "path":path,
+                "seed_entity_field": seed_entity_field,
+                "entity_fields": entity_fields
             }
+        )
+
+    def nav_search_string(self, root_path, search_string):
+        """
+        Search function adapted to work with the navigation hierarchy.
+
+        .. warning::
+
+            This is an experimental method that is not officially part of the
+            python-api. Usage of this method is discouraged. This method's name,
+            arguments, and argument types may change at any point.
+        """
+        return self._call_rpc(
+                "nav_search",
+                {
+                    "root_path":root_path,
+                    "search_criteria": { "search_string": search_string }
+                }
+        )
+
+    def nav_search_entity(self, root_path, entity):
+        """
+        Search function adapted to work with the navigation hierarchy.
+
+        .. warning::
+
+            This is an experimental method that is not officially part of the
+            python-api. Usage of this method is discouraged. This method's name,
+            arguments, and argument types may change at any point.
+
+        """
+        return self._call_rpc(
+                "nav_search",
+                {
+                    "root_path": root_path,
+                    "search_criteria": {"entity": entity }
+                }
         )
 
     def get_session_token(self):
