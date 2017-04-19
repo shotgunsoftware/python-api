@@ -114,7 +114,6 @@ Below is a non-exhaustive list of things that we still need to implement:
 
 """
 
-import copy
 import datetime
 
 from ... import sg_timezone, ShotgunError
@@ -301,7 +300,7 @@ class Shotgun(object):
             )
         ]
 
-        # Request additional fields from results
+        # Extract fields from row
         val = [dict((field, self._get_field_from_row(entity_type, row, field)) for field in all_fields) for row in results]
 
         # Handle the ordering of the result after we requested additional fields from results.
@@ -379,7 +378,9 @@ class Shotgun(object):
         
         self._update_row(entity_type, row, data)
         row["id"] = next_id
-        row["created_at"] = datetime.datetime.now()
+        
+        if "create_at" not in row:
+            row["created_at"] = datetime.datetime.now()
         
         self._db[entity_type][next_id] = row
         
@@ -655,11 +656,6 @@ class Shotgun(object):
                 # not multi entity, must be entity.
                 elif not isinstance(field_value, dict):
                     raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
-
-                # make sure that types in the query match type in the linked field
-                if entity_type2 != field_value["type"]:
-                    raise ShotgunError("Deep query field %s.%s does not match type "
-                                       "with data %s" % (entity_type, field, field_value))
 
                 # ok so looks like the value is an entity link
                 # e.g. db contains: {"sg_sequence": {"type":"Sequence", "id": 123 } }

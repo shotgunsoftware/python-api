@@ -219,6 +219,12 @@ class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
         # Create a project for nested sub entity field
         self._project1 = self._mockgun.create("Project", {"name": "project1", "users": [self._user1]})
         self._project2 = self._mockgun.create("Project", {"name": "project2", "users": [self._user2]})
+        
+        self._sequence1 = self._mockgun.create("Sequence", {"code":"01", "project":self._project1})
+        self._shot1 = self._mockgun.create("Shot", {"code":"01_0010", "project":self._project1, "sg_sequence": self._sequence1})
+        
+        self._task_seq = self._mockgun.create("Task", {"entity": self._sequence1})
+        self._task_shot = self._mockgun.create("Task", {"entity": self._shot1})
 
         # Create pipeline configurations that are assigned none, one or two users.
         self._pipeline_config_1 = self._mockgun.create(
@@ -272,6 +278,19 @@ class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
             ]}]
         )
         self.assertEqual(len(items), 1)
+        
+        # Try with multi entities
+        item = self._mockgun.find_one("Task", [
+            ['entity.Shot.code', 'is', self._shot1['code']]
+        ])
+        self.assertNotEqual(None, item)
+        self.assertEqual(self._task_shot["id"], item["id"])
+        
+        item = self._mockgun.find_one("Task", [
+            ['entity.Sequence.code', 'is', self._sequence1['code']]
+        ])
+        self.assertNotEqual(None, item)
+        self.assertEqual(self._task_seq["id"], item["id"])
 
     def test_find_by_sub_entity_field_nested(self):
         """
@@ -288,6 +307,7 @@ class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
         ])
         self.assertEqual(len(items), 1)
         self.assertEqual(self._pipeline_config_2['id'], items[0]['id'])
+        
 
 
 class TestFindFields(TestBaseWithExceptionTests):
@@ -369,7 +389,7 @@ class TestFindOrder(TestBaseWithExceptionTests):
     def test_find_order_fields_leak(self):
         """Ensure that additional fields passed through the order argument but NOT via the field argument are not added to the resulting fields."""
         item = self._mockgun.find_one("HumanUser", [], fields=['email'], order=[{'field_name': 'login', 'direction': 'asc'}])
-        self.assertSetEqual(set(item.keys()), set(['id', 'type', 'email']))  # note: we don't verify the order yet
+        self.assertEqual(set(item.keys()), set(['id', 'type', 'email']))  # note: we don't verify the order yet
 
     def test_find_order_date_created(self):
         """Ensure we are able to sort entities by their creation date."""
