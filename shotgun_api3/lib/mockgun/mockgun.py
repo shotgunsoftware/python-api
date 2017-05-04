@@ -242,15 +242,30 @@ class Shotgun(object):
         else:
             return dict((k, v) for k, v in self._schema[entity_type].items() if k == field_name)
 
-
     def find(self, entity_type, filters, fields=None, order=None, filter_operator=None, limit=0, retired_only=False, page=0):
-        
-
         self.finds += 1
 
         self._validate_entity_type(entity_type)
         # do not validate custom fields - this makes it hard to mock up a field quickly
         #self._validate_entity_fields(entity_type, fields)
+
+        # Configure fields
+        if fields is None:
+            requested_fields = set(["type", "id"])
+        else:
+            requested_fields = set(fields) | set(["type", "id"])
+
+        # Include fields from the order argument in the searched fields
+        order_fields = set()
+        if order:
+            for o in order:
+                order_fields.add(o['field_name'])
+
+        # Merge the requested fields and the order fields.
+        # We need all those to property order the results but still return only requested fields.
+        all_fields = set()
+        all_fields.update(requested_fields)
+        all_fields.update(order_fields)
 
         # FIXME: This should be refactored so that we can use the complex filer
         # style in nested filter operations.
@@ -274,7 +289,7 @@ class Shotgun(object):
                     resolved_filters.append([ f["path"], f["relation"], f["values"][0] ])
 
         else:
-            # traditiona style sg filters
+            # traditional style sg filters
             resolved_filters = filters
 
         results = [
@@ -285,7 +300,10 @@ class Shotgun(object):
             )
         ]
 
-        # handle the ordering of the recordset
+        # Extract fields from row
+        val = [dict((field, self._get_field_from_row(entity_type, row, field)) for field in all_fields) for row in results]
+
+        # Handle the ordering of the result after we requested additional fields from results.
         if order:
             # order: [{"field_name": "code", "direction": "asc"}, ... ]
             for order_entry in order:
@@ -300,23 +318,20 @@ class Shotgun(object):
                 else:
                     raise ValueError("Unknown ordering direction")
 
-                results = sorted(results, key=lambda k: k[order_field], reverse=desc_order)
+                val = sorted(val, key=lambda k: k[order_field], reverse=desc_order)
 
-        if fields is None:
-            fields = set(["type", "id"])
-        else:
-            fields = set(fields) | set(["type", "id"])
-
-        # get the values requested
-        val = [dict((field, self._get_field_from_row(entity_type, row, field)) for field in fields) for row in results]
+        # Remove any fields that was not explicitely requested.
+        fields_to_remove = all_fields - requested_fields
+        for v in val:
+            for field in fields_to_remove:
+                v.pop(field)
 
         return val
-    
-    
+
     def find_one(self, entity_type, filters, fields=None, order=None, filter_operator=None, retired_only=False):
         results = self.find(entity_type, filters, fields=fields, order=order, filter_operator=filter_operator, retired_only=retired_only)
         return results[0] if results else None
-    
+
     def batch(self, requests):
         results = []
         for request in requests:
@@ -361,8 +376,11 @@ class Shotgun(object):
         
         row = self._get_new_row(entity_type)
         
-        self._update_row(entity_type, row, data)        
+        self._update_row(entity_type, row, data)
         row["id"] = next_id
+        
+        if "created_at" not in row:
+            row["created_at"] = datetime.datetime.now()
         
         self._db[entity_type][next_id] = row
         
@@ -637,14 +655,11 @@ class Shotgun(object):
                         sub_field_value = self._get_field_from_row(entity_type2, entity, field3)
                         values.append(sub_field_value)
                     return values
+                elif field_value is None:
+                    return None
                 # not multi entity, must be entity.
                 elif not isinstance(field_value, dict):
                     raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
-
-                # make sure that types in the query match type in the linked field
-                if entity_type2 != field_value["type"]:
-                    raise ShotgunError("Deep query field %s.%s does not match type "
-                                       "with data %s" % (entity_type, field, field_value))
 
                 # ok so looks like the value is an entity link
                 # e.g. db contains: {"sg_sequence": {"type":"Sequence", "id": 123 } }
