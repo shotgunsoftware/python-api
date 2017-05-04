@@ -2895,7 +2895,7 @@ class Shotgun(object):
             }
         )
 
-    def nav_search_string(self, root_path, search_string):
+    def nav_search_string(self, root_path, search_string, seed_entity_field=None):
         """
         Search function adapted to work with the navigation hierarchy.
 
@@ -2909,11 +2909,12 @@ class Shotgun(object):
                 "nav_search",
                 {
                     "root_path":root_path,
+                    "seed_entity_field": seed_entity_field,
                     "search_criteria": { "search_string": search_string }
                 }
         )
 
-    def nav_search_entity(self, root_path, entity):
+    def nav_search_entity(self, root_path, entity, seed_entity_field=None):
         """
         Search function adapted to work with the navigation hierarchy.
 
@@ -2928,6 +2929,7 @@ class Shotgun(object):
                 "nav_search",
                 {
                     "root_path": root_path,
+                    "seed_entity_field": seed_entity_field,
                     "search_criteria": {"entity": entity }
                 }
         )
