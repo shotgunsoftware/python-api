@@ -4,6 +4,8 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.0.32.toolkit (2017 May 11)
+=====================
 - Multiple enhancements and bugfixes to Mockgun:
    - Added support for filters using the `filter_operator` syntax.
    - `is` and `is_not` comparisons with an entity or multi-entity field set to `None` are now handled.
@@ -14,6 +16,7 @@ Here you can see the full list of changes between each Python API release.
    - Schemas are written using pickle's highest protocol as of Python 2.4's release, which speeds up the loading from disk.
    - The current schema is cached in memory so it can be reused without having to do back to disk.
 - Added ``nav_search_string()`` and ``nav_search_entity()`` methods as experimental, internal methods for querying SG hierarchy.
+
 v3.0.32 (2016 Sep 22)
 =====================
 
