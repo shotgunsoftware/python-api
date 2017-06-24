@@ -573,6 +573,9 @@ class Shotgun(object):
         if connect:
             self.server_caps
 
+        # Check for api_max_entities_per_page in the server info and change the record per page value if it is supplied.
+        self.config.records_per_page = self.server_caps.server_info.get('api_max_entities_per_page') or self.config.records_per_page
+
         # When using auth_token in a 2FA scenario we need to switch to session-based
         # authentication because the auth token will no longer be valid after a first use.
         if self.config.auth_token is not None:
