@@ -9,16 +9,8 @@ v3.0.33.dev (TBD)
 
 - Raise an exception when uploading an empty file using :meth:`upload`, :meth:`upload_thumbnail` 
   or :meth:`upload_filmstrip_thumbnail` before calling out to the server.
-- Multiple enhancements and bugfixes to Mockgun:
-   - Added support for filters using the `filter_operator` syntax.
-   - `is` and `is_not` comparison with a field set to `None` are now handled.
-   - Fixed contains operator on strings.
-   - Fixed entity link comparisons with `None`.
-   - Added support for dotted notation in find parameters (e.g. `users.HumanUser.login`) on both entity and multi-entity fields.
-   - Added unit tests for Mockgun in `test_mockgun.py`. The tests currently cover all the fixes and features mentionned above.
-   - Schemas are written using pickle's highest protocol as of Python 2.4's release, which speeds up the loading from disk.
-   - The current schema is cached in memory so it can be reused without having to do back to disk.
-- TBD
+- Multiple enhancements and bugfixes to Mockgun
+- Added ``nav_search_string()`` and ``nav_search_entity()`` methods as experimental, internal methods for querying SG hierarchy.
 
 v3.0.32 (2016 Sep 22)
 =====================
