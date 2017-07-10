@@ -2972,11 +2972,15 @@ class Shotgun(object):
         """
         Build urllib2 opener with appropriate proxy handler.
         """
+        handlers = []
+        if self.__ca_certs and not NO_SSL_VALIDATION and hasattr(ssl, "create_default_context"):
+            context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH,
+                                                 cafile=self.__ca_certs)
+            handlers.append(urllib2.HTTPSHandler(context=context))
         if self.config.proxy_handler:
-            opener = urllib2.build_opener(self.config.proxy_handler, handler)
-        else:
-            opener = urllib2.build_opener(handler)
-        return opener
+            handlers.append(self.config.proxy_handler)
+        handlers.append(handler)
+        return urllib2.build_opener(*handlers)
 
     def _turn_off_ssl_validation(self):
         """
