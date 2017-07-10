@@ -179,13 +179,21 @@ class TestShotgunApi(base.LiveTestBase):
         # test download with attachment hash
         ticket = self.sg.find_one('Ticket', [['id', 'is', self.ticket['id']]],
                                   ['attachments'])
-        attach_file = self.sg.download_attachment(ticket['attachments'][0])
+
+        # Look for the attachment we just uploaded, the attachments are not returned from latest
+        # to earliest.
+        attachment = [x for x in ticket["attachments"] if x["id"] == attach_id]
+        self.assertEqual(len(attachment), 1)
+
+        attachment = attachment[0]
+        attach_file = self.sg.download_attachment(attachment)
+
         self.assertTrue(attach_file is not None)
         self.assertEqual(size, len(attach_file))
         self.assertEqual(orig_file, attach_file)
 
         # test download with attachment hash (write to disk)
-        result = self.sg.download_attachment(ticket['attachments'][0],
+        result = self.sg.download_attachment(attachment,
                                              file_path=file_path)
         self.assertEqual(result, file_path)
         fp = open(file_path, 'rb')
