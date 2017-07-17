@@ -33,7 +33,8 @@ You can see the [full history of the Python API on the documentation site](http:
 
 Integration and unit tests are provided. 
 
-[![Build Status](https://secure.travis-ci.org/shotgunsoftware/python-api.png?branch=master)](http://travis-ci.org/shotgunsoftware/python-api)
+[![Build Status](https://secure.travis-ci.org/shotgunsoftware/python-api.svg?branch=master)](http://travis-ci.org/shotgunsoftware/python-api)
+
 
 - All tests require the [nose unit testing tools](http://nose.readthedocs.org), and a `tests/config` file (you can copy an example from `tests/example_config`).
 - Tests can be run individually like this: `nosetest tests/test_client.py`
