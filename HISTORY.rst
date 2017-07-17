@@ -11,6 +11,7 @@ v3.0.33.dev (TBD)
   or :meth:`upload_filmstrip_thumbnail` before calling out to the server.
 - Multiple enhancements and bugfixes to Mockgun
 - Added ``nav_search_string()`` and ``nav_search_entity()`` methods as experimental, internal methods for querying SG hierarchy.
+- Introduces a :meth:`following` query method, that accepts a user entity and optionally an entity type and/or project.
 
 v3.0.32 (2016 Sep 22)
 =====================
