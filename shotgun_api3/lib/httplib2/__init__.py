@@ -56,7 +56,7 @@ from gettext import gettext as _
 import socket
 
 try:
-    from httplib2 import socks
+    from . import socks
 except ImportError:
     try:
         import socks
