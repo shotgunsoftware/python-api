@@ -29,7 +29,6 @@
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-from pprint import pprint # useful for debugging
 import base64
 import cookielib    # used for attachment upload
 import cStringIO    # used for attachment upload
