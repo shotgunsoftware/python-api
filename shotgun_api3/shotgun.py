@@ -255,6 +255,15 @@ class ServerCapabilities(object):
             'label': 'optimized pagination'
         }, False)
 
+    def ensure_return_image_urls_support(self):
+        """
+        Ensures server has support for returning thumbnail URLs without additional round-trips, added in v3.3.0.
+        """
+        return self._ensure_support({
+            'version': (3, 3, 0),
+            'label': 'return thumbnail URLs'
+        }, False)
+
     def __str__(self):
         return "ServerCapabilities: host %s, version %s, is_dev %s"\
                  % (self.host, self.version, self.is_dev)
@@ -841,7 +850,7 @@ class Shotgun(object):
                                                  include_archived_projects,
                                                  additional_filter_presets)
 
-        if self.server_caps.version and self.server_caps.version >= (3, 3, 0):
+        if self.server_caps.ensure_return_image_urls_support():
             params['api_return_image_urls'] = True
 
         if self.server_caps.ensure_paging_info_without_counts_support():
