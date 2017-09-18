@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; python-api v3.0.32 documentation</title>
+  <title>API Reference &mdash; python-api v3.0.34 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api v3.0.32 documentation" href="index.html"/>
+    <link rel="top" title="python-api v3.0.34 documentation" href="index.html"/>
         <link rel="next" title="API Cookbook" href="cookbook.html"/>
         <link rel="prev" title="Authentication" href="authentication.html"/> 
 
@@ -186,7 +186,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.32.<br>
+    <b>python-api</b> v3.0.34.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -703,8 +703,13 @@ this <code class="docutils literal"><span class="pre">session_uuid</span></code>
 <code class="descclassname">Shotgun.</code><code class="descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get API-related metadata from the Shotgun server.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
-<span class="go">{&#39;s3_uploads_enabled&#39;: True, &#39;full_version&#39;: [6, 3, 15, 0], &#39;version&#39;: [6, 3, 15]}</span>
+<span class="go">{&#39;full_version&#39;: [6, 3, 15, 0], &#39;version&#39;: [6, 3, 15], ...}</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Beyond <code class="docutils literal"><span class="pre">full_version</span></code> and <code class="docutils literal"><span class="pre">version</span></code> which differ by the inclusion of the bugfix number, you should expect
+these values to be unsupported and for internal use only.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -751,7 +756,7 @@ also some specialized convenience methods for accessing particular types of info
 <li><strong>data</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Dictionary of fields and corresponding values to set on the new entity. If
 <code class="docutils literal"><span class="pre">image</span></code> or <code class="docutils literal"><span class="pre">filmstrip_image</span></code> fields are provided, the file path will be uploaded
 to the server automatically.</li>
-<li><strong>return_fields</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Optional list of additional field values to return from the new
+<li><strong>return_fields</strong> (<em>list</em>) &#8211; Optional list of additional field values to return from the new
 entity. Defaults to <code class="docutils literal"><span class="pre">id</span></code> field.</li>
 </ul>
 </td>
@@ -824,15 +829,15 @@ This is often called &#8220;deep linking&#8221; or using &#8220;dot syntax&#8221
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Shotgun entity type to find.</li>
-<li><strong>filters</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; <p>list of filters to apply to the query.</p>
+<li><strong>filters</strong> (<em>list</em>) &#8211; <p>list of filters to apply to the query.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <p class="last"><a class="reference internal" href="#filter-syntax"><span class="std std-ref">Filter Syntax</span></a></p>
 </div>
 </li>
-<li><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Optional list of fields to include in each entity record returned.
+<li><strong>fields</strong> (<em>list</em>) &#8211; Optional list of fields to include in each entity record returned.
 Defaults to <code class="docutils literal"><span class="pre">[&quot;id&quot;]</span></code>.</li>
-<li><strong>order</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; <p>Optional list of dictionaries defining how to order the results of the
+<li><strong>order</strong> (<em>list</em>) &#8211; <p>Optional list of dictionaries defining how to order the results of the
 query. Each dictionary contains the <code class="docutils literal"><span class="pre">field_name</span></code> to order by and  the <code class="docutils literal"><span class="pre">direction</span></code>
 to sort:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;field_name&#39;</span><span class="p">:</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;asc&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;field_name&#39;</span><span class="p">:</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;desc&#39;</span><span class="p">}]</span>
@@ -847,7 +852,7 @@ query. Defaults to <code class="docutils literal"><span class="pre">&quot;all&qu
 returns all entities that match.</li>
 <li><strong>page</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Optional page of results to return. Use this together with the <code class="docutils literal"><span class="pre">limit</span></code>
 parameter to control how your query results are paged. Defaults to <code class="docutils literal"><span class="pre">0</span></code> which returns
-the first page of results.</li>
+all entities that match.</li>
 <li><strong>retired_only</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Optional boolean when <code class="docutils literal"><span class="pre">True</span></code> will return only entities that have
 been retried. Defaults to <code class="docutils literal"><span class="pre">False</span></code> which returns only entities which have not been
 retired. There is no option to return both retired and non-retired entities in the
@@ -871,7 +876,7 @@ argument.</p>
 defaults <code class="docutils literal"><span class="pre">&quot;id&quot;</span></code> and <code class="docutils literal"><span class="pre">&quot;type&quot;</span></code> which are always included.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)">list</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
 </td>
 </tr>
 </tbody>
@@ -893,13 +898,13 @@ result.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Shotgun entity type as a string to find.</li>
-<li><strong>filters</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; <p>list of filters to apply to the query.</p>
+<li><strong>filters</strong> (<em>list</em>) &#8211; <p>list of filters to apply to the query.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <p class="last"><a class="reference internal" href="#filter-syntax"><span class="std std-ref">Filter Syntax</span></a></p>
 </div>
 </li>
-<li><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; Optional list of fields to include in each entity record returned.
+<li><strong>fields</strong> (<em>list</em>) &#8211; Optional list of fields to include in each entity record returned.
 Defaults to <code class="docutils literal"><span class="pre">[&quot;id&quot;]</span></code>.</li>
 <li><strong>order</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; <p>Optional list of fields to order the results by. List has the format:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;field_name&#39;</span><span class="p">:</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;asc&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;field_name&#39;</span><span class="p">:</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;desc&#39;</span><span class="p">}]</span>
@@ -1106,7 +1111,7 @@ entity is not currently retired).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>requests</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; <p>A list of dict&#8217;s of the form which have a request_type key and also
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>requests</strong> (<em>list</em>) &#8211; <p>A list of dict&#8217;s of the form which have a request_type key and also
 specifies:</p>
 <ul class="simple">
 <li>create: <code class="docutils literal"><span class="pre">entity_type</span></code>, data dict of fields to set</li>
@@ -1118,7 +1123,7 @@ specifies:</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of values for each operation. Create and update requests return a dict of
 the fields updated. Delete requests return <code class="docutils literal"><span class="pre">True</span></code> if the entity was deleted.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)">list</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
 </tbody>
 </table>
@@ -1277,9 +1282,9 @@ and summary values are returned for each group on each level.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The entity type to summarize</li>
-<li><strong>filters</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; A list of conditions used to filter the find query. Uses the same
+<li><strong>filters</strong> (<em>list</em>) &#8211; A list of conditions used to filter the find query. Uses the same
 syntax as <code class="xref py py-meth docutils literal"><span class="pre">find()</span></code> method.</li>
-<li><strong>summary_fields</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; <p>A list of dictionaries with the following keys:</p>
+<li><strong>summary_fields</strong> (<em>list</em>) &#8211; <p>A list of dictionaries with the following keys:</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1297,7 +1302,7 @@ syntax as <code class="xref py py-meth docutils literal"><span class="pre">find(
 <li><strong>filter_operator</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Operator to apply to the filters. Supported values are <code class="docutils literal"><span class="pre">&quot;all&quot;</span></code>
 and <code class="docutils literal"><span class="pre">&quot;any&quot;</span></code>. These are just another way of defining if the query is an AND or OR
 query. Defaults to <code class="docutils literal"><span class="pre">&quot;all&quot;</span></code>.</li>
-<li><strong>grouping</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; <p>Optional list of dicts with the following keys:</p>
+<li><strong>grouping</strong> (<em>list</em>) &#8211; <p>Optional list of dicts with the following keys:</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1395,7 +1400,7 @@ See above for details.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of dictionaries. See above for example.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)">list</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
 </td>
 </tr>
 </tbody>
@@ -1454,7 +1459,7 @@ with.</p>
 exception will be raised.</li>
 <li><strong>entity_types</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Dictionary to specify which entity types to search across. See
 above for usage examples.</li>
-<li><strong>project_ids</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; List of Projects to search. By default, all projects will be
+<li><strong>project_ids</strong> (<em>list</em>) &#8211; List of Projects to search. By default, all projects will be
 searched.</li>
 <li><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Specify the maximum number of matches to return.</li>
 </ul>
@@ -1651,7 +1656,7 @@ assign tags to the Attachment.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Entity type to link the upload to.</li>
 <li><strong>entity_id</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Id of the entity to link the upload to.</li>
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Full path to file on disk to upload.</li>
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Full path to an existing non-empty file on disk to upload.</li>
 <li><strong>field_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The internal Shotgun field name on the entity to store the file in.
 This field must be a File/Link field type.</li>
 <li><strong>display_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The display name to use for the file. Defaults to the file name.</li>
@@ -1874,7 +1879,7 @@ place before the filmstrip will be displayed in the Shotgun web UI.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>entities</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; <p>The entities to update to point to the shared  thumbnail provided in
+<li><strong>entities</strong> (<em>list</em>) &#8211; <p>The entities to update to point to the shared  thumbnail provided in
 standard entity dict format:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">123</span><span class="p">},</span>
  <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">456</span><span class="p">}]</span>
@@ -1959,7 +1964,7 @@ traverse into connected data.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Entity type to retrieve activity stream for</li>
 <li><strong>entity_id</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Entity id to retrieve activity stream for</li>
-<li><strong>entity_fields</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; List of additional fields to include.
+<li><strong>entity_fields</strong> (<em>list</em>) &#8211; List of additional fields to include.
 See above for details</li>
 <li><strong>max_id</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Do not retrieve ids greater than this id.
 This is useful when implementing paging.</li>
@@ -2066,7 +2071,7 @@ passed in.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of dicts representing each user following the entity</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)">list</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Versionadded:</th><td class="field-body"></td>
 </tr>
@@ -2768,7 +2773,7 @@ with which parameters.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">value:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></a></td>
+<tr class="field-odd field"><th class="field-name">value:</th><td class="field-body"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -2950,7 +2955,7 @@ Example above is default.F=Feet f=Frames.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">value:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></a></td>
+<tr class="field-odd field"><th class="field-name">value:</th><td class="field-body"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -3043,7 +3048,7 @@ Example above is default.F=Feet f=Frames.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">value:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#list" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></a></td>
+<tr class="field-odd field"><th class="field-name">value:</th><td class="field-body"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -3218,7 +3223,7 @@ immediate concerns, please <a class="reference external" href="https://support.s
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Autodesk.
+        &copy; Copyright 2017, Autodesk.
 
     </p>
   </div> 
@@ -3239,7 +3244,7 @@ immediate concerns, please <a class="reference external" href="https://support.s
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v3.0.32',
+            VERSION:'v3.0.34',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Shotgun Python API Changelog &mdash; python-api v3.0.32 documentation</title>
+  <title>Shotgun Python API Changelog &mdash; python-api v3.0.34 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api v3.0.32 documentation" href="index.html"/>
+    <link rel="top" title="python-api v3.0.34 documentation" href="index.html"/>
         <link rel="up" title="Advanced Topics" href="advanced.html"/>
         <link rel="prev" title="IronPython" href="advanced/iron_python.html"/> 
 
@@ -99,7 +99,8 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced/packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/iron_python.html">IronPython</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Shotgun Python API Changelog</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#v3-0-33-dev-tbd">v3.0.33.dev (TBD)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-0-34-2017-september-18">v3.0.34 (2017 September 18)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-0-33-2017-july-18">v3.0.33 (2017 July 18)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-32-2016-sep-22">v3.0.32 (2016 Sep 22)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-31-2016-may-18">v3.0.31 (2016 May 18)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-30-2016-apr-25">v3.0.30 (2016 Apr 25)</a></li>
@@ -166,7 +167,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.32.<br>
+    <b>python-api</b> v3.0.34.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -232,10 +233,21 @@
   <div class="section" id="shotgun-python-api-changelog">
 <h1>Shotgun Python API Changelog<a class="headerlink" href="#shotgun-python-api-changelog" title="Permalink to this headline">¶</a></h1>
 <p>Here you can see the full list of changes between each Python API release.</p>
-<div class="section" id="v3-0-33-dev-tbd">
-<h2>v3.0.33.dev (TBD)<a class="headerlink" href="#v3-0-33-dev-tbd" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="v3-0-34-2017-september-18">
+<h2>v3.0.34 (2017 September 18)<a class="headerlink" href="#v3-0-34-2017-september-18" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>TBD</li>
+<li>Optimized pagination strategy for Shotgun 7.4+</li>
+<li>Switched from a hard-coded value of 500 for &#8220;records_per_page&#8221; to a server-defined value. We will be experimenting with higher values with the goal of increasing performance for large result sets.</li>
+</ul>
+</div>
+<div class="section" id="v3-0-33-2017-july-18">
+<h2>v3.0.33 (2017 July 18)<a class="headerlink" href="#v3-0-33-2017-july-18" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Raise an exception when uploading an empty file using <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code></a>, <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_thumbnail"><code class="xref py py-meth docutils literal"><span class="pre">upload_thumbnail()</span></code></a>
+or <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_filmstrip_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_filmstrip_thumbnail"><code class="xref py py-meth docutils literal"><span class="pre">upload_filmstrip_thumbnail()</span></code></a> before calling out to the server.</li>
+<li>Multiple enhancements and bugfixes to Mockgun</li>
+<li>Added <code class="docutils literal"><span class="pre">nav_search_string()</span></code> and <code class="docutils literal"><span class="pre">nav_search_entity()</span></code> methods as experimental, internal methods for querying SG hierarchy.</li>
+<li>Introduces a <code class="xref py py-meth docutils literal"><span class="pre">following()</span></code> query method, that accepts a user entity and optionally an entity type and/or project.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-32-2016-sep-22">
@@ -609,7 +621,7 @@ after initializing it).</li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Autodesk.
+        &copy; Copyright 2017, Autodesk.
 
     </p>
   </div> 
@@ -630,7 +642,7 @@ after initializing it).</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v3.0.32',
+            VERSION:'v3.0.34',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

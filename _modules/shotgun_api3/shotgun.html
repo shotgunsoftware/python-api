@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>shotgun_api3.shotgun &mdash; python-api v3.0.32 documentation</title>
+  <title>shotgun_api3.shotgun &mdash; python-api v3.0.34 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="python-api v3.0.32 documentation" href="../../index.html"/>
+    <link rel="top" title="python-api v3.0.34 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -116,7 +116,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.32.<br>
+    <b>python-api</b> v3.0.34.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -183,7 +183,7 @@
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd"> -----------------------------------------------------------------------------</span>
-<span class="sd"> Copyright (c) 2009-2016, Shotgun Software Inc.</span>
+<span class="sd"> Copyright (c) 2009-2017, Shotgun Software Inc.</span>
 
 <span class="sd"> Redistribution and use in source and binary forms, with or without</span>
 <span class="sd"> modification, are permitted provided that the following conditions are met:</span>
@@ -210,7 +210,6 @@
 <span class="sd"> OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
 <span class="sd"> OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
 
 <span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">import</span> <span class="nn">cookielib</span>    <span class="c1"># used for attachment upload</span>
@@ -274,7 +273,7 @@
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.0.33.dev&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.0.34&quot;</span>
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Errors</span>
@@ -420,6 +419,33 @@
             <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;additional_filter_presets parameter&#39;</span>
         <span class="p">},</span> <span class="kc">True</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">ensure_user_following_support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensures server has support for listing items a user is following, added in v7.0.12.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
+            <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
+            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;user_following parameter&#39;</span>
+        <span class="p">},</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">ensure_paging_info_without_counts_support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensures server has support for optimized pagination, added in v7.4.0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
+            <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;optimized pagination&#39;</span>
+        <span class="p">},</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">ensure_return_image_urls_support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensures server has support for returning thumbnail URLs without additional round-trips, added in v3.3.0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
+            <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;return thumbnail URLs&#39;</span>
+        <span class="p">},</span> <span class="kc">False</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;ServerCapabilities: host </span><span class="si">%s</span><span class="s2">, version </span><span class="si">%s</span><span class="s2">, is_dev </span><span class="si">%s</span><span class="s2">&quot;</span>\
                  <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dev</span><span class="p">)</span>
@@ -535,6 +561,8 @@
         <span class="s2">&quot;^(\d</span><span class="si">{4}</span><span class="s2">)\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])&quot;</span>\
         <span class="s2">&quot;(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d</span><span class="si">{3}</span><span class="s2">)?)?$&quot;</span><span class="p">)</span>
 
+    <span class="n">_MULTIPART_UPLOAD_CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">20000000</span>
+    
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">base_url</span><span class="p">,</span>
                  <span class="n">script_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -744,6 +772,9 @@
         <span class="k">if</span> <span class="n">connect</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">server_caps</span>
 
+        <span class="c1"># Check for api_max_entities_per_page in the server info and change the record per page value if it is supplied.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">records_per_page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;api_max_entities_per_page&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">records_per_page</span>
+
         <span class="c1"># When using auth_token in a 2FA scenario we need to switch to session-based</span>
         <span class="c1"># authentication because the auth token will no longer be valid after a first use.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">auth_token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -762,9 +793,12 @@
 <span class="sd">        Property containing server information.</span>
 
 <span class="sd">        &gt;&gt;&gt; sg.server_info</span>
-<span class="sd">        {&#39;full_version&#39;: [6, 3, 15, 0],</span>
-<span class="sd">         &#39;s3_uploads_enabled&#39;: True,</span>
-<span class="sd">         &#39;version&#39;: [6, 3, 15]}</span>
+<span class="sd">        {&#39;full_version&#39;: [6, 3, 15, 0], &#39;version&#39;: [6, 3, 15], ...}</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            Beyond ``full_version`` and ``version`` which differ by the inclusion of the bugfix number, you should expect</span>
+<span class="sd">            these values to be unsupported and for internal use only.</span>
 
 <span class="sd">        :returns: dict of server information from :class:`ServerCapabilities` object</span>
 <span class="sd">        :rtype: dict</span>
@@ -814,7 +848,12 @@
 <span class="sd">        Get API-related metadata from the Shotgun server.</span>
 
 <span class="sd">        &gt;&gt;&gt; sg.info()</span>
-<span class="sd">        {&#39;s3_uploads_enabled&#39;: True, &#39;full_version&#39;: [6, 3, 15, 0], &#39;version&#39;: [6, 3, 15]}</span>
+<span class="sd">        {&#39;full_version&#39;: [6, 3, 15, 0], &#39;version&#39;: [6, 3, 15], ...}</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            Beyond ``full_version`` and ``version`` which differ by the inclusion of the bugfix number, you should expect</span>
+<span class="sd">            these values to be unsupported and for internal use only.</span>
 
 <span class="sd">        :returns: dict of the server metadata.</span>
 <span class="sd">        :rtype: dict</span>
@@ -942,7 +981,7 @@
 <span class="sd">            returns all entities that match.</span>
 <span class="sd">        :param int page: Optional page of results to return. Use this together with the ``limit``</span>
 <span class="sd">            parameter to control how your query results are paged. Defaults to ``0`` which returns</span>
-<span class="sd">            the first page of results.</span>
+<span class="sd">            all entities that match.</span>
 <span class="sd">        :param bool retired_only: Optional boolean when ``True`` will return only entities that have</span>
 <span class="sd">            been retried. Defaults to ``False`` which returns only entities which have not been</span>
 <span class="sd">            retired. There is no option to return both retired and non-retired entities in the</span>
@@ -993,6 +1032,16 @@
                                                  <span class="n">include_archived_projects</span><span class="p">,</span>
                                                  <span class="n">additional_filter_presets</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_caps</span><span class="o">.</span><span class="n">ensure_return_image_urls_support</span><span class="p">():</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;api_return_image_urls&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_caps</span><span class="o">.</span><span class="n">ensure_paging_info_without_counts_support</span><span class="p">():</span>
+            <span class="n">paging_info_param</span> <span class="o">=</span> <span class="s2">&quot;return_paging_info_without_counts&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">paging_info_param</span> <span class="o">=</span> <span class="s2">&quot;return_paging_info&quot;</span>
+
+        <span class="n">params</span><span class="p">[</span><span class="n">paging_info_param</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
         <span class="k">if</span> <span class="n">limit</span> <span class="ow">and</span> <span class="n">limit</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">records_per_page</span><span class="p">:</span>
             <span class="n">params</span><span class="p">[</span><span class="s2">&quot;paging&quot;</span><span class="p">][</span><span class="s2">&quot;entities_per_page&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">limit</span>
             <span class="c1"># If page isn&#39;t set and the limit doesn&#39;t require pagination,</span>
@@ -1000,30 +1049,40 @@
             <span class="k">if</span> <span class="n">page</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">page</span> <span class="o">=</span> <span class="mi">1</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_caps</span><span class="o">.</span><span class="n">version</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_caps</span><span class="o">.</span><span class="n">version</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;api_return_image_urls&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-
         <span class="c1"># if page is specified, then only return the page of records requested</span>
         <span class="k">if</span> <span class="n">page</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># No paging_info needed, so optimize it out.</span>
-            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;return_paging_info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">params</span><span class="p">[</span><span class="s2">&quot;paging&quot;</span><span class="p">][</span><span class="s2">&quot;current_page&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">page</span>
             <span class="n">records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entities&quot;</span><span class="p">,</span> <span class="p">[])</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_records</span><span class="p">(</span><span class="n">records</span><span class="p">)</span>
 
+        <span class="n">params</span><span class="p">[</span><span class="n">paging_info_param</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">records</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-        <span class="k">while</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entities&quot;</span><span class="p">):</span>
-            <span class="n">records</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entities&quot;</span><span class="p">))</span>
 
-            <span class="k">if</span> <span class="n">limit</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">limit</span><span class="p">:</span>
-                <span class="n">records</span> <span class="o">=</span> <span class="n">records</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span>
-                <span class="k">break</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">)</span> <span class="o">==</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;paging_info&quot;</span><span class="p">][</span><span class="s2">&quot;entity_count&quot;</span><span class="p">]:</span>
-                <span class="k">break</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_caps</span><span class="o">.</span><span class="n">ensure_paging_info_without_counts_support</span><span class="p">():</span>
+            <span class="n">has_next_page</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">while</span> <span class="n">has_next_page</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+                <span class="n">records</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entities&quot;</span><span class="p">))</span>
+                
+                <span class="k">if</span> <span class="n">limit</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">limit</span><span class="p">:</span>
+                    <span class="n">records</span> <span class="o">=</span> <span class="n">records</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span>
+                    <span class="k">break</span>
 
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;paging&#39;</span><span class="p">][</span><span class="s1">&#39;current_page&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">has_next_page</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;paging_info&quot;</span><span class="p">][</span><span class="s2">&quot;has_next_page&quot;</span><span class="p">]</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;paging&#39;</span><span class="p">][</span><span class="s1">&#39;current_page&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entities&quot;</span><span class="p">):</span>
+                <span class="n">records</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entities&quot;</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="n">limit</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">limit</span><span class="p">:</span>
+                    <span class="n">records</span> <span class="o">=</span> <span class="n">records</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span>
+                    <span class="k">break</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">records</span><span class="p">)</span> <span class="o">==</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;paging_info&quot;</span><span class="p">][</span><span class="s2">&quot;entity_count&quot;</span><span class="p">]:</span>
+                    <span class="k">break</span>
+
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;paging&#39;</span><span class="p">][</span><span class="s1">&#39;current_page&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;read&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_records</span><span class="p">(</span><span class="n">records</span><span class="p">)</span></div>
 
@@ -1042,7 +1101,6 @@
         <span class="n">params</span><span class="p">[</span><span class="s2">&quot;return_fields&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span> <span class="ow">or</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
         <span class="n">params</span><span class="p">[</span><span class="s2">&quot;filters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">filters</span>
         <span class="n">params</span><span class="p">[</span><span class="s2">&quot;return_only&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">retired_only</span> <span class="ow">and</span> <span class="s1">&#39;retired&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;active&quot;</span>
-        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;return_paging_info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">params</span><span class="p">[</span><span class="s2">&quot;paging&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;entities_per_page&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">records_per_page</span><span class="p">,</span>
                              <span class="s2">&quot;current_page&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="p">}</span>
 
@@ -1792,6 +1850,39 @@
         
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s1">&#39;followers&#39;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
+    <span class="k">def</span> <span class="nf">following</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">entity_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return all entity instances a user is following.</span>
+
+<span class="sd">        Optionally, a project and/or entity_type can be supplied to restrict returned results.</span>
+
+<span class="sd">            &gt;&gt;&gt; user = {&quot;type&quot;: &quot;HumanUser&quot;, &quot;id&quot;: 1234}</span>
+<span class="sd">            &gt;&gt;&gt; project = {&quot;type&quot;: &quot;Project&quot;, &quot;id&quot;: 1234}</span>
+<span class="sd">            &gt;&gt;&gt; entity_type = &quot;Task&quot;</span>
+<span class="sd">            &gt;&gt;&gt; sg.following(user, project=project, entity_type=entity_type)</span>
+<span class="sd">            [{&quot;type&quot;:&quot;Task&quot;, &quot;id&quot;:1},</span>
+<span class="sd">             {&quot;type&quot;:&quot;Task&quot;, &quot;id&quot;:2},</span>
+<span class="sd">             {&quot;type&quot;:&quot;Task&quot;, &quot;id&quot;:3}]</span>
+
+<span class="sd">        :param dict user: Find what this person is following.</span>
+<span class="sd">        :param dict project: Optional filter to only return results from a specific project.</span>
+<span class="sd">        :param str entity_type: Optional filter to only return results from one entity type.</span>
+<span class="sd">        :returns: list of dictionaries, each containing entity type &amp; id&#39;s being followed.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_caps</span><span class="o">.</span><span class="n">ensure_user_following_support</span><span class="p">()</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;user&quot;</span><span class="p">:</span><span class="n">user</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">project</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;project&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="k">if</span> <span class="n">entity_type</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;entity_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entity_type</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s1">&#39;following&#39;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Shotgun.schema_entity_read"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.schema_entity_read">[docs]</a>    <span class="k">def</span> <span class="nf">schema_entity_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_entity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all active entity types, their display names, and their visibility.</span>
@@ -2198,33 +2289,19 @@
             <span class="s2">&quot;filmstrip_thumbnail&quot;</span> <span class="p">:</span> <span class="n">filmstrip_thumbnail</span><span class="p">,</span>
         <span class="p">}</span>
 
-        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth_params</span><span class="p">())</span>
-
-        <span class="c1"># Create opener with extended form post support</span>
-        <span class="n">opener</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_opener</span><span class="p">(</span><span class="n">FormPostHandler</span><span class="p">)</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlunparse</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">server</span><span class="p">,</span>
             <span class="s2">&quot;/upload/share_thumbnail&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
-        <span class="c1"># Perform the request</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">resp</span> <span class="o">=</span> <span class="n">opener</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-            <span class="c1"># response headers are in str(resp.info()).splitlines()</span>
-        <span class="k">except</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">500</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Server encountered an internal error. &quot;</span>
-                    <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_auth_params</span><span class="p">(</span><span class="n">params</span><span class="p">),</span> <span class="n">e</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Unanticipated error occurred </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_form</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Unable to share thumbnail: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Unable to share thumbnail: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># clearing thumbnail returns no attachment_id</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">attachment_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="n">attachment_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># clearing thumbnail returns no attachment_id</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">attachment_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">attachment_id</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="n">attachment_id</span></div>
 
@@ -2319,7 +2396,7 @@
 
 <span class="sd">        :param str entity_type: Entity type to link the upload to.</span>
 <span class="sd">        :param int entity_id: Id of the entity to link the upload to.</span>
-<span class="sd">        :param str path: Full path to file on disk to upload.</span>
+<span class="sd">        :param str path: Full path to an existing non-empty file on disk to upload.</span>
 <span class="sd">        :param str field_name: The internal Shotgun field name on the entity to store the file in.</span>
 <span class="sd">            This field must be a File/Link field type.</span>
 <span class="sd">        :param str display_name: The display name to use for the file. Defaults to the file name.</span>
@@ -2327,12 +2404,114 @@
 <span class="sd">        :returns: Id of the Attachment entity that was created for the image.</span>
 <span class="sd">        :rtype: int</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Basic validations of the file to upload.</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">path</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Path must be a valid file, got &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Path cannot be an empty file: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
 
         <span class="n">is_thumbnail</span> <span class="o">=</span> <span class="p">(</span><span class="n">field_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;thumb_image&quot;</span><span class="p">,</span> <span class="s2">&quot;filmstrip_thumb_image&quot;</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">,</span>
                                        <span class="s2">&quot;filmstrip_image&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Version.sg_uploaded_movie is handled as a special case and uploaded</span>
+        <span class="c1"># directly to Cloud storage</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;s3_direct_uploads_enabled&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> \
+                <span class="ow">and</span> <span class="n">entity_type</span> <span class="o">==</span> <span class="s2">&quot;Version&quot;</span> <span class="ow">and</span> <span class="n">field_name</span> <span class="o">==</span> <span class="s2">&quot;sg_uploaded_movie&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_to_storage</span><span class="p">(</span><span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">display_name</span><span class="p">,</span>
+                                           <span class="n">tag_list</span><span class="p">,</span> <span class="n">is_thumbnail</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upload_to_sg</span><span class="p">(</span><span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">display_name</span><span class="p">,</span>
+                                      <span class="n">tag_list</span><span class="p">,</span> <span class="n">is_thumbnail</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_upload_to_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">display_name</span><span class="p">,</span>
+                           <span class="n">tag_list</span><span class="p">,</span> <span class="n">is_thumbnail</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to upload a file to the Cloud storage and link it to the specified entity.</span>
+
+<span class="sd">        :param str entity_type: Entity type to link the upload to.</span>
+<span class="sd">        :param int entity_id: Id of the entity to link the upload to.</span>
+<span class="sd">        :param str path: Full path to an existing non-empty file on disk to upload.</span>
+<span class="sd">        :param str field_name: The internal Shotgun field name on the entity to store the file in.</span>
+<span class="sd">            This field must be a File/Link field type.</span>
+<span class="sd">        :param str display_name: The display name to use for the file. Defaults to the file name.</span>
+<span class="sd">        :param str tag_list: comma-separated string of tags to assign to the file.</span>
+<span class="sd">        :param bool is_thumbnail: indicates if the attachment is a thumbnail.</span>
+<span class="sd">        :returns: Id of the Attachment entity that was created for the image.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># Step 1: get the upload url</span>
+
+        <span class="n">is_multipart_upload</span> <span class="o">=</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>  <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MULTIPART_UPLOAD_CHUNK_SIZE</span><span class="p">)</span>
+
+        <span class="n">upload_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attachment_upload_info</span><span class="p">(</span><span class="n">is_thumbnail</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">is_multipart_upload</span><span class="p">)</span>
+
+        <span class="c1"># Step 2: upload the file</span>
+        <span class="c1"># We upload large files in multiple parts because it is more robust</span>
+        <span class="c1"># (and required when using S3 storage)</span>
+        <span class="k">if</span> <span class="n">is_multipart_upload</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_multipart_upload_file_to_storage</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">upload_info</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_upload_file_to_storage</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">upload_info</span><span class="p">[</span><span class="s2">&quot;upload_url&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Step 3: create the attachment</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlunparse</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">server</span><span class="p">,</span>
+                                   <span class="s2">&quot;/upload/api_link_file&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;entity_type&quot;</span> <span class="p">:</span> <span class="n">entity_type</span><span class="p">,</span>
+            <span class="s2">&quot;entity_id&quot;</span> <span class="p">:</span> <span class="n">entity_id</span><span class="p">,</span>
+            <span class="s2">&quot;upload_link_info&quot;</span><span class="p">:</span> <span class="n">upload_info</span><span class="p">[</span><span class="s1">&#39;upload_info&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth_params</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">is_thumbnail</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">field_name</span> <span class="o">==</span> <span class="s2">&quot;filmstrip_thumb_image&quot;</span> <span class="ow">or</span> <span class="n">field_name</span> <span class="o">==</span> <span class="s2">&quot;filmstrip_image&quot;</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s2">&quot;filmstrip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">display_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">display_name</span> <span class="o">=</span> <span class="n">filename</span>
+            <span class="c1"># we allow linking to nothing for generic reference use cases</span>
+            <span class="k">if</span> <span class="n">field_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s2">&quot;field_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field_name</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;display_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">display_name</span>
+            <span class="c1"># None gets converted to a string and added as a tag...</span>
+            <span class="k">if</span> <span class="n">tag_list</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s2">&quot;tag_list&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag_list</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_form</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Could not upload file successfully, but &quot;</span> \
+                               <span class="s2">&quot;not sure why.</span><span class="se">\n</span><span class="s2">Path: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Url: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Error: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                                   <span class="n">path</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)))</span>
+
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Attachment linked to content on Cloud storage&quot;</span><span class="p">)</span>
+
+        <span class="n">attachment_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">attachment_id</span>
+
+    <span class="k">def</span> <span class="nf">_upload_to_sg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">display_name</span><span class="p">,</span>
+                      <span class="n">tag_list</span><span class="p">,</span> <span class="n">is_thumbnail</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to upload a file to Shotgun and link it to the specified entity.</span>
+
+<span class="sd">        :param str entity_type: Entity type to link the upload to.</span>
+<span class="sd">        :param int entity_id: Id of the entity to link the upload to.</span>
+<span class="sd">        :param str path: Full path to an existing non-empty file on disk to upload.</span>
+<span class="sd">        :param str field_name: The internal Shotgun field name on the entity to store the file in.</span>
+<span class="sd">            This field must be a File/Link field type.</span>
+<span class="sd">        :param str display_name: The display name to use for the file. Defaults to the file name.</span>
+<span class="sd">        :param str tag_list: comma-separated string of tags to assign to the file.</span>
+<span class="sd">        :param bool is_thumbnail: indicates if the attachment is a thumbnail.</span>
+
+<span class="sd">        :returns: Id of the Attachment entity that was created for the image.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;entity_type&quot;</span> <span class="p">:</span> <span class="n">entity_type</span><span class="p">,</span>
@@ -2363,27 +2542,62 @@
 
             <span class="n">params</span><span class="p">[</span><span class="s2">&quot;file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Create opener with extended form post support</span>
-        <span class="n">opener</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_opener</span><span class="p">(</span><span class="n">FormPostHandler</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_form</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
-        <span class="c1"># Perform the request</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">opener</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="k">except</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">500</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Server encountered an internal error. &quot;</span>
-                    <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_auth_params</span><span class="p">(</span><span class="n">params</span><span class="p">),</span> <span class="n">e</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Unanticipated error occurred uploading &quot;</span>
-                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Could not upload file successfully, but &quot;</span>\
-                    <span class="s2">&quot;not sure why.</span><span class="se">\n</span><span class="s2">Path: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Url: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Error: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                    <span class="n">path</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Could not upload file successfully, but &quot;</span>\
+                <span class="s2">&quot;not sure why.</span><span class="se">\n</span><span class="s2">Path: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Url: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Error: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">path</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)))</span>
 
         <span class="n">attachment_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">attachment_id</span></div>
+        <span class="k">return</span> <span class="n">attachment_id</span>
+
+    <span class="k">def</span> <span class="nf">_get_attachment_upload_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_thumbnail</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">is_multipart_upload</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to get the information needed to upload a file to Cloud storage.</span>
+
+<span class="sd">        :param bool is_thumbnail: indicates if the attachment is a thumbnail.</span>
+<span class="sd">        :param str filename: name of the file that will be uploaded.</span>
+<span class="sd">        :param bool is_multipart_upload: Indicates if we want multi-part upload information back.</span>
+
+<span class="sd">        :returns: dictionary containing upload details from the server. </span>
+<span class="sd">            These details are used throughout the upload process.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">is_thumbnail</span><span class="p">:</span>
+            <span class="n">upload_type</span> <span class="o">=</span> <span class="s2">&quot;Thumbnail&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">upload_type</span> <span class="o">=</span> <span class="s2">&quot;Attachment&quot;</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;upload_type&quot;</span> <span class="p">:</span> <span class="n">upload_type</span><span class="p">,</span>
+            <span class="s2">&quot;filename&quot;</span> <span class="p">:</span> <span class="n">filename</span>
+        <span class="p">}</span>
+
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;multipart_upload&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_multipart_upload</span>
+
+        <span class="n">upload_url</span> <span class="o">=</span> <span class="s2">&quot;/upload/api_get_upload_link_info&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlunparse</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">server</span><span class="p">,</span>
+                                   <span class="n">upload_url</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+        <span class="n">upload_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_form</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">upload_info</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Could not get upload_url but &quot;</span> \
+                               <span class="s2">&quot;not sure why.</span><span class="se">\n</span><span class="s2">Path: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Url: </span><span class="si">%s</span><span class="se">\n</span><span class="s2">Error: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                                   <span class="n">filename</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">upload_info</span><span class="p">)))</span>
+
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed rpc call to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">upload_url</span><span class="p">))</span>
+
+        <span class="n">upload_info_parts</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">upload_info</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;upload_url&quot;</span> <span class="p">:</span> <span class="n">upload_info_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;timestamp&quot;</span> <span class="p">:</span> <span class="n">upload_info_parts</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="s2">&quot;upload_type&quot;</span> <span class="p">:</span> <span class="n">upload_info_parts</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+            <span class="s2">&quot;upload_id&quot;</span><span class="p">:</span> <span class="n">upload_info_parts</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+            <span class="s2">&quot;upload_info&quot;</span> <span class="p">:</span> <span class="n">upload_info</span>
+        <span class="p">}</span>
 
 <div class="viewcode-block" id="Shotgun.download_attachment"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.download_attachment">[docs]</a>    <span class="k">def</span> <span class="nf">download_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attachment</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attachment_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2901,12 +3115,51 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span>
-            <span class="s1">&#39;nav_expand&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;nav_expand&quot;</span><span class="p">,</span>
             <span class="p">{</span>
-                <span class="s1">&#39;path&#39;</span><span class="p">:</span><span class="n">path</span><span class="p">,</span>
-                <span class="s1">&#39;seed_entity_field&#39;</span><span class="p">:</span> <span class="n">seed_entity_field</span><span class="p">,</span>
-                <span class="s1">&#39;entity_fields&#39;</span><span class="p">:</span> <span class="n">entity_fields</span>
+                <span class="s2">&quot;path&quot;</span><span class="p">:</span><span class="n">path</span><span class="p">,</span>
+                <span class="s2">&quot;seed_entity_field&quot;</span><span class="p">:</span> <span class="n">seed_entity_field</span><span class="p">,</span>
+                <span class="s2">&quot;entity_fields&quot;</span><span class="p">:</span> <span class="n">entity_fields</span>
             <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">nav_search_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_path</span><span class="p">,</span> <span class="n">search_string</span><span class="p">,</span> <span class="n">seed_entity_field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search function adapted to work with the navigation hierarchy.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            This is an experimental method that is not officially part of the</span>
+<span class="sd">            python-api. Usage of this method is discouraged. This method&#39;s name,</span>
+<span class="sd">            arguments, and argument types may change at any point.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span>
+                <span class="s2">&quot;nav_search&quot;</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;root_path&quot;</span><span class="p">:</span><span class="n">root_path</span><span class="p">,</span>
+                    <span class="s2">&quot;seed_entity_field&quot;</span><span class="p">:</span> <span class="n">seed_entity_field</span><span class="p">,</span>
+                    <span class="s2">&quot;search_criteria&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;search_string&quot;</span><span class="p">:</span> <span class="n">search_string</span> <span class="p">}</span>
+                <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">nav_search_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_path</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">seed_entity_field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search function adapted to work with the navigation hierarchy.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            This is an experimental method that is not officially part of the</span>
+<span class="sd">            python-api. Usage of this method is discouraged. This method&#39;s name,</span>
+<span class="sd">            arguments, and argument types may change at any point.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span>
+                <span class="s2">&quot;nav_search&quot;</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;root_path&quot;</span><span class="p">:</span> <span class="n">root_path</span><span class="p">,</span>
+                    <span class="s2">&quot;seed_entity_field&quot;</span><span class="p">:</span> <span class="n">seed_entity_field</span><span class="p">,</span>
+                    <span class="s2">&quot;search_criteria&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;entity&quot;</span><span class="p">:</span> <span class="n">entity</span> <span class="p">}</span>
+                <span class="p">}</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Shotgun.get_session_token"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.get_session_token">[docs]</a>    <span class="k">def</span> <span class="nf">get_session_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3540,7 +3793,173 @@
 
 <span class="sd">        e.g. d {&#39;foo&#39; : &#39;bar&#39;} changed to {&#39;foo&#39;: {&quot;value&quot;: &#39;bar&#39;}]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">k</span><span class="p">,</span> <span class="p">{</span><span class="n">key_name</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">d</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()])</span></div>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">k</span><span class="p">,</span> <span class="p">{</span><span class="n">key_name</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">d</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()])</span>
+
+    <span class="k">def</span> <span class="nf">_upload_file_to_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">storage_url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to upload an entire file to the Cloud storage.</span>
+<span class="sd">        </span>
+<span class="sd">        :param str path: Full path to an existing non-empty file on disk to upload.</span>
+<span class="sd">        :param str storage_url: Target URL for the uploaded file. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">fd</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">content_type</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">content_type</span> <span class="o">=</span> <span class="n">content_type</span> <span class="ow">or</span> <span class="s2">&quot;application/octet-stream&quot;</span>
+            <span class="n">file_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fstat</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">fileno</span><span class="p">())[</span><span class="n">stat</span><span class="o">.</span><span class="n">ST_SIZE</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_upload_data_to_storage</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">content_type</span><span class="p">,</span> <span class="n">file_size</span><span class="p">,</span> <span class="n">storage_url</span> <span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;File uploaded to Cloud storage: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_multipart_upload_file_to_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">upload_info</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to upload a file to the Cloud storage in multiple parts.</span>
+
+<span class="sd">        :param str path: Full path to an existing non-empty file on disk to upload.</span>
+<span class="sd">        :param dict upload_info: Contains details received from the server, about the upload.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">fd</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">content_type</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">content_type</span> <span class="o">=</span> <span class="n">content_type</span> <span class="ow">or</span> <span class="s2">&quot;application/octet-stream&quot;</span>
+            <span class="n">file_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fstat</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">fileno</span><span class="p">())[</span><span class="n">stat</span><span class="o">.</span><span class="n">ST_SIZE</span><span class="p">]</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+            <span class="n">etags</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">part_number</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">bytes_read</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MULTIPART_UPLOAD_CHUNK_SIZE</span>
+            <span class="k">while</span> <span class="n">bytes_read</span> <span class="o">&lt;</span> <span class="n">file_size</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
+                <span class="n">bytes_read</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">part_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_upload_part_link</span><span class="p">(</span><span class="n">upload_info</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">part_number</span><span class="p">)</span>
+                <span class="n">etags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_upload_data_to_storage</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">content_type</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">part_url</span> <span class="p">))</span>
+                <span class="n">part_number</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_complete_multipart_upload</span><span class="p">(</span><span class="n">upload_info</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">etags</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;File uploaded in multiple parts to Cloud storage: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_upload_part_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">upload_info</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">part_number</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to get the url to upload the next part of a file to the</span>
+<span class="sd">        Cloud storage, in a multi-part upload process.</span>
+
+<span class="sd">        :param dict upload_info: Contains details received from the server, about the upload.</span>
+<span class="sd">        :param str filename: Name of the file for which we want the link.</span>
+<span class="sd">        :param int part_number: Part number for the link.</span>
+<span class="sd">        :returns: upload url.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;upload_type&quot;</span><span class="p">:</span> <span class="n">upload_info</span><span class="p">[</span><span class="s2">&quot;upload_type&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+            <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">upload_info</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;upload_id&quot;</span><span class="p">:</span> <span class="n">upload_info</span><span class="p">[</span><span class="s2">&quot;upload_id&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;part_number&quot;</span><span class="p">:</span> <span class="n">part_number</span>
+        <span class="p">}</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlunparse</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">server</span><span class="p">,</span>
+                                   <span class="s2">&quot;/upload/api_get_upload_link_for_part&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_form</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="c1"># Response is of the form: 1\n&lt;url&gt; (for success) or 0\n (for failure). </span>
+        <span class="c1"># In case of success, we know we the second line of the response contains the </span>
+        <span class="c1"># requested URL.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Unable get upload part link: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">)</span>
+
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Got next upload link from server for multipart upload.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_upload_data_to_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">content_type</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">storage_url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to upload data to Cloud storage.</span>
+<span class="sd">        </span>
+<span class="sd">        :param stream data: Contains details received from the server, about the upload.</span>
+<span class="sd">        :param str content_type: Content type of the data stream.</span>
+<span class="sd">        :param int size: Number of bytes in the data stream.</span>
+<span class="sd">        :param str storage_url: Target URL for the uploaded file. </span>
+<span class="sd">        :returns: upload url.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">opener</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">build_opener</span><span class="p">(</span><span class="n">urllib2</span><span class="o">.</span><span class="n">HTTPHandler</span><span class="p">)</span>
+
+            <span class="n">request</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">storage_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="n">content_type</span><span class="p">)</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s2">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">get_method</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="s2">&quot;PUT&quot;</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">opener</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+            <span class="n">etag</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">info</span><span class="p">()</span><span class="o">.</span><span class="n">getheader</span><span class="p">(</span><span class="s2">&quot;ETag&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">500</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Server encountered an internal error.</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">storage_url</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Unanticipated error occurred uploading to </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">storage_url</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+
+        <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Part upload completed successfully.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">etag</span>
+
+    <span class="k">def</span> <span class="nf">_complete_multipart_upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">upload_info</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">etags</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal function to complete a multi-part upload to the Cloud storage.</span>
+
+<span class="sd">        :param dict upload_info: Contains details received from the server, about the upload.</span>
+<span class="sd">        :param str filename: Name of the file for which we want to complete the upload.</span>
+<span class="sd">        :param tupple etags: Contains the etag of each uploaded file part.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;upload_type&quot;</span><span class="p">:</span> <span class="n">upload_info</span><span class="p">[</span><span class="s2">&quot;upload_type&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">filename</span><span class="p">,</span>
+            <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">upload_info</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;upload_id&quot;</span><span class="p">:</span> <span class="n">upload_info</span><span class="p">[</span><span class="s2">&quot;upload_id&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;etags&quot;</span><span class="p">:</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">etags</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="n">url</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlunparse</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">server</span><span class="p">,</span>
+                                   <span class="s2">&quot;/upload/api_complete_multipart_upload&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_form</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="c1"># Response is of the form: 1\n or 0\n to indicate success or failure of the call.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Unable get upload part link: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_send_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Utility function to send a Form to Shotgun and process any HTTP errors that</span>
+<span class="sd">        could occur.</span>
+
+<span class="sd">        :param url: endpoint where the form is sent.</span>
+<span class="sd">        :param params: form data</span>
+<span class="sd">        :returns: result from the server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_auth_params</span><span class="p">())</span>
+        
+        <span class="n">opener</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_opener</span><span class="p">(</span><span class="n">FormPostHandler</span><span class="p">)</span>
+
+        <span class="c1"># Perform the request</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="n">opener</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="c1"># response headers are in str(resp.info()).splitlines()</span>
+        <span class="k">except</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">500</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Server encountered an internal error. &quot;</span>
+                                   <span class="s2">&quot;</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_auth_params</span><span class="p">(</span><span class="n">params</span><span class="p">),</span> <span class="n">e</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Unanticipated error occurred </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
 
 <span class="c1"># Helpers from the previous API, left as is.</span>
 
@@ -3674,7 +4093,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Autodesk.
+        &copy; Copyright 2017, Autodesk.
 
     </p>
   </div> 
@@ -3695,7 +4114,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v3.0.32',
+            VERSION:'v3.0.34',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
