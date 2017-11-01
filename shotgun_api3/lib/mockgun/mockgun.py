@@ -378,8 +378,9 @@ class Shotgun(object):
         
         self._update_row(entity_type, row, data)
         row["id"] = next_id
-        
-        if "created_at" not in row:
+
+        # created_at can be set by a shotgun.create call, only set it automatically if not previously set.
+        if row["created_at"] is None:
             row["created_at"] = datetime.datetime.now()
         
         self._db[entity_type][next_id] = row
