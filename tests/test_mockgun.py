@@ -308,6 +308,18 @@ class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
         self.assertEqual(len(items), 1)
         self.assertEqual(self._pipeline_config_2['id'], items[0]['id'])
         
+    def test_find_with_none(self):
+        """
+        Ensures comparison with multi-entity fields and None works.
+        """
+        items = self._mockgun.find("PipelineConfiguration", [["users", "is", None]], ["users"])
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["users"], [])
+
+        items = self._mockgun.find("PipelineConfiguration", [["users", "is_not", None]], ["users"])
+        self.assertEqual(len(items), 3)
+        for item in items:
+            self.assertTrue(len(item["users"]) > 0)
 
 
 class TestFindFields(TestBaseWithExceptionTests):
@@ -398,19 +410,6 @@ class TestFindOrder(TestBaseWithExceptionTests):
 
         item = self._mockgun.find_one("PipelineConfiguration", [], order=[{'field_name': 'created_at', 'direction': 'desc'}])
         self.assertEqual(self._pipeline_configutation_2['id'], item['id'])
-
-    def test_find_with_none(self):
-        """
-        Ensures comparison with multi-entity fields and None works.
-        """
-        items = self._mockgun.find("PipelineConfiguration", [["users", "is", None]], ["users"])
-        self.assertEqual(len(items), 1)
-        self.assertEqual(items[0]["users"], [])
-
-        items = self._mockgun.find("PipelineConfiguration", [["users", "is_not", None]], ["users"])
-        self.assertEqual(len(items), 3)
-        for item in items:
-            self.assertTrue(len(item["users"]) > 0)
 
 
 class TestFilterOperator(TestBaseWithExceptionTests):
