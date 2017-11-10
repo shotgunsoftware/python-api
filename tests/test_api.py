@@ -257,10 +257,11 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('filmstrip_image') is not None)
 
-        h = Http(".cache")
-        filmstrip_thumb_resp, content = h.request(new_version.get('filmstrip_image'), "GET")
-        self.assertEqual(filmstrip_thumb_resp['status'], '200')
-        self.assertEqual(filmstrip_thumb_resp['content-type'], 'image/jpeg')
+        url = new_version.get('filmstrip_image')
+        data = self.sg.download_attachment({'url': url})
+        self.assertTrue(isinstance(data, str))
+        # check that the credential did work and that we don't have the login page
+        self.assertFalse('login' in data.lower())
 
         self.sg.delete("Version", new_version['id'])
     # end test_upload_thumbnail_in_create
