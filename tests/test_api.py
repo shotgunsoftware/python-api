@@ -258,7 +258,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertTrue(new_version.get('filmstrip_image') is not None)
 
         url = new_version.get('filmstrip_image')
-        data = sg.download_attachment({"url": url})
+        data = self.sg.download_attachment({"url": url})
         self.assertTrue(isinstance(data, str))
         # check that the credential did work and that we don't have the login page
         self.assertNotIn("login", data.lower())
