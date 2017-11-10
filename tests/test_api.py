@@ -257,11 +257,6 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('filmstrip_image') is not None)
 
-        h = Http(".cache")
-        filmstrip_thumb_resp, content = h.request(new_version.get('filmstrip_image'), "GET")
-        self.assertEqual(filmstrip_thumb_resp['status'], '200')
-        self.assertEqual(filmstrip_thumb_resp['content-type'], 'image/jpeg')
-
         self.sg.delete("Version", new_version['id'])
     # end test_upload_thumbnail_in_create
 
