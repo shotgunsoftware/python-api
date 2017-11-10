@@ -4,12 +4,6 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
-v3.0.34 (2017 September 18)
-=====================
-
-- Optimized pagination strategy for Shotgun 7.4+
-- Switched from a hard-coded value of 500 for "records_per_page" to a server-defined value. We will be experimenting with higher values with the goal of increasing performance for large result sets.
-
 v3.0.33 (2017 July 18)
 =====================
 
