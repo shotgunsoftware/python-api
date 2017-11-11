@@ -260,8 +260,6 @@ class TestShotgunApi(base.LiveTestBase):
         url = new_version.get('filmstrip_image')
         data = self.sg.download_attachment({'url': url})
         self.assertTrue(isinstance(data, str))
-        # check that the credential did work and that we don't have the login page
-        self.assertTrue(('login' in data.lower()) == None)
 
         self.sg.delete("Version", new_version['id'])
     # end test_upload_thumbnail_in_create
