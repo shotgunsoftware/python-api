@@ -81,7 +81,7 @@ have a self-signed internal certificate that isn't included in our certificate b
 not require the added security provided by enforcing this.
 """
 try:
-    import ssl        
+    import ssl
 except ImportError, e:
     if "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
         raise ImportError("%s. SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable prevents "
@@ -127,6 +127,13 @@ class MissingTwoFactorAuthenticationFault(Fault):
     """
     pass
 
+class UserCredentialsNotAllowedForSSOAuthenticationFault(Fault):
+    """
+    Exception when the server is configured to use SSO. It is not possible to use
+    a username/password pair to authenticate on such server.
+    """
+    pass
+
 # ----------------------------------------------------------------------------
 # API
 
@@ -136,8 +143,8 @@ class ServerCapabilities(object):
 
     .. warning::
 
-        This class is part of the internal API and its interfaces may change at any time in 
-        the future. Therefore, usage of this class is discouraged. 
+        This class is part of the internal API and its interfaces may change at any time in
+        the future. Therefore, usage of this class is discouraged.
     """
 
     def __init__(self, host, meta):
@@ -274,8 +281,8 @@ class ClientCapabilities(object):
 
     .. warning::
 
-        This class is part of the internal API and its interfaces may change at any time in 
-        the future. Therefore, usage of this class is discouraged. 
+        This class is part of the internal API and its interfaces may change at any time in
+        the future. Therefore, usage of this class is discouraged.
 
     :ivar str platform: The current client platform. Valid values are ``mac``, ``linux``,
         ``windows``, or ``None`` (if the current platform couldn't be determined).
@@ -327,8 +334,8 @@ class _Config(object):
     def __init__(self):
         self.max_rpc_attempts = 3
         # From http://docs.python.org/2.6/library/httplib.html:
-        # If the optional timeout parameter is given, blocking operations 
-        # (like connection attempts) will timeout after that many seconds 
+        # If the optional timeout parameter is given, blocking operations
+        # (like connection attempts) will timeout after that many seconds
         # (if it is not given, the global default timeout setting is used)
         self.timeout_secs = None
         self.api_ver = 'api3'
@@ -347,9 +354,9 @@ class _Config(object):
         self.scheme = None
         self.server = None
         self.api_path = None
-        # The raw_http_proxy reflects the exact string passed in 
-        # to the Shotgun constructor. This can be useful if you 
-        # need to construct a Shotgun API instance based on 
+        # The raw_http_proxy reflects the exact string passed in
+        # to the Shotgun constructor. This can be useful if you
+        # need to construct a Shotgun API instance based on
         # another Shotgun API instance.
         self.raw_http_proxy = None
         # if a proxy server is being used, the proxy_handler
@@ -380,7 +387,7 @@ class Shotgun(object):
         "(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?)?$")
 
     _MULTIPART_UPLOAD_CHUNK_SIZE = 20000000
-    
+
     def __init__(self,
                  base_url,
                  script_name=None,
@@ -484,7 +491,7 @@ class Shotgun(object):
             if login is not None or password is not None:
                 raise ValueError("cannot provide both session_token "
                                  "and login/password")
-        
+
         if login is not None or password is not None:
             if script_name is not None or api_key is not None:
                 raise ValueError("cannot provide both login/password "
@@ -581,7 +588,7 @@ class Shotgun(object):
             self._json_loads = self._json_loads_ascii
 
         self.client_caps = ClientCapabilities()
-        # this relies on self.client_caps being set first 
+        # this relies on self.client_caps being set first
         self.reset_user_agent()
 
         self._server_caps = None
@@ -881,7 +888,7 @@ class Shotgun(object):
             while has_next_page:
                 result = self._call_rpc("read", params)
                 records.extend(result.get("entities"))
-                
+
                 if limit and len(records) >= limit:
                     records = records[:limit]
                     break
@@ -1604,12 +1611,12 @@ class Shotgun(object):
         if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
             raise ShotgunError("Follow support requires server version 5.2 or "\
                 "higher, server is %s" % (self.server_caps.version,))
-        
+
         params = dict(
             user=user,
             entity=entity
         )
-        
+
         return self._call_rpc('follow', params)
 
     def unfollow(self, user, entity):
@@ -1632,12 +1639,12 @@ class Shotgun(object):
         if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
             raise ShotgunError("Follow support requires server version 5.2 or "\
                 "higher, server is %s" % (self.server_caps.version,))
-        
+
         params = dict(
             user=user,
             entity=entity
         )
-        
+
         return self._call_rpc('unfollow', params)
 
     def followers(self, entity):
@@ -1661,11 +1668,11 @@ class Shotgun(object):
         if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
             raise ShotgunError("Follow support requires server version 5.2 or "\
                 "higher, server is %s" % (self.server_caps.version,))
-        
+
         params = dict(
             entity=entity
         )
-        
+
         return self._call_rpc('followers', params)
 
     def following(self, user, project=None, entity_type=None):
@@ -1986,13 +1993,13 @@ class Shotgun(object):
         ua_platform = "Unknown"
         if self.client_caps.platform is not None:
             ua_platform = self.client_caps.platform.capitalize()
-        
+
 
         # create ssl validation string based on settings
         validation_str = "validate"
         if self.config.no_ssl_validation:
             validation_str = "no-validate"
-        
+
         self._user_agents = ["shotgun-json (%s)" % __version__,
                              "Python %s (%s)" % (self.client_caps.py_version, ua_platform),
                              "ssl %s (%s)" % (self.client_caps.ssl_version, validation_str)]
@@ -2378,7 +2385,7 @@ class Shotgun(object):
         :param str filename: name of the file that will be uploaded.
         :param bool is_multipart_upload: Indicates if we want multi-part upload information back.
 
-        :returns: dictionary containing upload details from the server. 
+        :returns: dictionary containing upload details from the server.
             These details are used throughout the upload process.
         :rtype: dict
         """
@@ -2452,7 +2459,7 @@ class Shotgun(object):
             ``file_path`` is ``None``, returns the actual data of the file as a string.
         :rtype: str
         """
-        # backwards compatibility when passed via keyword argument 
+        # backwards compatibility when passed via keyword argument
         if attachment is False:
             if type(attachment_id) == int:
                 attachment = attachment_id
@@ -2466,7 +2473,7 @@ class Shotgun(object):
                 fp = open(file_path, 'wb')
             except IOError, e:
                 raise IOError("Unable to write Attachment to disk using "\
-                              "file_path. %s" % e) 
+                              "file_path. %s" % e)
 
         url = self.get_attachment_download_url(attachment)
         if url is None:
@@ -2475,7 +2482,7 @@ class Shotgun(object):
         # We only need to set the auth cookie for downloads from Shotgun server
         if self.config.server in url:
             self.set_up_auth_cookie()
-   
+
         try:
             request = urllib2.Request(url)
             request.add_header('user-agent', "; ".join(self._user_agents))
@@ -2494,7 +2501,7 @@ class Shotgun(object):
                 if e.code == 400:
                     err += "\nAttachment may not exist or is a local file?"
                 elif e.code == 403:
-                    # Only parse the body if it is an Amazon S3 url. 
+                    # Only parse the body if it is an Amazon S3 url.
                     if url.find('s3.amazonaws.com') != -1 \
                         and e.headers['content-type'] == 'application/xml':
                         body = e.readlines()
@@ -2561,7 +2568,7 @@ class Shotgun(object):
             try:
                 url = attachment['url']
             except KeyError:
-                if ('id' in attachment and 'type' in attachment and 
+                if ('id' in attachment and 'type' in attachment and
                     attachment['type'] == 'Attachment'):
                     attachment_id = attachment['id']
                 else:
@@ -2572,7 +2579,7 @@ class Shotgun(object):
             raise TypeError("Unable to determine download url. Expected "\
                 "dict, int, or NoneType. Instead got %s" % type(attachment))
 
-        if attachment_id: 
+        if attachment_id:
             url = urlparse.urlunparse((self.config.scheme, self.config.server,
                 "/file_serve/attachment/%s" % urllib.quote(str(attachment_id)),
                 None, None, None))
@@ -2736,10 +2743,10 @@ class Shotgun(object):
                     "higher, server is %s" % (self.server_caps.version,))
 
         entity_fields = entity_fields or {}
-        
+
         if not isinstance(entity_fields, dict):
             raise ValueError("entity_fields parameter must be a dictionary")
-        
+
         params = { "note_id": note_id, "entity_fields": entity_fields }
 
         record = self._call_rpc("note_thread_contents", params)
@@ -2806,25 +2813,25 @@ class Shotgun(object):
         if self.server_caps.version and self.server_caps.version < (6, 2, 0):
                 raise ShotgunError("auto_complete requires server version 6.2.0 or "\
                     "higher, server is %s" % (self.server_caps.version,))
-        
-        # convert entity_types structure into the form 
+
+        # convert entity_types structure into the form
         # that the API endpoint expects
         if not isinstance(entity_types, dict):
             raise ValueError("entity_types parameter must be a dictionary")
-        
+
         api_entity_types = {}
         for (entity_type, filter_list) in entity_types.iteritems():
 
             if isinstance(filter_list, (list, tuple)):
                 resolved_filters = _translate_filters(filter_list, filter_operator=None)
-                api_entity_types[entity_type] = resolved_filters      
+                api_entity_types[entity_type] = resolved_filters
             else:
                 raise ValueError("value of entity_types['%s'] must "
                                  "be a list or tuple." % entity_type)
-            
+
         project_ids = project_ids or []
 
-        params = { "text": text, 
+        params = { "text": text,
                    "entity_types": api_entity_types,
                    "project_ids": project_ids,
                    "max_results": limit }
@@ -2906,10 +2913,10 @@ class Shotgun(object):
 
         # set up parameters to send to server.
         entity_fields = entity_fields or {}
-        
+
         if not isinstance(entity_fields, dict):
             raise ValueError("entity_fields parameter must be a dictionary")
-        
+
         params = { "type": entity_type,
                    "id": entity_id,
                    "max_id": max_id,
@@ -3022,9 +3029,9 @@ class Shotgun(object):
         self.config.no_ssl_validation = True
         NO_SSL_VALIDATION = True
         # reset ssl-validation in user-agents
-        self._user_agents = ["ssl %s (no-validate)" % self.client_caps.ssl_version 
-                             if ua.startswith("ssl ") else ua 
-                             for ua in self._user_agents] 
+        self._user_agents = ["ssl %s (no-validate)" % self.client_caps.ssl_version
+                             if ua.startswith("ssl ") else ua
+                             for ua in self._user_agents]
 
     # Deprecated methods from old wrapper
     def schema(self, entity_type):
@@ -3113,8 +3120,8 @@ class Shotgun(object):
 
             auth_params = {"session_token" : str(self.config.session_token)}
 
-            # Request server side to raise exception for expired sessions. 
-            # This was added in as part of Shotgun 5.4.4            
+            # Request server side to raise exception for expired sessions.
+            # This was added in as part of Shotgun 5.4.4
             if self.server_caps.version and self.server_caps.version > (5, 4, 3):
                 auth_params["reject_if_expired"] = True
 
@@ -3206,24 +3213,24 @@ class Shotgun(object):
                 return self._http_request(verb, path, body, req_headers)
             except SSLHandshakeError, e:
                 # Test whether the exception is due to the fact that this is an older version of
-                # Python that cannot validate certificates encrypted with SHA-2. If it is, then 
+                # Python that cannot validate certificates encrypted with SHA-2. If it is, then
                 # fall back on disabling the certificate validation and try again - unless the
-                # SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable has been set by the 
-                # user. In that case we simply raise the exception. Any other exceptions simply 
-                # get raised as well. 
+                # SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable has been set by the
+                # user. In that case we simply raise the exception. Any other exceptions simply
+                # get raised as well.
                 #
                 # For more info see:
                 # http://blog.shotgunsoftware.com/2016/01/important-ssl-certificate-renewal-and.html
                 #
-                # SHA-2 errors look like this: 
+                # SHA-2 errors look like this:
                 #   [Errno 1] _ssl.c:480: error:0D0C50A1:asn1 encoding routines:ASN1_item_verify:
                 #   unknown message digest algorithm
-                # 
+                #
                 # Any other exceptions simply get raised.
                 if not str(e).endswith("unknown message digest algorithm") or \
                    "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
                     raise
-                
+
                 if self.config.no_ssl_validation is False:
                     LOG.warning("SSLHandshakeError: this Python installation is incompatible with "
                                 "certificates signed with SHA-2. Disabling certificate validation. "
@@ -3232,7 +3239,7 @@ class Shotgun(object):
                     self._turn_off_ssl_validation()
                     # reload user agent to reflect that we have turned off ssl validation
                     req_headers["user-agent"] = "; ".join(self._user_agents)
-                
+
                 self._close_connection()
                 if attempt == max_rpc_attempts:
                     raise
@@ -3352,14 +3359,19 @@ class Shotgun(object):
 
         ERR_AUTH = 102 # error code for authentication related problems
         ERR_2FA  = 106 # error code when 2FA authentication is required but no 2FA token provided.
+        ERR_SSO  = 108 # error code when SSO is activated on the site, preventing the use of username/password for authentication.
 
         if isinstance(sg_response, dict) and sg_response.get("exception"):
             if sg_response.get("error_code") == ERR_AUTH:
                 raise AuthenticationFault(sg_response.get("message", "Unknown Authentication Error"))
             elif sg_response.get("error_code") == ERR_2FA:
                 raise MissingTwoFactorAuthenticationFault(sg_response.get("message", "Unknown 2FA Authentication Error"))
+            elif sg_response.get("error_code") == ERR_SSO:
+                raise UserCredentialsNotAllowedForSSOAuthenticationFault(
+                    sg_response.get("message", "Authentication using username/password is not allowed for an SSO-enabled Shotgun site")
+                )
             else:
-                # raise general Fault            
+                # raise general Fault
                 raise Fault(sg_response.get("message", "Unknown Error"))
         return
 
@@ -3616,9 +3628,9 @@ class Shotgun(object):
     def _upload_file_to_storage(self, path, storage_url):
         """
         Internal function to upload an entire file to the Cloud storage.
-        
+
         :param str path: Full path to an existing non-empty file on disk to upload.
-        :param str storage_url: Target URL for the uploaded file. 
+        :param str storage_url: Target URL for the uploaded file.
         """
         filename = os.path.basename(path)
 
@@ -3688,8 +3700,8 @@ class Shotgun(object):
                                    "/upload/api_get_upload_link_for_part", None, None, None))
         result = self._send_form(url, params)
 
-        # Response is of the form: 1\n<url> (for success) or 0\n (for failure). 
-        # In case of success, we know we the second line of the response contains the 
+        # Response is of the form: 1\n<url> (for success) or 0\n (for failure).
+        # In case of success, we know we the second line of the response contains the
         # requested URL.
         if not str(result).startswith("1"):
             raise ShotgunError("Unable get upload part link: %s" % result)
@@ -3700,11 +3712,11 @@ class Shotgun(object):
     def _upload_data_to_storage(self, data, content_type, size, storage_url):
         """
         Internal function to upload data to Cloud storage.
-        
+
         :param stream data: Contains details received from the server, about the upload.
         :param str content_type: Content type of the data stream.
         :param int size: Number of bytes in the data stream.
-        :param str storage_url: Target URL for the uploaded file. 
+        :param str storage_url: Target URL for the uploaded file.
         :returns: upload url.
         :rtype: str
         """
@@ -3762,7 +3774,7 @@ class Shotgun(object):
         """
 
         params.update(self._auth_params())
-        
+
         opener = self._build_opener(FormPostHandler)
 
         # Perform the request
@@ -3851,7 +3863,7 @@ def _translate_filters(filters, filter_operator):
 def _translate_filters_dict(sg_filter):
     new_filters = {}
     filter_operator = sg_filter.get("filter_operator")
-    
+
     if filter_operator == "all" or filter_operator == "and":
         new_filters["logical_operator"] = "and"
     elif filter_operator == "any" or filter_operator == "or":
@@ -3864,12 +3876,12 @@ def _translate_filters_dict(sg_filter):
                            % sg_filter["filters"])
 
     new_filters["conditions"] = _translate_filters_list(sg_filter["filters"])
-    
+
     return new_filters
-    
+
 def _translate_filters_list(filters):
     conditions = []
-    
+
     for sg_filter in filters:
         if isinstance(sg_filter, (list,tuple)):
             conditions.append(_translate_filters_simple(sg_filter))
@@ -3886,7 +3898,7 @@ def _translate_filters_simple(sg_filter):
         "path": sg_filter[0],
         "relation": sg_filter[1]
     }
-    
+
     values = sg_filter[2:]
     if len(values) == 1 and isinstance(values[0], (list, tuple)):
         values = values[0]
