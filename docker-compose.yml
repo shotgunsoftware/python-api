@@ -8,4 +8,4 @@ services:
   python_api-27:
     build:
       context: .
-#      dockerfile: Dockerfile.py27
+      dockerfile: Dockerfile.py27
