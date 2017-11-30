@@ -5,10 +5,13 @@ import shotgun.jenkins.Pipeline
 
 properties([buildDiscarder(logRotator(daysToKeepStr:"31",numToKeepStr:"30"))])
 
-def stages = [nosetests: [command: "nosetest -v"]]
+def pipeline26 = new Pipeline(this, "python_api-26")
+pipeline26.dockerBuildParameters = "Dockerfile.py26"
+def pipeline27 = new Pipeline(this, "python_api-27")
+pipeline27.dockerBuildParameters = "Dockerfile.py27"
+def stages = [nosetests: [command: "nosetests -v"]]
 
 parallel(
-        py26: {new Pipeline(this, "python_api-26").build(stages)},
-        py27: {new Pipeline(this, "python_api-27").build(stages)},
+        py26: { pipeline26.build(stages) },
+        py27: { pipeline27.build(stages) }
 )
-
