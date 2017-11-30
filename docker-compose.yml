@@ -1,0 +1,11 @@
+version: "3"
+services:
+  python_api-26:
+    build:
+      context: .
+      dockerfile: Dockerfile.py26
+
+  python_api-27:
+    build:
+      context: .
+#      dockerfile: Dockerfile.py27

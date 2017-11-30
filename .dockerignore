@@ -1,0 +1,5 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea
+build
+dist
+shotgun_api3.egg-info
