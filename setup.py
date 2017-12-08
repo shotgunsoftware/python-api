@@ -17,7 +17,7 @@ if (sys.version_info[0] <= 2) or (sys.version_info[0] == 2 and sys.version_info[
 
 setup(
     name='shotgun_api3',
-    version='3.0.34',
+    version='3.0.35',
     description='Shotgun Python API ',
     long_description=readme,
     author='Shotgun Software',
@@ -27,6 +27,6 @@ setup(
     packages=find_packages(exclude=('tests',)),
     script_args=script_args,
     include_package_data=True,
-    package_data={'': [ 'cacerts.txt']},
+    package_data={'': ['cacerts.txt']},
     zip_safe=False,
 )

@@ -4,6 +4,13 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.0.35 (2017 December 8)
+=====================
+
+- Add exception UserCredentialsNotAllowedForSSOAuthenticationFault.
+  Triggered when attempting to initiate a connection with a username/password
+  pair on an SSO-enabled Shotgun site.
+
 v3.0.34 (2017 September 18)
 =====================
 
