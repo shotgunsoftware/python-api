@@ -32,56 +32,56 @@
 
 
 -----------------------------------------------------------------------------
-M O C K G U N 
+M O C K G U N
 -----------------------------------------------------------------------------
 
 Experimental software ahead!
 ----------------------------
-Disclaimer! Mockgun is in its early stages of development. It is not fully 
-compatible with the Shotgun API yet and we offer no guarantees at this point 
-that future versions of Mockgun will be backwards compatible. Consider this 
-alpha level software and use at your own risk. 
+Disclaimer! Mockgun is in its early stages of development. It is not fully
+compatible with the Shotgun API yet and we offer no guarantees at this point
+that future versions of Mockgun will be backwards compatible. Consider this
+alpha level software and use at your own risk.
 
 
 What is Mockgun?
 ----------------
 Mockgun is a Shotgun API mocker. It's a class that has got *most* of the same
-methods and parameters that the Shotgun API has got. Mockgun is essentially a 
+methods and parameters that the Shotgun API has got. Mockgun is essentially a
 Shotgun *emulator* that (for basic operations) looks and feels like Shotgun.
 
 The primary purpose of Mockgun is to drive unit test rigs where it becomes
-too slow, cumbersome or non-practical to connect to a real Shotgun. Using a 
-Mockgun for unit tests means that a test can be rerun over and over again 
+too slow, cumbersome or non-practical to connect to a real Shotgun. Using a
+Mockgun for unit tests means that a test can be rerun over and over again
 from exactly the same database state. This can be hard to do if you connect
-to a live Shotgun instance.  
+to a live Shotgun instance.
 
 
 How do I use Mockgun?
 ---------------------
 First of all, you need a Shotgun schema to run against. This will define
-all the fields and entities that mockgun will use. Simply connect to 
+all the fields and entities that mockgun will use. Simply connect to
 your Shotgun site and use the generate_schema() method to download
 the schema data:
 
     # connect to your site
     from shotgun_api3 import Shotgun
     sg = Shotgun("https://mysite.shotgunstudio.com", script_name="xyz", api_key="abc")
-    
+
     # write out schema data to files
     from shotgun_api3.lib import mockgun
     mockgun.generate_schema(sg, "/tmp/schema", "/tmp/entity_schema")
-    
+
 Now that you have a schema, you can tell your mockgun instance about it.
-We do this as a class-level operation, so that the consctructor can be 
+We do this as a class-level operation, so that the consctructor can be
 exactly like the real Shotgun one:
 
     from shotgun_api3.lib import mockgun
-    
+
     # tell mockgun about the schema
     mockgun.Shotgun.set_schema_paths("/tmp/schema", "/tmp/entity_schema")
-    
-    # we are ready to mock! 
-    # this call will not connect to mysite, but instead create a 
+
+    # we are ready to mock!
+    # this call will not connect to mysite, but instead create a
     # mockgun instance which is connected to an *empty* shotgun site
     # which has got the same schema as mysite.
     sg = mockgun.Shotgun("https://mysite.shotgunstudio.com", script_name="xyz", api_key="abc")
@@ -89,15 +89,15 @@ exactly like the real Shotgun one:
     # now you can start putting stuff in
     print sg.create("HumanUser", {"firstname": "John", "login": "john"})
     # prints {'login': 'john', 'type': 'HumanUser', 'id': 1, 'firstname': 'John'}
- 
+
     # and find what you have created
     print sg.find("HumanUser", [["login", "is", "john"]])
     prints [{'type': 'HumanUser', 'id': 1}]
-    
+
 That's it! Mockgun is used to run the Shotgun Pipeline Toolkit unit test rig.
 
 Mockgun has a 'database' in the form of a dictionary stored in Mockgun._db
-By editing this directly, you can modify the database without going through 
+By editing this directly, you can modify the database without going through
 the API.
 
 
@@ -135,13 +135,13 @@ class Shotgun(object):
     It generates an object which looks and feels like a normal Shotgun API instance.
     Instead of connecting to a real server, it keeps all its data in memory in a way
     which makes it easy to introspect and test.
-    
+
     The methods presented in this class reflect the Shotgun API and are therefore
     sparsely documented.
-    
+
     Please note that this class is built for test purposes only and only creates an
-    object which *roughly* resembles the Shotgun API - however, for most common 
-    use cases, this is enough to be able to perform relevant and straight forward 
+    object which *roughly* resembles the Shotgun API - however, for most common
+    use cases, this is enough to be able to perform relevant and straight forward
     testing of code.
     """
 
@@ -155,7 +155,7 @@ class Shotgun(object):
         level so all Shotgun instances will share the same schema.
         The responsability to generate and load these files is left to the user
         changing the default value.
-        
+
         :param schema_path: Directory path where schema files are.
         """
         cls.__schema_path = schema_path
@@ -166,7 +166,7 @@ class Shotgun(object):
         """
         Returns a tuple with paths to the files which are part of the schema.
         These paths can then be used in generate_schema if needed.
-        
+
         :returns: A tuple with schema_file_path and schema_entity_file_path
         """
         return (cls.__schema_path, cls.__schema_entity_path)
@@ -191,7 +191,7 @@ class Shotgun(object):
         # having them present means code and get and set them
         # they way they would expect to in the real API.
         self.config = _Config()
-        
+
         # load in the shotgun schema to associate with this Shotgun
         (schema_path, schema_entity_path) = self.get_schema_paths()
 
@@ -199,7 +199,7 @@ class Shotgun(object):
             raise MockgunError("Cannot create Mockgun instance because no schema files have been defined. "
                                "Before creating a Mockgun instance, please call Mockgun.set_schema_paths() "
                                "in order to specify which Shotgun schema Mockgun should operate against.")
-        
+
         self._schema, self._schema_entity = SchemaFactory.get_schemas(schema_path, schema_entity_path)
 
         # initialize the "database"
@@ -207,7 +207,7 @@ class Shotgun(object):
 
         # set some basic public members that exist in the Shotgun API
         self.base_url = base_url
-        
+
         # bootstrap the event log
         # let's make sure there is at least one event log id in our mock db
         data = {}
@@ -221,18 +221,21 @@ class Shotgun(object):
     # public API methods
 
 
+    def get_session_token(self):
+        return "bogus_session_token"
+
     def schema_read(self):
         return self._schema
 
     def schema_field_create(self, entity_type, data_type, display_name, properties=None):
         raise NotImplementedError
-    
+
     def schema_field_update(self, entity_type, field_name, properties):
         raise NotImplementedError
 
     def schema_field_delete(self, entity_type, field_name):
         raise NotImplementedError
-    
+
     def schema_entity_read(self):
         return self._schema_entity
 
@@ -244,7 +247,7 @@ class Shotgun(object):
 
 
     def find(self, entity_type, filters, fields=None, order=None, filter_operator=None, limit=0, retired_only=False, page=0):
-        
+
 
         self.finds += 1
 
@@ -311,12 +314,12 @@ class Shotgun(object):
         val = [dict((field, self._get_field_from_row(entity_type, row, field)) for field in fields) for row in results]
 
         return val
-    
-    
+
+
     def find_one(self, entity_type, filters, fields=None, order=None, filter_operator=None, retired_only=False):
         results = self.find(entity_type, filters, fields=fields, order=order, filter_operator=filter_operator, retired_only=retired_only)
         return results[0] if results else None
-    
+
     def batch(self, requests):
         results = []
         for request in requests:
@@ -332,14 +335,14 @@ class Shotgun(object):
         return results
 
     def create(self, entity_type, data, return_fields=None):
-        
+
         # special handling of storage fields - if a field value
-        # is a dict with a key local_path, then add fields 
-        # local_path_linux, local_path_windows, local_path_mac 
+        # is a dict with a key local_path, then add fields
+        # local_path_linux, local_path_windows, local_path_mac
         # as a reflection of this
         for d in data:
             if isinstance(data[d], dict) and "local_path" in data[d]:
-                # partly imitate some of the business logic happening on the 
+                # partly imitate some of the business logic happening on the
                 # server side of shotgun when a file/link entity value is created
                 if "local_storage" not in data[d]:
                     data[d]["local_storage"] = {"id": 0, "name": "auto_generated_by_mockgun", "type": "LocalStorage"}
@@ -349,7 +352,7 @@ class Shotgun(object):
                     data[d]["local_path_windows"] = data[d]["local_path"]
                 if "local_path_mac" not in data[d]:
                     data[d]["local_path_mac"] = data[d]["local_path"]
-        
+
         self._validate_entity_type(entity_type)
         self._validate_entity_data(entity_type, data)
         self._validate_entity_fields(entity_type, return_fields)
@@ -358,14 +361,14 @@ class Shotgun(object):
             next_id = max(self._db[entity_type]) + 1
         except ValueError:
             next_id = 1
-        
+
         row = self._get_new_row(entity_type)
-        
-        self._update_row(entity_type, row, data)        
+
+        self._update_row(entity_type, row, data)
         row["id"] = next_id
-        
+
         self._db[entity_type][next_id] = row
-        
+
         if return_fields is None:
             result = dict((field, self._get_field_from_row(entity_type, row, field)) for field in data)
         else:
@@ -373,7 +376,7 @@ class Shotgun(object):
 
         result["type"] = row["type"]
         result["id"] = row["id"]
-        
+
         return result
 
     def update(self, entity_type, entity_id, data):
@@ -389,28 +392,28 @@ class Shotgun(object):
     def delete(self, entity_type, entity_id):
         self._validate_entity_type(entity_type)
         self._validate_entity_exists(entity_type, entity_id)
-        
+
         row = self._db[entity_type][entity_id]
         if not row["__retired"]:
             row["__retired"] = True
             return True
         else:
             return False
-    
+
     def revive(self, entity_type, entity_id):
         self._validate_entity_type(entity_type)
         self._validate_entity_exists(entity_type, entity_id)
-        
+
         row = self._db[entity_type][entity_id]
         if row["__retired"]:
             row["__retired"] = False
             return True
         else:
             return False
-    
+
     def upload(self, entity_type, entity_id, path, field_name=None, display_name=None, tag_list=None):
         raise NotImplementedError
-    
+
     def upload_thumbnail(self, entity_type, entity_id, path, **kwargs):
         pass
 
@@ -420,7 +423,7 @@ class Shotgun(object):
     def _validate_entity_type(self, entity_type):
         if entity_type not in self._schema:
             raise ShotgunError("%s is not a valid entity" % entity_type)
-    
+
     def _validate_entity_data(self, entity_type, data):
         if "id" in data or "type" in data:
             raise ShotgunError("Can't set id or type on create or update")
@@ -428,11 +431,11 @@ class Shotgun(object):
         self._validate_entity_fields(entity_type, data.keys())
 
         for field, item in data.items():
-            
+
             if item is None:
                 # none is always ok
                 continue
-            
+
             field_info = self._schema[entity_type][field]
 
             if field_info["data_type"]["value"] == "multi_entity":
@@ -444,8 +447,8 @@ class Shotgun(object):
                     raise ShotgunError("%s.%s is of type multi-entity, but an item in data %s does not contain 'type' and 'id'" % (entity_type, field, item))
                 elif item and any(sub_item["type"] not in field_info["properties"]["valid_types"]["value"] for sub_item in item):
                     raise ShotgunError("%s.%s is of multi-type entity, but an item in data %s has an invalid type (expected one of %s)" % (entity_type, field, item, field_info["properties"]["valid_types"]["value"]))
-                
-                
+
+
             elif field_info["data_type"]["value"] == "entity":
                 if not isinstance(item, dict):
                     raise ShotgunError("%s.%s is of type entity, but data %s is not a dictionary" % (entity_type, field, item))
@@ -469,8 +472,8 @@ class Shotgun(object):
                                    "status_list": basestring,
                                    "url": dict}[sg_type]
                 except KeyError:
-                    raise ShotgunError("Field %s.%s: Handling for Shotgun type %s is not implemented" % (entity_type, field, sg_type)) 
-                
+                    raise ShotgunError("Field %s.%s: Handling for Shotgun type %s is not implemented" % (entity_type, field, sg_type))
+
                 if not isinstance(item, python_type):
                     raise ShotgunError("%s.%s is of type %s, but data %s is not of type %s" % (entity_type, field, type(item), sg_type, python_type))
 
@@ -776,7 +779,7 @@ class Shotgun(object):
                 row[field] = [{"type": item["type"], "id": item["id"]} for item in data[field]]
             else:
                 row[field] = data[field]
-            
+
 
     def _validate_entity_exists(self, entity_type, entity_id):
         if entity_id not in self._db[entity_type]:
