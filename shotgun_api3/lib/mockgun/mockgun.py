@@ -1,6 +1,6 @@
 """
  -----------------------------------------------------------------------------
- Copyright (c) 2009-2015, Shotgun Software Inc
+ Copyright (c) 2009-2017, Shotgun Software Inc
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
@@ -114,55 +114,18 @@ Below is a non-exhaustive list of things that we still need to implement:
 
 """
 
-import os, datetime
-import cPickle as pickle
+import datetime
 
-from .. import sg_timezone, ShotgunError
-from ..shotgun import _Config
+from ... import sg_timezone, ShotgunError
+from ...shotgun import _Config
+from .errors import MockgunError
+from .schema import SchemaFactory
 
 # ----------------------------------------------------------------------------
 # Version
 __version__ = "0.0.1"
 
-# ----------------------------------------------------------------------------
-# Errors
 
-class MockgunError(Exception):
-    """
-    Base for all Mockgun related API Errors.
-    These are errors that relate to mockgun specifically, for example
-    relating to mockups setup and initialization. For operational errors,
-    mockgun raises ShotgunErrors just like the Shotgun API.
-    """
-    pass
-
-# ----------------------------------------------------------------------------
-# Utility methods
-
-def generate_schema(shotgun, schema_file_path, schema_entity_file_path):
-    """
-    Helper method for mockgun.
-    Generates the schema files needed by the mocker by connecting to a real shotgun
-    and downloading the schema information for that site. Once the generated schema 
-    files are being passed to mockgun, it will mimic the site's schema structure.
-    
-    :param sg_url: Shotgun site url
-    :param sg_script: Script name to connect with
-    :param sg_key: Script key to connect with
-    :param schema_file_path: Path where to write the main schema file to
-    :param schema_entity_file_path: Path where to write the entity schema file to
-    """
-    
-    schema = shotgun.schema_read()
-    fh = open(schema_file_path, "w")
-    pickle.dump(schema, fh)
-    fh.close()
-        
-    schema_entity = shotgun.schema_entity_read()
-    fh = open(schema_entity_file_path, "w")
-    pickle.dump(schema_entity, fh)
-    fh.close()
-    
 # ----------------------------------------------------------------------------
 # API
 
@@ -237,23 +200,7 @@ class Shotgun(object):
                                "Before creating a Mockgun instance, please call Mockgun.set_schema_paths() "
                                "in order to specify which Shotgun schema Mockgun should operate against.")
         
-        if not os.path.exists(schema_path):
-            raise MockgunError("Cannot locate Mockgun schema file '%s'!" % schema_path)
-             
-        if not os.path.exists(schema_entity_path):
-            raise MockgunError("Cannot locate Mockgun schema file '%s'!" % schema_entity_path)
-
-        fh = open(schema_path, "r")
-        try:
-            self._schema = pickle.load(fh)
-        finally:
-            fh.close()
-            
-        fh = open(schema_entity_path, "r")
-        try:
-            self._schema_entity = pickle.load(fh)
-        finally:
-            fh.close() 
+        self._schema, self._schema_entity = SchemaFactory.get_schemas(schema_path, schema_entity_path)
 
         # initialize the "database"
         self._db = dict((entity, {}) for entity in self._schema)
@@ -305,6 +252,8 @@ class Shotgun(object):
         # do not validate custom fields - this makes it hard to mock up a field quickly
         #self._validate_entity_fields(entity_type, fields)
 
+        # FIXME: This should be refactored so that we can use the complex filer
+        # style in nested filter operations.
         if isinstance(filters, dict):
             # complex filter style!
             # {'conditions': [{'path': 'id', 'relation': 'is', 'values': [1]}], 'logical_operator': 'and'}
@@ -328,24 +277,13 @@ class Shotgun(object):
             # traditiona style sg filters
             resolved_filters = filters
 
-        # now translate ["field", "in", 2,3,4] --> ["field", "in", [2, 3, 4]]
-        resolved_filters_2 = []
-        for f in resolved_filters:
-
-            if len(f) > 3:
-                # ["field", "in", 2,3,4] --> ["field", "in", [2, 3, 4]]
-                new_filter = [ f[0], f[1], f[2:] ]
-
-            elif f[1] == "in" and not isinstance(f[2], list):
-                # ["field", "in", 2] --> ["field", "in", [2]]
-                new_filter = [ f[0], f[1], [ f[2] ] ]
-
-            else:
-                new_filter = f
-
-            resolved_filters_2.append(new_filter)
-
-        results = [row for row in self._db[entity_type].values() if self._row_matches_filters(entity_type, row, resolved_filters_2, filter_operator, retired_only)]
+        results = [
+            # Apply the filters for every single entities for the given entity type.
+            row for row in self._db[entity_type].values()
+            if self._row_matches_filters(
+                entity_type, row, resolved_filters, filter_operator, retired_only
+            )
+        ]
 
         # handle the ordering of the recordset
         if order:
@@ -526,6 +464,8 @@ class Shotgun(object):
                                    "serializable": dict,
                                    "date": datetime.date,
                                    "date_time": datetime.datetime,
+                                   "list": basestring,
+                                   "status_list": basestring,
                                    "url": dict}[sg_type]
                 except KeyError:
                     raise ShotgunError("Field %s.%s: Handling for Shotgun type %s is not implemented" % (entity_type, field, sg_type)) 
@@ -546,7 +486,7 @@ class Shotgun(object):
                 except ValueError:
                     if field not in valid_fields and field not in ("type", "id"):
                         raise ShotgunError("%s is not a valid field for entity %s" % (field, entity_type))
-            
+
     def _get_default_value(self, entity_type, field):
         field_info = self._schema[entity_type][field]
         if field_info["data_type"]["value"] == "multi_entity":
@@ -567,6 +507,22 @@ class Shotgun(object):
         return row
 
     def _compare(self, field_type, lval, operator, rval):
+        """
+        Compares a field using the operator and value provide by the filter.
+
+        :param str field_type: Type of the field we are operating on.
+        :param lval: Value inside that field. Can be of any type: datetime, date, int, str, bool, etc.
+        :param str operator: Name of the operator to use.
+        :param rval: The value following the operator in a filter.
+
+        :returns: The result of the operator that was applied.
+        :rtype: bool
+        """
+        # If we have a list of scalar values
+        if isinstance(lval, list) and field_type != "multi_entity":
+            # Compare each one. If one matches the predicate we're good!
+            return any((self._compare(field_type, sub_val, operator, rval)) for sub_val in lval)
+
         if field_type == "checkbox":
             if operator == "is":
                 return lval == rval
@@ -587,7 +543,7 @@ class Shotgun(object):
                 return lval < rval[0] or lval > rval[1]
             elif operator == "in":
                 return lval in rval
-        elif field_type == "list":
+        elif field_type in ("list", "status_list"):
             if operator == "is":
                 return lval == rval
             elif operator == "is_not":
@@ -605,9 +561,9 @@ class Shotgun(object):
             elif operator == "is_not":
                 return lval != rval
             elif operator == "in":
-                return lval in rval            
-            elif operator == "contains":
                 return lval in rval
+            elif operator == "contains":
+                return rval in lval
             elif operator == "not_contains":
                 return lval not in rval
             elif operator == "starts_with":
@@ -616,8 +572,17 @@ class Shotgun(object):
                 return lval.endswith(rval)
         elif field_type == "entity":
             if operator == "is":
+                # If one of the two is None, ensure both are.
+                if lval is None or rval is None:
+                    return lval == rval
+                # Both values are set, compare them.
                 return lval["type"] == rval["type"] and lval["id"] == rval["id"]
             elif operator == "is_not":
+                if lval is None or rval is None:
+                    return lval != rval
+                if rval is None:
+                    # We already know lval is not None, so we know they are not equal.
+                    return True
                 return lval["type"] != rval["type"] or lval["id"] != rval["id"]
             elif operator == "in":
                 return all((lval["type"] == sub_rval["type"] and lval["id"] == sub_rval["id"]) for sub_rval in rval)
@@ -635,43 +600,61 @@ class Shotgun(object):
                 return lval["name"].endswith(rval)
         elif field_type == "multi_entity":
             if operator == "is":
+                if rval is None:
+                    return len(lval) == 0
                 return rval["id"] in (sub_lval["id"] for sub_lval in lval)
             elif operator == "is_not":
+                if rval is None:
+                    return len(lval) != 0
                 return rval["id"] not in (sub_lval["id"] for sub_lval in lval)
 
         raise ShotgunError("The %s operator is not supported on the %s type" % (operator, field_type))
 
     def _get_field_from_row(self, entity_type, row, field):
-        # split dotted form fields        
+        # split dotted form fields
         try:
             # is it something like sg_sequence.Sequence.code ?
             field2, entity_type2, field3 = field.split(".", 2)
-            
+
             if field2 in row:
-                
+
                 field_value = row[field2]
-                
-                # all deep links need to be link fields
-                if not isinstance(field_value, dict):                    
+
+                # If we have a list of links, retrieve the subfields one by one.
+                if isinstance(field_value, list):
+                    values = []
+                    for linked_row in field_value:
+                        # Make sure we're actually iterating on links.
+                        if not isinstance(linked_row, dict):
+                            raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
+
+                        # Skips entities that are not of the requested type.
+                        if linked_row["type"] != entity_type2:
+                            continue
+
+                        entity = self._db[linked_row["type"]][linked_row["id"]]
+
+                        sub_field_value = self._get_field_from_row(entity_type2, entity, field3)
+                        values.append(sub_field_value)
+                    return values
+                # not multi entity, must be entity.
+                elif not isinstance(field_value, dict):
                     raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
-                    
+
                 # make sure that types in the query match type in the linked field
                 if entity_type2 != field_value["type"]:
                     raise ShotgunError("Deep query field %s.%s does not match type "
                                        "with data %s" % (entity_type, field, field_value))
-                     
+
                 # ok so looks like the value is an entity link
                 # e.g. db contains: {"sg_sequence": {"type":"Sequence", "id": 123 } }
                 linked_row = self._db[ field_value["type"] ][ field_value["id"] ]
-                if field3 in linked_row:
-                    return linked_row[field3]
-                else:
-                    return None
 
+                return self._get_field_from_row(entity_type2, linked_row, field3)
             else:
                 # sg returns none for unknown stuff
                 return None
-        
+
         except ValueError:
             # this is not a deep-linked field - just something like "code"
             if field in row:
@@ -688,36 +671,97 @@ class Shotgun(object):
         except ValueError:
             return self._schema[entity_type][field]["data_type"]["value"]
 
-    def _row_matches_filter(self, entity_type, row, filter):
-        
-        
+    def _row_matches_filter(self, entity_type, row, sg_filter, retired_only):
+
         try:
-            field, operator, rval = filter
+            field, operator, rval = sg_filter
         except ValueError:
             raise ShotgunError("Filters must be in the form [lval, operator, rval]")
-        lval = self._get_field_from_row(entity_type, row, field)
-        
-        field_type = self._get_field_type(entity_type, field)
-        
-        # if we're operating on an entity, we'll need to grab the name from the lval's row
-        if field_type == "entity":
-            lval_row = self._db[lval["type"]][lval["id"]]
-            if "name" in lval_row:
-                lval["name"] = lval_row["name"]
-            elif "code" in lval_row:
-                lval["name"] = lval_row["code"]
-        return self._compare(field_type, lval, operator, rval)
+
+        # Special case, field is None when we have a filter operator.
+        if field is None:
+            if operator in ["any", "all"]:
+                return self._row_matches_filters(entity_type, row, rval, operator, retired_only)
+            else:
+                raise ShotgunError("Unknown filter_operator type: %s" % operator)
+        else:
+
+            lval = self._get_field_from_row(entity_type, row, field)
+
+            field_type = self._get_field_type(entity_type, field)
+
+            # if we're operating on an entity, we'll need to grab the name from the lval's row
+            if field_type == "entity":
+                # If the entity field is set, we'll retrieve the name of the entity.
+                if lval is not None:
+                    link_type = lval["type"]
+                    link_id = lval["id"]
+                    lval_row = self._db[link_type][link_id]
+                    if "name" in lval_row:
+                        lval["name"] = lval_row["name"]
+                    elif "code" in lval_row:
+                        lval["name"] = lval_row["code"]
+
+            return self._compare(field_type, lval, operator, rval)
+
+    def _rearrange_filters(self, filters):
+        """
+        Modifies the filter syntax to turn it into a list of three items regardless
+        of the actual filter. Most of the filters are list of three elements, so this doesn't change much.
+
+        The filter_operator syntax uses a dictionary with two keys, "filters" and
+        "filter_operator". Filters using this syntax will be turned into
+        [None, filter["filter_operator"], filter["filters"]]
+
+        Filters of the form [field, operator, values....] will be turned into
+        [field, operator, [values...]].
+
+        :param list filters: List of filters to rearrange.
+
+        :returns: A list of three items.
+        """
+        rearranged_filters = []
+
+        # now translate ["field", "in", 2,3,4] --> ["field", "in", [2, 3, 4]]
+        for f in filters:
+            if isinstance(f, list):
+                if len(f) > 3:
+                    # ["field", "in", 2,3,4] --> ["field", "in", [2, 3, 4]]
+                    new_filter = [f[0], f[1], f[2:]]
+
+                elif f[1] == "in" and not isinstance(f[2], list):
+                    # ["field", "in", 2] --> ["field", "in", [2]]
+                    new_filter = [f[0], f[1], [f[2]]]
+
+                else:
+                    new_filter = f
+            elif isinstance(f, dict):
+                if "filter_operator" not in f or "filters" not in f:
+                    raise ShotgunError(
+                        "Bad filter operator, requires keys 'filter_operator' and 'filters', "
+                        "found %s" % ", ".join(f.keys())
+                    )
+                new_filter = [None, f["filter_operator"], f["filters"]]
+            else:
+                raise ShotgunError(
+                    "Filters can only be lists or dictionaries, not %s." % type(f).__name__
+                )
+
+            rearranged_filters.append(new_filter)
+
+        return rearranged_filters
 
     def _row_matches_filters(self, entity_type, row, filters, filter_operator, retired_only):
-                
+        filters = self._rearrange_filters(filters)
+
         if retired_only and not row["__retired"] or not retired_only and row["__retired"]:
             # ignore retired rows unless the retired_only flag is set
             # ignore live rows if the retired_only flag is set
             return False
         elif filter_operator in ("all", None):
-            return all(self._row_matches_filter(entity_type, row, filter) for filter in filters)
+            return all(self._row_matches_filter(entity_type, row, filter, retired_only) for filter in filters)
         elif filter_operator == "any":
-            return any(self._row_matches_filter(entity_type, row, filter) for filter in filters)
+            return any(self._row_matches_filter(entity_type, row, filter, retired_only) for filter in filters)
         else:
             raise ShotgunError("%s is not a valid filter operator" % filter_operator)
 

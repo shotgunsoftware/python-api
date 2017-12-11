@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
  -----------------------------------------------------------------------------
- Copyright (c) 2009-2016, Shotgun Software Inc
+ Copyright (c) 2009-2017, Shotgun Software Inc.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,6 @@
  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-
 
 import base64
 import cookielib    # used for attachment upload
@@ -61,12 +60,26 @@ mimetypes.add_type('video/webm','.webm') # webm and mp4 seem to be missing
 mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
 
 LOG = logging.getLogger("shotgun_api3")
-LOG.setLevel(logging.WARN)
+"""
+Logging instance for shotgun_api3
 
+Provides a logging instance where log messages are sent during execution. This instance has no
+handler associated with it.
+
+.. seealso:: :ref:`logging`
+"""
+LOG.setLevel(logging.WARN)
 
 SG_TIMEZONE = SgTimezone()
 
 NO_SSL_VALIDATION = False
+"""
+Turns off hostname matching validation for SSL certificates
+
+Sometimes there are cases where certificate validation should be disabled. For example, if you
+have a self-signed internal certificate that isn't included in our certificate bundle, you may
+not require the added security provided by enforcing this.
+"""
 try:
     import ssl        
 except ImportError, e:
@@ -78,30 +91,39 @@ except ImportError, e:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.0.31"
+__version__ = "3.0.34"
 
 # ----------------------------------------------------------------------------
 # Errors
 
 class ShotgunError(Exception):
-    """Base for all Shotgun API Errors"""
+    """
+    Base for all Shotgun API Errors.
+    """
     pass
 
 class ShotgunFileDownloadError(ShotgunError):
-    """Exception for file download-related errors"""
+    """
+    Exception for file download-related errors.
+    """
     pass
 
 class Fault(ShotgunError):
-    """Exception when server side exception detected."""
+    """
+    Exception when server-side exception detected.
+    """
     pass
 
 class AuthenticationFault(Fault):
-    """Exception when the server side reports an error related to authentication"""
+    """
+    Exception when the server side reports an error related to authentication.
+    """
     pass
 
 class MissingTwoFactorAuthenticationFault(Fault):
-    """Exception when the server side reports an error related to missing
-    two factor authentication credentials
+    """
+    Exception when the server side reports an error related to missing two-factor authentication
+    credentials.
     """
     pass
 
@@ -109,23 +131,34 @@ class MissingTwoFactorAuthenticationFault(Fault):
 # API
 
 class ServerCapabilities(object):
-    """Container for the servers capabilities, such as version and paging.
+    """
+    Container for the servers capabilities, such as version enabled features.
+
+    .. warning::
+
+        This class is part of the internal API and its interfaces may change at any time in 
+        the future. Therefore, usage of this class is discouraged. 
     """
 
     def __init__(self, host, meta):
-        """ServerCapabilities.__init__
-
-        :param host: Host name for the server excluding protocol.
-
-        :param meta: dict of meta data for the server returned from the
-        info api method.
         """
-        #Server host name
+        ServerCapabilities.__init__
+
+        :param str host: Host name for the server excluding protocol.
+        :param dict meta: dict of meta data for the server returned from the info() api method.
+
+        :ivar str host:
+        :ivar dict server_info:
+        :ivar tuple version: Simple version of the Shotgun server. ``(major, minor, rev)``
+        :ivar bool is_dev: ``True`` if server is running a development version of the Shotgun
+            codebase.
+        """
+        # Server host name
         self.host = host
         self.server_info = meta
 
-        #Version from server is major.minor.rev or major.minor.rev."Dev"
-        #Store version as triple and check dev flag
+        # Version from server is major.minor.rev or major.minor.rev."Dev"
+        # Store version as tuple and check dev flag
         try:
             self.version = meta.get("version", None)
         except AttributeError:
@@ -146,12 +179,16 @@ class ServerCapabilities(object):
 
 
     def _ensure_support(self, feature, raise_hell=True):
-        """Checks the server version supports a given feature, raises an
-        exception if it does not.
+        """
+        Checks the server version supports a given feature, raises an exception if it does not.
 
-        :param feature: dict supported version and human label { 'version': (int, int, int), 'label': str }
+        :param dict feature: dict where **version** key contains a 3 integer tuple indicating the
+            supported server version and **label** key contains a human-readable label str::
 
-        :raises ShotgunError: The current server version does not [feature]
+                { 'version': (5, 4, 4), 'label': 'project parameter }
+        :param bool raise_hell: Whether to raise an exception if the feature is not supported.
+            Defaults to ``True``
+        :raises: :class:`ShotgunError` if the current server version does not support ``feature``
         """
 
         if not self.version or self.version < feature['version']:
@@ -164,44 +201,90 @@ class ServerCapabilities(object):
         else:
             return True
 
-
     def _ensure_json_supported(self):
-        """Wrapper for ensure_support"""
+        """
+        Ensures server has support for JSON API endpoint added in v2.4.0.
+        """
         self._ensure_support({
             'version': (2, 4, 0),
             'label': 'JSON API'
         })
 
     def ensure_include_archived_projects(self):
-        """Wrapper for ensure_support"""
+        """
+        Ensures server has support for archived Projects feature added in v5.3.14.
+        """
         self._ensure_support({
             'version': (5, 3, 14),
             'label': 'include_archived_projects parameter'
         })
 
     def ensure_per_project_customization(self):
-        """Wrapper for ensure_support"""
+        """
+        Ensures server has support for per-project customization feature added in v5.4.4.
+        """
         return self._ensure_support({
             'version': (5, 4, 4),
             'label': 'project parameter'
         }, True)
 
     def ensure_support_for_additional_filter_presets(self):
-        """Wrapper for ensure_support"""
+        """
+        Ensures server has support for additional filter presets feature added in v7.0.0.
+        """
         return self._ensure_support({
             'version': (7, 0, 0),
             'label': 'additional_filter_presets parameter'
         }, True)
+
+    def ensure_user_following_support(self):
+        """
+        Ensures server has support for listing items a user is following, added in v7.0.12.
+        """
+        return self._ensure_support({
+            'version': (7, 0, 12),
+            'label': 'user_following parameter'
+        }, True)
+
+    def ensure_paging_info_without_counts_support(self):
+        """
+        Ensures server has support for optimized pagination, added in v7.4.0.
+        """
+        return self._ensure_support({
+            'version': (7, 4, 0),
+            'label': 'optimized pagination'
+        }, False)
+
+    def ensure_return_image_urls_support(self):
+        """
+        Ensures server has support for returning thumbnail URLs without additional round-trips, added in v3.3.0.
+        """
+        return self._ensure_support({
+            'version': (3, 3, 0),
+            'label': 'return thumbnail URLs'
+        }, False)
 
     def __str__(self):
         return "ServerCapabilities: host %s, version %s, is_dev %s"\
                  % (self.host, self.version, self.is_dev)
 
 class ClientCapabilities(object):
-    """Container for the client capabilities.
+    """
+    Container for the client capabilities.
 
-    Detects the current client platform and works out the SG field
-    used for local data paths.
+    .. warning::
+
+        This class is part of the internal API and its interfaces may change at any time in 
+        the future. Therefore, usage of this class is discouraged. 
+
+    :ivar str platform: The current client platform. Valid values are ``mac``, ``linux``,
+        ``windows``, or ``None`` (if the current platform couldn't be determined).
+    :ivar str local_path_field: The SG field used for local file paths. This is calculated using
+        the value of ``platform``. Ex. ``local_path_mac``.
+    :ivar str py_version: Simple version of Python executable as a string. Eg. ``2.7``.
+    :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``. This
+        info is only available in Python 2.7+ if the ssl module was imported successfully.
+        Defaults to ``unknown``
     """
 
     def __init__(self):
@@ -237,7 +320,9 @@ class ClientCapabilities(object):
             self.py_version, self.ssl_version)
 
 class _Config(object):
-    """Container for the client configuration."""
+    """
+    Container for the client configuration.
+    """
 
     def __init__(self):
         self.max_rpc_attempts = 3
@@ -281,7 +366,9 @@ class _Config(object):
 
 
 class Shotgun(object):
-    """Shotgun Client Connection"""
+    """
+    Shotgun Client connection.
+    """
 
     # reg ex from
     # http://underground.infovark.com/2008/07/22/iso-date-validation-regex/
@@ -292,6 +379,8 @@ class Shotgun(object):
         "^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])"\
         "(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?)?$")
 
+    _MULTIPART_UPLOAD_CHUNK_SIZE = 20000000
+    
     def __init__(self,
                  base_url,
                  script_name=None,
@@ -306,62 +395,85 @@ class Shotgun(object):
                  sudo_as_login=None,
                  session_token=None,
                  auth_token=None):
-        """Initializes a new instance of the Shotgun client.
+        """
+        Initializes a new instance of the Shotgun client.
 
-        :param base_url: http or https url to the shotgun server.
+        :param str base_url: http or https url of the Shotgun server. Do not include the trailing
+            slash::
 
-        :param script_name: name of the client script, used to authenticate
-        to the server. If script_name is provided, then api_key must be as
-        well and neither login nor password can be provided.
+                https://example.shotgunstudio.com
+        :param str script_name: name of the Script entity used to authenticate to the server.
+            If provided, then ``api_key`` must be as well, and neither ``login`` nor ``password``
+            can be provided.
 
-        :param api_key: key assigned to the client script, used to
-        authenticate to the server.  If api_key is provided, then script_name
-        must be as well and neither login nor password can be provided.
+            .. seealso:: :ref:`authentication`
+        :param str api_key: API key for the provided ``script_name``. Used to authenticate to the
+            server.  If provided, then ``script_name`` must be as well, and neither ``login`` nor
+            ``password`` can be provided.
 
-        :param convert_datetimes_to_utc: If True date time values are
-        converted from local time to UTC time before been sent to the server.
-        Datetimes received from the server are converted back to local time.
-        If False the client should use UTC date time values.
-        Default is True.
+            .. seealso:: :ref:`authentication`
+        :param bool convert_datetimes_to_utc: (optional) When ``True``, datetime values are converted
+            from local time to UTC time before being sent to the server. Datetimes received from
+            the server are then converted back to local time. When ``False`` the client should use
+            UTC date time values. Default is ``True``.
+        :param str http_proxy: (optional) URL for a proxy server to use for all connections. The
+            expected str format is ``[username:password@]111.222.333.444[:8080]``. Examples::
 
-        :param http_proxy: Optional, URL for the http proxy server, on the
-        form [username:pass@]proxy.com[:8080]
+                192.168.0.1
+                192.168.0.1:8888
+                joe:user@192.168.0.1:8888
+        :param bool connect: (optional) When ``True``, as soon as the :class:`~shotgun_api3.Shotgun`
+            instance is created, a connection will be made to the Shotgun server to determine the
+            server capabilities and confirm this version of the client is compatible with the server
+            version. This is mostly used for testing. Default is ``True``.
+        :param str ca_certs: (optional) path to an external SSL certificates file. By default, the
+            Shotgun API will use its own built-in certificates file which stores root certificates
+            for the most common Certificate Authorities (CAs). If you are using a corporate or
+            internal CA, or are packaging an application into an executable, it may be necessary to
+            point to your own certificates file. You can do this by passing in the full path to the
+            file via this parameter or by setting the environment variable ``SHOTGUN_API_CACERTS``.
+            In the case both are set, this parameter will take precedence.
+        :param str login: The user login str to use to authenticate to the server when using user-based
+            authentication. If provided, then ``password`` must be as well, and neither
+            ``script_name`` nor ``api_key`` can be provided.
 
-        :param connect: If True, connect to the server. Only used for testing.
-        
-        :param ca_certs: Optional path to an external SSL certificates file. By 
-        default, the Shotgun API will use its own built-in certificates file
-        which stores root certificates for the most common Certificate 
-        Authorities (CAs). If you are using a corporate or internal CA, or are
-        packaging an application into an executable, it may be necessary to 
-        point to your own certificates file. You can do this by passing in the 
-        full path to the file via this parameter or by setting the environment 
-        variable `SHOTGUN_API_CACERTS`. In the case both are set, this 
-        parameter will take precedence. 
+            .. seealso:: :ref:`authentication`
+        :param str password: The password str to use to authenticate to the server when using user-based
+            authentication. If provided, then ``login`` must be as well and neither ``script_name``
+            nor ``api_key`` can be provided.
 
-        :param login: The login to use to authenticate to the server. If login
-        is provided, then password must be as well and neither script_name nor
-        api_key can be provided.
+            See :ref:`authentication` for more info.
+        :param str sudo_as_login: A user login string for the user whose permissions will be applied
+            to all actions. Event log entries will be generated showing this user performing all
+            actions with an additional extra meta-data parameter ``sudo_actual_user`` indicating the
+            script or user that is actually authenticated.
+        :param str session_token: The session token to use to authenticate to the server. This
+            can be used as an alternative to authenticating with a script user or regular user.
+            You can retrieve the session token by running the
+            :meth:`~shotgun_api3.Shotgun.get_session_token()` method.
 
-        :param password: The password for the login to use to authenticate to
-        the server. If password is provided, then login must be as well and
-        neither script_name nor api_key can be provided.
-        
-        :param sudo_as_login: A user login string for the user whose permissions will
-        be applied to all actions and who will be logged as the user performing
-        all actions. Note that logged events will have an additional extra meta-data parameter 
-        'sudo_actual_user' indicating the script or user that actually authenticated.
-        
-        :param session_token: The session token to use to authenticate to the server. This
-        can be used as an alternative to authenticating with a script user or regular user.
-        You retrieve the session token by running the get_session_token() method.        
+            .. todo: Add this info to the Authentication section of the docs
+        :param str auth_token: The authentication token required to authenticate to a server with
+            two-factor authentication turned on. If provided, then ``login`` and ``password`` must
+            be provided as well, and neither ``script_name`` nor ``api_key`` can be provided.
 
-        :param auth_token: The authentication token required to authenticate to
-        a server with two factor authentication turned on. If auth_token is provided,
-        then login and password must be as well and neither script_name nor api_key
-        can be provided. Note that these tokens can be short lived so a session is
-        established right away if an auth_token is provided. A
-        MissingTwoFactorAuthenticationFault will be raised if the auth_token is invalid.
+            .. note:: These tokens can be short lived so a session is established right away if an
+                ``auth_token`` is provided. A
+                :class:`~shotgun_api3.MissingTwoFactorAuthenticationFault` will be raised if the
+                ``auth_token`` is invalid.
+            .. todo: Add this info to the Authentication section of the docs
+
+        .. note:: A note about proxy connections: If you are using Python <= v2.6.2, HTTPS
+            connections through a proxy server will not work due to a bug in the :mod:`urllib2`
+            library (see http://bugs.python.org/issue1424152). This will affect upload and
+            download-related methods in the Shotgun API (eg. :meth:`~shotgun_api3.Shotgun.upload`,
+            :meth:`~shotgun_api3.Shotgun.upload_thumbnail`,
+            :meth:`~shotgun_api3.Shotgun.upload_filmstrip_thumbnail`,
+            :meth:`~shotgun_api3.Shotgun.download_attachment`. Normal CRUD methods for passing JSON
+            data should still work fine. If you cannot upgrade your Python installation, you can see
+            the patch merged into Python v2.6.3 (http://hg.python.org/cpython/rev/0f57b30a152f/) and
+            try and hack it into your installation but YMMV. For older versions of Python there
+            are other patches that were proposed in the bug report that may help you as well.
         """
 
         # verify authentication arguments
@@ -478,6 +590,9 @@ class Shotgun(object):
         if connect:
             self.server_caps
 
+        # Check for api_max_entities_per_page in the server info and change the record per page value if it is supplied.
+        self.config.records_per_page = self.server_info.get('api_max_entities_per_page') or self.config.records_per_page
+
         # When using auth_token in a 2FA scenario we need to switch to session-based
         # authentication because the auth token will no longer be valid after a first use.
         if self.config.auth_token is not None:
@@ -492,14 +607,33 @@ class Shotgun(object):
 
     @property
     def server_info(self):
-        """Returns server information."""
+        """
+        Property containing server information.
+
+        >>> sg.server_info
+        {'full_version': [6, 3, 15, 0], 'version': [6, 3, 15], ...}
+
+        .. note::
+
+            Beyond ``full_version`` and ``version`` which differ by the inclusion of the bugfix number, you should expect
+            these values to be unsupported and for internal use only.
+
+        :returns: dict of server information from :class:`ServerCapabilities` object
+        :rtype: dict
+        """
         return self.server_caps.server_info
 
     @property
     def server_caps(self):
         """
-        :returns: ServerCapabilities that describe the server the client is
-        connected to.
+        Property containing :class:`ServerCapabilities` object.
+
+        >>> sg.server_caps
+        <shotgun_api3.shotgun.ServerCapabilities object at 0x10120d350>
+
+        :returns: :class:`ServerCapabilities` object that describe the server the client is
+            connected to.
+        :rtype: :class:`ServerCapabilities` object
         """
         if not self._server_caps or (
             self._server_caps.host != self.config.server):
@@ -508,18 +642,19 @@ class Shotgun(object):
         return self._server_caps
 
     def connect(self):
-        """Forces the client to connect to the server if it is not already
-        connected.
+        """
+        Connect client to the server if it is not already connected.
 
-        NOTE: The client will automatically connect to the server. Only
-        call this function if you wish to confirm the client can connect.
+        .. note:: The client will automatically connect to the server on demand. You only need to
+            call this function if you wish to confirm the client can connect.
         """
         self._get_connection()
         self.info()
         return
 
     def close(self):
-        """Closes the current connection to the server.
+        """
+        Close the current connection to the server.
 
         If the client needs to connect again it will do so automatically.
         """
@@ -527,52 +662,66 @@ class Shotgun(object):
         return
 
     def info(self):
-        """Calls the Info function on the Shotgun API to get the server meta.
+        """
+        Get API-related metadata from the Shotgun server.
 
-        :returns: dict of the server meta data.
+        >>> sg.info()
+        {'full_version': [6, 3, 15, 0], 'version': [6, 3, 15], ...}
+
+        .. note::
+
+            Beyond ``full_version`` and ``version`` which differ by the inclusion of the bugfix number, you should expect
+            these values to be unsupported and for internal use only.
+
+        :returns: dict of the server metadata.
+        :rtype: dict
         """
         return self._call_rpc("info", None, include_auth_params=False)
 
     def find_one(self, entity_type, filters, fields=None, order=None,
         filter_operator=None, retired_only=False, include_archived_projects=True,
         additional_filter_presets=None):
-        """Calls the find() method and returns the first result, or None.
+        """
+        Shortcut for :meth:`~shotgun_api3.Shotgun.find` with ``limit=1`` so it returns a single
+        result.
 
-        :param entity_type: Required, entity type (string) to find.
+            >>> sg.find_one("Asset", [["id", "is", 32]], ["id", "code", "sg_status_list"])
+            {'code': 'Gopher', 'id': 32, 'sg_status_list': 'ip', 'type': 'Asset'}
 
-        :param filters: Required, list of filters to apply.
+        :param str entity_type: Shotgun entity type as a string to find.
+        :param list filters: list of filters to apply to the query.
 
-        :param fields: Optional list of fields from the matched entities to
-        return. Defaults to id.
+            .. seealso:: :ref:`filter_syntax`
 
-        :param order: Optional list of fields to order the results by, list
-        has the form [{'field_name':'foo','direction':'asc or desc'},]
+        :param list fields: Optional list of fields to include in each entity record returned.
+            Defaults to ``["id"]``.
+        :param int order: Optional list of fields to order the results by. List has the format::
 
-        :param filter_operator: Optional operator to apply to the filters,
-        supported values are 'all' and 'any'. Defaults to 'all'.
+            [{'field_name':'foo', 'direction':'asc'}, {'field_name':'bar', 'direction':'desc'}]
 
-        :param limit: Optional, number of entities to return per page.
-        Defaults to 0 which returns all entities that match.
+            Defaults to sorting by ``id`` in ascending order.
+        :param str filter_operator: Operator to apply to the filters. Supported values are ``"all"``
+            and ``"any"``. These are just another way of defining if the query is an AND or OR
+            query. Defaults to ``"all"``.
+        :param bool retired_only: Optional boolean when ``True`` will return only entities that have
+            been retried. Defaults to ``False`` which returns only entities which have not been
+            retired. There is no option to return both retired and non-retired entities in the
+            same query.
+        :param bool include_archived_projects: Optional boolean flag to include entities whose projects
+            have been archived. Defaults to ``True``.
+        :param additional_filter_presets: Optional list of presets to further filter the result
+            set, list has the form::
 
-        :param page: Optional, page of results to return. By default all
-        results are returned. Use together with limit.
+                [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
 
-        :param retired_only: Optional, flag to return only entities that have
-        been retried. Defaults to False which returns only entities which
-        have not been retired.
+            Note that these filters are ANDed together and ANDed with the 'filter'
+            argument.
 
-        :param additional_filter_presets: Optional list of presets to
-        further filter the result set, list has the form:
-        [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
-
-        Note that these filters are ANDed together and ANDed with the 'filter'
-        argument.
-
-        For details on supported presets and the format of this parameter,
-        please consult the API documentation:
-        https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax
-
-        :returns: Dictionary of requested Shotgun fields and values.
+            For details on supported presets and the format of this parameter see
+            :ref:`additional_filter_presets`
+        :returns: Dictionary representing a single matching entity with the requested fields,
+            and the defaults ``"id"`` and ``"type"`` which are always included.
+        :rtype: dict
         """
 
         results = self.find(entity_type, filters, fields, order,
@@ -586,47 +735,90 @@ class Shotgun(object):
     def find(self, entity_type, filters, fields=None, order=None,
             filter_operator=None, limit=0, retired_only=False, page=0,
             include_archived_projects=True, additional_filter_presets=None):
-        """Find entities matching the given filters.
+        """
+        Find entities matching the given filters.
 
-        :param entity_type: Required, entity type (string) to find.
+            >>> # Find Character Assets in Sequence 100_FOO
+            >>> # -------------
+            >>> fields = ['id', 'code', 'sg_asset_type']
+            >>> sequence_id = 2 # Sequence "100_FOO"
+            >>> project_id = 4 # Demo Project
+            >>> filters = [
+            ...     ['project', 'is', {'type': 'Project', 'id': project_id}],
+            ...     ['sg_asset_type', 'is', 'Character'],
+            ...     ['sequences', 'is', {'type': 'Sequence', 'id': sequence_id}]
+            ... ]
+            >>> assets= sg.find("Asset",filters,fields)
+            [{'code': 'Gopher', 'id': 32, 'sg_asset_type': 'Character', 'type': 'Asset'},
+             {'code': 'Cow', 'id': 33, 'sg_asset_type': 'Character', 'type': 'Asset'},
+             {'code': 'Bird_1', 'id': 35, 'sg_asset_type': 'Character', 'type': 'Asset'},
+             {'code': 'Bird_2', 'id': 36, 'sg_asset_type': 'Character', 'type': 'Asset'},
+             {'code': 'Bird_3', 'id': 37, 'sg_asset_type': 'Character', 'type': 'Asset'},
+             {'code': 'Raccoon', 'id': 45, 'sg_asset_type': 'Character', 'type': 'Asset'},
+             {'code': 'Wet Gopher', 'id': 149, 'sg_asset_type': 'Character', 'type': 'Asset'}]
 
-        :param filters: Required, list of filters to apply.
+        You can drill through single entity links to filter on fields or display linked fields.
+        This is often called "deep linking" or using "dot syntax".
 
-        :param fields: Optional list of fields from the matched entities to
-        return. Defaults to id.
+            .. seealso:: :ref:`filter_syntax`
 
-        :param order: Optional list of fields to order the results by, list
-        has the form [{'field_name':'foo','direction':'asc or desc'},]
+            >>> # Find Versions created by Tasks in the Animation Pipeline Step
+            >>> # -------------
+            >>> fields = ['id', 'code']
+            >>> pipeline_step_id = 2 # Animation Step ID
+            >>> project_id = 4 # Demo Project
+            >>> # you can drill through single-entity link fields
+            >>> filters = [
+            ...     ['project','is', {'type': 'Project','id': project_id}],
+            ...     ['sg_task.Task.step.Step.id', 'is', pipeline_step_id]
+            >>> ]
+            >>> sg.find("Version", filters, fields)
+            [{'code': 'scene_010_anim_v001', 'id': 42, 'type': 'Version'},
+             {'code': 'scene_010_anim_v002', 'id': 134, 'type': 'Version'},
+             {'code': 'bird_v001', 'id': 137, 'type': 'Version'},
+             {'code': 'birdAltBlue_v002', 'id': 236, 'type': 'Version'}]
 
-        :param filter_operator: Optional operator to apply to the filters,
-        supported values are 'all' and 'any'. Defaults to 'all'.
+        :param str entity_type: Shotgun entity type to find.
+        :param list filters: list of filters to apply to the query.
 
-        :param limit: Optional, number of entities to return per page.
-        Defaults to 0 which returns all entities that match.
+            .. seealso:: :ref:`filter_syntax`
 
-        :param page: Optional, page of results to return. By default all
-        results are returned. Use together with limit.
+        :param list fields: Optional list of fields to include in each entity record returned.
+            Defaults to ``["id"]``.
+        :param list order: Optional list of dictionaries defining how to order the results of the
+            query. Each dictionary contains the ``field_name`` to order by and  the ``direction``
+            to sort::
 
-        :param retired_only: Optional, flag to return only entities that have
-        been retried. Defaults to False which returns only entities which
-        have not been retired.
+                [{'field_name':'foo', 'direction':'asc'}, {'field_name':'bar', 'direction':'desc'}]
 
-        :param include_archived_projects: Optional, flag to include entities
-        whose projects have been archived.
+            Defaults to sorting by ``id`` in ascending order.
+        :param str filter_operator: Operator to apply to the filters. Supported values are ``"all"``
+            and ``"any"``. These are just another way of defining if the query is an AND or OR
+            query. Defaults to ``"all"``.
+        :param int limit: Optional limit to the number of entities to return. Defaults to ``0`` which
+            returns all entities that match.
+        :param int page: Optional page of results to return. Use this together with the ``limit``
+            parameter to control how your query results are paged. Defaults to ``0`` which returns
+            all entities that match.
+        :param bool retired_only: Optional boolean when ``True`` will return only entities that have
+            been retried. Defaults to ``False`` which returns only entities which have not been
+            retired. There is no option to return both retired and non-retired entities in the
+            same query.
+        :param bool include_archived_projects: Optional boolean flag to include entities whose projects
+            have been archived. Defaults to ``True``.
+        :param additional_filter_presets: Optional list of presets to further filter the result
+            set, list has the form::
 
-        :param additional_filter_presets: Optional list of presets to
-        further filter the result set, list has the form:
-        [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
+                [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
 
-        Note that these filters are ANDed together and ANDed with the 'filter'
-        argument.
+            Note that these filters are ANDed together and ANDed with the 'filter'
+            argument.
 
-        For details on supported presets and the format of this parameter,
-        please consult the API documentation:
-        https://github.com/shotgunsoftware/python-api/wiki/Reference%3A-Filter-Syntax
-
-        :returns: list of the dicts for each entity with the requested fields,
-        and their id and type.
+            For details on supported presets and the format of this parameter see
+            :ref:`additional_filter_presets`
+        :returns: list of dictionaries representing each entity with the requested fields, and the
+            defaults ``"id"`` and ``"type"`` which are always included.
+        :rtype: list
         """
 
         if not isinstance(limit, int) or limit < 0:
@@ -638,7 +830,7 @@ class Shotgun(object):
         if isinstance(filters, (list, tuple)):
             filters = _translate_filters(filters, filter_operator)
         elif filter_operator:
-            #TODO:Not sure if this test is correct, replicated from prev api
+            # TODO: Not sure if this test is correct, replicated from prev api
             raise ShotgunError("Deprecated: Use of filter_operator for find()"
                 " is not valid any more. See the documentation on find()")
 
@@ -658,6 +850,16 @@ class Shotgun(object):
                                                  include_archived_projects,
                                                  additional_filter_presets)
 
+        if self.server_caps.ensure_return_image_urls_support():
+            params['api_return_image_urls'] = True
+
+        if self.server_caps.ensure_paging_info_without_counts_support():
+            paging_info_param = "return_paging_info_without_counts"
+        else:
+            paging_info_param = "return_paging_info"
+
+        params[paging_info_param] = False
+
         if limit and limit <= self.config.records_per_page:
             params["paging"]["entities_per_page"] = limit
             # If page isn't set and the limit doesn't require pagination,
@@ -665,30 +867,40 @@ class Shotgun(object):
             if page == 0:
                 page = 1
 
-        if self.server_caps.version and self.server_caps.version >= (3, 3, 0):
-            params['api_return_image_urls'] = True
-
         # if page is specified, then only return the page of records requested
         if page != 0:
-            # No paging_info needed, so optimize it out.
-            params["return_paging_info"] = False
             params["paging"]["current_page"] = page
             records = self._call_rpc("read", params).get("entities", [])
             return self._parse_records(records)
 
+        params[paging_info_param] = True
         records = []
-        result = self._call_rpc("read", params)
-        while result.get("entities"):
-            records.extend(result.get("entities"))
 
-            if limit and len(records) >= limit:
-                records = records[:limit]
-                break
-            if len(records) == result["paging_info"]["entity_count"]:
-                break
+        if self.server_caps.ensure_paging_info_without_counts_support():
+            has_next_page = True
+            while has_next_page:
+                result = self._call_rpc("read", params)
+                records.extend(result.get("entities"))
+                
+                if limit and len(records) >= limit:
+                    records = records[:limit]
+                    break
 
-            params['paging']['current_page'] += 1
+                has_next_page = result["paging_info"]["has_next_page"]
+                params['paging']['current_page'] += 1
+        else:
             result = self._call_rpc("read", params)
+            while result.get("entities"):
+                records.extend(result.get("entities"))
+
+                if limit and len(records) >= limit:
+                    records = records[:limit]
+                    break
+                if len(records) == result["paging_info"]["entity_count"]:
+                    break
+
+                params['paging']['current_page'] += 1
+                result = self._call_rpc("read", params)
 
         return self._parse_records(records)
 
@@ -707,7 +919,6 @@ class Shotgun(object):
         params["return_fields"] = fields or ["id"]
         params["filters"] = filters
         params["return_only"] = (retired_only and 'retired') or "active"
-        params["return_paging_info"] = True
         params["paging"] = { "entities_per_page": self.config.records_per_page,
                              "current_page": 1 }
 
@@ -739,7 +950,6 @@ class Shotgun(object):
 
         return params
 
-
     def summarize(self,
                   entity_type,
                   filters,
@@ -747,57 +957,179 @@ class Shotgun(object):
                   filter_operator=None,
                   grouping=None,
                   include_archived_projects=True):
-        """Summarize column data returned by a query.
-        
-        This provides the same functionality as the summaries in the UI. 
-        You can specify one or more fields to summarize, choose the summary 
-        type for each, and optionally group the results which will return 
-        summary information for each group as well as the total for the query.
-        
-        :param entity_type: The entity type to summarize
-        
-        :param filters: An array of conditions used to filter the find query.
-                        Uses the same syntax as for example the find() method.
-        
-        :param summary_fields: A list of dictionaries with the following keys:
-                - field: Which field you are summarizing
-                - type: The type of summary you are performing on the field. 
-                  Summary types can be any of [record_count, count, sum, 
-                  maximum, minimum, average, earliest, latest, percentage, 
-                  status_percentage, status_list, checked, unchecked] 
-                  depending on the type of field you're summarizing.
-        
-        :param filter_operator: Controls how the filters are matched. 
-                                There are only two valid options: all and any. 
-                                You cannot currently combine the two options 
-                                in the same query. Defaults to "all".
-        :param grouping: Optional list of dicts with the following keys:
-                - field: a string indicating the field on entity_type to 
-                  group results by.
-                - type: a string indicating the type of grouping to perform 
-                  for each group. Valid types depend on the type of field 
-                  you are grouping on and can be one of [exact, tens, hundreds, 
-                  thousands, tensofthousands, hundredsofthousands, millions, 
-                  day, week, month, quarter, year, clustered_date, oneday, 
-                  fivedays, entitytype, firstletter].
-                - direction: a string that sets the order to display the 
-                  grouped results. Valid direction options are asc (default) 
-                  and desc.
-                  
-        :returns: dict object containing grouping and summaries keys.
-                - grouping: list of dictionaries containing grouping 
-                  information:
-                    - group_name: Display name of the value 
-                      that defines the group.
-                    - group_value: Data representation of the value 
-                      that defines the group.
-                    - summaries: see summary key
-                    - groups: For nested groups. This structure will be 
-                              repeated with the same structure as defined 
-                              in the top-level grouping key.
-                - summaries: Dict of key/value pairs where the key is the 
-                  field name and the value is the summary value 
-                  requested for that field.
+        """
+        Summarize field data returned by a query.
+
+        This provides the same functionality as the summaries in the UI. You can specify one or
+        more fields to summarize, choose the summary type for each, and optionally group the
+        results which will return summary information for each group as well as the total for
+        the query.
+
+        **Example: Count all Assets for a Project**
+
+        >>> sg.summarize(entity_type='Asset',
+        ...              filters = [['project', 'is', {'type':'Project', 'id':4}]],
+        ...              summary_fields=[{'field':'id', 'type':'count'}])
+        {'groups': [], 'summaries': {'id': 15}}
+
+        ``summaries`` contains the total summary for the query. Each key is the field summarized
+        and the value is the result of the summary operation for the entire result set.
+
+        .. note::
+            You cannot perform more than one summary on a field at a time, but you can summarize
+            several different fields in the same call.
+
+        **Example: Count all Assets for a Project, grouped by sg_asset_type**
+
+        >>> sg.summarize(entity_type='Asset',
+        ...              filters=[['project', 'is', {'type': 'Project', 'id': 4}]],
+        ...              summary_fields=[{'field': 'id', 'type': 'count'}],
+        ...              grouping=[{'field': 'sg_asset_type', 'type': 'exact', 'direction': 'asc'}])
+        {'groups': [{'group_name': 'Character','group_value': 'Character', 'summaries': {'id': 3}},
+                    {'group_name': 'Environment','group_value': 'Environment', 'summaries': {'id': 3}},
+                    {'group_name': 'Matte Painting', 'group_value': 'Matte Painting', 'summaries': {'id': 1}},
+                    {'group_name': 'Prop', 'group_value': 'Prop', 'summaries': {'id': 4}},
+                    {'group_name': 'Vehicle', 'group_value': 'Vehicle', 'summaries': {'id': 4}}],
+         'summaries': {'id': 15}}
+
+        - ``summaries`` contains the total summary for the query.
+        - ``groups`` contains the summary for each group.
+
+            - ``group_name`` is the display name for the group.
+            - ``group_value`` is the actual value of the grouping value. This is often the same as
+              ``group_name`` but in the case when grouping by entity, the ``group_name`` may be
+              ``PuppyA`` and the group_value would be
+              ``{'type':'Asset','id':922,'name':'PuppyA'}``.
+            - ``summaries`` contains the summary calculation dict for each field requested.
+
+        **Example: Count all Tasks for a Sequence and find the latest due_date**
+
+        >>> sg.summarize(entity_type='Task',
+        ...              filters = [
+        ...                 ['entity.Shot.sg_sequence', 'is', {'type':'Sequence', 'id':2}],
+        ...                 ['sg_status_list', 'is_not', 'na']],
+        ...              summary_fields=[{'field':'id', 'type':'count'},
+        ...                              {'field':'due_date','type':'latest'}])
+        {'groups': [], 'summaries': {'due_date': '2013-07-05', 'id': 30}}
+
+        This shows that the there are 30 Tasks for Shots in the Sequence and the latest ``due_date``
+        of any Task is ``2013-07-05``.
+
+        **Example: Count all Tasks for a Sequence, find the latest due_date and group by Shot**
+
+        >>> sg.summarize(entity_type='Task',
+        ...              filters = [
+        ...                 ['entity.Shot.sg_sequence', 'is', {'type': 'Sequence', 'id': 2}],
+        ...                 ['sg_status_list', 'is_not', 'na']],
+        ...              summary_fields=[{'field': 'id', 'type': 'count'}, {'field': 'due_date', 'type': 'latest'}],
+        ...              grouping=[{'field': 'entity', 'type': 'exact', 'direction': 'asc'}]))
+        {'groups': [{'group_name': 'shot_010',
+                     'group_value': {'id': 2, 'name': 'shot_010', 'type': 'Shot', 'valid': 'valid'},
+                     'summaries': {'due_date': '2013-06-18', 'id': 10}},
+                    {'group_name': 'shot_020',
+                     'group_value': {'id': 3, 'name': 'shot_020', 'type': 'Shot', 'valid': 'valid'},
+                     'summaries': {'due_date': '2013-06-28', 'id': 10}},
+                    {'group_name': 'shot_030',
+                     'group_value': {'id': 4, 'name': 'shot_030', 'type': 'Shot', 'valid': 'valid'},
+                     'summaries': {'due_date': '2013-07-05', 'id': 10}}],
+         'summaries': {'due_date': '2013-07-05', 'id': 30}}
+
+        This shows that the there are 30 Tasks for Shots in the Sequence and the latest ``due_date``
+        of any Task is ``2013-07-05``. Because the summary is grouped by ``entity``, we can also
+        see the summaries for each Shot returned. Each Shot has 10 Tasks and the latest ``due_date``
+        for each Shot. The difference between ``group_name`` and ``group_value`` is highlighted in
+        this example as the name of the Shot is different from its value.
+
+        **Example: Count all Tasks for a Sequence, find the latest due_date, group by Shot and
+        Pipeline Step**
+
+        >>> sg.summarize(entity_type='Task',
+        ...                 filters = [
+        ...                    ['entity.Shot.sg_sequence', 'is', {'type': 'Sequence', 'id': 2}],
+        ...                    ['sg_status_list', 'is_not', 'na']],
+        ...                 summary_fields=[{'field': 'id', 'type': 'count'},
+        ...                                 {'field': 'due_date', 'type': 'latest'}],
+        ...                 grouping=[{'field': 'entity', 'type': 'exact', 'direction': 'asc'},
+        ...                           {'field': 'step', 'type': 'exact', 'direction': 'asc'}])
+        {'groups': [{'group_name': 'shot_010',
+                     'group_value': {'id': 2, 'name': 'shot_010', 'type': 'Shot', 'valid': 'valid'},
+                     'groups': [{'group_name': 'Client',
+                                 'group_value': {'id': 1, 'name': 'Client', 'type': 'Step', 'valid': 'valid'},
+                                 'summaries': {'due_date': '2013-05-04', 'id': 1}},
+                                {'group_name': 'Online',
+                                 'group_value': {'id': 2, 'name': 'Online', 'type': 'Step', 'valid': 'valid'},
+                                 'summaries': {'due_date': '2013-05-05', 'id': 1}},
+                                ...
+                                ... truncated for brevity
+                                ...
+                                {'group_name': 'Comp',
+                                 'group_value': {'id': 8, 'name': 'Comp', 'type': 'Step', 'valid': 'valid'},
+                                 'summaries': {'due_date': '2013-06-18', 'id': 1}}],
+                     'summaries': {'due_date': '2013-06-18', 'id': 10}},
+                    {'group_name': 'shot_020',
+                     'group_value': {'id': 3, 'name': 'shot_020', 'type': 'Shot', 'valid': 'valid'},
+                     'groups': [{'group_name': 'Client',
+                                 'group_value': {'id': 1, 'name': 'Client', 'type': 'Step', 'valid': 'valid'},
+                                 'summaries': {'due_date': '2013-05-15', 'id': 1}},
+                                {'group_name': 'Online',
+                                 'group_value': {'id': 2, 'name': 'Online', 'type': 'Step', 'valid': 'valid'},
+                                 'summaries': {'due_date': '2013-05-16', 'id': 1}},
+                                ...
+                                ... truncated for brevity
+                                ...
+                                {'group_name': 'Comp',
+                                 'group_value': {'id': 8, 'name': 'Comp', 'type': 'Step', 'valid': 'valid'},
+                                 'summaries': {'due_date': '2013-06-28', 'id': 1}}],
+                     'summaries': {'due_date': '2013-06-28', 'id': 10}},
+                    {'group_name': 'shot_030',
+                     'group_value': {'id': 4, 'name': 'shot_030', 'type': 'Shot', 'valid': 'valid'},
+                     'groups': [{'group_name': 'Client',
+                                 'group_value': {'id': 1, 'name': 'Client', 'type': 'Step', 'valid': 'valid'},
+                                 'summaries': {'due_date': '2013-05-20', 'id': 1}},
+                                {'group_name': 'Online',
+                                 'group_value': {'id': 2, 'name': 'Online', 'type': 'Step', 'valid': 'valid'},
+                                 'summaries': {'due_date': '2013-05-21', 'id': 1}},
+                                ...
+                                ... truncated for brevity
+                                ...
+                                {'group_name': 'Comp',
+                                 'group_value': {'id': 8, 'name': 'Comp', 'type': 'Step', 'valid': 'valid'},
+                                 'summaries': {'due_date': '2013-07-05', 'id': 1}}],
+                     'summaries': {'due_date': '2013-07-05', 'id': 10}}],
+        'summaries': {'due_date': '2013-07-05', 'id': 30}}
+
+        When grouping my more than one field, the grouping structure is repeated for each sub-group
+        and summary values are returned for each group on each level.
+
+        :param str entity_type: The entity type to summarize
+        :param list filters: A list of conditions used to filter the find query. Uses the same
+            syntax as :meth:`~shotgun_api3.Shotgun.find` method.
+        :param list summary_fields: A list of dictionaries with the following keys:
+
+            :field: The internal Shotgun field name you are summarizing.
+            :type: The type of summary you are performing on the field. Summary types can be any of
+                ``record_count``, ``count``, ``sum``, ``maximum``, ``minimum``, ``average``,
+                ``earliest``, ``latest``, ``percentage``, ``status_percentage``, ``status_list``,
+                ``checked``, ``unchecked`` depending on the type of field you're summarizing.
+
+        :param str filter_operator: Operator to apply to the filters. Supported values are ``"all"``
+            and ``"any"``. These are just another way of defining if the query is an AND or OR
+            query. Defaults to ``"all"``.
+        :param list grouping: Optional list of dicts with the following keys:
+
+                :field: a string indicating the internal Shotgun field name on ``entity_type`` to
+                    group results by.
+                :type: A string indicating the type of grouping to perform for each group.
+                    Valid types depend on the type of field you are grouping on and can be one of
+                    ``exact``, ``tens``, ``hundreds``, ``thousands``, ``tensofthousands``,
+                    ``hundredsofthousands``, ``millions``, ``day``, ``week``, ``month``,
+                    ``quarter``,``year``, ``clustered_date``, ``oneday``, ``fivedays``,
+                    ``entitytype``, ``firstletter``.
+                :direction: A string that sets the order to display the grouped results. Valid
+                    options are ``asc`` and  ``desc``. Defaults to ``asc``.
+
+        :returns: dictionary containing grouping and summaries keys.
+        :rtype: dict
         """
 
         if not isinstance(grouping, list) and grouping is not None:
@@ -827,16 +1159,34 @@ class Shotgun(object):
         return records
 
     def create(self, entity_type, data, return_fields=None):
-        """Create a new entity of the specified entity_type.
+        """
+        Create a new entity of the specified ``entity_type``.
 
-        :param entity_type: Required, entity type (string) to create.
+            >>> data = {
+            ...     "project": {"type": "Project", "id": 161},
+            ...     "sg_sequence": {"type": "Sequence", "id": 109},
+            ...     "code": "001_100",
+            ...     'sg_status_list': "ip"
+            ... }
+            >>> sg.create('Shot', data)
+            {'code': '001_100',
+             'id': 2557,
+             'project': {'id': 161, 'name': 'Pied Piper', 'type': 'Project'},
+             'sg_sequence': {'id': 109, 'name': 'Sequence 001', 'type': 'Sequence'},
+             'sg_status_list': 'ip',
+             'type': 'Shot'}
 
-        :param data: Required, dict fields to set on the new entity.
-
-        :param return_fields: Optional list of fields from the new entity
-        to return. Defaults to 'id' field.
-
-        :returns: dict of the requested fields.
+        :param str entity_type: Shotgun entity type to create.
+        :param dict data: Dictionary of fields and corresponding values to set on the new entity. If
+            ``image`` or ``filmstrip_image`` fields are provided, the file path will be uploaded
+            to the server automatically.
+        :param list return_fields: Optional list of additional field values to return from the new
+            entity. Defaults to ``id`` field.
+        :returns: Shotgun entity dictionary containing the field/value pairs of all of the fields
+            set from the ``data`` parameter as well as the defaults ``type`` and ``id``. If any
+            additional fields were provided using the ``return_fields`` parameter, these would be
+            included as well.
+        :rtype: dict
         """
 
         data = data.copy()
@@ -880,26 +1230,40 @@ class Shotgun(object):
         return result
 
     def update(self, entity_type, entity_id, data, multi_entity_update_modes=None):
-        """Updates the specified entity with the supplied data.
+        """
+        Update the specified entity with the supplied data.
 
-        :param entity_type: Required, entity type (string) to update.
+        >>> shots = [
+        ...    {'type':'Shot', 'id':'40435'},
+        ...    {'type':'Shot', 'id':'40438'},
+        ...    {'type':'Shot', 'id':'40441'}]
+        >>> data = {
+        ...    'shots': shots_asset_is_in,
+        ...    'sg_status_list':'rev'}
+        >>> sg.update("Asset", 55, data)
+        {'type': 'Shot',
+         'id': 55,
+         'sg_status_`list`': 'rev',
+         'shots': [{'id': 40435, 'name': '100_010', 'type': 'Shot', 'valid': 'valid'},
+                   {'id': 40438, 'name': '100_040', 'type': 'Shot', 'valid': 'valid'},
+                   {'id': 40441, 'name': '100_070', 'type': 'Shot', 'valid': 'valid'}]
+        }
 
-        :param entity_id: Required, id of the entity to update.
+        :param str entity_type: Entity type to update.
+        :param id entity_id: id of the entity to update.
+        :param dict data: key/value pairs where key is the field name and value is the value to set
+            for that field. This method does not restrict the updating of fields hidden in the web
+            UI via the Project Tracking Settings panel.
+        :param dict multi_entity_update_modes: Optional dict indicating what update mode to use
+            when updating a multi-entity link field. The keys in the dict are the fields to set
+            the mode for, and the values from the dict are one of ``set``, ``add``, or ``remove``.
+            Defaults to ``set``.
+            ::
 
-        :param data: Required, dict fields to update on the entity.
+                multi_entity_update_modes={"shots": "add", "assets": "remove"}
 
-        :param multi_entity_update_modes: Optional, dict of what update mode to
-        use when updating a multi-entity link field.  The keys in the dict are
-        the fields to set the mode for and the values from the dict are one
-        of "set", "add", or "remove". The default behavior if mode is not
-        specified for a field is 'set'. For example, on the 'Sequence' entity,
-        to append to the 'shots' field and remove from the 'assets' field, you
-        would specify:
-
-            multi_entity_update_modes={"shots":"add", "assets":"remove"}
-
-        :returns: dict of the fields updated, with the entity_type and
-        id added.
+        :returns: Dictionary of the fields updated, with the default keys `type` and `id` added as well.
+        :rtype: dict
         """
 
         data = data.copy()
@@ -944,17 +1308,24 @@ class Shotgun(object):
         return result
 
     def delete(self, entity_type, entity_id):
-        """Retire the specified entity.
-
-        The entity can be brought back to life using the revive function.
-
-        :param entity_type: Required, entity type (string) to delete.
-
-        :param entity_id: Required, id of the entity to delete.
-
-        :returns: True if the entity was deleted, False otherwise e.g. if the
-        entity has previously been deleted.
         """
+        Retire the specified entity.
+
+        Entities in Shotgun are not "deleted" destructively, they are instead, "retired". This
+        means they are placed in the trash where they are no longer accessible to users.
+
+        The entity can be brought back to life using :meth:`~shotgun_api3.Shotgun.revive`.
+
+            >>> sg.delete("Shot", 2557)
+            True
+
+        :param str entity_type: Shotgun entity type to delete.
+        :param id entity_id: ``id`` of the entity to delete.
+        :returns: ``True`` if the entity was deleted, ``False`` otherwise (for example, if the
+            entity was already deleted).
+        :rtype: bool
+        :raises: :class:`Fault` if entity does not exist (deleted or not).
+       """
 
         params = {
             "type" : entity_type,
@@ -964,14 +1335,17 @@ class Shotgun(object):
         return self._call_rpc("delete", params)
 
     def revive(self, entity_type, entity_id):
-        """Revive an entity that has previously been deleted.
+        """
+        Revive an entity that has previously been deleted.
 
-        :param entity_type: Required, entity type (string) to revive.
+        >>> sg.revive("Shot", 860)
+        True
 
-        :param entity_id: Required, id of the entity to revive.
-
-        :returns: True if the entity was revived, False otherwise e.g. if the
-        entity has previously been revived (or was not deleted).
+        :param str entity_type: Shotgun entity type to revive.
+        :param int entity_id: id of the entity to revive.
+        :returns: ``True`` if the entity was revived, ``False`` otherwise (e.g. if the
+            entity is not currently retired).
+        :rtype: bool
         """
 
         params = {
@@ -982,20 +1356,61 @@ class Shotgun(object):
         return self._call_rpc("revive", params)
 
     def batch(self, requests):
-        """Make a batch request  of several create, update and delete calls.
+        """
+        Make a batch request of several :meth:`~shotgun_api3.Shotgun.create`,
+        :meth:`~shotgun_api3.Shotgun.update`, and :meth:`~shotgun_api3.Shotgun.delete` calls.
 
-        All requests are performed within a transaction, so either all will
-        complete or none will.
+        All requests are performed within a transaction, so either all will complete or none will.
 
-        :param requests: A list of dict's of the form which have a
-            request_type key and also specifies:
-            - create: entity_type, data dict of fields to set
-            - update: entity_type, entity_id, data dict of fields to set, optionally multi_entity_update_modes
-            - delete: entity_type and entity_id
+        Ex. Make a bunch of shots::
 
-        :returns: A list of values for each operation, create and update
-        requests return a dict of the fields updated. Delete requests
-        return True if the entity was deleted.
+            batch_data = []
+            for i in range(1,100):
+                data = {
+                    "code": "shot_%04d" % i,
+                    "project": project
+                }
+                batch_data.append({"request_type": "create", "entity_type": "Shot", "data": data})
+            sg.batch(batch_data)
+
+        Example output::
+
+             [{'code': 'shot_0001',
+               'type': 'Shot',
+               'id': 3624,
+               'project': {'id': 4, 'name': 'Demo Project', 'type': 'Project'}},
+              ...
+              ... and a bunch more ...
+              ...
+              {'code': 'shot_0099',
+               'type': 'Shot',
+               'id': 3722,
+               'project': {'id': 4, 'name': 'Demo Project', 'type': 'Project'}}]
+
+        Ex. All three types of requests in one batch::
+
+            batch_data = [
+              {"request_type": "create", "entity_type": "Shot", "data": {"code": "New Shot 1", "project": project}},
+              {"request_type": "update", "entity_type": "Shot", "entity_id": 3624, "data": {"code": "Changed 1"}},
+              {"request_type": "delete", "entity_type": "Shot", "entity_id": 3624}
+            ]
+            sg.batch(batch_data)
+
+        Example output::
+
+             [{'code': 'New Shot 1', 'type': 'Shot', 'id': 3723, 'project': {'id': 4, 'name': 'Demo Project', 'type': 'Project'}},
+              {'code': 'Changed 1', 'type': 'Shot', 'id': 3624},
+              True]
+
+        :param list requests: A list of dict's of the form which have a request_type key and also
+            specifies:
+
+            - create: ``entity_type``, data dict of fields to set
+            - update: ``entity_type``, ``entity_id``, data dict of fields to set, and optionally ``multi_entity_update_modes``
+            - delete: ``entity_type`` and entity_id
+        :returns: A list of values for each operation. Create and update requests return a dict of
+            the fields updated. Delete requests return ``True`` if the entity was deleted.
+        :rtype: list
         """
 
         if not isinstance(requests, list):
@@ -1048,23 +1463,55 @@ class Shotgun(object):
         return self._parse_records(records)
 
     def work_schedule_read(self, start_date, end_date, project=None, user=None):
-        """Get the work day rules for a given date range.
+        """
+        Return the work day rules for a given date range.
 
-        reasons:
-            STUDIO_WORK_WEEK
-            STUDIO_EXCEPTION
-            PROJECT_WORK_WEEK
-            PROJECT_EXCEPTION
-            USER_WORK_WEEK
-            USER_EXCEPTION
+        .. versionadded:: 3.0.9
+            Requires Shotgun server v3.2.0+
+
+        This returns the defined WorkDayRules between the ``start_date`` and ``end_date`` inclusive
+        as a dict where the key is the date and the value is another dict describing the rule for
+        that date.
+
+        Rules are represented by a dict with the following keys:
+
+        :description: the description entered into the work day rule exception if applicable.
+        :reason: one of six options:
+
+            - STUDIO_WORK_WEEK: standard studio schedule applies
+            - STUDIO_EXCEPTION: studio-wide exception applies
+            - PROJECT_WORK_WEEK: standard project schedule applies
+            - PROJECT_EXCEPTION: project-specific exception applies
+            - USER_WORK_WEEK: standard user work week applies
+            - USER_EXCEPTION: user-specific exception applies
+
+        :working: boolean indicating whether it is a "working" day or not.
+
+        >>> sg.work_schedule_read("2015-12-21", "2015-12-25")
+        {'2015-12-21': {'description': None,
+                        'reason': 'STUDIO_WORK_WEEK',
+                        'working': True},
+         '2015-12-22': {'description': None,
+                        'reason': 'STUDIO_WORK_WEEK',
+                        'working': True},
+         '2015-12-23': {'description': None,
+                        'reason': 'STUDIO_WORK_WEEK',
+                        'working': True},
+         '2015-12-24': {'description': 'Closed for Christmas Eve',
+                        'reason': 'STUDIO_EXCEPTION',
+                        'working': False},
+         '2015-12-25': {'description': 'Closed for Christmas',
+                        'reason': 'STUDIO_EXCEPTION',
+                        'working': False}}
 
 
-        :param start_date: Start date of date range.
-        :type start_date: str (YYYY-MM-DD)
-        :param end_date: End date of date range.
-        :type end_date: str (YYYY-MM-DD)
-        :param dict project: Project entity to query WorkDayRules for. (optional)
-        :param dict user: User entity to query WorkDayRules for. (optional)
+        :param str start_date: Start date of date range. ``YYYY-MM-DD``
+        :param str end_date: End date of date range. ``YYYY-MM-DD``
+        :param dict project: Optional Project entity to query `WorkDayRules` for.
+        :param dict user: Optional HumanUser entity to query WorkDayRules for.
+        :returns: Complex dict containing each date and the WorkDayRule defined for that date
+            between the ``start_date`` and ``end date`` inclusive. See above for details.
+        :rtype: dict
         """
 
         if not self.server_caps.version or self.server_caps.version < (3, 2, 0):
@@ -1083,17 +1530,39 @@ class Shotgun(object):
 
         return self._call_rpc('work_schedule_read', params)
 
-    def work_schedule_update(self, date, working, description=None, project=None, user=None, recalculate_field=None):
-        """Update the work schedule for a given date. If neither project nor user are passed the studio work schedule will be updated.
-        Project and User can only be used separately.
+    def work_schedule_update(self, date, working, description=None, project=None, user=None,
+                             recalculate_field=None):
+        """
+        Update the work schedule for a given date.
 
-        :param date: Date of WorkDayRule to update.
-        :type date: str (YYYY-MM-DD)
-        :param bool working:
-        :param str description: Reason for time off. (optional)
-        :param dict project: Project entity to assign to. Cannot be used with user. (optional)
-        :param dict user: User entity to assign to. Cannot be used with project. (optional)
-        :param str recalculate_field: Choose the schedule field that will be recalculated on Tasks when they are affected by a change in working schedule. 'due_date' or 'duration', default is a Site Preference (optional)
+        .. versionadded:: 3.0.9
+            Requires Shotgun server v3.2.0+
+
+        If neither ``project`` nor ``user`` are passed in, the studio work schedule will be updated.
+        ``project`` and ``user`` can only be used exclusively of each other.
+
+        >>> sg.work_schedule_update ("2015-12-31", working=False,
+        ...                          description="Studio closed for New Years Eve", project=None,
+        ...                          user=None, recalculate_field=None)
+        {'date': '2015-12-31',
+         'description': "Studio closed for New Years Eve",
+         'project': None,
+         'user': None,
+         'working': False}
+
+        :param str date: Date of WorkDayRule to update. ``YYY-MM-DD``
+        :param bool working: Indicates whether the day is a working day or not.
+        :param str description: Optional reason for time off.
+        :param dict project: Optional Project entity to assign the rule to. Cannot be used with the
+            ``user`` param.
+        :param dict user: Optional HumanUser entity to assign the rule to. Cannot be used with the
+            ``project`` param.
+        :param str recalculate_field: Optional schedule field that will be recalculated on Tasks
+            when they are affected by a change in working schedule. Options are ``due_date`` or
+            ``duration``. Defaults to the value set in the Shotgun web application's Site
+            Preferences.
+        :returns: dict containing key/value pairs for each value of the work day rule updated.
+        :rtype: dict
         """
 
         if not self.server_caps.version or self.server_caps.version < (3, 2, 0):
@@ -1115,12 +1584,21 @@ class Shotgun(object):
         return self._call_rpc('work_schedule_update', params)
 
     def follow(self, user, entity):
-        """Adds the entity to the user's followed entities (or does nothing if the user is already following the entity)
-        
-        :param dict user: User entity to follow the entity
-        :param dict entity: Entity to be followed
-        
-        :returns: dict with 'followed'=true, and dicts for the 'user' and 'entity' that were passed in
+        """
+        Add the entity to the user's followed entities.
+
+        If the user is already following the entity, the method will succeed but nothing will be
+        changed on the server-side.
+
+            >>> sg.follow({"type": "HumanUser", "id": 42}, {"type": "Shot", "id": 2050})
+            {'followed': True, 'user': {'type': 'HumanUser', 'id': 42},
+             'entity': {'type': 'Shot', 'id': 2050}}
+
+        :param dict user: User entity that will follow the entity.
+        :param dict entity: Shotgun entity to be followed.
+        :returns: dict with ``"followed": True`` as well as key/values for the params that were
+            passed in.
+        :rtype: dict
         """
 
         if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
@@ -1135,12 +1613,20 @@ class Shotgun(object):
         return self._call_rpc('follow', params)
 
     def unfollow(self, user, entity):
-        """Removes entity from the user's followed entities (or does nothing if the user is not following the entity)
-        
-        :param dict user: User entity to unfollow the entity
+        """
+        Remove entity from the user's followed entities.
+
+        This does nothing if the user is not following the entity.
+
+        >>> sg.unfollow({"type": "HumanUser", "id": 42}, {"type": "Shot", "id": 2050})
+        {'entity': {'type': 'Shot', 'id': 2050}, 'user': {'type': 'HumanUser', 'id': 42},
+         'unfollowed': True}
+
+        :param dict user: User entity that will unfollow the entity.
         :param dict entity: Entity to be unfollowed
-        
-        :returns: dict with 'unfollowed'=true, and dicts for the 'user' and 'entity' that were passed in
+        :returns: dict with ``"unfollowed": True`` as well as key/values for the params that were
+            passed in.
+        :rtype: dict
         """
 
         if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
@@ -1155,11 +1641,21 @@ class Shotgun(object):
         return self._call_rpc('unfollow', params)
 
     def followers(self, entity):
-        """Gets all followers of the entity.
-        
-        :param dict entity: Find all followers of this entity
-        
-        :returns list of dicts for all the users following the entity
+        """
+        Return all followers for an entity.
+
+            >>> sg.followers({"type": "Shot", "id": 2050})
+            [{'status': 'act', 'valid': 'valid', 'type': 'HumanUser', 'name': 'Richard Hendriks',
+              'id': 42},
+             {'status': 'act', 'valid': 'valid', 'type': 'HumanUser', 'name': 'Bertram Gilfoyle',
+              'id': 33},
+             {'status': 'act', 'valid': 'valid', 'type': 'HumanUser', 'name': 'Dinesh Chugtai',
+              'id': 57}]
+
+        :param dict entity: Entity to find followers of.
+        :returns: list of dicts representing each user following the entity
+        :rtype: list
+        :versionadded:
         """
 
         if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
@@ -1172,14 +1668,69 @@ class Shotgun(object):
         
         return self._call_rpc('followers', params)
 
+    def following(self, user, project=None, entity_type=None):
+        """
+        Return all entity instances a user is following.
+
+        Optionally, a project and/or entity_type can be supplied to restrict returned results.
+
+            >>> user = {"type": "HumanUser", "id": 1234}
+            >>> project = {"type": "Project", "id": 1234}
+            >>> entity_type = "Task"
+            >>> sg.following(user, project=project, entity_type=entity_type)
+            [{"type":"Task", "id":1},
+             {"type":"Task", "id":2},
+             {"type":"Task", "id":3}]
+
+        :param dict user: Find what this person is following.
+        :param dict project: Optional filter to only return results from a specific project.
+        :param str entity_type: Optional filter to only return results from one entity type.
+        :returns: list of dictionaries, each containing entity type & id's being followed.
+        :rtype: list
+        """
+
+        self.server_caps.ensure_user_following_support()
+
+        params = {
+            "user":user
+        }
+        if project:
+            params["project"] = project
+        if entity_type:
+            params["entity_type"] = entity_type
+
+        return self._call_rpc('following', params)
+
     def schema_entity_read(self, project_entity=None):
-        """Gets all active entities defined in the schema.
+        """
+        Return all active entity types, their display names, and their visibility.
 
-        :param dict project_entity: Optional, if set, each field's visibility is reported accordingly
-        to the specified project's current visibility settings.
-        If None, all fields are reported as visible.
+        If the project parameter is specified, the schema visibility for the given project is
+        being returned. If the project parameter is omitted or set to ``None``, a full listing is
+        returned where per-project entity type visibility settings are not considered.
 
+        >>> sg.schema_entity_read()
+        {'ActionMenuItem': {'name': {'editable': False, 'value': 'Action Menu Item'},
+                            'visible': {'editable': False, 'value': True}},
+         'ApiUser': {'name': {'editable': False, 'value': 'Script'},
+                     'visible': {'editable': False, 'value': True}},
+         'AppWelcomeUserConnection': {'name': {'editable': False,
+                                               'value': 'App Welcome User Connection'},
+                                      'visible': {'editable': False, 'value': True}},
+         'Asset': {'name': {'editable': False, 'value': 'Asset'},
+                   'visible': {'editable': False, 'value': True}},
+         'AssetAssetConnection': {'name': {'editable': False,
+                                           'value': 'Asset Asset Connection'},
+                                  'visible': {'editable': False, 'value': True}},
+         '...'
+        }
+
+        :param dict project_entity: Optional Project entity specifying which project to return
+            the listing for. If omitted or set to ``None``, per-project visibility settings are
+            not taken into consideration and the global list is returned. Example:
+            ``{'type': 'Project', 'id': 3}``
         :returns: dict of Entity Type to dict containing the display name.
+        :rtype: dict
         """
 
         params = {}
@@ -1192,13 +1743,62 @@ class Shotgun(object):
             return self._call_rpc("schema_entity_read", None)
 
     def schema_read(self, project_entity=None):
-        """Gets the schema for all fields in all entities.
+        """
+        Get the schema for all fields on all entities.
 
-        :param dict project_entity: Optional, if set, each field's visibility is reported accordingly
-        to the specified project's current visibility settings.
-        If None, all fields are reported as visible.
+        .. note::
+            If ``project_entity`` is not specified, everything is reported as visible.
 
-        :returns: nested dicts
+        >>> sg.schema_read()
+        {'ActionMenuItem': {'created_at': {'data_type': {'editable': False, 'value': 'date_time'},
+                                           'description': {'editable': True,  'value': ''},
+                                           'editable': {'editable': False, 'value': False},
+                                           'entity_type': {'editable': False, 'value': 'ActionMenuItem'},
+                                           'mandatory': {'editable': False, 'value': False},
+                                           'name': {'editable': True, 'value': 'Date Created'},
+                                           'properties': {'default_value': {'editable': False, 'value': None},
+                                                          'summary_default': {'editable': True, 'value': 'none'}},
+                                           'unique': {'editable': False, 'value': False},
+                                           'visible': {'editable': False, 'value': True}},
+                            'created_by': {'data_type': {'editable': False,'value': 'entity'},
+                                           'description': {'editable': True,'value': ''},
+                                           'editable': {'editable': False,'value': False},
+                                           'entity_type': {'editable': False,'value': 'ActionMenuItem'},
+                                           'mandatory': {'editable': False,'value': False},
+                                           'name': {'editable': True,'value': 'Created by'},
+                                           'properties': {'default_value': {'editable': False,'value': None},
+                                                          'summary_default': {'editable': True,'value': 'none'},
+                                                          'valid_types': {'editable': True,'value': ['HumanUser','ApiUser']}},
+                                           'unique': {'editable': False,'value': False},
+                                           'visible': {'editable': False,'value': True}},
+                            ...
+                            ...
+         ...
+         ...
+         'Version': {'client_approved': {'data_type': {'editable': False,'value': 'checkbox'},
+                                         'description': {'editable': True,'value': ''},
+                                         'editable': {'editable': False,'value': True},
+                                         'entity_type': {'editable': False,'value': 'Version'},
+                                         'mandatory': {'editable': False,'value': False},
+                                         'name': {'editable': True,'value': 'Client Approved'},
+                                         'properties': {'default_value': {'editable': False,'value': False},
+                                                        'summary_default': {'editable': False,'value': 'none'}},
+                                         'unique': {'editable': False,'value': False},
+                                         'visible': {'editable': False,'value': True}},
+                     ...
+                     ...
+         ...
+         ...
+        }
+
+        :param dict project_entity: Optional, Project entity specifying which project to return
+            the listing for. If omitted or set to ``None``, per-project visibility settings are
+            not taken into consideration and the global list is returned. Example:
+            ``{'type': 'Project', 'id': 3}``. Defaults to ``None``.
+        :returns: A nested dict object containing a key/value pair for all fields of all entity
+            types. Properties that are ``'editable': True``, can be updated using the
+            :meth:`~shotgun_api3.Shotgun.schema_field_update` method.
+        :rtype: dict
         """
 
         params = {}
@@ -1211,21 +1811,53 @@ class Shotgun(object):
             return self._call_rpc("schema_read", None)
 
     def schema_field_read(self, entity_type, field_name=None, project_entity=None):
-        """Gets all schema for fields in the specified entity_type or one
-        field.
+        """
+        Get schema for all fields on the specified entity type or just the field name specified
+        if provided.
 
-        :param entity_type: Required, entity type (string) to get the schema
-        for.
+        .. note::
+            Unlike how the results of a :meth:`~shotgun_api3.Shotgun.find` can be pumped into a
+            :meth:`~shotgun_api3.Shotgun.create` or :meth:`~shotgun_api3.Shotgun.update`, the
+            results of :meth:`~shotgun_api3.Shotgun.schema_field_read` are not compatible with
+            the format used for :meth:`~shotgun_api3.Shotgun.schema_field_create` or
+            :meth:`~shotgun_api3.Shotgun.schema_field_update`. If you need to pipe the results
+            from :meth:`~shotgun_api3.Shotgun.schema_field_read` into a
+            :meth:`~shotgun_api3.Shotgun.schema_field_create` or
+            :meth:`~shotgun_api3.Shotgun.schema_field_update`, you will need to reformat the
+            data in your script.
 
-        :param field_name: Optional, name of the field to get the schema
-        definition for. If not supplied all fields for the entity type are
-        returned.
+        .. note::
+            If you don't specify a ``project_entity``, everything is reported as visible.
 
-        :param dict project_entity: Optional, if set, each field's visibility is reported accordingly
-        to the specified project's current visibility settings.
-        If None, all fields are reported as visible.
+        >>> sg.schema_field_read('Asset', 'shots')
+        {'shots': {'data_type': {'editable': False, 'value': 'multi_entity'},
+                   'description': {'editable': True, 'value': ''},
+                   'editable': {'editable': False, 'value': True},
+                   'entity_type': {'editable': False, 'value': 'Asset'},
+                   'mandatory': {'editable': False, 'value': False},
+                   'name': {'editable': True, 'value': 'Shots'},
+                   'properties': {'default_value': {'editable': False,
+                                                    'value': None},
+                                  'summary_default': {'editable': True,
+                                                      'value': 'none'},
+                                  'valid_types': {'editable': True,
+                                                  'value': ['Shot']}},
+                   'unique': {'editable': False, 'value': False},
+                   'visible': {'editable': False, 'value': True}}}
 
-        :returns: dict of field name to nested dicts which describe the field
+        :param str entity_type: Entity type to get the schema for.
+        :param str field_name: Optional internal Shotgun name of the field to get the schema
+            definition for. If this parameter is excluded or set to ``None``, data structures of
+            all fields will be returned. Defaults to ``None``. Example: ``sg_temp_field``.
+        :param dict project_entity: Optional Project entity specifying which project to return
+            the listing for. If omitted or set to ``None``, per-project visibility settings are
+            not taken into consideration and the global list is returned. Example:
+            ``{'type': 'Project', 'id': 3}``
+        :returns: a nested dict object containing a key/value pair for the ``field_name`` specified
+            and its properties, or if no field_name is specified, for all the fields of the
+            ``entity_type``. Properties that are ``'editable': True``, can be updated using the
+            :meth:`~shotgun_api3.Shotgun.schema_field_update` method.
+        :rtype: dict
         """
 
         params = {
@@ -1239,20 +1871,30 @@ class Shotgun(object):
 
         return self._call_rpc("schema_field_read", params)
 
-    def schema_field_create(self, entity_type, data_type, display_name,
-        properties=None):
-        """Creates a field for the specified entity type.
+    def schema_field_create(self, entity_type, data_type, display_name, properties=None):
+        """
+        Create a field for the specified entity type.
 
-        :param entity_type: Required, entity type (string) to add the field to
+        .. note::
+            If the internal Shotgun field name computed from the provided ``display_name`` already
+            exists, the internal Shotgun field name will automatically be appended with ``_1`` in
+            order to create a unique name. The integer suffix will be incremented by 1 until a
+            unique name is found.
 
-        :param data_type: Required, Shotgun data type for the new field.
+        >>> properties = {"summary_default": "count", "description": "Complexity breakdown of Asset"}
+        >>> sg.schema_field_create("Asset", "text", "Complexity", properties)
+        'sg_complexity'
 
-        :param display_name: Required, display name for the new field.
-
-        :param properties: Optional, dict of properties for the new field.
-
-        :returns: The Shotgun name (string) for the new field, this is
-        different to the display_name passed in.
+        :param str entity_type: Entity type to add the field to.
+        :param str data_type: Shotgun data type for the new field.
+        :param str display_name: Specifies the display name of the field you are creating. The
+            system name will be created from this display name and returned upon successful
+            creation.
+        :param dict properties: Dict of valid properties for the new field. Use this to specify
+            other field properties such as the 'description' or 'summary_default'.
+        :returns: The internal Shotgun name for the new field, this is different to the
+            ``display_name`` parameter passed in.
+        :rtype: str
         """
 
         params = {
@@ -1268,16 +1910,25 @@ class Shotgun(object):
         return self._call_rpc("schema_field_create", params)
 
     def schema_field_update(self, entity_type, field_name, properties):
-        """Updates the specified field definition with the supplied
-        properties.
+        """
+        Update the properties for the specified field on an entity.
 
-        :param entity_type: Required, entity type (string) to add the field to
+        .. note::
+            Although the property name may be the key in a nested dictionary, like
+            'summary_default', it is treated no differently than keys that are up
+            one level, like 'description'.
 
-        :param field_name: Required, Shotgun name of the field to update.
+        >>> properties = {"name": "Test Number Field Renamed", "summary_default": "sum",
+        ...               "description": "this is only a test"}
+        >>> sg.schema_field_update("Asset", "sg_test_number", properties)
+        True
 
-        :param properties: Required, dict of updated properties for the field.
-
-        :returns: True if the field was updated, False otherwise.
+        :param entity_type: Entity type of field to update.
+        :param field_name: Internal Shotgun name of the field to update.
+        :param properties: Dictionary with key/value pairs where the key is the property to be
+            updated and the value is the new value.
+        :returns: ``True`` if the field was updated.
+        :rtype: bool
         """
 
         params = {
@@ -1292,16 +1943,16 @@ class Shotgun(object):
         return self._call_rpc("schema_field_update", params)
 
     def schema_field_delete(self, entity_type, field_name):
-        """Deletes the specified field definition from the entity_type.
+        """
+        Delete the specified field from the entity type.
 
-        :param entity_type: Required, entity type (string) to delete the field
-        from.
+        >>> sg.schema_field_delete("Asset", "sg_temp_field")
+        True
 
-        :param field_name: Required, Shotgun name of the field to delete.
-
-        :param properties: Required, dict of updated properties for the field.
-
-        :returns: True if the field was updated, False otherwise.
+        :param str entity_type: Entity type to delete the field from.
+        :param str field_name: Internal Shotgun name of the field to delete.
+        :returns: ``True`` if the field was deleted.
+        :rtype: bool
         """
 
         params = {
@@ -1312,19 +1963,25 @@ class Shotgun(object):
         return self._call_rpc("schema_field_delete", params)
 
     def add_user_agent(self, agent):
-        """Add agent to the user-agent header.
+        """
+        Add agent to the user-agent header.
 
-        Append agent to the string passed in as the user-agent to be logged
-        in events for this API session.
+        Appends agent to the user-agent string sent with every API request.
 
-        :param agent: Required, string to append to user-agent.
+        >>> sg.add_user_agent("my_tool 1.0")
+
+        :param str agent: string to append to user-agent.
         """
         self._user_agents.append(agent)
 
     def reset_user_agent(self):
-        """Reset user agent to the default.
+        """
+        Reset user agent to the default value.
 
-        Eg. "shotgun-json (3.0.17); Python 2.6 (Mac); ssl OpenSSL 1.0.2d 9 Jul 2015 (validate)"
+        Example default user-agent::
+
+            shotgun-json (3.0.17); Python 2.6 (Mac); ssl OpenSSL 1.0.2d 9 Jul 2015 (validate)
+
         """
         ua_platform = "Unknown"
         if self.client_caps.platform is not None:
@@ -1342,12 +1999,16 @@ class Shotgun(object):
 
 
     def set_session_uuid(self, session_uuid):
-        """Sets the browser session_uuid for this API session.
+        """
+        Set the browser session_uuid in the current Shotgun API instance.
 
-        Once set events generated by this API session will include the
-        session_uuid in their EventLogEntries.
+        When this is set, any events generated by the API will include the ``session_uuid`` value
+        on the corresponding EventLogEntries. If there is a current browser session open with
+        this ``session_uuid``, the browser will display updates for these events.
 
-        :param session_uuid: Session UUID to set.
+        >>> sg.set_session_uuid("5a1d49b0-0c69-11e0-a24c-003048d17544")
+
+        :param str session_uuid: The uuid of the browser session to be updated.
         """
 
         self.config.session_uuid = session_uuid
@@ -1355,38 +2016,44 @@ class Shotgun(object):
 
     def share_thumbnail(self, entities, thumbnail_path=None, source_entity=None,
         filmstrip_thumbnail=False, **kwargs):
-        """Associate a thumbnail with more than one Shotgun entity.
-    
-        Share the thumbnail from between entities without requiring 
-        uploading the thumbnail file multiple times. You can use this in 
-        two ways: 
-        
-        1) Upload an image to set as the thumbnail on multiple entities. 
+        """
+        Associate a thumbnail with more than one Shotgun entity.
+
+        .. versionadded:: 3.0.9
+            Requires Shotgun server v4.0.0+
+
+        Share the thumbnail from between entities without requiring uploading the thumbnail file
+        multiple times. You can use this in two ways:
+
+        1) Upload an image to set as the thumbnail on multiple entities.
         2) Update multiple entities to point to an existing entity's thumbnail.
 
-        Please note that when sharing a filmstrip thumbnail, it is required 
-        to have a static thumbnail in place before the filmstrip will 
-        be displayed in the Shotgun web UI.        
-        
-        :param entities: The entities to update to point to the shared 
-                         thumbnail provided in standard hash (dict) format.
-                         Example: [{'type': 'Version', 'id': 123}, 
-                                   {'type': 'Version', 'id': 456}]
-        
-        :param thumbnail_path: Required if source_entity is not provided.
-                               The full path to the local thumbnail file to 
-                               upload and share.
-        
-        :param source_entity: Required if source_entity is not provided.
-                              The entity whoes thumbnail will be the source 
-                              for sharing. Dictionary with type and id.
-        
-        :param filmstrip_thumbnail: If True, the filmstrip_thumbnail will be 
-                                    shared. If False (default), the static 
-                                    thumbnail will be shared.
-                                  
-        :returns: Id of the Attachment entity that was created for the image 
-                  if a thumbnail was uploaded successfully.
+        .. note::
+            When sharing a filmstrip thumbnail, it is required to have a static thumbnail in
+            place before the filmstrip will be displayed in the Shotgun web UI.
+
+        >>> thumb = '/data/show/ne2/100_110/anim/01.mlk-02b.jpg'
+        >>> e = [{'type': 'Version', 'id': 123}, {'type': 'Version', 'id': 456}]
+        >>> sg.share_thumbnail(entities=e, thumbnail_path=thumb)
+        4271
+
+        >>> e = [{'type': 'Version', 'id': 123}, {'type': 'Version', 'id': 456}]
+        >>> sg.share_thumbnail(entities=e, source_entity={'type':'Version', 'id': 789})
+        4271
+
+        :param list entities: The entities to update to point to the shared  thumbnail provided in
+            standard entity dict format::
+
+                [{'type': 'Version', 'id': 123},
+                 {'type': 'Version', 'id': 456}]
+        :param str thumbnail_path: The full path to the local thumbnail file to upload and share.
+            Required if ``source_entity`` is not provided.
+        :param dict source_entity: The entity whos thumbnail will be the source for sharing.
+            Required if ``source_entity`` is not provided.
+        :param bool filmstrip_thumbnail: ``True`` to share the filmstrip thumbnail. ``False`` to
+            share the static thumbnail. Defaults to ``False``.
+        :returns: ``id`` of the Attachment entity representing the source thumbnail that is shared.
+        :rtype: int
         """
         if not self.server_caps.version or self.server_caps.version < (4, 0, 0):
             raise ShotgunError("Thumbnail sharing support requires server "\
@@ -1440,60 +2107,89 @@ class Shotgun(object):
             "filmstrip_thumbnail" : filmstrip_thumbnail,
         }
 
-        params.update(self._auth_params())
-
-        # Create opener with extended form post support
-        opener = self._build_opener(FormPostHandler)
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
             "/upload/share_thumbnail", None, None, None))
 
-        # Perform the request
-        try:
-            resp = opener.open(url, params)
-            result = resp.read()
-            # response headers are in str(resp.info()).splitlines()
-        except urllib2.HTTPError, e:
-            if e.code == 500:
-                raise ShotgunError("Server encountered an internal error. "
-                    "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
-            else:
-                raise ShotgunError("Unanticipated error occurred %s" % (e))
+        result = self._send_form(url, params)
+
+        if not str(result).startswith("1"):
+            raise ShotgunError("Unable to share thumbnail: %s" % result)
         else:
-            if not str(result).startswith("1"):
-                raise ShotgunError("Unable to share thumbnail: %s" % result)
-            else:
-                # clearing thumbnail returns no attachment_id
-                try:
-                    attachment_id = int(str(result).split(":")[1].split("\n")[0])
-                except ValueError:
-                    attachment_id = None
+            # clearing thumbnail returns no attachment_id
+            try:
+                attachment_id = int(str(result).split(":")[1].split("\n")[0])
+            except ValueError:
+                attachment_id = None
 
         return attachment_id
 
     def upload_thumbnail(self, entity_type, entity_id, path, **kwargs):
-        """Convenience function for uploading thumbnails.
-        
-        Additional keyword arguments passed to this method will be forwarded
-        to the upload() method.
-        
-        :param entity_type: Entity type of the entity to associate with
-        :param entity_id: Required, id of the entity to associate with
-        :param path: Path to file on disk
+        """
+        Upload a file from a local path and assign it as the thumbnail for the specified entity.
+
+        .. note::
+            Images will automatically be re-sized on the server to generate a size-appropriate image
+            file. However, the original file is retained as well and is accessible when you click
+            on the thumbnail image in the web UI. If you are using a local install of Shotgun and
+            have not enabled S3, this can eat up disk space if you're uploading really large source
+            images for your thumbnails.
+
+        You can un-set (aka clear) a thumbnail on an entity using the
+        :meth:`~shotgun_api3.Shotgun.update` method and setting the **image** field to ``None``.
+        This will also unset the ``filmstrip_thumbnail`` field if it is set.
+
+        Supported image file types include ``.jpg` and ``.png`` (preferred) but will also accept.
+        ``.gif```, ``.tif``, ``.tiff``, ``.bmp``, ``.exr``, ``.dpx``, and ``.tga``.
+
+        This method wraps over :meth:`~shotgun_api3.Shotgun.upload`. Additional keyword arguments
+        passed to this method will be forwarded to the :meth:`~shotgun_api3.Shotgun.upload` method.
+
+        :param str entity_type: Entity type to set the thumbnail for.
+        :param int entity_id: Id of the entity to set the thumbnail for.
+        :param str path: Full path to the thumbnail file on disk.
         :returns: Id of the new attachment
         """
         return self.upload(entity_type, entity_id, path,
             field_name="thumb_image", **kwargs)
 
     def upload_filmstrip_thumbnail(self, entity_type, entity_id, path, **kwargs):
-        """Convenience function for uploading filmstrip thumbnails.
+        """
+        Upload filmstrip thumbnail to specified entity.
 
-        Additional keyword arguments passed to this method will be forwarded
-        to the upload() method.
-        
-        :param entity_type: Entity type of the entity to associate with
-        :param entity_id: Required, id of the entity to associate with
-        :param path: Path to file on disk
-        :returns: Id of the new attachment
+        .. versionadded:: 3.0.9
+            Requires Shotgun server v3.1.0+
+
+        Uploads a file from a local directory and assigns it as the filmstrip thumbnail for the
+        specified entity. The image must be a horizontal strip of any number of frames that are
+        exactly 240 pixels wide. Therefore the whole strip must be an exact multiple of 240 pixels
+        in width. The height can be anything (and will depend on the aspect ratio of the frames).
+        Any image file type that works for thumbnails will work for filmstrip thumbnails.
+
+        Filmstrip thumbnails will only be visible in the Thumbnail field on an entity if a
+        regular thumbnail image is also uploaded to the entity. The standard thumbnail is
+        displayed by default as the poster frame. Then, on hover, the filmstrip thumbnail is
+        displayed and updated based on your horizontal cursor position for scrubbing. On mouseout,
+        the default thumbnail is displayed again as the poster frame.
+
+        The url for a filmstrip thumbnail on an entity is available by querying for the
+        ``filmstrip_image field``.
+
+        You can un-set (aka clear) a thumbnail on an entity using the
+        :meth:`~shotgun_api3.Shotgun.update` method and setting the **image** field to ``None``.
+        This will also unset the ``filmstrip_thumbnail`` field if it is set.
+
+        This method wraps over :meth:`~shotgun_api3.Shotgun.upload`. Additional keyword arguments
+        passed to this method will be forwarded to the :meth:`~shotgun_api3.Shotgun.upload` method.
+
+        >>> filmstrip_thumbnail = '/data/show/ne2/100_110/anim/01.mlk-02b_filmstrip.jpg'
+        >>> sg.upload_filmstrip_thumbnail("Version", 27, filmstrip_thumbnail)
+        87
+
+        :param str entity_type: Entity type to set the filmstrip thumbnail for.
+        :param int entity_id: Id of the entity to set the filmstrip thumbnail for.
+        :param str path: Full path to the filmstrip thumbnail file on disk.
+        :returns: Id of the new Attachment entity created for the filmstrip thumbnail
+        :rtype: int
         """
         if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
             raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "\
@@ -1502,100 +2198,138 @@ class Shotgun(object):
         return self.upload(entity_type, entity_id, path,
             field_name="filmstrip_thumb_image", **kwargs)
 
-    def upload(self, entity_type, entity_id, path, field_name=None,
-        display_name=None, tag_list=None):
-        """Upload a file as an attachment/thumbnail to the specified
-        entity_type and entity_id.
-
-        :param entity_type: Entity type of the entity to associate with
-
-        :param entity_id: Entity id of the entity to associate with
-
-        :param path: Path to file on disk
-
-        :param field_name: the field on the entity to upload to
-            (ignored if thumbnail)
-
-        :param display_name: the display name to use for the file in the ui
-            (ignored if thumbnail)
-
-        :param tag_list: comma-separated string of tags to assign to the file
-
-        :returns: Id of the new attachment.
+    def upload(self, entity_type, entity_id, path, field_name=None, display_name=None,
+               tag_list=None):
         """
+        Upload a file to the specified entity.
 
-        # Note: in semiPrivate mode (eg. captain project)
-        # we do not want user to upload thumbnail in the cloud
-        # This modification was recommended by Shotgun support
+        Creates an Attachment entity for the file in Shotgun and links it to the specified entity.
+        You can optionally store the file in a field on the entity, change the display name, and
+        assign tags to the Attachment.
 
-        # Note: SHOTGUN_SITE_TYPE and SHOTGUN_THUMBNAIL_ROOT are defined
-        # per tank config (eg. animtst2TkConfig)
+        >>> mov_file = '/data/show/ne2/100_110/anim/01.mlk-02b.mov'
+        >>> sg.upload("Shot", 423, mov_file, field_name="sg_latest_quicktime",
+        ...           display_name="Latest QT")
+        72
 
-        # Note: be sure to be in sync with tkCore package
-
+        :param str entity_type: Entity type to link the upload to.
+        :param int entity_id: Id of the entity to link the upload to.
+        :param str path: Full path to an existing non-empty file on disk to upload.
+        :param str field_name: The internal Shotgun field name on the entity to store the file in.
+            This field must be a File/Link field type.
+        :param str display_name: The display name to use for the file. Defaults to the file name.
+        :param str tag_list: comma-separated string of tags to assign to the file.
+        :returns: Id of the Attachment entity that was created for the image.
+        :rtype: int
+        """
+        # Basic validations of the file to upload.
         path = os.path.abspath(os.path.expanduser(path or ""))
         if not os.path.isfile(path):
             raise ShotgunError("Path must be a valid file, got '%s'" % path)
-
-        is_semi_private = (os.environ['SHOTGUN_SITE_TYPE'] == 'semiPrivate')
-        
-        if field_name == "thumb_image" and is_semi_private:
-
-            entity = {'type': entity_type, 'id': entity_id}
-            
-            # find project
-            sg_entity = self.find_one(entity_type, [['id', 'is', entity_id]], fields=['project'])
-
-            if not sg_entity or 'project' not in sg_entity:
-                raise ShotgunError('Entity is not linked to a shotgun project, could not call share_thumbnail')
-
-            attachment_id = self.share_thumbnail(entities=[entity], source_entity=sg_entity['project'])
-            
-            dst = os.path.join(os.environ['SHOTGUN_THUMBNAIL_ROOT'], entity_type, str(entity_id))
-
-            import errno
-
-            # Create folders
-            try:
-                os.makedirs(os.path.dirname(dst))
-            except OSError, e:
-                if e.errno == errno.EEXIST:
-                    # do not raise if folder is already there
-                    pass
-                else:
-                    raise ShotgunError
-
-            # Remove if already exists (in case of re-upload)
-            try:
-                os.unlink(dst)
-            except OSError, e:
-                if e.errno == errno.ENOENT:
-                    # do not raise if file does not exist
-                    pass
-                else:
-                    raise ShotgunError
-
-            # Copy File
-            try:
-                shutil.copy(path, dst)
-            except OSError, e:
-                raise ShotgunError
-
-            # Access Rights
-            try:
-                os.chmod(dst, stat.S_IRUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
-            except OSError, e:
-                raise ShotgunError("Could not update permissions")
-
-            return attachment_id # return attachment_id for API compat
-
-        elif field_name == "filmstrip_thumb_image" and is_semi_private:
-
-            raise ShotgunError('Unsupported call for semi private Shotgun')
-
+        if os.path.getsize(path) == 0:
+            raise ShotgunError("Path cannot be an empty file: '%s'" % path)
 
         is_thumbnail = (field_name in ["thumb_image", "filmstrip_thumb_image", "image",
                                        "filmstrip_image"])
+
+        # Version.sg_uploaded_movie is handled as a special case and uploaded
+        # directly to Cloud storage
+        if self.server_info.get("s3_direct_uploads_enabled", False) \
+                and entity_type == "Version" and field_name == "sg_uploaded_movie":
+            return self._upload_to_storage(entity_type, entity_id, path, field_name, display_name,
+                                           tag_list, is_thumbnail)
+        else:
+            return self._upload_to_sg(entity_type, entity_id, path, field_name, display_name,
+                                      tag_list, is_thumbnail)
+
+    def _upload_to_storage(self, entity_type, entity_id, path, field_name, display_name,
+                           tag_list, is_thumbnail):
+        """
+        Internal function to upload a file to the Cloud storage and link it to the specified entity.
+
+        :param str entity_type: Entity type to link the upload to.
+        :param int entity_id: Id of the entity to link the upload to.
+        :param str path: Full path to an existing non-empty file on disk to upload.
+        :param str field_name: The internal Shotgun field name on the entity to store the file in.
+            This field must be a File/Link field type.
+        :param str display_name: The display name to use for the file. Defaults to the file name.
+        :param str tag_list: comma-separated string of tags to assign to the file.
+        :param bool is_thumbnail: indicates if the attachment is a thumbnail.
+        :returns: Id of the Attachment entity that was created for the image.
+        :rtype: int
+        """
+
+        filename = os.path.basename(path)
+
+        # Step 1: get the upload url
+
+        is_multipart_upload = (os.path.getsize(path)  > self._MULTIPART_UPLOAD_CHUNK_SIZE)
+
+        upload_info = self._get_attachment_upload_info(is_thumbnail, filename, is_multipart_upload)
+
+        # Step 2: upload the file
+        # We upload large files in multiple parts because it is more robust
+        # (and required when using S3 storage)
+        if is_multipart_upload:
+            self._multipart_upload_file_to_storage(path, upload_info)
+        else:
+            self._upload_file_to_storage(path, upload_info["upload_url"])
+
+        # Step 3: create the attachment
+
+        url = urlparse.urlunparse((self.config.scheme, self.config.server,
+                                   "/upload/api_link_file", None, None, None))
+
+        params = {
+            "entity_type" : entity_type,
+            "entity_id" : entity_id,
+            "upload_link_info": upload_info['upload_info']
+        }
+
+        params.update(self._auth_params())
+
+        if is_thumbnail:
+            if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
+                params["filmstrip"] = True
+        else:
+            if display_name is None:
+                display_name = filename
+            # we allow linking to nothing for generic reference use cases
+            if field_name is not None:
+                params["field_name"] = field_name
+            params["display_name"] = display_name
+            # None gets converted to a string and added as a tag...
+            if tag_list:
+                params["tag_list"] = tag_list
+
+        result = self._send_form(url, params)
+        if not str(result).startswith("1"):
+            raise ShotgunError("Could not upload file successfully, but " \
+                               "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
+                                   path, url, str(result)))
+
+        LOG.debug("Attachment linked to content on Cloud storage")
+
+        attachment_id = int(str(result).split(":")[1].split("\n")[0])
+        return attachment_id
+
+    def _upload_to_sg(self, entity_type, entity_id, path, field_name, display_name,
+                      tag_list, is_thumbnail):
+        """
+        Internal function to upload a file to Shotgun and link it to the specified entity.
+
+        :param str entity_type: Entity type to link the upload to.
+        :param int entity_id: Id of the entity to link the upload to.
+        :param str path: Full path to an existing non-empty file on disk to upload.
+        :param str field_name: The internal Shotgun field name on the entity to store the file in.
+            This field must be a File/Link field type.
+        :param str display_name: The display name to use for the file. Defaults to the file name.
+        :param str tag_list: comma-separated string of tags to assign to the file.
+        :param bool is_thumbnail: indicates if the attachment is a thumbnail.
+
+        :returns: Id of the Attachment entity that was created for the image.
+        :rtype: int
+        """
 
         params = {
             "entity_type" : entity_type,
@@ -1626,56 +2360,97 @@ class Shotgun(object):
 
             params["file"] = open(path, "rb")
 
-        # Create opener with extended form post support
-        opener = self._build_opener(FormPostHandler)
+        result = self._send_form(url, params)
 
-        # Perform the request
-        try:
-            result = opener.open(url, params).read()
-        except urllib2.HTTPError, e:
-            if e.code == 500:
-                raise ShotgunError("Server encountered an internal error. "
-                    "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
-            else:
-                raise ShotgunError("Unanticipated error occurred uploading "
-                    "%s: %s" % (path, e))
-        else:
-            if not str(result).startswith("1"):
-                raise ShotgunError("Could not upload file successfully, but "\
-                    "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
-                    path, url, str(result)))
+        if not str(result).startswith("1"):
+            raise ShotgunError("Could not upload file successfully, but "\
+                "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
+                path, url, str(result)))
 
         attachment_id = int(str(result).split(":")[1].split("\n")[0])
         return attachment_id
 
-    def download_attachment(self, attachment=False, file_path=None, 
-                            attachment_id=None):
-        """Downloads the file associated with a Shotgun Attachment.
+    def _get_attachment_upload_info(self, is_thumbnail, filename, is_multipart_upload):
+        """
+        Internal function to get the information needed to upload a file to Cloud storage.
 
-        NOTE: On older (< v5.1.0) Shotgun versions, non-downloadable files 
-        on Shotgun don't raise exceptions, they cause a server error which 
-        returns a 200 with the page content.
+        :param bool is_thumbnail: indicates if the attachment is a thumbnail.
+        :param str filename: name of the file that will be uploaded.
+        :param bool is_multipart_upload: Indicates if we want multi-part upload information back.
 
-        :param attachment: (mixed) Usually a dict representing an Attachment.
-        The dict should have a 'url' key that specifies the download url. 
-        Optionally, the dict can be a standard entity hash format with 'id' and
-        'type' keys as long as 'type'=='Attachment'. This is only supported for
-        backwards compatibility (#22150).
-        If an int value is passed in, the Attachment with the matching id will
-        be downloaded from the Shotgun server.
+        :returns: dictionary containing upload details from the server. 
+            These details are used throughout the upload process.
+        :rtype: dict
+        """
 
-        :param file_path: (str) Optional. If provided, write the data directly
-        to local disk using the file_path. This avoids loading all of the data 
-        in memory and saves the file locally which is probably what is desired
-        anyway. 
+        if is_thumbnail:
+            upload_type = "Thumbnail"
+        else:
+            upload_type = "Attachment"
 
-        :param attachment_id: (int) Optional. Deprecated in favor of passing in 
-        Attachment hash to attachment param. This attachment_id exists only for
-        backwards compatibility for scripts specifying the parameter with
-        keywords.
+        params = {
+            "upload_type" : upload_type,
+            "filename" : filename
+        }
 
-        :returns: (str) If file_path is None, returns data of the Attachment 
-        file as a string. If file_path is provided, returns file_path.
+        params["multipart_upload"] = is_multipart_upload
+
+        upload_url = "/upload/api_get_upload_link_info"
+        url = urlparse.urlunparse((self.config.scheme, self.config.server,
+                                   upload_url, None, None, None))
+
+        upload_info = self._send_form(url, params)
+        if not str(upload_info).startswith("1"):
+            raise ShotgunError("Could not get upload_url but " \
+                               "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
+                                   filename, url, str(upload_info)))
+
+        LOG.debug("Completed rpc call to %s" % (upload_url))
+
+        upload_info_parts = str(upload_info).split("\n")
+
+        return {
+            "upload_url" : upload_info_parts[1],
+            "timestamp" : upload_info_parts[2],
+            "upload_type" : upload_info_parts[3],
+            "upload_id": upload_info_parts[4],
+            "upload_info" : upload_info
+        }
+
+    def download_attachment(self, attachment=False, file_path=None, attachment_id=None):
+        """
+        Download the file associated with a Shotgun Attachment.
+
+            >>> version = sg.find_one("Version", [["id", "is", 7115]], ["sg_uploaded_movie"])
+            >>> local_file_path = "/var/tmp/%s" % version["sg_uploaded_movie"]["name"]
+            >>> sg.download_attachment(version["sg_uploaded_movie"], file_path=local_file_path)
+            /var/tmp/100b_scene_output_v032.mov
+
+        .. warning::
+
+            On older (< v5.1.0) Shotgun versions, non-downloadable files
+            on Shotgun don't raise exceptions, they cause a server error which
+            returns a 200 with the page content.
+
+        :param dict attachment: Usually a dictionary representing an Attachment entity.
+            The dictionary should have a ``url`` key that specifies the download url.
+            Optionally, the dictionary can be a standard entity hash format with ``id`` and
+            ``type`` keys as long as ``"type"=="Attachment"``. This is only supported for
+            backwards compatibility (#22150).
+
+            If an int value is passed in, the Attachment entity with the matching id will
+            be downloaded from the Shotgun server.
+        :param str file_path: Optional file path to write the data directly to local disk. This
+            avoids loading all of the data in memory and saves the file locally at the given path.
+        :param id attachment_id: (deprecated) Optional ``id`` of the Attachment entity in Shotgun to
+            download.
+
+            .. note:
+                This parameter exists only for backwards compatibility for scripts specifying
+                the parameter with keywords.
+        :returns: If ``file_path`` is provided, returns the path to the file on disk.  If
+            ``file_path`` is ``None``, returns the actual data of the file as a string.
+        :rtype: str
         """
         # backwards compatibility when passed via keyword argument 
         if attachment is False:
@@ -1725,8 +2500,8 @@ class Shotgun(object):
                         body = e.readlines()
                         if body:
                             xml = ''.join(body)
-                            # Once python 2.4 support is not needed we can think about using elementtree.
-                            # The doc is pretty small so this shouldn't be an issue.
+                            # Once python 2.4 support is not needed we can think about using
+                            # elementtree. The doc is pretty small so this shouldn't be an issue.
                             match = re.search('<Message>(.*)</Message>', xml)
                             if match:
                                 err += ' - %s' % (match.group(1))
@@ -1740,8 +2515,11 @@ class Shotgun(object):
                 return attachment
 
     def set_up_auth_cookie(self):
-        """Sets up urllib2 with a cookie for authentication on the Shotgun 
-        instance.
+        """
+        Set up urllib2 with a cookie for authentication on the Shotgun instance.
+
+        Looks up session token and sets that in a cookie in the :mod:`urllib2` handler. This is
+        used internally for downloading attachments from the Shotgun server.
         """
         sid = self.get_session_token()
         cj = cookielib.LWPCookieJar()
@@ -1754,21 +2532,27 @@ class Shotgun(object):
         urllib2.install_opener(opener)
 
     def get_attachment_download_url(self, attachment):
-        """Returns the URL for downloading provided Attachment.
+        """
+        Return the URL for downloading provided Attachment.
 
-        :param attachment: (mixed) If type is an int, construct url to download
-        Attachment with id from Shotgun. 
-        If type is a dict, and a url key is present, use that url. 
-        If type is a dict, and url key is not present, check if we have
-        an id and type keys and the type is 'Attachment' in which case we 
-        construct url to download Attachment with id from Shotgun as if just
-        the id has been passed in. 
+        :param mixed attachment: Usually a dict representing An Attachment entity in Shotgun to
+            return the download url for. If the ``url`` key is present, it will be used as-is for
+            the download url. If the ``url`` key is not present, a url will be constructed pointing
+            at the current Shotgun server for downloading the Attachment entity using the ``id``.
 
-        :todo: Support for a standard entity hash should be removed: #22150
+            If ``None`` is passed in, it is silently ignored in order to avoid raising an error when
+            results from a :meth:`~shotgun_api3.Shotgun.find` are passed off to
+            :meth:`~shotgun_api3.Shotgun.download_attachment`
 
-        :returns: (str) the download URL for the Attachment or None if None was
-        passed to attachment param. This avoids raising an error when results
-        from a find() are passed off to a download_attachment() call.
+        .. note::
+            Support for passing in an int representing the Attachment ``id`` is deprecated
+
+        .. todo::
+            Support for a standard entity hash should be removed: #22150
+
+        :returns: the download URL for the Attachment or ``None`` if ``None`` was passed to
+            ``attachment`` parameter.
+        :rtype: str
         """
         attachment_id = None
         if isinstance(attachment, int):
@@ -1795,18 +2579,23 @@ class Shotgun(object):
         return url
 
     def authenticate_human_user(self, user_login, user_password, auth_token=None):
-        """Authenticate Shotgun HumanUser. 
-        
-        Note that HumanUser must be an active account.
-        
-        :param user_login: Login name of Shotgun HumanUser
+        """
+        Authenticate Shotgun HumanUser.
 
-        :param user_password: Password for Shotgun HumanUser
+        Authenticates a user given the login, password, and optionally, one-time auth token (when
+        two-factor authentication is required). The user must be a ``HumanUser`` entity and the
+        account must be active.
 
-        :param auth_token: One-time token required to authenticate Shotgun HumanUser
-        when two factor authentication is turned on.
+        >>> sg.authenticate_human_user("rhendriks", "c0mPre$Hi0n", None)
+        {"type": "HumanUser", "id": 123, "name": "Richard Hendriks"}
 
-        :return: Dictionary of HumanUser including ID if authenticated, None if unauthorized.
+        :param str user_login: Login name of Shotgun HumanUser
+        :param str user_password: Password for Shotgun HumanUser
+        :param str auth_token: One-time token required to authenticate Shotgun HumanUser
+            when two-factor authentication is turned on.
+        :returns: Standard Shotgun dictionary representing the HumanUser if authentication
+            succeeded. ``None`` if authentication failed for any reason.
+        :rtype: dict
         """
         if not user_login:
             raise ValueError('Please supply a username to authenticate.')
@@ -1824,7 +2613,9 @@ class Shotgun(object):
         self.config.auth_token = auth_token
 
         try:
-            data = self.find_one('HumanUser', [['sg_status_list', 'is', 'act'], ['login', 'is', user_login]], ['id', 'login'], '', 'all')
+            data = self.find_one('HumanUser', [['sg_status_list', 'is', 'act'],
+                                               ['login', 'is', user_login]],
+                                 ['id', 'login'], '', 'all')
             # Set back to default - There finally and except cannot be used together in python2.4
             self.config.user_login = original_login
             self.config.user_password = original_password
@@ -1842,15 +2633,27 @@ class Shotgun(object):
             self.config.auth_token = original_auth_token
             raise
 
-
     def update_project_last_accessed(self, project, user=None):
-        """Update projects last_accessed_by_current_user field.
-        
-        :param project: a project entity hash
-        :param user: A human user entity hash. Optional if either login or sudo_as are used.
+        """
+        Update a Project's ``last_accessed_by_current_user`` field to the current timestamp.
+
+        This helps keep track of the recent Projects each user has worked on and enables scripts
+        and apps to use this information to display "Recent Projects" for users as a convenience.
+
+        .. versionadded::
+            Requires Shotgun v5.3.20+
+
+        >>> sg.update_project_last_accessed({"type": "Project", "id": 66},
+        ...                                 {"type": "HumanUser", "id": 43})
+
+        :param dict project: Standard Project entity dictionary
+        :param dict user: Standard user entity dictionary. This is optional if the current API
+            instance is using user-based authenitcation, or has specified ``sudo_as_login``. In
+            these cases, if ``user`` is not provided, the ``sudo_as_login`` value or ``login``
+            value from the current instance will be used instead.
         """
         if self.server_caps.version and self.server_caps.version < (5, 3, 20):
-                raise ShotgunError("update_project_last_accessed requires server version 5.3.20 or "\
+                raise ShotgunError("update_project_last_accessed requires server version 5.3.20 or "
                     "higher, server is %s" % (self.server_caps.version,))
 
         if not user:
@@ -1871,11 +2674,11 @@ class Shotgun(object):
 
 
     def note_thread_read(self, note_id, entity_fields=None):
-        """Returns the full conversation for a given note, including 
-        replies and attachments.
-        
-        Returns a complex data structure on the following form:
-        
+        """
+        Return the full conversation for a given note, including Replies and Attachments.
+
+        Returns a complex data structure on the following form::
+
             [{'content': 'Please add more awesomeness to the color grading.',
               'created_at': '2015-07-14 21:33:28 UTC',
               'created_by': {'id': 38,
@@ -1904,29 +2707,29 @@ class Shotgun(object):
                        'valid': 'valid'}}]
 
         The list is returned in descending chronological order.
-        
-        If you wish to include additional fields beyond the ones that are 
-        returned by default, you can specify these in an entity_fields 
-        dictionary. This dictonary should be keyed by entity type and each
-        key should contain a list of fields to retrieve, for example:
-        
-            { "Note":       ["created_by.HumanUser.image", 
-                             "addressings_to", 
-                             "playlist", 
+
+        If you wish to include additional fields beyond the ones that are
+        returned by default, you can specify these in an entity_fields
+        dictionary. This dictionary should be keyed by entity type and each
+        key should contain a list of fields to retrieve, for example::
+
+            { "Note":       ["created_by.HumanUser.image",
+                             "addressings_to",
+                             "playlist",
                              "user" ],
-              "Reply":      ["content"], 
-              "Attachment": ["filmstrip_image", 
-                            "local_storage", 
-                            "this_file", 
+              "Reply":      ["content"],
+              "Attachment": ["filmstrip_image",
+                            "local_storage",
+                            "this_file",
                             "image"]
             }
-        
-        :param note_id: The id for the note to be retrieved
-        :param entity_fields: Additional fields to retrieve as part 
-                              of the request. See above for details.
-                              
-        :returns: A list of dictionaries. See above for example. 
-        """        
+
+        :param int note_id: The id for the note to be retrieved
+        :param dict entity_fields: Additional fields to retrieve as part of the request.
+            See above for details.
+        :returns: A list of dictionaries. See above for example.
+        :rtype: list
+        """
 
         if self.server_caps.version and self.server_caps.version < (6, 2, 0):
                 raise ShotgunError("note_thread requires server version 6.2.0 or "\
@@ -1945,39 +2748,38 @@ class Shotgun(object):
 
 
     def text_search(self, text, entity_types, project_ids=None, limit=None):
-        """Searches across the specified entity types for the given text.
-        
-        This method can be used to implement auto completion or a Shotgun 
-        global search. The method requires a text input phrase that is at least 
-        three characters long, or an exception will be raised.
-        
-        Several ways to limit the results of the query are available: 
-        
-        - Using the project_ids parameter, you can provide a list 
-          of project ids to search across. Leaving this at its default
-          value of None will search across all Shotgun data. 
-        
-        - You need to define which subset of entity types to search using the 
-          entity_types parameter. Each of these entity types can be associated 
-          with a filter query to further reduce the list of matches. The filter
-          list is using the standard filter syntax used by for example the 
-          find() method. For example: 
-          
-          Constrain the search to all shots but character assets only:
-          { "Asset": [["sg_asset_type", "is", "character"]], 
-            "Shot":  []  
-          }
-          
-        A dictionary with keys 'terms' and 'matches' will be returned:
-        
+        """
+        Search across the specified entity types for the given text.
+
+        This method can be used to implement auto completion or a Shotgun global search. The method
+        requires a text input phrase that is at least three characters long, or an exception will
+        be raised.
+
+        Several ways to limit the results of the query are available:
+
+        - Using the ``project_ids`` parameter, you can provide a list of Project ids to search
+          across. Leaving this at its default value of ``None`` will search across all Shotgun data.
+
+        - You need to define which subset of entity types to search using the ``entity_types``
+          parameter. Each of these entity types can be associated with a filter query to further
+          reduce the list of matches. The filter list is using the standard filter syntax used by
+          for example the :meth:`~shotgun_api3.Shotgun.find` method.
+
+        **Example: Constrain the search to all Tasks but Character Assets only**
+
+        >>> entity_types = {
+        ...     "Asset": [["sg_asset_type", "is", "Character"]],
+        ...     "Task": []
+        ... }
+        >>> sg.text_search("bunny", entity_types)
         {'matches': [{'id': 734,
                       'type': 'Asset',
                       'name': 'Bunny',
-                      'project_id': 65,                      
+                      'project_id': 65,
                       'image': 'https://...',
                       'links': ['', ''],
                       'status': 'fin'},
-                      
+                      ...
                       {'id': 558,
                        'type': 'Task'
                        'name': 'FX',
@@ -1986,21 +2788,21 @@ class Shotgun(object):
                        'links': ['Shot', 'bunny_010_0010'],
                        'status': 'fin'}],
             'terms': ['bunny']}
-        
-        The links field will contain information about any linked entity. 
-        This is useful when for example presenting tasks and you want to 
-        display what shot or asset the task is associated with.
 
-        :param text: Text to search for. This must be at least three 
-                     characters long, or an exception will be raised.
-        :param entity_types: Dictionary to specify which entity types to search 
-                             across. See above for usage examples.
-        :param project_ids: List of projects to search. By default, all 
-                            projects will be searched. 
-        :param limit: Specify the maximum number of matches to return.
-        
-        :returns: A complex dictonary structure, see above for example.
-        """        
+        The links field will contain information about any linked entity. This is useful when, for
+        example, presenting Tasks and you want to display what Shot or Asset the Task is associated
+        with.
+
+        :param str text: Text to search for. This must be at least three characters long, or an
+            exception will be raised.
+        :param dict entity_types: Dictionary to specify which entity types to search across. See
+            above for usage examples.
+        :param list project_ids: List of Projects to search. By default, all projects will be
+            searched.
+        :param int limit: Specify the maximum number of matches to return.
+        :returns: A complex dictionary structure, see above for example.
+        :rtype: dict
+        """
         if self.server_caps.version and self.server_caps.version < (6, 2, 0):
                 raise ShotgunError("auto_complete requires server version 6.2.0 or "\
                     "higher, server is %s" % (self.server_caps.version,))
@@ -2032,68 +2834,71 @@ class Shotgun(object):
         return result
 
 
-    def activity_stream_read(self, entity_type, entity_id, entity_fields=None, 
-                             min_id=None, max_id=None, limit=None):
-        """Retrieves activity stream data from Shotgun.
-        
-        This data corresponds to the data that is displayed in the 
-        Activity tab for an entity in the Shotgun Web UI.
-        
-        A complex data structure on the following form will be 
-        returned from Shotgun:
-        
-        {'earliest_update_id': 50,
-         'entity_id': 65,
-         'entity_type': 'Project',
-         'latest_update_id': 79,
-         'updates': [{'created_at': '2015-07-15 11:06:55 UTC',
-                      'created_by': {'id': 38,
-                                     'image': '6641',
-                                     'name': 'John Smith',
-                                     'status': 'act',
-                                     'type': 'HumanUser'},
-                      'id': 79,
-                      'meta': {'entity_id': 6004,
-                               'entity_type': 'Version',
-                               'type': 'new_entity'},
-                      'primary_entity': {'id': 6004,
-                                         'name': 'Review_turntable_v2',
-                                         'status': 'rev',
-                                         'type': 'Version'},
-                      'read': False,
-                      'update_type': 'create'},        
-        ]}
-        
-        The main payload of the return data can be found inside the 'updates' 
-        key, containing a list of dictionaries. This list is always returned 
-        in descending date order. Each item may contain different fields 
-        depending on their update type. The primary_entity key represents the 
-        main Shotgun entity that is associated with the update. By default, 
-        this entity is returned with a set of standard fields. By using the 
-        entity_fields parameter, you can extend the returned data to include 
-        additional fields. If for example you wanted to return the asset type 
-        for all assets and the linked sequence for all Shots, pass the 
-        following entity_fields:
-        
-        {"Shot": ["sg_sequence"], "Asset": ["sg_asset_type"]}
-        
-        Deep queries can be used in this syntax if you want to 
-        traverse into connected data.
-        
-        :param entity_type: Entity type to retrieve activity stream for
-        :param entity_id: Entity id to retrieve activity stream for
-        :param entity_fields: List of additional fields to include. 
-                              See above for details
-        :param max_id: Do not retrieve ids greater than this id. 
-                       This is useful when implementing paging.
-        :param min_id: Do not retrieve ids lesser than this id. 
-                       This is useful when implementing caching of 
-                       the event stream data and you want to 
-                       "top up" an existing cache.
-        :param limit: Limit the number of returned records. If not specified, 
-                      the system default will be used.
+    def activity_stream_read(self, entity_type, entity_id, entity_fields=None, min_id=None,
+                             max_id=None, limit=None):
+        """
+        Retrieve activity stream data from Shotgun.
 
-        :returns: A complex activity stream data structure. See above for details 
+        This data corresponds to the data that is displayed in the
+        Activity tab for an entity in the Shotgun Web UI.
+
+        A complex data structure on the following form will be
+        returned from Shotgun::
+
+            {'earliest_update_id': 50,
+             'entity_id': 65,
+             'entity_type': 'Project',
+             'latest_update_id': 79,
+             'updates': [{'created_at': '2015-07-15 11:06:55 UTC',
+                          'created_by': {'id': 38,
+                                         'image': '6641',
+                                         'name': 'John Smith',
+                                         'status': 'act',
+                                         'type': 'HumanUser'},
+                          'id': 79,
+                          'meta': {'entity_id': 6004,
+                                   'entity_type': 'Version',
+                                   'type': 'new_entity'},
+                          'primary_entity': {'id': 6004,
+                                             'name': 'Review_turntable_v2',
+                                             'status': 'rev',
+                                             'type': 'Version'},
+                          'read': False,
+                          'update_type': 'create'},
+                         {...},
+                        ]
+            }
+
+        The main payload of the return data can be found inside the 'updates'
+        key, containing a list of dictionaries. This list is always returned
+        in descending date order. Each item may contain different fields
+        depending on their update type. The primary_entity key represents the
+        main Shotgun entity that is associated with the update. By default,
+        this entity is returned with a set of standard fields. By using the
+        entity_fields parameter, you can extend the returned data to include
+        additional fields. If for example you wanted to return the asset type
+        for all assets and the linked sequence for all Shots, pass the
+        following entity_fields::
+
+            {"Shot": ["sg_sequence"], "Asset": ["sg_asset_type"]}
+
+        Deep queries can be used in this syntax if you want to
+        traverse into connected data.
+
+        :param str entity_type: Entity type to retrieve activity stream for
+        :param int entity_id: Entity id to retrieve activity stream for
+        :param list entity_fields: List of additional fields to include.
+                              See above for details
+        :param int max_id: Do not retrieve ids greater than this id.
+                       This is useful when implementing paging.
+        :param int min_id: Do not retrieve ids lesser than this id.
+                       This is useful when implementing caching of
+                       the event stream data and you want to
+                       "top up" an existing cache.
+        :param int limit: Limit the number of returned records. If not specified,
+                      the system default will be used.
+        :returns: A complex activity stream data structure. See above for details.
+        :rtype: dict
         """
         if self.server_caps.version and self.server_caps.version < (6, 2, 0):
                 raise ShotgunError("activity_stream requires server version 6.2.0 or "\
@@ -2116,13 +2921,77 @@ class Shotgun(object):
         result = self._parse_records(record)[0]
         return result
 
+    def nav_expand(self, path, seed_entity_field=None, entity_fields=None):
+        """
+        Expand the navigation hierarchy for the supplied path.
+
+        .. warning::
+
+            This is an experimental method that is not officially part of the
+            python-api. Usage of this method is discouraged. This method's name,
+            arguments, and argument types may change at any point.
+
+        """
+        return self._call_rpc(
+            "nav_expand",
+            {
+                "path":path,
+                "seed_entity_field": seed_entity_field,
+                "entity_fields": entity_fields
+            }
+        )
+
+    def nav_search_string(self, root_path, search_string, seed_entity_field=None):
+        """
+        Search function adapted to work with the navigation hierarchy.
+
+        .. warning::
+
+            This is an experimental method that is not officially part of the
+            python-api. Usage of this method is discouraged. This method's name,
+            arguments, and argument types may change at any point.
+        """
+        return self._call_rpc(
+                "nav_search",
+                {
+                    "root_path":root_path,
+                    "seed_entity_field": seed_entity_field,
+                    "search_criteria": { "search_string": search_string }
+                }
+        )
+
+    def nav_search_entity(self, root_path, entity, seed_entity_field=None):
+        """
+        Search function adapted to work with the navigation hierarchy.
+
+        .. warning::
+
+            This is an experimental method that is not officially part of the
+            python-api. Usage of this method is discouraged. This method's name,
+            arguments, and argument types may change at any point.
+
+        """
+        return self._call_rpc(
+                "nav_search",
+                {
+                    "root_path": root_path,
+                    "seed_entity_field": seed_entity_field,
+                    "search_criteria": {"entity": entity }
+                }
+        )
 
     def get_session_token(self):
-        """Get the session token associated with the current session.
-        If a session token has already been established, this is returned, 
-        otherwise a new one is generated on the server and returned.
-        
-        :returns: String containing a session token
+        """
+        Get the session token associated with the current session.
+
+        If a session token has already been established, this is returned, otherwise a new one is
+        generated on the server and returned.
+
+        >>> sg.get_session_token()
+        dd638be7d07c39fa73d935a775558a50
+
+        :returns: String containing a session token.
+        :rtype: str
         """
         if self.config.session_token:
             return self.config.session_token
@@ -2136,7 +3005,9 @@ class Shotgun(object):
         return session_token
 
     def _build_opener(self, handler):
-        """Build urllib2 opener with appropriate proxy handler."""
+        """
+        Build urllib2 opener with appropriate proxy handler.
+        """
         if self.config.proxy_handler:
             opener = urllib2.build_opener(self.config.proxy_handler, handler)
         else:
@@ -2144,7 +3015,9 @@ class Shotgun(object):
         return opener
 
     def _turn_off_ssl_validation(self):
-        """Turn off SSL certificate validation."""
+        """
+        Turn off SSL certificate validation.
+        """
         global NO_SSL_VALIDATION
         self.config.no_ssl_validation = True
         NO_SSL_VALIDATION = True
@@ -2155,18 +3028,25 @@ class Shotgun(object):
 
     # Deprecated methods from old wrapper
     def schema(self, entity_type):
+        """
+        .. deprecated:: 3.0.0
+           Use :meth:`~shotgun_api3.Shotgun.schema_field_read` instead.
+        """
         raise ShotgunError("Deprecated: use schema_field_read('type':'%s') "
             "instead" % entity_type)
 
     def entity_types(self):
+        """
+        .. deprecated:: 3.0.0
+           Use :meth:`~shotgun_api3.Shotgun.schema_entity_read` instead.
+        """
         raise ShotgunError("Deprecated: use schema_entity_read() instead")
     # ========================================================================
     # RPC Functions
 
     def _call_rpc(self, method, params, include_auth_params=True, first=False):
-        """Calls the specified method on the Shotgun Server sending the
-        supplied payload.
-
+        """
+        Call the specified method on the Shotgun Server sending the supplied payload.
         """
 
         LOG.debug("Starting rpc call to %s with params %s" % (
@@ -2206,8 +3086,9 @@ class Shotgun(object):
         return results
 
     def _auth_params(self):
-        """ return a dictionary of the authentication parameters being used. """
-                
+        """
+        Return a dictionary of the authentication parameters being used.
+        """
         # Used to authenticate HumanUser credentials
         if self.config.user_login and self.config.user_password:
             auth_params = {
@@ -2227,9 +3108,9 @@ class Shotgun(object):
         # Authenticate using session_id
         elif self.config.session_token:
             if self.server_caps.version and self.server_caps.version < (5, 3, 0):
-                raise ShotgunError("Session token based authentication requires server version 5.3.0 or "\
-                    "higher, server is %s" % (self.server_caps.version,))
-            
+                raise ShotgunError("Session token based authentication requires server version "
+                    "5.3.0 or higher, server is %s" % (self.server_caps.version,))
+
             auth_params = {"session_token" : str(self.config.session_token)}
 
             # Request server side to raise exception for expired sessions. 
@@ -2267,8 +3148,8 @@ class Shotgun(object):
         return sanitized_params
 
     def _build_payload(self, method, params, include_auth_params=True):
-        """Builds the payload to be send to the rpc endpoint.
-
+        """
+        Build the payload to be send to the rpc endpoint.
         """
         if not method:
             raise ValueError("method is empty")
@@ -2288,7 +3169,8 @@ class Shotgun(object):
         }
 
     def _encode_payload(self, payload):
-        """Encodes the payload to a string to be passed to the rpc endpoint.
+        """
+        Encode the payload to a string to be passed to the rpc endpoint.
 
         The payload is json encoded as a unicode string if the content
         requires it. The unicode string is then encoded as 'utf-8' as it must
@@ -2301,7 +3183,10 @@ class Shotgun(object):
         return wire
 
     def _make_call(self, verb, path, body, headers):
-        """Makes a HTTP call to the server, handles retry and failure.
+        """
+        Make an HTTP call to the server.
+
+        Handles retry and failure.
         """
 
         attempt = 0
@@ -2358,7 +3243,8 @@ class Shotgun(object):
                     raise
 
     def _http_request(self, verb, path, body, headers):
-        """Makes the actual HTTP request.
+        """
+        Make the actual HTTP request.
         """
         url = urlparse.urlunparse((self.config.scheme, self.config.server,
             path, None, None, None))
@@ -2384,11 +3270,11 @@ class Shotgun(object):
         return (http_status, resp_headers, resp_body)
 
     def _parse_http_status(self, status):
-        """Parse the status returned from the http request.
+        """
+        Parse the status returned from the http request.
 
+        :param tuple status: Tuple of (code, reason).
         :raises: RuntimeError if the http status is non success.
-
-        :param status: Tuple of (code, reason).
         """
         error_code = status[0]
         errmsg = status[1]
@@ -2396,7 +3282,8 @@ class Shotgun(object):
         if status[0] >= 300:
             headers = "HTTP error from server"
             if status[0] == 503:
-                errmsg = "Shotgun is currently down for maintenance or too busy to reply. Please try again later."
+                errmsg = "Shotgun is currently down for maintenance or too busy to reply. Please " \
+                         "try again later."
             raise ProtocolError(self.config.server,
                                 error_code,
                                 errmsg,
@@ -2405,16 +3292,16 @@ class Shotgun(object):
         return
 
     def _decode_response(self, headers, body):
-        """Decodes the response from the server from the wire format to
+        """
+        Decode the response from the server from the wire format to
         a python data structure.
 
-        :param headers: Headers from the server.
-
-        :param body: Raw response body from the server.
-
+        :param dict headers: Headers from the server.
+        :param str body: Raw response body from the server.
         :returns: If the content-type starts with application/json or
-        text/javascript the body is json decoded. Otherwise the raw body is
-        returned.
+            text/javascript the body is json decoded. Otherwise the raw body is
+            returned.
+        :rtype: str
         """
         if not body:
             return body
@@ -2429,7 +3316,9 @@ class Shotgun(object):
         return json.loads(body)
 
     def _json_loads_ascii(self, body):
-        """"See http://stackoverflow.com/questions/956867"""
+        """
+        See http://stackoverflow.com/questions/956867
+        """
         def _decode_list(lst):
             newlist = []
             for i in lst:
@@ -2455,7 +3344,8 @@ class Shotgun(object):
 
 
     def _response_errors(self, sg_response):
-        """Raises any API errors specified in the response.
+        """
+        Raise any API errors specified in the response.
 
         :raises ShotgunError: If the server response contains an exception.
         """
@@ -2474,7 +3364,9 @@ class Shotgun(object):
         return
 
     def _visit_data(self, data, visitor):
-        """Walk the data (simple python types) and call the visitor."""
+        """
+        Walk the data (simple python types) and call the visitor.
+        """
 
         if not data:
             return data
@@ -2495,8 +3387,8 @@ class Shotgun(object):
         return visitor(data)
 
     def _transform_outbound(self, data):
-        """Transforms data types or values before they are sent by the
-        client.
+        """
+        Transform data types or values before they are sent by the client.
 
         - changes timezones
         - converts dates and times to strings
@@ -2541,11 +3433,12 @@ class Shotgun(object):
         return self._visit_data(data, _outbound_visitor)
 
     def _transform_inbound(self, data):
-        """Transforms data types or values after they are received from the
-        server."""
-        #NOTE: The time zone is removed from the time after it is transformed
-        #to the local time, otherwise it will fail to compare to datetimes
-        #that do not have a time zone.
+        """
+        Transforms data types or values after they are received from the server.
+        """
+        # NOTE: The time zone is removed from the time after it is transformed
+        # to the local time, otherwise it will fail to compare to datetimes
+        # that do not have a time zone.
         if self.config.convert_datetimes_to_utc:
             _change_tz = lambda x: x.replace(tzinfo=SG_TIMEZONE.utc)\
                 .astimezone(SG_TIMEZONE.local)
@@ -2573,8 +3466,8 @@ class Shotgun(object):
     # Connection Functions
 
     def _get_connection(self):
-        """Returns the current connection or creates a new connection to the
-        current server.
+        """
+        Return the current connection or creates a new connection to the current server.
         """
         if self._connection is not None:
             return self._connection
@@ -2592,7 +3485,9 @@ class Shotgun(object):
         return self._connection
 
     def _close_connection(self):
-        """Closes the current connection."""
+        """
+        Close the current connection.
+        """
         if self._connection is None:
             return
 
@@ -2608,7 +3503,8 @@ class Shotgun(object):
     # Utility
 
     def _parse_records(self, records):
-        """Parses 'records' returned from the api to do local modifications:
+        """
+        Parse 'records' returned from the api to do local modifications:
 
         - Insert thumbnail urls
         - Insert local file paths.
@@ -2657,15 +3553,13 @@ class Shotgun(object):
         return records
 
     def _build_thumb_url(self, entity_type, entity_id):
-        """Returns the URL for the thumbnail of an entity given the
-        entity type and the entity id.
+        """
+        Return the URL for the thumbnail of an entity given the entity type and the entity id.
 
         Note: This makes a call to the server for every thumbnail.
 
         :param entity_type: Entity type the id is for.
-
         :param entity_id: id of the entity to get the thumbnail for.
-
         :returns: Fully qualified url to the thumbnail.
         """
         # Example response from the end point
@@ -2682,7 +3576,7 @@ class Shotgun(object):
         code, thumb_url = body.splitlines()
         code = int(code)
 
-        #code of 0 means error, second line is the error code
+        # code of 0 means error, second line is the error code
         if code == 0:
             raise ShotgunError(thumb_url)
 
@@ -2694,8 +3588,8 @@ class Shotgun(object):
         raise RuntimeError("Unknown code %s %s" % (code, thumb_url))
 
     def _dict_to_list(self, d, key_name="field_name", value_name="value", extra_data=None):
-        """Utility function to convert a dict into a list dicts using the
-        key_name and value_name keys.
+        """
+        Utility function to convert a dict into a list dicts using the key_name and value_name keys.
 
         e.g. d {'foo' : 'bar'} changed to [{'field_name':'foo', 'value':'bar'}]
 
@@ -2711,12 +3605,179 @@ class Shotgun(object):
         return ret
 
     def _dict_to_extra_data(self, d, key_name="value"):
-        """Utility function to convert a dict into a dict compatible with the extra_data arg
-        of _dict_to_list
+        """
+        Utility function to convert a dict into a dict compatible with the extra_data arg
+        of _dict_to_list.
 
         e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
         """
         return dict([(k, {key_name: v}) for (k,v) in (d or {}).iteritems()])
+
+    def _upload_file_to_storage(self, path, storage_url):
+        """
+        Internal function to upload an entire file to the Cloud storage.
+        
+        :param str path: Full path to an existing non-empty file on disk to upload.
+        :param str storage_url: Target URL for the uploaded file. 
+        """
+        filename = os.path.basename(path)
+
+        fd = open(path, "rb")
+        try:
+            content_type = mimetypes.guess_type(filename)[0]
+            content_type = content_type or "application/octet-stream"
+            file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
+            self._upload_data_to_storage(fd, content_type, file_size, storage_url )
+        finally:
+            fd.close()
+
+        LOG.debug("File uploaded to Cloud storage: %s", filename)
+
+    def _multipart_upload_file_to_storage(self, path, upload_info):
+        """
+        Internal function to upload a file to the Cloud storage in multiple parts.
+
+        :param str path: Full path to an existing non-empty file on disk to upload.
+        :param dict upload_info: Contains details received from the server, about the upload.
+        """
+
+        fd = open(path, "rb")
+        try:
+            content_type = mimetypes.guess_type(path)[0]
+            content_type = content_type or "application/octet-stream"
+            file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
+            filename = os.path.basename(path)
+
+            etags = []
+            part_number = 1
+            bytes_read = 0
+            chunk_size = self._MULTIPART_UPLOAD_CHUNK_SIZE
+            while bytes_read < file_size:
+                data = fd.read(chunk_size)
+                bytes_read += len(data)
+                part_url = self._get_upload_part_link(upload_info, filename, part_number)
+                etags.append(self._upload_data_to_storage(data, content_type, len(data), part_url ))
+                part_number += 1
+
+            self._complete_multipart_upload(upload_info, filename, etags)
+        finally:
+            fd.close()
+
+        LOG.debug("File uploaded in multiple parts to Cloud storage: %s", path)
+
+    def _get_upload_part_link(self, upload_info, filename, part_number):
+        """
+        Internal function to get the url to upload the next part of a file to the
+        Cloud storage, in a multi-part upload process.
+
+        :param dict upload_info: Contains details received from the server, about the upload.
+        :param str filename: Name of the file for which we want the link.
+        :param int part_number: Part number for the link.
+        :returns: upload url.
+        :rtype: str
+        """
+        params = {
+            "upload_type": upload_info["upload_type"],
+            "filename": filename,
+            "timestamp": upload_info["timestamp"],
+            "upload_id": upload_info["upload_id"],
+            "part_number": part_number
+        }
+
+        url = urlparse.urlunparse((self.config.scheme, self.config.server,
+                                   "/upload/api_get_upload_link_for_part", None, None, None))
+        result = self._send_form(url, params)
+
+        # Response is of the form: 1\n<url> (for success) or 0\n (for failure). 
+        # In case of success, we know we the second line of the response contains the 
+        # requested URL.
+        if not str(result).startswith("1"):
+            raise ShotgunError("Unable get upload part link: %s" % result)
+
+        LOG.debug("Got next upload link from server for multipart upload.")
+        return str(result).split("\n")[1]
+
+    def _upload_data_to_storage(self, data, content_type, size, storage_url):
+        """
+        Internal function to upload data to Cloud storage.
+        
+        :param stream data: Contains details received from the server, about the upload.
+        :param str content_type: Content type of the data stream.
+        :param int size: Number of bytes in the data stream.
+        :param str storage_url: Target URL for the uploaded file. 
+        :returns: upload url.
+        :rtype: str
+        """
+        try:
+            opener = urllib2.build_opener(urllib2.HTTPHandler)
+
+            request = urllib2.Request(storage_url, data=data)
+            request.add_header("Content-Type", content_type)
+            request.add_header("Content-Length", size)
+            request.get_method = lambda: "PUT"
+            result = opener.open(request)
+            etag = result.info().getheader("ETag")
+        except urllib2.HTTPError, e:
+            if e.code == 500:
+                raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (storage_url, e))
+            else:
+                raise ShotgunError("Unanticipated error occurred uploading to %s: %s" % (storage_url, e))
+
+        LOG.debug("Part upload completed successfully.")
+        return etag
+
+    def _complete_multipart_upload(self, upload_info, filename, etags):
+        """
+        Internal function to complete a multi-part upload to the Cloud storage.
+
+        :param dict upload_info: Contains details received from the server, about the upload.
+        :param str filename: Name of the file for which we want to complete the upload.
+        :param tupple etags: Contains the etag of each uploaded file part.
+        """
+
+        params = {
+            "upload_type": upload_info["upload_type"],
+            "filename": filename,
+            "timestamp": upload_info["timestamp"],
+            "upload_id": upload_info["upload_id"],
+            "etags": ",".join(etags)
+        }
+
+        url = urlparse.urlunparse((self.config.scheme, self.config.server,
+                                   "/upload/api_complete_multipart_upload", None, None, None))
+        result = self._send_form(url, params)
+
+        # Response is of the form: 1\n or 0\n to indicate success or failure of the call.
+        if not str(result).startswith("1"):
+            raise ShotgunError("Unable get upload part link: %s" % result)
+
+    def _send_form(self, url, params):
+        """
+        Utility function to send a Form to Shotgun and process any HTTP errors that
+        could occur.
+
+        :param url: endpoint where the form is sent.
+        :param params: form data
+        :returns: result from the server.
+        """
+
+        params.update(self._auth_params())
+        
+        opener = self._build_opener(FormPostHandler)
+
+        # Perform the request
+        try:
+            resp = opener.open(url, params)
+            result = resp.read()
+            # response headers are in str(resp.info()).splitlines()
+        except urllib2.HTTPError, e:
+            if e.code == 500:
+                raise ShotgunError("Server encountered an internal error. "
+                                   "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
+            else:
+                raise ShotgunError("Unanticipated error occurred %s" % (e))
+
+        return result
 
 # Helpers from the previous API, left as is.
 
@@ -2777,8 +3838,9 @@ class FormPostHandler(urllib2.BaseHandler):
 
 
 def _translate_filters(filters, filter_operator):
-    """_translate_filters translates filters params into data structure
-    expected by rpc call."""
+    """
+    Translate filters params into data structure expected by rpc call.
+    """
     wrapped_filters = {
         "filter_operator": filter_operator or "all",
         "filters": filters
@@ -2798,8 +3860,9 @@ def _translate_filters_dict(sg_filter):
         raise ShotgunError("Invalid filter_operator %s" % filter_operator)
 
     if not isinstance(sg_filter["filters"], (list,tuple)):
-        raise ShotgunError("Invalid filters, expected a list or a tuple, got %s" % sg_filter["filters"])
-        
+        raise ShotgunError("Invalid filters, expected a list or a tuple, got %s"
+                           % sg_filter["filters"])
+
     new_filters["conditions"] = _translate_filters_list(sg_filter["filters"])
     
     return new_filters
@@ -2813,8 +3876,9 @@ def _translate_filters_list(filters):
         elif isinstance(sg_filter, dict):
             conditions.append(_translate_filters_dict(sg_filter))
         else:
-            raise ShotgunError("Invalid filters, expected a list, tuple or dict, got %s" % sg_filter)
-    
+            raise ShotgunError("Invalid filters, expected a list, tuple or dict, got %s"
+                               % sg_filter)
+
     return conditions
 
 def _translate_filters_simple(sg_filter):
@@ -2832,6 +3896,7 @@ def _translate_filters_simple(sg_filter):
     return condition
 
 def _version_str(version):
-    """Converts a tuple of int's to a '.' separated str"""
+    """
+    Convert a tuple of int's to a '.' separated str.
+    """
     return '.'.join(map(str, version))
-    
