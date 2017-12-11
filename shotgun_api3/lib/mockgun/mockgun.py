@@ -463,7 +463,7 @@ class Shotgun(object):
                                    "percent": int,
                                    "text": basestring,
                                    "serializable": dict,
-                                   "date": datetime.date,
+                                   "date": basestring,
                                    "date_time": datetime.datetime,
                                    "list": basestring,
                                    "status_list": basestring,
@@ -766,8 +766,13 @@ class Shotgun(object):
         else:
             raise ShotgunError("%s is not a valid filter operator" % filter_operator)
 
-
     def _update_row(self, entity_type, row, data):
+        """For a given row of the 'database', update the row with the given data.
+        
+        :param str entity_type: shotgun entity.
+        :param dict row: current definition of the row.
+        :param dict data: data to inject in the row.
+        """
         for field in data:
             field_type = self._get_field_type(entity_type, field)
             if field_type == "entity" and data[field]:
@@ -776,7 +781,6 @@ class Shotgun(object):
                 row[field] = [{"type": item["type"], "id": item["id"]} for item in data[field]]
             else:
                 row[field] = data[field]
-            
 
     def _validate_entity_exists(self, entity_type, entity_id):
         if entity_id not in self._db[entity_type]:

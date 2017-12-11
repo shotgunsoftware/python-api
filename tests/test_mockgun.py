@@ -38,6 +38,9 @@ and can be run on their own by typing "python test_mockgun.py".
 import re
 import os
 import unittest
+
+import datetime
+
 from shotgun_api3.lib.mockgun import Shotgun as Mockgun
 from shotgun_api3 import ShotgunError
 
@@ -198,6 +201,41 @@ class TestTextFieldOperators(TestBaseWithExceptionTests):
         """
         item = self._mockgun.find_one("HumanUser", [["login", "contains", "se"]])
         self.assertTrue(item)
+
+
+class TestDateDatetimeFields(TestBaseWithExceptionTests):
+    """Test Suite for the behavior of the fields date and datetime."""
+
+    def setUp(self):
+        """Test data"""
+        self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
+
+    def test_dateDataAreStoredAsString(self):
+        """
+        Given the data for a date field is given as a string
+        When the entity is created
+        Then the data is stored as a string.
+        """
+        project = self._mockgun.create(
+            "Project", {"name": "Death Star", "start_date": "1980-04-05"}
+        )
+        self.assertEqual(
+            "1980-04-05", project["start_date"], msg="The date should stay a string."
+        )
+
+    def test_datetimeDataAreStoredAsDatetime(self):
+        """
+        Given the data for a datetime is given as datetime
+        When the entity is created
+        Then the data is kept as datetime.
+        """
+        datetime_ = datetime.datetime(1980, 4, 5, 12, 0)
+        project = self._mockgun.create(
+            "Project", {"name": "Death Star", "updated_at": datetime_}
+        )
+        self.assertEqual(
+            datetime_, project["updated_at"], msg="A datetime should have been kept as a datetime."
+        )
 
 
 class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
