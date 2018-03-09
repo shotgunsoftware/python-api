@@ -27,7 +27,7 @@ Quicktimes, etc.
     sg = shotgun_api3.Shotgun("https://piedpiper.shotgunstudio.com",
                               login="rhendriks",
                               password="c0mPre$Hi0n")
-    sg.find("Shot", filters=[["sg_status_list", "is", "ip"]], fields=["code", "sg_status_list])
+    sg.find("Shot", filters=[["sg_status_list", "is", "ip"]], fields=["code", "sg_status_list"])
 
 **Output**::
 
