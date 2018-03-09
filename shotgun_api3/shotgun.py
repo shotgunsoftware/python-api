@@ -44,6 +44,7 @@ import time
 import types
 import urllib
 import urllib2      # used for image upload
+import httplib
 import urlparse
 import shutil       # used for attachment download
 
@@ -68,7 +69,7 @@ handler associated with it.
 
 .. seealso:: :ref:`logging`
 """
-LOG.setLevel(logging.WARN)
+LOG.setLevel(logging.CRITICAL)
 
 SG_TIMEZONE = SgTimezone()
 
@@ -274,6 +275,26 @@ class ServerCapabilities(object):
     def __str__(self):
         return "ServerCapabilities: host %s, version %s, is_dev %s"\
                  % (self.host, self.version, self.is_dev)
+
+class ShotgunHTTPSConnection(httplib.HTTPConnection):
+        "This class allows communication via SSL."
+
+        default_port = httplib.HTTPS_PORT
+
+        def __init__(self, *args, **kwargs):
+            httplib.HTTPConnection.__init__(self, *args, **kwargs)
+            this.CERT_FILE = os.environ.get('SHOTGUN_API_CACERTS', None)
+
+        def connect(self):
+            "Connect to a host on a given (SSL) port."
+            sock = socket.create_connection((self.host, self.port),
+                                            self.timeout, self.source_address)
+            if self._tunnel_host:
+                self.sock = sock
+                self._tunnel()
+            self.sock = ssl.wrap_socket(sock,
+                                        ca_certs=self.CERT_FILE,
+                                        cert_reqs=ssl.CERT_REQUIRED)
 
 class ClientCapabilities(object):
     """
@@ -2486,7 +2507,7 @@ class Shotgun(object):
         try:
             request = urllib2.Request(url)
             request.add_header('user-agent', "; ".join(self._user_agents))
-            req = urllib2.urlopen(request)
+            req = urllib2.urlopen(request, cafile=os.environ.get('SHOTGUN_API_CACERTS', None))
             if file_path:
                 shutil.copyfileobj(req, fp)
             else:
@@ -3794,7 +3815,8 @@ class Shotgun(object):
 # Helpers from the previous API, left as is.
 
 # Based on http://code.activestate.com/recipes/146306/
-class FormPostHandler(urllib2.BaseHandler):
+#class FormPostHandler(urllib2.BaseHandler):
+class FormPostHandler(urllib2.HTTPSHandler):
     """
     Handler for multipart form data
     """
