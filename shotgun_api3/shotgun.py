@@ -47,6 +47,7 @@ import urllib2      # used for image upload
 import httplib
 import urlparse
 import shutil       # used for attachment download
+import socket
 
 # use relative import for versions >=2.5 and package import for python versions <2.5
 if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 6):
