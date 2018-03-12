@@ -70,7 +70,7 @@ handler associated with it.
 
 .. seealso:: :ref:`logging`
 """
-LOG.setLevel(logging.CRITICAL)
+LOG.setLevel(logging.WARN)
 
 SG_TIMEZONE = SgTimezone()
 
@@ -3816,7 +3816,6 @@ class Shotgun(object):
 # Helpers from the previous API, left as is.
 
 # Based on http://code.activestate.com/recipes/146306/
-#class FormPostHandler(urllib2.BaseHandler):
 class FormPostHandler(urllib2.HTTPSHandler):
     """
     Handler for multipart form data
