@@ -3822,6 +3822,9 @@ class FormPostHandler(urllib2.HTTPSHandler):
     """
     handler_order = urllib2.HTTPHandler.handler_order - 10 # needs to run first
 
+    def https_open(self, req):
+        return self.do_open(ShotgunHTTPSConnection, req)
+
     def http_request(self, request):
         data = request.get_data()
         if data is not None and not isinstance(data, basestring):
