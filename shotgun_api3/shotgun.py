@@ -2512,6 +2512,11 @@ class Shotgun(object):
                             match = re.search('<Message>(.*)</Message>', xml)
                             if match:
                                 err += ' - %s' % (match.group(1))
+                elif e.code == 409 or e.code == 410:
+                    # we may be dealing with a file that is pending/failed a malware scan
+                    lines = e.readlines()
+                    if lines:
+                        err += "\n%s\n" % ''.join(lines)
             raise ShotgunFileDownloadError(err)
         else:
             if file_path:
