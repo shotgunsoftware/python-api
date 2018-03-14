@@ -281,9 +281,11 @@ class ShotgunHTTPSConnection(httplib.HTTPConnection):
         "This class allows communication via SSL."
 
         default_port = httplib.HTTPS_PORT
+        source_address = None
 
         def __init__(self, *args, **kwargs):
             httplib.HTTPConnection.__init__(self, *args, **kwargs)
+            self.source_address = '{host}:{port}'.format(host=self.host, port=self.port)
             self.CERT_FILE = os.environ.get('SHOTGUN_API_CACERTS', None)
 
         def connect(self):
