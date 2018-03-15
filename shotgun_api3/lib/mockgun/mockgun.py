@@ -190,7 +190,7 @@ class Shotgun(object):
         # these settings won't make sense for mockgun, but
         # having them present means code and get and set them
         # they way they would expect to in the real API.
-        self.config = _Config()
+        self.config = _Config(self)
 
         # load in the shotgun schema to associate with this Shotgun
         (schema_path, schema_entity_path) = self.get_schema_paths()

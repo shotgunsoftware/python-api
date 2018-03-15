@@ -331,7 +331,11 @@ class _Config(object):
     Container for the client configuration.
     """
 
-    def __init__(self):
+    def __init__(self, sg):
+        """
+        :param sg: Shotgun connection.
+        """
+        self._sg = sg
         self.max_rpc_attempts = 3
         # From http://docs.python.org/2.6/library/httplib.html:
         # If the optional timeout parameter is given, blocking operations
@@ -340,7 +344,7 @@ class _Config(object):
         self.timeout_secs = None
         self.api_ver = 'api3'
         self.convert_datetimes_to_utc = True
-        self.records_per_page = 500
+        self._records_per_page = None
         self.api_key = None
         self.script_name = None
         self.user_login = None
@@ -370,6 +374,17 @@ class _Config(object):
         self.session_token = None
         self.authorization = None
         self.no_ssl_validation = False
+
+    @property
+    def records_per_page(self):
+        if self._records_per_page is None:
+            # Check for api_max_entities_per_page in the server info and change the record per page value if it is supplied.
+            self._records_per_page = self._sg.server_info.get('api_max_entities_per_page') or 500
+        return self._records_per_page
+
+    @records_per_page.setter
+    def records_per_page(self, records_per_page):
+        self._records_per_page = records_per_page
 
 
 class Shotgun(object):
@@ -519,7 +534,7 @@ class Shotgun(object):
             if connect:
                 raise ValueError("must provide login/password, session_token or script_name/api_key")
 
-        self.config = _Config()
+        self.config = _Config(self)
         self.config.api_key = api_key
         self.config.script_name = script_name
         self.config.user_login = login
@@ -596,9 +611,6 @@ class Shotgun(object):
         # call to server will only be made once and will raise error
         if connect:
             self.server_caps
-
-        # Check for api_max_entities_per_page in the server info and change the record per page value if it is supplied.
-        self.config.records_per_page = self.server_info.get('api_max_entities_per_page') or self.config.records_per_page
 
         # When using auth_token in a 2FA scenario we need to switch to session-based
         # authentication because the auth token will no longer be valid after a first use.
