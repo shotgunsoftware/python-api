@@ -2513,7 +2513,9 @@ class Shotgun(object):
                             if match:
                                 err += ' - %s' % (match.group(1))
                 elif e.code == 409 or e.code == 410:
-                    # we may be dealing with a file that is pending/failed a malware scan
+                    # we may be dealing with a file that is pending/failed a malware scan, e.g:
+                    # 409: This file is undergoing a malware scan, please try again in a few minutes
+                    # 410: File scanning has detected malware and the file has been quarantined
                     lines = e.readlines()
                     if lines:
                         err += "\n%s\n" % ''.join(lines)
