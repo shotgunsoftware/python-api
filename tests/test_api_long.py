@@ -6,6 +6,8 @@ Includes the schema functions and the automated searching for all entity types
 import base
 import random
 import shotgun_api3
+import os
+import time
 
 class TestShotgunApiLong(base.LiveTestBase):
 
@@ -142,7 +144,6 @@ class TestShotgunApiLong(base.LiveTestBase):
             self.assertTrue(len(schema) > 0)
             self.assertTrue('user' in schema)
             self.assertTrue('visible' in schema['user'])
-
 
 if __name__ == '__main__':
     base.unittest.main()
