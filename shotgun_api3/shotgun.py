@@ -377,8 +377,12 @@ class _Config(object):
 
     @property
     def records_per_page(self):
+        """
+        The records per page value from the server.
+        """
         if self._records_per_page is None:
-            # Check for api_max_entities_per_page in the server info and change the record per page value if it is supplied.
+            # Check for api_max_entities_per_page in the server info and change the record per page
+            # value if it is supplied.
             self._records_per_page = self._sg.server_info.get('api_max_entities_per_page') or 500
         return self._records_per_page
 

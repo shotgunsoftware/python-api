@@ -132,11 +132,6 @@ class TestShotgunClient(base.MockTestBase):
         self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
         self.assertEqual(my_uuid, auth_args()["session_uuid"])
 
-    def test_config(self):
-        """Client config can be created"""
-        x = api.shotgun._Config()
-        self.assertTrue(x is not None)
-
     def test_url(self):
         """Server url is parsed correctly"""
         login    = self.human_user['login']
