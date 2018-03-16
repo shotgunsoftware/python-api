@@ -2486,7 +2486,7 @@ class Shotgun(object):
         try:
             request = urllib2.Request(url)
             request.add_header('user-agent', "; ".join(self._user_agents))
-            req = urllib2.urlopen(request)
+            req = urllib2.urlopen(request, cafile=os.environ.get('SHOTGUN_API_CACERTS', None))
             if file_path:
                 shutil.copyfileobj(req, fp)
             else:
