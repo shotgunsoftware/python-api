@@ -386,10 +386,6 @@ class _Config(object):
             self._records_per_page = self._sg.server_info.get('api_max_entities_per_page') or 500
         return self._records_per_page
 
-    @records_per_page.setter
-    def records_per_page(self, records_per_page):
-        self._records_per_page = records_per_page
-
 
 class Shotgun(object):
     """
