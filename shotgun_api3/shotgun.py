@@ -46,6 +46,8 @@ import urllib
 import urllib2      # used for image upload
 import urlparse
 import shutil       # used for attachment download
+import httplib      # used for secure file upload
+import socket
 
 # use relative import for versions >=2.5 and package import for python versions <2.5
 if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 6):
@@ -92,6 +94,33 @@ except ImportError, e:
 # ----------------------------------------------------------------------------
 # Version
 __version__ = "3.0.35"
+
+# ----------------------------------------------------------------------------
+# Self signed certificate connection class
+
+class ShotgunHTTPSConnection(httplib.HTTPConnection):
+        "This class allows communication via SSL."
+
+        default_port = httplib.HTTPS_PORT
+        source_address = None
+
+        def __init__(self, *args, **kwargs):
+            httplib.HTTPConnection.__init__(self, *args, **kwargs)
+            self.CERT_FILE = os.environ.get('SHOTGUN_API_CACERTS', None)
+
+        def connect(self):
+            "Connect to a host on a given (SSL) port."
+            sock = socket.create_connection((self.host, self.port),
+                            self.timeout, self.source_address)
+            if self._tunnel_host:
+                self.sock = sock
+                self._tunnel()
+            if not self.CERT_FILE:
+                self.sock = ssl.wrap_socket(sock)
+            else:
+                self.sock = ssl.wrap_socket(sock,
+                                            ca_certs=self.CERT_FILE,
+                                            cert_reqs=ssl.CERT_REQUIRED)
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -2498,7 +2527,7 @@ class Shotgun(object):
         try:
             request = urllib2.Request(url)
             request.add_header('user-agent', "; ".join(self._user_agents))
-            req = urllib2.urlopen(request)
+            req = urllib2.urlopen(request, cafile=os.environ.get('SHOTGUN_API_CACERTS', None))
             if file_path:
                 shutil.copyfileobj(req, fp)
             else:
@@ -3813,7 +3842,7 @@ class Shotgun(object):
 # Helpers from the previous API, left as is.
 
 # Based on http://code.activestate.com/recipes/146306/
-class FormPostHandler(urllib2.BaseHandler):
+class FormPostHandler(urllib2.HTTPSHandler):
     """
     Handler for multipart form data
     """
@@ -3866,6 +3895,9 @@ class FormPostHandler(urllib2.BaseHandler):
 
     def https_request(self, request):
         return self.http_request(request)
+
+    def https_open(self, req):
+        return self.do_open(ShotgunHTTPSConnection, req)
 
 
 def _translate_filters(filters, filter_operator):
