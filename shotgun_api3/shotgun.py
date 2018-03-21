@@ -46,8 +46,7 @@ import urllib
 import urllib2      # used for image upload
 import urlparse
 import shutil       # used for attachment download
-import httplib      # used for secure file upload
-import socket
+import httplib      # Used for secure file upload.
 
 # use relative import for versions >=2.5 and package import for python versions <2.5
 if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 6):
@@ -94,33 +93,6 @@ except ImportError, e:
 # ----------------------------------------------------------------------------
 # Version
 __version__ = "3.0.35"
-
-# ----------------------------------------------------------------------------
-# Self signed certificate connection class
-
-class ShotgunHTTPSConnection(httplib.HTTPConnection):
-        "This class allows communication via SSL."
-
-        default_port = httplib.HTTPS_PORT
-        source_address = None
-
-        def __init__(self, *args, **kwargs):
-            httplib.HTTPConnection.__init__(self, *args, **kwargs)
-            self.CERT_FILE = os.environ.get('SHOTGUN_API_CACERTS', None)
-
-        def connect(self):
-            "Connect to a host on a given (SSL) port."
-            sock = socket.create_connection((self.host, self.port),
-                            self.timeout, self.source_address)
-            if self._tunnel_host:
-                self.sock = sock
-                self._tunnel()
-            if not self.CERT_FILE:
-                self.sock = ssl.wrap_socket(sock)
-            else:
-                self.sock = ssl.wrap_socket(sock,
-                                            ca_certs=self.CERT_FILE,
-                                            cert_reqs=ssl.CERT_REQUIRED)
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -2527,7 +2499,7 @@ class Shotgun(object):
         try:
             request = urllib2.Request(url)
             request.add_header('user-agent', "; ".join(self._user_agents))
-            req = urllib2.urlopen(request, cafile=os.environ.get('SHOTGUN_API_CACERTS', None))
+            req = urllib2.urlopen(request)
             if file_path:
                 shutil.copyfileobj(req, fp)
             else:
@@ -3063,11 +3035,15 @@ class Shotgun(object):
         """
         Build urllib2 opener with appropriate proxy handler.
         """
+        handlers = []
+        if self.__ca_certs and not NO_SSL_VALIDATION:
+            handlers.append(CACertsHTTPSHandler(self.__ca_certs))
+
         if self.config.proxy_handler:
-            opener = urllib2.build_opener(self.config.proxy_handler, handler)
-        else:
-            opener = urllib2.build_opener(handler)
-        return opener
+            handlers.append(self.config.proxy_handler)
+
+        handlers.append(handler)
+        return urllib2.build_opener(*handlers)
 
     def _turn_off_ssl_validation(self):
         """
@@ -3839,10 +3815,52 @@ class Shotgun(object):
 
         return result
 
-# Helpers from the previous API, left as is.
 
+class CACertsHTTPSConnection(httplib.HTTPConnection):
+    """"
+    This class allows communication with custom CA certs.
+    """
+
+    default_port = httplib.HTTPS_PORT
+    source_address = None
+
+    def __init__(self, *args, **kwargs):
+        """
+        :param args: Positional arguments passed down to the base class.
+        :param ca_certs: Path to the custom CA certs file.
+        :param kwargs: Keyword arguments passed down to the bas class
+        """
+        # Pop that argument,
+        self.__ca_certs = kwargs.pop("ca_certs")
+        httplib.HTTPConnection.__init__(self, *args, **kwargs)
+
+    def connect(self):
+        "Connect to a host on a given (SSL) port."
+        httplib.HTTPConnection.connect(self)
+        # Now that the regular HTTP socket has been created, wrap it with our SSL certs.
+        self.sock = ssl.wrap_socket(
+            self.sock,
+            ca_certs=self.__ca_certs,
+            cert_reqs=ssl.CERT_REQUIRED
+        )
+
+
+class CACertsHTTPSHandler(urllib2.HTTPSHandler):
+
+    def __init__(self, cacerts):
+        urllib2.HTTPSHandler.__init__(self)
+        self.__ca_certs = cacerts
+
+    def https_open(self, req):
+        return self.do_open(self.create_https_connection, req)
+
+    def create_https_connection(self, *args, **kwargs):
+        return CACertsHTTPSConnection(*args, ca_certs=self.__ca_certs, **kwargs)
+
+
+# Helpers from the previous API, left as is.
 # Based on http://code.activestate.com/recipes/146306/
-class FormPostHandler(urllib2.HTTPSHandler):
+class FormPostHandler(urllib2.BaseHandler):
     """
     Handler for multipart form data
     """
@@ -3895,9 +3913,6 @@ class FormPostHandler(urllib2.HTTPSHandler):
 
     def https_request(self, request):
         return self.http_request(request)
-
-    def https_open(self, req):
-        return self.do_open(ShotgunHTTPSConnection, req)
 
 
 def _translate_filters(filters, filter_operator):
