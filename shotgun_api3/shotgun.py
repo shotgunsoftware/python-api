@@ -3818,11 +3818,11 @@ class Shotgun(object):
 
 class CACertsHTTPSConnection(httplib.HTTPConnection):
     """"
-    This class allows communication with custom CA certs.
+    This class allows to create an HTTPS connection that uses the custom certificates
+    passed in.
     """
 
     default_port = httplib.HTTPS_PORT
-    source_address = None
 
     def __init__(self, *args, **kwargs):
         """
@@ -3846,7 +3846,9 @@ class CACertsHTTPSConnection(httplib.HTTPConnection):
 
 
 class CACertsHTTPSHandler(urllib2.HTTPSHandler):
-
+    """
+    Handler that ensures https connections are created with the custom CA certs.
+    """
     def __init__(self, cacerts):
         urllib2.HTTPSHandler.__init__(self)
         self.__ca_certs = cacerts
