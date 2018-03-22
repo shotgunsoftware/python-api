@@ -4,6 +4,13 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.0.36.dev (TBD)
+=====================
+
+- Fixes an error where ``connect=False`` during ``__init__`` would still connect to Shotgun.
+- Adds support for ``SHOTGUN_API_CACERTS`` when uploading and downloading files.
+- Properly handles failed downloads due to malware scanning.
+
 v3.0.35 (2017 December 8)
 =====================
 
