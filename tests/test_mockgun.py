@@ -188,6 +188,7 @@ class TestEntityFieldComparison(TestBaseWithExceptionTests):
         # it to not be returned here.
         items = self._mockgun.find("PipelineConfiguration", [["project.Project.archived", "is", False]])
         self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["id"], self._project_link["id"])
 
 
 class TestTextFieldOperators(TestBaseWithExceptionTests):
