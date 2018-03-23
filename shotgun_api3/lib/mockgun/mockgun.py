@@ -641,6 +641,8 @@ class Shotgun(object):
                         sub_field_value = self._get_field_from_row(entity_type2, entity, field3)
                         values.append(sub_field_value)
                     return values
+                elif field_value is None:
+                    return None
                 # not multi entity, must be entity.
                 elif not isinstance(field_value, dict):
                     raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
