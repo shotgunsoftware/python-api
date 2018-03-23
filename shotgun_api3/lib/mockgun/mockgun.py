@@ -116,7 +116,7 @@ Below is a non-exhaustive list of things that we still need to implement:
 
 import datetime
 
-from ... import sg_timezone, ShotgunError
+from ... import ShotgunError
 from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
@@ -220,7 +220,6 @@ class Shotgun(object):
     ###################################################################################################
     # public API methods
 
-
     def get_session_token(self):
         return "bogus_session_token"
 
@@ -245,15 +244,17 @@ class Shotgun(object):
         else:
             return dict((k, v) for k, v in self._schema[entity_type].items() if k == field_name)
 
-
-    def find(self, entity_type, filters, fields=None, order=None, filter_operator=None, limit=0, retired_only=False, page=0):
-
+    def find(
+        self,
+        entity_type, filters, fields=None,
+        order=None, filter_operator=None, limit=0, retired_only=False, page=0
+    ):
 
         self.finds += 1
 
         self._validate_entity_type(entity_type)
         # do not validate custom fields - this makes it hard to mock up a field quickly
-        #self._validate_entity_fields(entity_type, fields)
+        # self._validate_entity_fields(entity_type, fields)
 
         # FIXME: This should be refactored so that we can use the complex filer
         # style in nested filter operations.
@@ -271,10 +272,10 @@ class Shotgun(object):
 
                 if len(f["values"]) != 1:
                     # {'path': 'id', 'relation': 'in', 'values': [1,2,3]} --> ["id", "in", [1,2,3]]
-                    resolved_filters.append([ f["path"], f["relation"], f["values"] ])
+                    resolved_filters.append([f["path"], f["relation"], f["values"]])
                 else:
                     # {'path': 'id', 'relation': 'is', 'values': [3]} --> ["id", "is", 3]
-                    resolved_filters.append([ f["path"], f["relation"], f["values"][0] ])
+                    resolved_filters.append([f["path"], f["relation"], f["values"][0]])
 
         else:
             # traditiona style sg filters
@@ -315,9 +316,15 @@ class Shotgun(object):
 
         return val
 
-
-    def find_one(self, entity_type, filters, fields=None, order=None, filter_operator=None, retired_only=False):
-        results = self.find(entity_type, filters, fields=fields, order=order, filter_operator=filter_operator, retired_only=retired_only)
+    def find_one(
+        self,
+        entity_type, filters, fields=None,
+        order=None, filter_operator=None, retired_only=False
+    ):
+        results = self.find(
+            entity_type, filters, fields=fields,
+            order=order, filter_operator=filter_operator, retired_only=retired_only
+        )
         return results[0] if results else None
 
     def batch(self, requests):
@@ -440,22 +447,44 @@ class Shotgun(object):
 
             if field_info["data_type"]["value"] == "multi_entity":
                 if not isinstance(item, list):
-                    raise ShotgunError("%s.%s is of type multi_entity, but data %s is not a list" % (entity_type, field, item))
+                    raise ShotgunError(
+                        "%s.%s is of type multi_entity, but data %s is not a list" %
+                        (entity_type, field, item)
+                    )
                 elif item and any(not isinstance(sub_item, dict) for sub_item in item):
-                    raise ShotgunError("%s.%s is of type multi_entity, but data %s contains a non-dictionary" % (entity_type, field, item))
+                    raise ShotgunError(
+                        "%s.%s is of type multi_entity, but data %s contains a non-dictionary" %
+                        (entity_type, field, item)
+                    )
                 elif item and any("id" not in sub_item or "type" not in sub_item for sub_item in item):
-                    raise ShotgunError("%s.%s is of type multi-entity, but an item in data %s does not contain 'type' and 'id'" % (entity_type, field, item))
-                elif item and any(sub_item["type"] not in field_info["properties"]["valid_types"]["value"] for sub_item in item):
-                    raise ShotgunError("%s.%s is of multi-type entity, but an item in data %s has an invalid type (expected one of %s)" % (entity_type, field, item, field_info["properties"]["valid_types"]["value"]))
-
+                    raise ShotgunError(
+                        "%s.%s is of type multi-entity, but an item in data %s does not contain 'type' and 'id'" %
+                        (entity_type, field, item)
+                    )
+                elif item and any(
+                    sub_item["type"] not in field_info["properties"]["valid_types"]["value"] for sub_item in item
+                ):
+                    raise ShotgunError(
+                        "%s.%s is of multi-type entity, but an item in data %s has an invalid type (expected one of %s)"
+                        % (entity_type, field, item, field_info["properties"]["valid_types"]["value"])
+                    )
 
             elif field_info["data_type"]["value"] == "entity":
                 if not isinstance(item, dict):
-                    raise ShotgunError("%s.%s is of type entity, but data %s is not a dictionary" % (entity_type, field, item))
+                    raise ShotgunError(
+                        "%s.%s is of type entity, but data %s is not a dictionary" %
+                        (entity_type, field, item)
+                    )
                 elif "id" not in item or "type" not in item:
-                    raise ShotgunError("%s.%s is of type entity, but data %s does not contain 'type' and 'id'" % (entity_type, field, item))
-                #elif item["type"] not in field_info["properties"]["valid_types"]["value"]:
-                #    raise ShotgunError("%s.%s is of type entity, but data %s has an invalid type (expected one of %s)" % (entity_type, field, item, field_info["properties"]["valid_types"]["value"]))
+                    raise ShotgunError(
+                        "%s.%s is of type entity, but data %s does not contain 'type' and 'id'"
+                        % (entity_type, field, item)
+                    )
+                # elif item["type"] not in field_info["properties"]["valid_types"]["value"]:
+                #    raise ShotgunError(
+                #        "%s.%s is of type entity, but data %s has an invalid type (expected one of %s)" %
+                #        (entity_type, field, item, field_info["properties"]["valid_types"]["value"])
+                #    )
 
             else:
                 try:
@@ -472,10 +501,16 @@ class Shotgun(object):
                                    "status_list": basestring,
                                    "url": dict}[sg_type]
                 except KeyError:
-                    raise ShotgunError("Field %s.%s: Handling for Shotgun type %s is not implemented" % (entity_type, field, sg_type))
+                    raise ShotgunError(
+                        "Field %s.%s: Handling for Shotgun type %s is not implemented" %
+                        (entity_type, field, sg_type)
+                    )
 
                 if not isinstance(item, python_type):
-                    raise ShotgunError("%s.%s is of type %s, but data %s is not of type %s" % (entity_type, field, type(item), sg_type, python_type))
+                    raise ShotgunError(
+                        "%s.%s is of type %s, but data %s is not of type %s" %
+                        (entity_type, field, type(item), sg_type, python_type)
+                    )
 
                 # TODO: add check for correct timezone
 
@@ -641,6 +676,7 @@ class Shotgun(object):
                         sub_field_value = self._get_field_from_row(entity_type2, entity, field3)
                         values.append(sub_field_value)
                     return values
+                # The field is not set, so return None.
                 elif field_value is None:
                     return None
                 # not multi entity, must be entity.
@@ -654,7 +690,7 @@ class Shotgun(object):
 
                 # ok so looks like the value is an entity link
                 # e.g. db contains: {"sg_sequence": {"type":"Sequence", "id": 123 } }
-                linked_row = self._db[ field_value["type"] ][ field_value["id"] ]
+                linked_row = self._db[field_value["type"]][field_value["id"]]
 
                 return self._get_field_from_row(entity_type2, linked_row, field3)
             else:
@@ -771,7 +807,6 @@ class Shotgun(object):
         else:
             raise ShotgunError("%s is not a valid filter operator" % filter_operator)
 
-
     def _update_row(self, entity_type, row, data):
         for field in data:
             field_type = self._get_field_type(entity_type, field)
@@ -782,11 +817,6 @@ class Shotgun(object):
             else:
                 row[field] = data[field]
 
-
     def _validate_entity_exists(self, entity_type, entity_id):
         if entity_id not in self._db[entity_type]:
             raise ShotgunError("No entity of type %s exists with id %s" % (entity_type, entity_id))
-
-
-
-
