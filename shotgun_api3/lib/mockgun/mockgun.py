@@ -245,9 +245,8 @@ class Shotgun(object):
             return dict((k, v) for k, v in self._schema[entity_type].items() if k == field_name)
 
     def find(
-        self,
-        entity_type, filters, fields=None,
-        order=None, filter_operator=None, limit=0, retired_only=False, page=0
+        self, entity_type, filters, fields=None, order=None, filter_operator=None,
+        limit=0, retired_only=False, page=0
     ):
 
         self.finds += 1
@@ -317,9 +316,8 @@ class Shotgun(object):
         return val
 
     def find_one(
-        self,
-        entity_type, filters, fields=None,
-        order=None, filter_operator=None, retired_only=False
+        self, entity_type, filters, fields=None, order=None, filter_operator=None,
+        retired_only=False
     ):
         results = self.find(
             entity_type, filters, fields=fields,
