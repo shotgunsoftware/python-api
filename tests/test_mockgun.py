@@ -148,12 +148,12 @@ class TestEntityFieldComparison(TestBaseWithExceptionTests):
         """
         self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
 
-        self._project_link = self._mockgun.create("Project", {"name": "project"})
+        self._project_link = self._mockgun.create("Project", {"name": "project", "archived": False})
 
         # This entity will ensure that a populated link field will be comparable.
         self._mockgun.create(
             "PipelineConfiguration",
-            {"code": "with_project", "project": self._project_link}
+            {"code": "with_project", "project": self._project_link, }
         )
 
         # This entity will ensure that an unpopulated link field will be comparable.
@@ -179,6 +179,16 @@ class TestEntityFieldComparison(TestBaseWithExceptionTests):
 
         items = self._mockgun.find("PipelineConfiguration", [["project", "is_not", self._project_link]])
         self.assertEqual(len(items), 1)
+
+    def test_find_entity_with_none_link(self):
+        """
+        Make sure that we can search for sub entity fields on entities that have the field not set.
+        """
+        # The pipeline configuration without_project doesn't have the project field set, so we're expecting
+        # it to not be returned here.
+        items = self._mockgun.find("PipelineConfiguration", [["project.Project.archived", "is", False]])
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["id"], self._project_link["id"])
 
 
 class TestTextFieldOperators(TestBaseWithExceptionTests):
