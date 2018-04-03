@@ -4,7 +4,7 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
-v3.0.36.dev (TBD)
+v3.0.36
 =====================
 
 - Fixes an error where ``connect=False`` during ``__init__`` would still connect to Shotgun.
