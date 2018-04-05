@@ -14,7 +14,7 @@ environment:
   matrix:
     - PYTHON: "C:\\Python26"
 
-environment:
+  # To update these values, visit AppVeyor's site, click the user icon and scroll down to Encrypt Data.
   SG_SERVER_URL:
     secure: 1klEyyzGkwq7KyTgI+9nqiqCNcdOXLVR/P8nXGgKu2kHj+DDCNNe2LNDLh2h0TIA
   SG_API_KEY:
