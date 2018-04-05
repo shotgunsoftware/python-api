@@ -560,7 +560,14 @@ class TestShotgunApi(base.LiveTestBase):
         self.sg.batch(batch_data)
 
         self.assertEqual(result['summaries'], count)
-        self.assertEqual(result['groups'], groups)
+        # Do not assume the order of the summarized results.
+        self.assertEqual(
+            sorted(
+                result['groups'],
+                key=lambda x: x["group_name"]
+            ),
+            groups
+        )
 
     def test_ensure_ascii(self):
         '''test_ensure_ascii tests ensure_unicode flag.'''
