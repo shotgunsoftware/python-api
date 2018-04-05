@@ -12,5 +12,5 @@
 :: This file is run by the appveyor builds.
 ::
 
-%PYTHON%\Scripts\pip install nose
+%PYTHON%\Scripts\pip install -r tests/ci_requirements.txt
 %PYTHON%\Scripts\nosetests.exe -v
