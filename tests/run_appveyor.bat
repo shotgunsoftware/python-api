@@ -12,6 +12,6 @@
 :: This file is run by the appveyor builds.
 ::
 
-copy tests\example_config copy tests\config
+copy tests\example_config tests\config
 %PYTHON%\Scripts\pip install -r tests/ci_requirements.txt
 %PYTHON%\Scripts\nosetests.exe -v
