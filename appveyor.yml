@@ -24,6 +24,7 @@ environment:
   SG_HUMAN_PASSWORD:
     secure: JAxEsOimGFFr0hYgCd6prUNEdTmUZinPU0516bHs4Jk=
   SG_SCRIPT_NAME: travis-ci
+  SG_PROJECT_NAME: SG unittest project for AppVeyor
 
 build: off
 
