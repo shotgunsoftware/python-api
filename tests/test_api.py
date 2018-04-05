@@ -1595,6 +1595,10 @@ class TestErrors(base.TestBase):
         sg = shotgun_api3.Shotgun(server_url, login=login, password='not a real password')
         self.assertRaises(shotgun_api3.AuthenticationFault, sg.find_one, 'Shot',[])
 
+        # This may trigger an account lockdown. Make sure it is not locked anymore.
+        user = self.sg.find_one("HumanUser", [["login", "is", login]])
+        self.sg.update("HumanUser", user["id"], {"locked_until": None})
+
     @patch('shotgun_api3.shotgun.Http.request')
     def test_status_not_200(self, mock_request):
         response = MagicMock(name="response mock", spec=dict)
