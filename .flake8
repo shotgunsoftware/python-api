@@ -35,8 +35,8 @@ exclude =
     *.egg-info,
     __pycache__,
     # Those are our third parties, do not lint them!
-    shotgun_api3/lib/httplib2/*.py
-    shotgun_api3/lib/simplejson/*.py
+    shotgun_api3/lib/httplib2/*.py,
+    shotgun_api3/lib/simplejson/*.py,
     shotgun_api3/lib/xmlrpclib.py
 
 # exceptions
