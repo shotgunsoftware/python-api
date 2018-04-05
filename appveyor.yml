@@ -19,11 +19,11 @@ environment:
     secure: 1klEyyzGkwq7KyTgI+9nqiqCNcdOXLVR/P8nXGgKu2kHj+DDCNNe2LNDLh2h0TIA
   SG_API_KEY:
     secure: jnC8/rvRGohDM6FA1zDX7RjRKGCHQLPVjC8xfURr4EeMgzpMnoQgL/qjNis47IfwEm4+dI2eN9fDjskfea+o4pTX1gt2rV1fe4qhAxGE4g4=
-  SG_HUMAN_LOGIN: 'travis-ci'
-  SG_HUMAN_NAME: 'Travis CI'
+  SG_HUMAN_LOGIN: travis-ci
+  SG_HUMAN_NAME: Travis CI
   SG_HUMAN_PASSWORD:
     secure: JAxEsOimGFFr0hYgCd6prUNEdTmUZinPU0516bHs4Jk=
-  SG_SCRIPT_NAME: 'travis-ci'
+  SG_SCRIPT_NAME: travis-ci
 
 build: off
 
