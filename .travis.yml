@@ -8,7 +8,7 @@ install:
 before_script:
   - cp ./tests/example_config ./tests/config
 # command to run tests
-script: COVERAGE=1 nosetests -v
+script: nosetests --with-coverage -v
 after_success: coveralls
 notifications:
   email:
