@@ -17,12 +17,12 @@ import platform
 import sys
 import time
 import unittest
-import mock
+from . import mock
 
 import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
-import base
+from . import base
 
 class TestShotgunClient(base.MockTestBase):
     '''Test case for shotgun api with server interactions mocked.'''
@@ -160,7 +160,7 @@ class TestShotgunClient(base.MockTestBase):
 
         self.sg = api.Shotgun(auth_url, "foo", "bar", connect=False)
         self._setup_mock()
-        self._mock_http({ 'version': [2, 4, 0, u'Dev'] })
+        self._mock_http({ 'version': [2, 4, 0, 'Dev'] })
 
         self.sg.info()
 
@@ -255,7 +255,7 @@ class TestShotgunClient(base.MockTestBase):
 
         try:
             self.sg.info()
-        except api.Fault, e:
+        except api.Fault as e:
             self.assertEqual("Go BANG", str(e))
 
     def test_call_rpc(self):
@@ -325,14 +325,14 @@ class TestShotgunClient(base.MockTestBase):
             return datetime.datetime(*time.strptime(s, f)[:6])
 
         def assert_wire(wire, match):
-            self.assertTrue(isinstance(wire["date"], basestring))
+            self.assertTrue(isinstance(wire["date"], str))
             d = _datetime(wire["date"], "%Y-%m-%d").date()
             d = wire['date']
             self.assertEqual(match["date"], d)
-            self.assertTrue(isinstance(wire["datetime"], basestring))
+            self.assertTrue(isinstance(wire["datetime"], str))
             d = _datetime(wire["datetime"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["datetime"], d)
-            self.assertTrue(isinstance(wire["time"], basestring))
+            self.assertTrue(isinstance(wire["time"], str))
             d = _datetime(wire["time"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["time"], d.time())
 
@@ -360,22 +360,22 @@ class TestShotgunClient(base.MockTestBase):
         """Request body is encoded as JSON"""
 
         d = {
-            "this is " : u"my data \u00E0"
+            "this is " : "my data \u00E0"
         }
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, str))
+        self.assertTrue(isinstance(j, bytes))
 
         d = {
-            "this is " : u"my data"
+            "this is " : "my data"
         }
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, str))
+        self.assertTrue(isinstance(j, bytes))
 
     def test_decode_response_ascii(self):
-        self._assert_decode_resonse(True, u"my data \u00E0".encode('utf8'))
+        self._assert_decode_resonse(True, "my data \u00E0".encode('utf8'))
 
     def test_decode_response_unicode(self):
-        self._assert_decode_resonse(False, u"my data \u00E0")
+        self._assert_decode_resonse(False, "my data \u00E0")
 
     def _assert_decode_resonse(self, ensure_ascii, data):
         """HTTP Response is decoded as JSON or text"""

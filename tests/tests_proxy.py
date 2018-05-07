@@ -1,6 +1,6 @@
 #! /opt/local/bin/python
 import sys
-import base
+from . import base
 import shotgun_api3 as api
 
 

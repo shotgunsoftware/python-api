@@ -242,7 +242,7 @@ class Shotgun(object):
         if field_name is None:
             return self._schema[entity_type]
         else:
-            return dict((k, v) for k, v in self._schema[entity_type].items() if k == field_name)
+            return dict((k, v) for k, v in list(self._schema[entity_type].items()) if k == field_name)
 
     def find(
         self, entity_type, filters, fields=None, order=None, filter_operator=None,
@@ -282,7 +282,7 @@ class Shotgun(object):
 
         results = [
             # Apply the filters for every single entities for the given entity type.
-            row for row in self._db[entity_type].values()
+            row for row in list(self._db[entity_type].values())
             if self._row_matches_filters(
                 entity_type, row, resolved_filters, filter_operator, retired_only
             )
@@ -392,7 +392,7 @@ class Shotgun(object):
         row = self._db[entity_type][entity_id]
         self._update_row(entity_type, row, data)
 
-        return [dict((field, item) for field, item in row.items() if field in data or field in ("type", "id"))]
+        return [dict((field, item) for field, item in list(row.items()) if field in data or field in ("type", "id"))]
 
     def delete(self, entity_type, entity_id):
         self._validate_entity_type(entity_type)
@@ -433,9 +433,9 @@ class Shotgun(object):
         if "id" in data or "type" in data:
             raise ShotgunError("Can't set id or type on create or update")
 
-        self._validate_entity_fields(entity_type, data.keys())
+        self._validate_entity_fields(entity_type, list(data.keys()))
 
-        for field, item in data.items():
+        for field, item in list(data.items()):
 
             if item is None:
                 # none is always ok
@@ -491,12 +491,12 @@ class Shotgun(object):
                                    "float": float,
                                    "checkbox": bool,
                                    "percent": int,
-                                   "text": basestring,
+                                   "text": str,
                                    "serializable": dict,
                                    "date": datetime.date,
                                    "date_time": datetime.datetime,
-                                   "list": basestring,
-                                   "status_list": basestring,
+                                   "list": str,
+                                   "status_list": str,
                                    "url": dict}[sg_type]
                 except KeyError:
                     raise ShotgunError(
@@ -779,7 +779,7 @@ class Shotgun(object):
                 if "filter_operator" not in f or "filters" not in f:
                     raise ShotgunError(
                         "Bad filter operator, requires keys 'filter_operator' and 'filters', "
-                        "found %s" % ", ".join(f.keys())
+                        "found %s" % ", ".join(list(f.keys()))
                     )
                 new_filter = [None, f["filter_operator"], f["filters"]]
             else:

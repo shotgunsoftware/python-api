@@ -63,13 +63,13 @@ class TestBaseWithExceptionTests(unittest.TestCase):
     def assertRaisesRegexp(self, exception_type, re_msg, func):
         try:
             func()
-        except exception_type, exception:
+        except exception_type as exception:
             matches = re.findall(re_msg, str(exception))
             if not matches:
                 self.fail("Expected exception to match '%s', got '%s' instead." % (
                     re_msg, str(exception)
                 ))
-        except Exception, ex:
+        except Exception as ex:
             self.fail("Expected exception of type %s, got %s" % (exception_type, type(ex)))
         else:
             self.fail("Expected %s was not raised." % exception_type)
@@ -127,7 +127,7 @@ class TestValidateFilterSyntax(TestBaseWithExceptionTests):
         )
 
         # We can't have not dict/list values for filters however.
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ShotgunError,
             "Filters can only be lists or dictionaries, not int.",
             lambda: self._mockgun.find(
@@ -408,7 +408,7 @@ class TestFilterOperator(TestBaseWithExceptionTests):
 
     def test_invalid_operator(self):
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ShotgunError,
             "Unknown filter_operator type: bad",
             lambda: self._mockgun.find(
@@ -421,7 +421,7 @@ class TestFilterOperator(TestBaseWithExceptionTests):
                 ])
         )
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ShotgunError,
             "Bad filter operator, requires keys 'filter_operator' and 'filters',",
             lambda: self._mockgun.find(

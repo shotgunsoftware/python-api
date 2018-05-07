@@ -3,7 +3,7 @@
 Includes the schema functions and the automated searching for all entity types
 """
 
-import base
+from . import base
 import random
 import shotgun_api3
 import os
@@ -13,7 +13,7 @@ class TestShotgunApiLong(base.LiveTestBase):
 
     def test_automated_find(self):
         """Called find for each entity type and read all fields"""
-        all_entities = self.sg.schema_entity_read().keys()
+        all_entities = list(self.sg.schema_entity_read().keys())
         direction = "asc"
         filter_operator = "all"
         limit = 1
@@ -22,18 +22,18 @@ class TestShotgunApiLong(base.LiveTestBase):
             if entity_type in ("Asset", "Task", "Shot", "Attachment",
                                "Candidate"):
                 continue
-            print "Finding entity type", entity_type
+            print("Finding entity type", entity_type)
 
             fields = self.sg.schema_field_read(entity_type)
             if not fields:
-                print "No fields for %s skipping" % (entity_type,)
+                print("No fields for %s skipping" % (entity_type,))
                 continue
 
             # trying to use some different code paths to the other find test
             # pivot_column fields aren't valid for sorting so ensure we're 
             # not using one.
             order_field = None
-            for field_name, field in fields.iteritems():
+            for field_name, field in fields.items():
                 if field['data_type']["value"] != 'pivot_column':
                     order_field = field_name
                     break       
@@ -44,7 +44,7 @@ class TestShotgunApiLong(base.LiveTestBase):
             else:
                 filters = []
 
-            records = self.sg.find(entity_type, filters, fields=fields.keys(),
+            records = self.sg.find(entity_type, filters, fields=list(fields.keys()),
                                    order=order, filter_operator=filter_operator,
                                    limit=limit, page=page)
 
@@ -131,7 +131,7 @@ class TestShotgunApiLong(base.LiveTestBase):
             self.assertTrue(schema, dict)
             self.assertTrue(len(schema) > 0)
             self.assertTrue('Version' in schema)
-            self.assertFalse('visible' in schema.keys())
+            self.assertFalse('visible' in list(schema.keys()))
 
             schema = self.sg.schema_field_read('Version', project_entity=project_entity)
             self.assertTrue(schema, dict)

@@ -2,10 +2,10 @@
 import os
 import re
 import unittest
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
 
-import mock
+from . import mock
 
 import shotgun_api3 as api
 from shotgun_api3.shotgun import json
@@ -125,7 +125,7 @@ class MockTestBase(TestBase):
         if not isinstance(self.sg._http_request, mock.Mock):
             return
 
-        if not isinstance(data, basestring):
+        if not isinstance(data, str):
             data = json.dumps(data, ensure_ascii=False, encoding="utf-8")
 
         resp_headers = { 'cache-control': 'no-cache',
@@ -149,7 +149,7 @@ class MockTestBase(TestBase):
         """Asserts _http_request is called with the method and params."""
         args, _ = self.sg._http_request.call_args
         arg_body = args[2]
-        assert isinstance(arg_body, basestring)
+        assert isinstance(arg_body, str)
         arg_body = json.loads(arg_body)
 
         arg_params = arg_body.get("params")
@@ -335,7 +335,7 @@ def _find_or_create_entity(sg, entity_type, data, identifyiers=None):
     @returns dicitonary of the entity values
     '''
     identifyiers = identifyiers or ['name']
-    fields = data.keys()
+    fields = list(data.keys())
     filters = [[key, 'is', data[key]] for key in identifyiers]
     entity = sg.find_one(entity_type, filters, fields=fields)
     entity = entity or sg.create(entity_type, data, return_fields=fields)
