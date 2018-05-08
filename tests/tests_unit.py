@@ -15,18 +15,18 @@ class TestShotgunInit(unittest.TestCase):
     def test_http_proxy_server(self):
         proxy_server = "someserver.com"
         http_proxy = proxy_server
-        sg = api.Shotgun(self.server_path, 
-                         self.script_name, 
-                         self.api_key, 
+        sg = api.Shotgun(self.server_path,
+                         self.script_name,
+                         self.api_key,
                          http_proxy=http_proxy,
                          connect=False)
         self.assertEqual(sg.config.proxy_server, proxy_server)
         self.assertEqual(sg.config.proxy_port, 8080)
         proxy_server = "123.456.789.012"
         http_proxy = proxy_server
-        sg = api.Shotgun(self.server_path, 
-                         self.script_name, 
-                         self.api_key, 
+        sg = api.Shotgun(self.server_path,
+                         self.script_name,
+                         self.api_key,
                          http_proxy=http_proxy,
                          connect=False)
         self.assertEqual(sg.config.proxy_server, proxy_server)
@@ -36,9 +36,9 @@ class TestShotgunInit(unittest.TestCase):
         proxy_server = "someserver.com"
         proxy_port = 1234
         http_proxy = "%s:%d" % (proxy_server, proxy_port)
-        sg = api.Shotgun(self.server_path, 
-                         self.script_name, 
-                         self.api_key, 
+        sg = api.Shotgun(self.server_path,
+                         self.script_name,
+                         self.api_key,
                          http_proxy=http_proxy,
                          connect=False)
         self.assertEqual(sg.config.proxy_server, proxy_server)
@@ -46,9 +46,9 @@ class TestShotgunInit(unittest.TestCase):
         proxy_server = "123.456.789.012"
         proxy_port = 1234
         http_proxy = "%s:%d" % (proxy_server, proxy_port)
-        sg = api.Shotgun(self.server_path, 
-                         self.script_name, 
-                         self.api_key, 
+        sg = api.Shotgun(self.server_path,
+                         self.script_name,
+                         self.api_key,
                          http_proxy=http_proxy,
                          connect=False)
         self.assertEqual(sg.config.proxy_server, proxy_server)
@@ -59,11 +59,11 @@ class TestShotgunInit(unittest.TestCase):
         proxy_port = 1234
         proxy_user = "user"
         proxy_pass = "password"
-        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server, 
+        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server,
                                       proxy_port)
-        sg = api.Shotgun(self.server_path, 
-                         self.script_name, 
-                         self.api_key, 
+        sg = api.Shotgun(self.server_path,
+                         self.script_name,
+                         self.api_key,
                          http_proxy=http_proxy,
                          connect=False)
         self.assertEqual(sg.config.proxy_server, proxy_server)
@@ -74,11 +74,11 @@ class TestShotgunInit(unittest.TestCase):
         proxy_port = 1234
         proxy_user = "user"
         proxy_pass = "password"
-        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server, 
+        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server,
                                       proxy_port)
-        sg = api.Shotgun(self.server_path, 
-                         self.script_name, 
-                         self.api_key, 
+        sg = api.Shotgun(self.server_path,
+                         self.script_name,
+                         self.api_key,
                          http_proxy=http_proxy,
                          connect=False)
         self.assertEqual(sg.config.proxy_server, proxy_server)
@@ -91,11 +91,11 @@ class TestShotgunInit(unittest.TestCase):
         proxy_port = 1234
         proxy_user = "user"
         proxy_pass = "p@ssword"
-        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server, 
+        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server,
                                       proxy_port)
-        sg = api.Shotgun(self.server_path, 
-                         self.script_name, 
-                         self.api_key, 
+        sg = api.Shotgun(self.server_path,
+                         self.script_name,
+                         self.api_key,
                          http_proxy=http_proxy,
                          connect=False)
         self.assertEqual(sg.config.proxy_server, proxy_server)
@@ -108,12 +108,12 @@ class TestShotgunInit(unittest.TestCase):
         proxy_port = 1234
         proxy_user = "user"
         proxy_pass = "password"
-        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server, 
+        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server,
                                       proxy_port)
         conn_info = {
             'base_url': self.server_path,
             'script_name': self.script_name,
-            'api_key': self.api_key, 
+            'api_key': self.api_key,
             'connect': False,
         }
         conn_info['http_proxy'] = 'http://someserver.com'
@@ -130,8 +130,8 @@ class TestShotgunSummarize(unittest.TestCase):
     Does not require database connection or test data.'''
     def setUp(self):
         self.sg = api.Shotgun('http://server_path',
-                              'script_name', 
-                              'api_key', 
+                              'script_name',
+                              'api_key',
                               connect=False)
 
 
@@ -141,7 +141,7 @@ class TestShotgunSummarize(unittest.TestCase):
         self._assert_filter_operator(expected_logical_operator, filter_operator)
 
     def _assert_filter_operator(self, expected_logical_operator, filter_operator):
-        result = self.get_call_rpc_params(None, {'filter_operator':filter_operator})
+        result = self.get_call_rpc_params(None, {'filter_operator': filter_operator})
         actual_logical_operator = result['filters']['logical_operator']
         self.assertEqual(expected_logical_operator, actual_logical_operator)
 
@@ -159,8 +159,8 @@ class TestShotgunSummarize(unittest.TestCase):
         path = 'path'
         relation = 'relation'
         value = 'value'
-        expected_condition = {'path':path, 'relation':relation, 'values':[value]}
-        args = ['',[[path, relation, value]],None]
+        expected_condition = {'path': path, 'relation': relation, 'values': [value]}
+        args = ['', [[path, relation, value]], None]
         result = self.get_call_rpc_params(args, {})
         actual_condition = result['filters']['conditions'][0]
         self.assertEqual(expected_condition, actual_condition)
@@ -177,7 +177,7 @@ class TestShotgunSummarize(unittest.TestCase):
         result = self.get_call_rpc_params(None, {})
         self.assertFalse('grouping' in result)
         grouping = ['something']
-        kws = {'grouping':grouping} 
+        kws = {'grouping': grouping}
         result = self.get_call_rpc_params(None, kws)
         self.assertEqual(grouping, result['grouping'])
 
@@ -188,8 +188,8 @@ class TestShotgunSummarize(unittest.TestCase):
 class TestShotgunBatch(unittest.TestCase):
     def setUp(self):
         self.sg = api.Shotgun('http://server_path',
-                              'script_name', 
-                              'api_key', 
+                              'script_name',
+                              'api_key',
                               connect=False)
 
     def test_missing_required_key(self):
@@ -223,15 +223,15 @@ class TestServerCapabilities(unittest.TestCase):
 
     def test_bad_version(self):
         '''test_bad_meta tests passing bad meta data type'''
-        self.assertRaises(api.ShotgunError, api.shotgun.ServerCapabilities, 'host', {'version':(0,0,0)})
+        self.assertRaises(api.ShotgunError, api.shotgun.ServerCapabilities, 'host', {'version': (0, 0, 0)})
 
     def test_dev_version(self):
-        serverCapabilities = api.shotgun.ServerCapabilities('host', {'version':(3,4,0,'Dev')})
-        self.assertEqual(serverCapabilities.version, (3,4,0))
+        serverCapabilities = api.shotgun.ServerCapabilities('host', {'version': (3, 4, 0, 'Dev')})
+        self.assertEqual(serverCapabilities.version, (3, 4, 0))
         self.assertTrue(serverCapabilities.is_dev)
 
-        serverCapabilities = api.shotgun.ServerCapabilities('host', {'version':(2,4,0)})
-        self.assertEqual(serverCapabilities.version, (2,4,0))
+        serverCapabilities = api.shotgun.ServerCapabilities('host', {'version': (2, 4, 0)})
+        self.assertEqual(serverCapabilities.version, (2, 4, 0))
         self.assertFalse(serverCapabilities.is_dev)
 
 class TestClientCapabilities(unittest.TestCase):
@@ -240,7 +240,7 @@ class TestClientCapabilities(unittest.TestCase):
         self.assert_platform('Darwin', 'mac')
 
     def test_windows(self):
-        self.assert_platform('win32','windows')
+        self.assert_platform('win32', 'windows')
         
     def test_linux(self):
         self.assert_platform('Linux', 'linux')
@@ -296,8 +296,8 @@ class TestFilters(unittest.TestCase):
         expected = {
             "logical_operator": "or",
             "conditions": [
-                { "path": "code", "relation": "is", "values": ["test"] },
-                { "path": "sg_status_list", "relation": "is", "values": ["ip"] }
+                {"path": "code", "relation": "is", "values": ["test"]},
+                {"path": "sg_status_list", "relation": "is", "values": ["ip"]}
             ]
         }
         
@@ -309,7 +309,7 @@ class TestFilters(unittest.TestCase):
         expected = {
             "logical_operator": "and",
             "conditions": [
-                { "path": "code", "relation": "in", "values": ["test1", "test2", "test3"] }
+                {"path": "code", "relation": "in", "values": ["test1", "test2", "test3"]}
             ]
         }
         
@@ -339,7 +339,7 @@ class TestFilters(unittest.TestCase):
                         "filter_operator": "all",
                         "filters": [
                             ["sg_status_list", "is", "hld"],
-                            ["assets", "is", { "type": "Asset", "id": 9 }]
+                            ["assets", "is", {"type": "Asset", "id": 9}]
                         ]
                     }
                 ]
@@ -349,17 +349,17 @@ class TestFilters(unittest.TestCase):
         expected = {
             "logical_operator": "and",
             "conditions": [
-                { "path": "code", "relation": "in", "values": ["test"] },
+                {"path": "code", "relation": "in", "values": ["test"]},
                 {
                     "logical_operator": "or",
                     "conditions": [
-                        { "path": "sg_status_list", "relation": "is", "values": ["ip"] },
-                        { "path": "sg_status_list", "relation": "is", "values": ["fin"] },
+                        {"path": "sg_status_list", "relation": "is", "values": ["ip"]},
+                        {"path": "sg_status_list", "relation": "is", "values": ["fin"]},
                         {
                             "logical_operator": "and",
                             "conditions": [
-                                { "path": "sg_status_list", "relation": "is", "values": ["hld"] },
-                                { "path": "assets", "relation": "is", "values": [ { "type": "Asset", "id": 9 } ] },
+                                {"path": "sg_status_list", "relation": "is", "values": ["hld"]},
+                                {"path": "assets", "relation": "is", "values": [{"type": "Asset", "id": 9}]},
                             ]
                         }
                     ]
@@ -389,7 +389,7 @@ class TestFilters(unittest.TestCase):
         
         filters = [{
             "filter_operator": "all",
-            "filters": { "bogus": "bogus" }
+            "filters": {"bogus": "bogus"}
         }]
         
         self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")

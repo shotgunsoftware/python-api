@@ -57,7 +57,7 @@ else:
     from .sg_24 import *
 
 # mimetypes imported in version specific imports
-mimetypes.add_type('video/webm','.webm') # webm and mp4 seem to be missing
+mimetypes.add_type('video/webm', '.webm') # webm and mp4 seem to be missing
 mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
 
 LOG = logging.getLogger("shotgun_api3")
@@ -598,7 +598,7 @@ class Shotgun(object):
             else:
                 auth_string = ""
             proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
-            self.config.proxy_handler = urllib.request.ProxyHandler({self.config.scheme : proxy_addr})
+            self.config.proxy_handler = urllib.request.ProxyHandler({self.config.scheme: proxy_addr})
 
         if ensure_ascii:
             self._json_loads = self._json_loads_ascii
@@ -939,8 +939,8 @@ class Shotgun(object):
         params["return_fields"] = fields or ["id"]
         params["filters"] = filters
         params["return_only"] = (retired_only and 'retired') or "active"
-        params["paging"] = { "entities_per_page": self.config.records_per_page,
-                             "current_page": 1 }
+        params["paging"] = {"entities_per_page": self.config.records_per_page,
+                             "current_page": 1}
 
         if additional_filter_presets:
             params["additional_filter_presets"] = additional_filter_presets;
@@ -958,7 +958,7 @@ class Shotgun(object):
                 sort.setdefault("direction", "asc")
                 sort_list.append({
                     'field_name': sort['field_name'],
-                    'direction' : sort['direction']
+                    'direction': sort['direction']
                 })
             params['sorts'] = sort_list
         return params
@@ -1225,9 +1225,9 @@ class Shotgun(object):
             upload_filmstrip_image = data.pop('filmstrip_image')
 
         params = {
-            "type" : entity_type,
-            "fields" : self._dict_to_list(data),
-            "return_fields" : return_fields
+            "type": entity_type,
+            "fields": self._dict_to_list(data),
+            "return_fields": return_fields
         }
 
         record = self._call_rpc("create", params, first=True)
@@ -1299,9 +1299,9 @@ class Shotgun(object):
 
         if data:
             params = {
-                "type" : entity_type,
-                "id" : entity_id,
-                "fields" : self._dict_to_list(
+                "type": entity_type,
+                "id": entity_id,
+                "fields": self._dict_to_list(
                     data,
                     extra_data=self._dict_to_extra_data(
                         multi_entity_update_modes, "multi_entity_update_mode"))
@@ -1348,8 +1348,8 @@ class Shotgun(object):
        """
 
         params = {
-            "type" : entity_type,
-            "id" : entity_id
+            "type": entity_type,
+            "id": entity_id
         }
 
         return self._call_rpc("delete", params)
@@ -1369,8 +1369,8 @@ class Shotgun(object):
         """
 
         params = {
-            "type" : entity_type,
-            "id" : entity_id
+            "type": entity_type,
+            "id": entity_id
         }
 
         return self._call_rpc("revive", params)
@@ -1455,7 +1455,7 @@ class Shotgun(object):
                            ['request_type', 'entity_type'],
                            req)
             request_params = {'request_type': req['request_type'],
-                              "type" : req["entity_type"]}
+                              "type": req["entity_type"]}
 
             if req["request_type"] == "create":
                 _required_keys("Batched create request", ['data'], req)
@@ -1712,7 +1712,7 @@ class Shotgun(object):
         self.server_caps.ensure_user_following_support()
 
         params = {
-            "user":user
+            "user": user
         }
         if project:
             params["project"] = project
@@ -1918,9 +1918,9 @@ class Shotgun(object):
         """
 
         params = {
-            "type" : entity_type,
-            "data_type" : data_type,
-            "properties" : [
+            "type": entity_type,
+            "data_type": data_type,
+            "properties": [
                 {'property_name': 'name', 'value': display_name}
             ]
         }
@@ -1952,10 +1952,10 @@ class Shotgun(object):
         """
 
         params = {
-            "type" : entity_type,
-            "field_name" : field_name,
+            "type": entity_type,
+            "field_name": field_name,
             "properties": [
-                {"property_name" : k, "value" : v}
+                {"property_name": k, "value": v}
                 for k, v in (properties or {}).items()
             ]
         }
@@ -1976,8 +1976,8 @@ class Shotgun(object):
         """
 
         params = {
-            "type" : entity_type,
-            "field_name" : field_name
+            "type": entity_type,
+            "field_name": field_name
         }
 
         return self._call_rpc("schema_field_delete", params)
@@ -2122,9 +2122,9 @@ class Shotgun(object):
         if filmstrip_thumbnail:
             filmstrip_thumbnail = 1
         params = {
-            "entities" : ','.join(entities_str),
+            "entities": ','.join(entities_str),
             "source_entity": "%s_%s" % (source_entity['type'], source_entity['id']),
-            "filmstrip_thumbnail" : filmstrip_thumbnail,
+            "filmstrip_thumbnail": filmstrip_thumbnail,
         }
 
         url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
@@ -2301,8 +2301,8 @@ class Shotgun(object):
                                    "/upload/api_link_file", None, None, None))
 
         params = {
-            "entity_type" : entity_type,
-            "entity_id" : entity_id,
+            "entity_type": entity_type,
+            "entity_id": entity_id,
             "upload_link_info": upload_info['upload_info']
         }
 
@@ -2352,8 +2352,8 @@ class Shotgun(object):
         """
 
         params = {
-            "entity_type" : entity_type,
-            "entity_id" : entity_id,
+            "entity_type": entity_type,
+            "entity_id": entity_id,
         }
 
         params.update(self._auth_params())
@@ -2409,8 +2409,8 @@ class Shotgun(object):
             upload_type = "Attachment"
 
         params = {
-            "upload_type" : upload_type,
-            "filename" : filename
+            "upload_type": upload_type,
+            "filename": filename
         }
 
         params["multipart_upload"] = is_multipart_upload
@@ -2430,11 +2430,11 @@ class Shotgun(object):
         upload_info_parts = str(upload_info).split("\n")
 
         return {
-            "upload_url" : upload_info_parts[1],
-            "timestamp" : upload_info_parts[2],
-            "upload_type" : upload_info_parts[3],
+            "upload_url": upload_info_parts[1],
+            "timestamp": upload_info_parts[2],
+            "upload_type": upload_info_parts[3],
             "upload_id": upload_info_parts[4],
-            "upload_info" : upload_info
+            "upload_info": upload_info
         }
 
     def download_attachment(self, attachment=False, file_path=None, attachment_id=None):
@@ -2691,7 +2691,7 @@ class Shotgun(object):
             if self.config.user_login:
                 user = self.find_one('HumanUser', [['login', 'is', self.config.user_login]])
 
-        params = { "project_id": project['id'], }
+        params = {"project_id": project['id'], }
         if user:
             params['user_id'] = user['id']
 
@@ -2767,7 +2767,7 @@ class Shotgun(object):
         if not isinstance(entity_fields, dict):
             raise ValueError("entity_fields parameter must be a dictionary")
 
-        params = { "note_id": note_id, "entity_fields": entity_fields }
+        params = {"note_id": note_id, "entity_fields": entity_fields}
 
         record = self._call_rpc("note_thread_contents", params)
         result = self._parse_records(record)
@@ -2851,10 +2851,10 @@ class Shotgun(object):
 
         project_ids = project_ids or []
 
-        params = { "text": text,
+        params = {"text": text,
                    "entity_types": api_entity_types,
                    "project_ids": project_ids,
-                   "max_results": limit }
+                   "max_results": limit}
 
         record = self._call_rpc("query_display_name_cache", params)
         result = self._parse_records(record)[0]
@@ -2937,12 +2937,12 @@ class Shotgun(object):
         if not isinstance(entity_fields, dict):
             raise ValueError("entity_fields parameter must be a dictionary")
 
-        params = { "type": entity_type,
+        params = {"type": entity_type,
                    "id": entity_id,
                    "max_id": max_id,
                    "min_id": min_id,
                    "limit": limit,
-                   "entity_fields": entity_fields }
+                   "entity_fields": entity_fields}
 
         record = self._call_rpc("activity_stream", params)
         result = self._parse_records(record)[0]
@@ -2962,7 +2962,7 @@ class Shotgun(object):
         return self._call_rpc(
             "nav_expand",
             {
-                "path":path,
+                "path": path,
                 "seed_entity_field": seed_entity_field,
                 "entity_fields": entity_fields
             }
@@ -2981,9 +2981,9 @@ class Shotgun(object):
         return self._call_rpc(
                 "nav_search",
                 {
-                    "root_path":root_path,
+                    "root_path": root_path,
                     "seed_entity_field": seed_entity_field,
-                    "search_criteria": { "search_string": search_string }
+                    "search_criteria": {"search_string": search_string}
                 }
         )
 
@@ -3003,7 +3003,7 @@ class Shotgun(object):
                 {
                     "root_path": root_path,
                     "seed_entity_field": seed_entity_field,
-                    "search_criteria": {"entity": entity }
+                    "search_criteria": {"entity": entity}
                 }
         )
 
@@ -3102,8 +3102,8 @@ class Shotgun(object):
         encoded_payload = self._encode_payload(payload)
 
         req_headers = {
-            "content-type" : "application/json; charset=utf-8",
-            "connection" : "keep-alive"
+            "content-type": "application/json; charset=utf-8",
+            "connection": "keep-alive"
         }
         http_status, resp_headers, body = self._make_call("POST",
             self.config.api_path, encoded_payload, req_headers)
@@ -3136,8 +3136,8 @@ class Shotgun(object):
         # Used to authenticate HumanUser credentials
         if self.config.user_login and self.config.user_password:
             auth_params = {
-                "user_login" : str(self.config.user_login),
-                "user_password" : str(self.config.user_password),
+                "user_login": str(self.config.user_login),
+                "user_password": str(self.config.user_password),
             }
             if self.config.auth_token:
                 auth_params["auth_token"] = str(self.config.auth_token)
@@ -3145,8 +3145,8 @@ class Shotgun(object):
         # Use script name instead
         elif self.config.script_name and self.config.api_key:
             auth_params = {
-                "script_name" : str(self.config.script_name),
-                "script_key" : str(self.config.api_key),
+                "script_name": str(self.config.script_name),
+                "script_key": str(self.config.api_key),
             }
 
         # Authenticate using session_id
@@ -3155,7 +3155,7 @@ class Shotgun(object):
                 raise ShotgunError("Session token based authentication requires server version "
                     "5.3.0 or higher, server is %s" % (self.server_caps.version,))
 
-            auth_params = {"session_token" : str(self.config.session_token)}
+            auth_params = {"session_token": str(self.config.session_token)}
 
             # Request server side to raise exception for expired sessions.
             # This was added in as part of Shotgun 5.4.4
@@ -3208,8 +3208,8 @@ class Shotgun(object):
             call_params.append(params)
 
         return {
-            "method_name" : method,
-            "params" : call_params
+            "method_name": method,
+            "params": call_params
         }
 
     def _encode_payload(self, payload):
@@ -3613,8 +3613,8 @@ class Shotgun(object):
         # curl "https://foo.com/upload/get_thumbnail_url?entity_type=Version&entity_id=1"
         # 1
         # /files/0000/0000/0012/232/shot_thumb.jpg.jpg
-        entity_info = {'e_type':urllib.parse.quote(entity_type),
-                       'e_id':urllib.parse.quote(str(entity_id))}
+        entity_info = {'e_type': urllib.parse.quote(entity_type),
+                       'e_id': urllib.parse.quote(str(entity_id))}
         url = ("/upload/get_thumbnail_url?" +
                 "entity_type=%(e_type)s&entity_id=%(e_id)s" % entity_info)
 
@@ -3658,7 +3658,7 @@ class Shotgun(object):
 
         e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
         """
-        return dict([(k, {key_name: v}) for (k,v) in (d or {}).items()])
+        return dict([(k, {key_name: v}) for (k, v) in (d or {}).items()])
 
     def _upload_file_to_storage(self, path, storage_url):
         """
@@ -3674,7 +3674,7 @@ class Shotgun(object):
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or "application/octet-stream"
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-            self._upload_data_to_storage(fd, content_type, file_size, storage_url )
+            self._upload_data_to_storage(fd, content_type, file_size, storage_url)
         finally:
             fd.close()
 
@@ -3703,7 +3703,7 @@ class Shotgun(object):
                 data = fd.read(chunk_size)
                 bytes_read += len(data)
                 part_url = self._get_upload_part_link(upload_info, filename, part_number)
-                etags.append(self._upload_data_to_storage(data, content_type, len(data), part_url ))
+                etags.append(self._upload_data_to_storage(data, content_type, len(data), part_url))
                 part_number += 1
 
             self._complete_multipart_upload(upload_info, filename, etags)
@@ -3950,7 +3950,7 @@ def _translate_filters_dict(sg_filter):
     else:
         raise ShotgunError("Invalid filter_operator %s" % filter_operator)
 
-    if not isinstance(sg_filter["filters"], (list,tuple)):
+    if not isinstance(sg_filter["filters"], (list, tuple)):
         raise ShotgunError("Invalid filters, expected a list or a tuple, got %s"
                            % sg_filter["filters"])
 
@@ -3962,7 +3962,7 @@ def _translate_filters_list(filters):
     conditions = []
 
     for sg_filter in filters:
-        if isinstance(sg_filter, (list,tuple)):
+        if isinstance(sg_filter, (list, tuple)):
             conditions.append(_translate_filters_simple(sg_filter))
         elif isinstance(sg_filter, dict):
             conditions.append(_translate_filters_dict(sg_filter))

@@ -1,7 +1,7 @@
 #! /opt/local/bin/python
 # ----------------------------------------------------------------------------
 #  SG_TIMEZONE module
-#  this is rolled into the this shotgun api file to avoid having to require 
+#  this is rolled into the this shotgun api file to avoid having to require
 #  current users of api2 to install new modules and modify PYTHONPATH info.
 # ----------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ class SgTimezone(object):
         DSTOFFSET = STDOFFSET
     DSTDIFF = DSTOFFSET - STDOFFSET
     
-    def __init__(self): 
+    def __init__(self):
         self.utc = UTC()
         self.local = LocalTimezone()
 

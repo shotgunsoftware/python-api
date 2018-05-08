@@ -1,12 +1,12 @@
 """Dummy data returned for schema functions when mocking the server.
 
-NOTE: Mostly abbreviated version of real data returned from the server. 
+NOTE: Mostly abbreviated version of real data returned from the server.
 """
 
 schema_entity_read = {'Version': {'name': {'editable': False, 'value': 'Version'}}}
 
 schema_read = {
-    'Version' : {'code': {'data_type': {'editable': False, 'value': 'text'},
+    'Version': {'code': {'data_type': {'editable': False, 'value': 'text'},
            'description': {'editable': True, 'value': ''},
            'editable': {'editable': False, 'value': True},
            'entity_type': {'editable': False, 'value': 'Version'},

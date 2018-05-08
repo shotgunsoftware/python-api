@@ -55,46 +55,46 @@ class TestShotgunClient(base.MockTestBase):
         '''test_detect_server_caps tests that ServerCapabilities object is made
         with appropriate settings for given server version.'''
         #has paging is tested else where.
-        server_info = { "version" : [9,9,9] }
+        server_info = {"version": [9, 9, 9]}
         self._mock_http(server_info)
         # ensrue the server caps is re-read
         self.sg._server_caps = None
         self.assertTrue(self.sg.server_caps is not None)
         self.assertFalse(self.sg.server_caps.is_dev)
-        self.assertEqual((9,9,9), self.sg.server_caps.version)
+        self.assertEqual((9, 9, 9), self.sg.server_caps.version)
         self.assertTrue(self.server_url.endswith(self.sg.server_caps.host))
-        self.assertTrue(str(self.sg.server_caps).startswith( "ServerCapabilities"))
+        self.assertTrue(str(self.sg.server_caps).startswith("ServerCapabilities"))
         self.assertEqual(server_info, self.sg.server_info)
 
-        self._mock_http({ "version" : [9,9,9, "Dev"] })
+        self._mock_http({"version": [9, 9, 9, "Dev"]})
         self.sg._server_caps = None
         self.assertTrue(self.sg.server_caps.is_dev)
 
 
     def test_server_version_json(self):
         '''test_server_version_json tests expected versions for json support.'''
-        sc = ServerCapabilities("foo", {"version" : (2,4,0)})
+        sc = ServerCapabilities("foo", {"version": (2, 4, 0)})
 
-        sc.version = (2,3,99)
+        sc.version = (2, 3, 99)
         self.assertRaises(api.ShotgunError, sc._ensure_json_supported)
         self.assertRaises(api.ShotgunError, ServerCapabilities, "foo",
-            {"version" : (2,2,0)})
+            {"version": (2, 2, 0)})
 
-        sc.version = (0,0,0)
+        sc.version = (0, 0, 0)
         self.assertRaises(api.ShotgunError, sc._ensure_json_supported)
 
-        sc.version = (2,4,0)
+        sc.version = (2, 4, 0)
         sc._ensure_json_supported()
 
-        sc.version = (2,5,0)
+        sc.version = (2, 5, 0)
         sc._ensure_json_supported()
 
     def test_extra_auth_params(self):
         """test_extra_auth_params tests provided auth_params are included in request"""
         # ok for the mock server to just return an error, we want to look at
         # what's in the request
-        self._mock_http({ "message":"Go BANG",
-                          "exception":True })
+        self._mock_http({"message": "Go BANG",
+                          "exception": True})
 
         def auth_args():
             args = self.sg._http_request.call_args[0]
@@ -106,7 +106,7 @@ class TestShotgunClient(base.MockTestBase):
         self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
         self.assertTrue("product" not in auth_args())
 
-        self.sg.config.extra_auth_params = {"product":"rv"}
+        self.sg.config.extra_auth_params = {"product": "rv"}
         self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
         self.assertEqual("rv", auth_args()["product"])
 
@@ -114,8 +114,8 @@ class TestShotgunClient(base.MockTestBase):
         """test_session_uuid tests session UUID is included in request"""
         #ok for the mock server to just return an error, we want to look at
         #whats in the request
-        self._mock_http({ "message":"Go BANG",
-                          "exception":True })
+        self._mock_http({"message": "Go BANG",
+                          "exception": True})
 
         def auth_args():
             args = self.sg._http_request.call_args[0]
@@ -138,7 +138,7 @@ class TestShotgunClient(base.MockTestBase):
         password = self.human_password
 
         self.assertRaises(ValueError, api.Shotgun, None, None, None, connect=False)
-        self.assertRaises(ValueError, api.Shotgun, "file://foo.com",None,None, connect=False)
+        self.assertRaises(ValueError, api.Shotgun, "file://foo.com", None, None, connect=False)
 
         self.assertEqual("/api3/json", self.sg.config.api_path)
 
@@ -160,7 +160,7 @@ class TestShotgunClient(base.MockTestBase):
 
         self.sg = api.Shotgun(auth_url, "foo", "bar", connect=False)
         self._setup_mock()
-        self._mock_http({ 'version': [2, 4, 0, 'Dev'] })
+        self._mock_http({'version': [2, 4, 0, 'Dev']})
 
         self.sg.info()
 
@@ -180,7 +180,7 @@ class TestShotgunClient(base.MockTestBase):
         (_, _, _, headers) = args
         ssl_validate_lut = {True: "no-validate", False: "validate"}
         expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s)" % (
-                        api.__version__, 
+                        api.__version__,
                         client_caps.py_version,
                         client_caps.platform.capitalize(),
                         client_caps.ssl_version,
@@ -194,7 +194,7 @@ class TestShotgunClient(base.MockTestBase):
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
         expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s); test-agent" % (
-                        api.__version__, 
+                        api.__version__,
                         client_caps.py_version,
                         client_caps.platform.capitalize(),
                         client_caps.ssl_version,
@@ -208,7 +208,7 @@ class TestShotgunClient(base.MockTestBase):
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
         expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s)" % (
-                        api.__version__, 
+                        api.__version__,
                         client_caps.py_version,
                         client_caps.platform.capitalize(),
                         client_caps.ssl_version,
@@ -237,7 +237,7 @@ class TestShotgunClient(base.MockTestBase):
     def test_http_error(self):
         """HTTP error raised and not retried."""
 
-        self._mock_http( "big old error string",
+        self._mock_http("big old error string",
                        status=(500, "Internal Server Error"))
 
         self.assertRaises(api.ProtocolError, self.sg.info)
@@ -248,8 +248,8 @@ class TestShotgunClient(base.MockTestBase):
     def test_rpc_error(self):
         """RPC error transformed into Python error"""
 
-        self._mock_http({ "message":"Go BANG",
-                          "exception":True })
+        self._mock_http({"message": "Go BANG",
+                          "exception": True})
 
         self.assertRaises(api.Fault, self.sg.info)
 
@@ -261,43 +261,43 @@ class TestShotgunClient(base.MockTestBase):
     def test_call_rpc(self):
         """Named rpc method is called and results handled"""
 
-        d = { "no-results" : "data without a results key" }
+        d = {"no-results": "data without a results key"}
         self._mock_http(d)
         rv = self.sg._call_rpc("no-results", None)
         self._assert_http_method("no-results", None)
         expected = "rpc response without results key is returned as-is"
-        self.assertEqual(d, rv, expected )
+        self.assertEqual(d, rv, expected)
 
-        d = { "results" : {"singleton" : "result"} }
+        d = {"results": {"singleton": "result"}}
         self._mock_http(d)
         rv = self.sg._call_rpc("singleton", None)
         self._assert_http_method("singleton", None)
         expected = "rpc response with singleton result"
-        self.assertEqual(d["results"], rv, expected )
+        self.assertEqual(d["results"], rv, expected)
 
-        d = { "results" : ["foo", "bar"] }
-        a = {"some" : "args"}
+        d = {"results": ["foo", "bar"]}
+        a = {"some": "args"}
         self._mock_http(d)
         rv = self.sg._call_rpc("list", a)
         self._assert_http_method("list", a)
         expected = "rpc response with list result"
-        self.assertEqual(d["results"], rv, expected )
+        self.assertEqual(d["results"], rv, expected)
 
-        d = { "results" : ["foo", "bar"] }
-        a = {"some" : "args"}
+        d = {"results": ["foo", "bar"]}
+        a = {"some": "args"}
         self._mock_http(d)
         rv = self.sg._call_rpc("list-first", a, first=True)
         self._assert_http_method("list-first", a)
         expected = "rpc response with list result, first item"
-        self.assertEqual(d["results"][0], rv, expected )
+        self.assertEqual(d["results"][0], rv, expected)
 
         # Test unicode mixed with utf-8 as reported in Ticket #17959
-        d = { "results" : ["foo", "bar"] }
-        a = { "utf_str": "\xe2\x88\x9a", "unicode_str": "\xe2\x88\x9a".decode("utf-8") }
+        d = {"results": ["foo", "bar"]}
+        a = {"utf_str": "\xe2\x88\x9a", "unicode_str": "\xe2\x88\x9a".decode("utf-8")}
         self._mock_http(d)
         rv = self.sg._call_rpc("list", a)
         expected = "rpc response with list result"
-        self.assertEqual(d["results"], rv, expected )
+        self.assertEqual(d["results"], rv, expected)
 
 
 
@@ -310,15 +310,15 @@ class TestShotgunClient(base.MockTestBase):
         utc_now = datetime.datetime.utcfromtimestamp(timestamp).replace(
             microsecond=0)
         local = {
-            "date" : now.strftime('%Y-%m-%d'),
-            "datetime" : now,
-            "time" : now.time()
+            "date": now.strftime('%Y-%m-%d'),
+            "datetime": now,
+            "time": now.time()
         }
         #date will still be the local date, because they are not transformed
         utc = {
-            "date" : now.strftime('%Y-%m-%d'),
+            "date": now.strftime('%Y-%m-%d'),
             "datetime": utc_now,
-            "time" : utc_now.time()
+            "time": utc_now.time()
         }
 
         def _datetime(s, f):
@@ -360,13 +360,13 @@ class TestShotgunClient(base.MockTestBase):
         """Request body is encoded as JSON"""
 
         d = {
-            "this is " : "my data \u00E0"
+            "this is ": "my data \u00E0"
         }
         j = self.sg._encode_payload(d)
         self.assertTrue(isinstance(j, bytes))
 
         d = {
-            "this is " : "my data"
+            "this is ": "my data"
         }
         j = self.sg._encode_payload(d)
         self.assertTrue(isinstance(j, bytes))
@@ -381,10 +381,10 @@ class TestShotgunClient(base.MockTestBase):
         """HTTP Response is decoded as JSON or text"""
 
         headers = {
-            "content-type" : "application/json;charset=utf-8"
+            "content-type": "application/json;charset=utf-8"
         }
         d = {
-            "this is " : data
+            "this is ": data
         }
         sg = api.Shotgun(self.config.server_url,
                          self.config.script_name,
@@ -415,11 +415,11 @@ class TestShotgunClient(base.MockTestBase):
         elif system == 'linux':
             local_path_field = "local_path_linux"
         orig = {
-            "type" : "FakeAsset",
-            "id" : 1234,
-            "image" : "blah",
-            "foo" : {
-                "link_type" : "local",
+            "type": "FakeAsset",
+            "id": 1234,
+            "image": "blah",
+            "foo": {
+                "link_type": "local",
                 local_path_field: "/foo/bar.jpg",
             }
         }
@@ -445,7 +445,7 @@ class TestShotgunClient(base.MockTestBase):
         #the thumbnail service returns a two line
         #test response success code on line 1, data on line 2
         resp = "1\n/files/0000/0000/0012/232/shot_thumb.jpg"
-        self._mock_http(resp, headers={"content-type" : "text/plain"})
+        self._mock_http(resp, headers={"content-type": "text/plain"})
         self.sg.config.scheme = "http"
         self.sg.config.server = "foo.com"
 
@@ -462,12 +462,12 @@ class TestShotgunClient(base.MockTestBase):
             path, "thumbnail url called with correct args")
 
         resp = "0\nSome Error"
-        self._mock_http(resp, headers={"content-type" : "text/plain"})
+        self._mock_http(resp, headers={"content-type": "text/plain"})
         self.assertRaises(api.ShotgunError, self.sg._build_thumb_url,
             "FakeAsset", 456)
 
         resp = "99\nSome Error"
-        self._mock_http(resp, headers={"content-type" : "text/plain"})
+        self._mock_http(resp, headers={"content-type": "text/plain"})
         self.assertRaises(RuntimeError, self.sg._build_thumb_url,
             "FakeAsset", 456)
 

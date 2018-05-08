@@ -52,26 +52,26 @@ class TestBase(unittest.TestCase):
                                   self.config.script_name,
                                   self.config.api_key,
                                   http_proxy=self.config.http_proxy,
-                                  connect=self.connect )
+                                  connect=self.connect)
         elif auth_mode == 'HumanUser':
             self.sg = api.Shotgun(self.config.server_url,
                                   login=self.human_login,
                                   password=self.human_password,
                                   http_proxy=self.config.http_proxy,
-                                  connect=self.connect )
+                                  connect=self.connect)
         elif auth_mode == 'SessionToken':
-            # first make an instance based on script key/name so 
+            # first make an instance based on script key/name so
             # we can generate a session token
             sg = api.Shotgun(self.config.server_url,
                              self.config.script_name,
                              self.config.api_key,
-                             http_proxy=self.config.http_proxy )
+                             http_proxy=self.config.http_proxy)
             self.session_token = sg.get_session_token()
             # now log in using session token
             self.sg = api.Shotgun(self.config.server_url,
                                   session_token=self.session_token,
                                   http_proxy=self.config.http_proxy,
-                                  connect=self.connect )
+                                  connect=self.connect)
         else:
             raise ValueError("Unknown value for auth_mode: %s" % auth_mode)
 
@@ -112,7 +112,7 @@ class MockTestBase(TestBase):
 
         #create the server caps directly to say we have the correct version
         self.sg._server_caps = ServerCapabilities(self.sg.config.server,
-                                                  {"version" : [2,4,0]})
+                                                  {"version": [2, 4, 0]})
 
 
     def _mock_http(self, data, headers=None, status=None):
@@ -128,13 +128,13 @@ class MockTestBase(TestBase):
         if not isinstance(data, str):
             data = json.dumps(data, ensure_ascii=False)
 
-        resp_headers = { 'cache-control': 'no-cache',
+        resp_headers = {'cache-control': 'no-cache',
                          'connection': 'close',
-                         'content-length': (data and str(len(data))) or 0 ,
+                         'content-length': (data and str(len(data))) or 0,
                          'content-type': 'application/json; charset=utf-8',
                          'date': 'Wed, 13 Apr 2011 04:18:58 GMT',
                          'server': 'Apache/2.2.3 (CentOS)',
-                         'status': '200 OK' }
+                         'status': '200 OK'}
         if headers:
             resp_headers.update(headers)
 
@@ -166,27 +166,27 @@ class MockTestBase(TestBase):
 
 
     def _setup_mock_data(self):
-        self.human_user = { 'id':1,
-                            'login':self.config.human_login,
-                            'type':'HumanUser' }
-        self.project    = { 'id':2,
-                            'name':self.config.project_name,
-                            'type':'Project' }
-        self.shot       = { 'id':3,
-                            'code':self.config.shot_code,
-                            'type':'Shot' }
-        self.asset      = { 'id':4,
-                            'code':self.config.asset_code,
-                            'type':'Asset' }
-        self.version    = { 'id':5,
-                            'code':self.config.version_code,
-                            'type':'Version' }
-        self.ticket     = { 'id':6,
-                            'title':self.config.ticket_title,
-                            'type':'Ticket' }
-        self.playlist   = { 'id':7,
-                            'code':self.config.playlist_code,
-                            'type':'Playlist'}
+        self.human_user = {'id': 1,
+                            'login': self.config.human_login,
+                            'type': 'HumanUser'}
+        self.project    = {'id': 2,
+                            'name': self.config.project_name,
+                            'type': 'Project'}
+        self.shot       = {'id': 3,
+                            'code': self.config.shot_code,
+                            'type': 'Shot'}
+        self.asset      = {'id': 4,
+                            'code': self.config.asset_code,
+                            'type': 'Asset'}
+        self.version    = {'id': 5,
+                            'code': self.config.version_code,
+                            'type': 'Version'}
+        self.ticket     = {'id': 6,
+                            'title': self.config.ticket_title,
+                            'type': 'Ticket'}
+        self.playlist   = {'id': 7,
+                            'code': self.config.playlist_code,
+                            'type': 'Playlist'}
 
 class LiveTestBase(TestBase):
     '''Test base for tests relying on connection to server.'''
@@ -203,46 +203,46 @@ class LiveTestBase(TestBase):
             self.server_address = self.sg.server_caps.host
 
     def _setup_db(self, config):
-        data = {'name':self.config.project_name}
+        data = {'name': self.config.project_name}
         self.project = _find_or_create_entity(self.sg, 'Project', data)
 
-        data = {'name':self.config.human_name,
-                'login':self.config.human_login,
-                'password_proxy':self.config.human_password}
+        data = {'name': self.config.human_name,
+                'login': self.config.human_login,
+                'password_proxy': self.config.human_password}
         if self.sg_version >= (3, 0, 0):
             data['locked_until'] = None
 
 
         self.human_user = _find_or_create_entity(self.sg, 'HumanUser', data)
 
-        data = {'code':self.config.asset_code,
-                'project':self.project}
+        data = {'code': self.config.asset_code,
+                'project': self.project}
         keys = ['code']
         self.asset = _find_or_create_entity(self.sg, 'Asset', data, keys)
 
-        data = {'project':self.project,
-                'code':self.config.version_code,
-                'entity':self.asset,
-                'user':self.human_user,
+        data = {'project': self.project,
+                'code': self.config.version_code,
+                'entity': self.asset,
+                'user': self.human_user,
                 'sg_frames_aspect_ratio': 13.3,
                 'frame_count': 33}
-        keys = ['code','project']
+        keys = ['code', 'project']
         self.version = _find_or_create_entity(self.sg, 'Version', data, keys)
 
-        keys = ['code','project']
-        data = {'code':self.config.shot_code,
-                'project':self.project}
+        keys = ['code', 'project']
+        data = {'code': self.config.shot_code,
+                'project': self.project}
         self.shot = _find_or_create_entity(self.sg, 'Shot', data, keys)
 
-        keys = ['project','user']
-        data = {'project':self.project,
-                'user':self.human_user,
-                'content':'anything'}
+        keys = ['project', 'user']
+        data = {'project': self.project,
+                'user': self.human_user,
+                'content': 'anything'}
         self.note = _find_or_create_entity(self.sg, 'Note', data, keys)
 
-        keys = ['code','project']
-        data = {'project':self.project,
-                'code':self.config.playlist_code}
+        keys = ['code', 'project']
+        data = {'project': self.project,
+                'code': self.config.playlist_code}
         self.playlist = _find_or_create_entity(self.sg, 'Playlist', data, keys)
 
         keys = ['code', 'entity_type']
@@ -251,26 +251,26 @@ class LiveTestBase(TestBase):
         self.step = _find_or_create_entity(self.sg, 'Step', data, keys)
 
         keys = ['project', 'entity', 'content']
-        data = {'project':self.project,
-                'entity':self.asset,
-                'content':self.config.task_content,
-                'color':'Black',
-                'due_date':'1968-10-13',
+        data = {'project': self.project,
+                'entity': self.asset,
+                'content': self.config.task_content,
+                'color': 'Black',
+                'due_date': '1968-10-13',
                 'task_assignees': [self.human_user],
                 'sg_status_list': 'ip'}
         self.task =  _find_or_create_entity(self.sg, 'Task', data, keys)
 
-        data = {'project':self.project,
-                'title':self.config.ticket_title,
+        data = {'project': self.project,
+                'title': self.config.ticket_title,
                 'sg_priority': '3'}
-        keys = ['title','project', 'sg_priority']
+        keys = ['title', 'project', 'sg_priority']
         self.ticket = _find_or_create_entity(self.sg, 'Ticket', data, keys)
 
         keys = ['code']
-        data = {'code':'api wrapper test storage',
-                'mac_path':'nowhere',
-                'windows_path':'nowhere',
-                'linux_path':'nowhere'}
+        data = {'code': 'api wrapper test storage',
+                'mac_path': 'nowhere',
+                'windows_path': 'nowhere',
+                'linux_path': 'nowhere'}
         self.local_storage = _find_or_create_entity(self.sg, 'LocalStorage', data, keys)
 
 
@@ -301,14 +301,14 @@ class SgTestConfig(object):
             # configuration naming of "SG_{KEY}". Default is None.
             value = os.environ.get('SG_%s' % (str(key).upper()))
             if key in ['mock']:
-                value = (value == None) or (str(value).lower() in ['true','1'])
+                value = (value == None) or (str(value).lower() in ['true', '1'])
             setattr(self, key, value)
 
     def config_keys(self):
         return [
             'api_key', 'asset_code', 'http_proxy', 'human_login', 'human_name',
-            'human_password', 'mock', 'project_name', 'script_name', 
-            'server_url', 'session_uuid', 'shot_code', 'task_content', 
+            'human_password', 'mock', 'project_name', 'script_name',
+            'server_url', 'session_uuid', 'shot_code', 'task_content',
             'version_code', 'playlist_code'
         ]
 
