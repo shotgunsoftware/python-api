@@ -34,7 +34,7 @@ import http.cookiejar    # used for attachment upload
 import io    # used for attachment upload
 import datetime
 import logging
-import email    # used for attachment upload
+from email.generator import _make_boundary as make_boundary   # used for attachment upload
 import os
 import re
 import copy
@@ -3900,7 +3900,7 @@ class FormPostHandler(urllib.request.BaseHandler):
 
     def encode(self, params, files, boundary=None, buffer=None):
         if boundary is None:
-            boundary = email.choose_boundary()
+            boundary = make_boundary()
         if buffer is None:
             buffer = io.StringIO()
         for (key, value) in params:
