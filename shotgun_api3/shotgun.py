@@ -567,8 +567,8 @@ class Shotgun(object):
         # and auth header
         auth, self.config.server = urllib.parse.splituser(urllib.parse.urlsplit(base_url).netloc)
         if auth:
-            auth = base64.encodestring(urllib.parse.unquote(auth))
-            self.config.authorization = "Basic " + auth.strip()
+            auth = base64.encodestring(urllib.parse.unquote(auth).encode())
+            self.config.authorization = b"Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
         if http_proxy:
@@ -3075,6 +3075,19 @@ class Shotgun(object):
     # ========================================================================
     # RPC Functions
 
+    def _process_str(self, _s):
+        if isinstance(_s, dict):
+            return self._process_dict(_s)
+        elif isinstance(_s, bytes):
+            return _s.decode()
+        return _s
+
+    def _process_dict(self, _d):
+        if not isinstance(_d, dict):
+            return _d
+
+        return {self._process_str(k): self._process_str(v) for k, v in _d.items()}
+
     def _call_rpc(self, method, params, include_auth_params=True, first=False):
         """
         Call the specified method on the Shotgun Server sending the supplied payload.
@@ -3109,12 +3122,12 @@ class Shotgun(object):
         response = self._transform_inbound(response)
 
         if not isinstance(response, dict) or "results" not in response:
-            return response
+            return self._process_dict(response)
 
         results = response.get("results")
         if first and isinstance(results, list):
-            return results[0]
-        return results
+            return self._process_dict(results[0])
+        return self._process_dict(results)
 
     def _auth_params(self):
         """
@@ -3207,7 +3220,6 @@ class Shotgun(object):
         requires it. The unicode string is then encoded as 'utf-8' as it must
         be in a single byte encoding to go over the wire.
         """
-
         wire = json.dumps(payload, ensure_ascii=False)
         if isinstance(wire, str):
             return wire.encode("utf-8")
@@ -3371,7 +3383,7 @@ class Shotgun(object):
                     v = _decode_list(v)
                 newdict[k] = v
             return newdict
-        return json.loads(body, object_hook=_decode_dict)
+        return json.loads(body.decode(), object_hook=_decode_dict)
 
 
     def _response_errors(self, sg_response):
@@ -3420,6 +3432,9 @@ class Shotgun(object):
                 for k, v in data.items()
             )
 
+        # if isinstance(data, str):
+        #     return data.encode()
+
         return visitor(data)
 
     def _transform_outbound(self, data):
@@ -3459,10 +3474,6 @@ class Shotgun(object):
                 if _change_tz:
                     value = _change_tz(value)
                 return value.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-            if isinstance(value, str):
-                # Convert strings to unicode
-                return value.decode("utf-8")
 
             return value
 

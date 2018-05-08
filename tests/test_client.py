@@ -147,7 +147,7 @@ class TestShotgunClient(base.MockTestBase):
         # login:password@domain
         auth_url = "%s%s@%s" % (self.uri_prefix, login_password, self.domain)
         sg = api.Shotgun(auth_url, None, None, connect=False)
-        expected = "Basic " + base64.encodestring(login_password).strip()
+        expected = b"Basic " + base64.encodestring(login_password.encode()).strip()
         self.assertEqual(expected, sg.config.authorization)
 
     def test_authorization(self):
@@ -168,7 +168,7 @@ class TestShotgunClient(base.MockTestBase):
         verb, path, body, headers = args
 
         expected = "Basic " + base64.encodestring(login_password).strip()
-        self.assertEqual(expected, headers.get("Authorization"))
+        self.assertEqual(expected.encode(), headers.get("Authorization"))
 
     def test_user_agent(self):
         """User-Agent passed to server"""
@@ -372,7 +372,7 @@ class TestShotgunClient(base.MockTestBase):
         self.assertTrue(isinstance(j, bytes))
 
     def test_decode_response_ascii(self):
-        self._assert_decode_resonse(True, "my data \u00E0".encode('utf8'))
+        self._assert_decode_resonse(True, "my data \u00E0".encode('utf8').decode())
 
     def test_decode_response_unicode(self):
         self._assert_decode_resonse(False, "my data \u00E0")
@@ -393,7 +393,7 @@ class TestShotgunClient(base.MockTestBase):
                          ensure_ascii = ensure_ascii,
                          connect=False)
 
-        j = json.dumps(d, ensure_ascii=ensure_ascii, encoding="utf-8")
+        j = json.dumps(d, ensure_ascii=ensure_ascii)
         self.assertEqual(d, sg._decode_response(headers, j))
 
         headers["content-type"] = "text/javascript"

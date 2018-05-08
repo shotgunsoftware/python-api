@@ -398,7 +398,7 @@ def _decompressContent(response, new_content):
         encoding = response.get('content-encoding', None)
         if encoding in ['gzip', 'deflate']:
             if encoding == 'gzip':
-                content = gzip.GzipFile(fileobj=io.StringIO(new_content)).read()
+                content = gzip.GzipFile(fileobj=io.BytesIO(new_content)).read()
             if encoding == 'deflate':
                 content = zlib.decompress(content)
             response['content-length'] = str(len(content))
@@ -942,7 +942,7 @@ class HTTPSConnectionWithTimeout(http.client.HTTPSConnection):
                  ca_certs=None, disable_ssl_certificate_validation=False):
         http.client.HTTPSConnection.__init__(self, host, port=port,
                                          key_file=key_file,
-                                         cert_file=cert_file, strict=strict)
+                                         cert_file=cert_file)
         self.timeout = timeout
         self.proxy_info = proxy_info
         if ca_certs is None:

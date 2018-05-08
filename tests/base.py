@@ -126,7 +126,7 @@ class MockTestBase(TestBase):
             return
 
         if not isinstance(data, str):
-            data = json.dumps(data, ensure_ascii=False, encoding="utf-8")
+            data = json.dumps(data, ensure_ascii=False)
 
         resp_headers = { 'cache-control': 'no-cache',
                          'connection': 'close',
@@ -149,8 +149,8 @@ class MockTestBase(TestBase):
         """Asserts _http_request is called with the method and params."""
         args, _ = self.sg._http_request.call_args
         arg_body = args[2]
-        assert isinstance(arg_body, str)
-        arg_body = json.loads(arg_body)
+        assert isinstance(arg_body, bytes)
+        arg_body = json.loads(arg_body.decode())
 
         arg_params = arg_body.get("params")
 
