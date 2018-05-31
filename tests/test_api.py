@@ -651,6 +651,10 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(work_schedule, resp)
 
     def test_preferences_read(self):
+        # Only run the tests on a server with the feature.
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (7, 10, 0):
+            return
+
         # all prefs
         resp = self.sg.preferences_read()
 
