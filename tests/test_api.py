@@ -650,6 +650,44 @@ class TestShotgunApi(base.LiveTestBase):
         work_schedule['2012-01-04'] = {"reason": "USER_EXCEPTION", "working": False, "description": "Artist Holiday"}
         self.assertEqual(work_schedule, resp)
 
+    def test_preferences_read(self):
+        # all prefs
+        resp = self.sg.preferences_read()
+
+        expected = {
+            'date_component_order': 'month_day',
+            'format_currency_fields_decimal_options': '$1,000.99',
+            'format_currency_fields_display_dollar_sign': False,
+            'format_currency_fields_negative_options': '- $1,000',
+            'format_date_fields': '08/04/22 OR 04/08/22 (depending on the Month order preference)',
+            'format_float_fields': '9,999.99',
+            'format_float_fields_rounding': '9.999999',
+            'format_footage_fields': '10-05',
+            'format_number_fields': '1,000',
+            'format_time_hour_fields': '12 hour',
+            'support_local_storage': False
+        }
+        self.assertEqual(expected, resp)
+
+        # all filtered
+        resp = self.sg.preferences_read(['date_component_order', 'support_local_storage'])
+
+        expected = {
+            'date_component_order': 'month_day',
+            'support_local_storage': False
+        }
+        self.assertEqual(expected, resp)
+
+        # all filtered with invalid pref
+        resp = self.sg.preferences_read(['date_component_order', 'support_local_storage', 'email_notifications'])
+
+        expected = {
+            'date_component_order': 'month_day',
+            'support_local_storage': False
+        }
+        self.assertEqual(expected, resp)
+
+
 class TestDataTypes(base.LiveTestBase):
     '''Test fields representing the different data types mapped on the server side.
 
@@ -1543,18 +1581,18 @@ class TestFollow(base.LiveTestBase):
             [["id","is",self.task["id"]]],
             ["project.Project.id"])["project.Project.id"]
         project_count = 2 if shot_project_id == task_project_id else 1
-        result = self.sg.following(self.human_user, 
+        result = self.sg.following(self.human_user,
             project={"type":"Project", "id":shot_project_id})
         self.assertEqual( project_count, len(result) )
-        result = self.sg.following(self.human_user, 
+        result = self.sg.following(self.human_user,
             project={"type":"Project", "id":task_project_id})
         self.assertEqual( project_count, len(result) )
-        result = self.sg.following(self.human_user, 
-            project={"type":"Project", "id":shot_project_id}, 
+        result = self.sg.following(self.human_user,
+            project={"type":"Project", "id":shot_project_id},
             entity_type="Shot")
         self.assertEqual( 1, len(result) )
-        result = self.sg.following(self.human_user, 
-            project={"type":"Project", "id":task_project_id}, 
+        result = self.sg.following(self.human_user,
+            project={"type":"Project", "id":task_project_id},
             entity_type="Task")
         self.assertEqual( 1, len(result) )
 
@@ -1701,7 +1739,7 @@ class TestErrors(base.TestBase):
         path = os.path.abspath(os.path.expanduser(os.path.join(this_dir,"empty.txt")))
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload, 'Version', 123, path)
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_thumbnail, 'Version', 123, path)
-        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_filmstrip_thumbnail, 'Version', 
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_filmstrip_thumbnail, 'Version',
                           123, path)
 
     def test_upload_missing_file(self):
@@ -1711,7 +1749,7 @@ class TestErrors(base.TestBase):
         path = "/path/to/nowhere/foo.txt"
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload, 'Version', 123, path)
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_thumbnail, 'Version', 123, path)
-        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_filmstrip_thumbnail, 'Version', 
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_filmstrip_thumbnail, 'Version',
                           123, path)
 
 #    def test_malformed_response(self):
@@ -2525,7 +2563,7 @@ def _has_unicode(data):
 
 def _get_path(url):
     """Returns path component of a url without the sheme, host, query, anchor, or any other
-    additional elements. 
+    additional elements.
     For example, the url "https://foo.shotgunstudio.com/page/2128#Shot_1190_sr10101_034"
     returns "/page/2128"
     """
