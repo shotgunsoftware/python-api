@@ -135,6 +135,13 @@ class UserCredentialsNotAllowedForSSOAuthenticationFault(Fault):
     """
     pass
 
+class UserCredentialsNotAllowedForOxygenAuthenticationFault(Fault):
+    """
+    Exception when the server is configured to use Oxygen. It is not possible to use
+    a username/password pair to authenticate on such server.
+    """
+    pass
+
 # ----------------------------------------------------------------------------
 # API
 
@@ -3384,6 +3391,7 @@ class Shotgun(object):
         ERR_AUTH = 102 # error code for authentication related problems
         ERR_2FA  = 106 # error code when 2FA authentication is required but no 2FA token provided.
         ERR_SSO  = 108 # error code when SSO is activated on the site, preventing the use of username/password for authentication.
+        ERR_OXYG = 110 # error code when Oxygen is activated on the site, preventing the use of username/password for authentication.
 
         if isinstance(sg_response, dict) and sg_response.get("exception"):
             if sg_response.get("error_code") == ERR_AUTH:
@@ -3393,6 +3401,10 @@ class Shotgun(object):
             elif sg_response.get("error_code") == ERR_SSO:
                 raise UserCredentialsNotAllowedForSSOAuthenticationFault(
                     sg_response.get("message", "Authentication using username/password is not allowed for an SSO-enabled Shotgun site")
+                )
+            elif sg_response.get("error_code") == ERR_OXYG:
+                raise UserCredentialsNotAllowedForOxygenAuthenticationFault(
+                    sg_response.get("message", "Authentication using username/password is not allowed for an Autodesk Identity enabled Shotgun site")
                 )
             else:
                 # raise general Fault
