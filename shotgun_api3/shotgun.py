@@ -3047,8 +3047,7 @@ class Shotgun(object):
                 raise ShotgunError("preferences_read requires server version 7.10.0 or "\
                     "higher, server is %s" % (self.server_caps.version,))
 
-        if not prefs:
-            prefs = []
+        prefs = prefs or []
 
         return self._call_rpc("preferences_read", { "prefs": prefs })
 
