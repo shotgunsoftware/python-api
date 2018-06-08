@@ -8,24 +8,24 @@ import datetime
 import sys
 import os
 import re
-from mock import patch, Mock, MagicMock
+from .mock import patch, Mock, MagicMock
 import time
 import uuid
 import unittest
-import urlparse
-import urllib2
+import urllib.parse
+import urllib.request, urllib.error, urllib.parse
 import warnings
 
 import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http, SSLHandshakeError
 
-import base
+from . import base
 
 class TestShotgunApi(base.LiveTestBase):
     def setUp(self):
         super(TestShotgunApi, self).setUp()
         # give note unicode content
-        self.sg.update('Note', self.note['id'], {'content':u'La Pe\xf1a'})
+        self.sg.update('Note', self.note['id'], {'content': 'La Pe\xf1a'})
 
     def test_info(self):
         """Called info"""
@@ -35,8 +35,8 @@ class TestShotgunApi(base.LiveTestBase):
     def test_server_dates(self):
         """Pass datetimes to the server"""
         #TODO check results
-        t = { 'project': self.project,
-              'start_date': datetime.date.today() }
+        t = {'project': self.project,
+              'start_date': datetime.date.today()}
         self.sg.create('Task', t, ['content', 'sg_status_list'])
 
 
@@ -45,19 +45,19 @@ class TestShotgunApi(base.LiveTestBase):
 
         requests = [
         {
-            "request_type" : "create",
-            "entity_type" : "Shot",
+            "request_type": "create",
+            "entity_type": "Shot",
             "data": {
-                "code" : "New Shot 5",
-                "project" : self.project
+                "code": "New Shot 5",
+                "project": self.project
             }
         },
         {
-            "request_type" : "update",
-            "entity_type" : "Shot",
-            "entity_id" : self.shot['id'],
-            "data" : {
-                "code" : "Changed 1"
+            "request_type": "update",
+            "entity_type": "Shot",
+            "entity_id": self.shot['id'],
+            "data": {
+                "code": "Changed 1"
             }
         }]
 
@@ -67,16 +67,16 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertTrue(new_shot.get("id"))
 
         new_shot_id = new_shot["id"]
-        requests = [{ "request_type" : "delete",
-                      "entity_type"  : "Shot",
-                      "entity_id"    : new_shot_id
+        requests = [{"request_type": "delete",
+                      "entity_type": "Shot",
+                      "entity_id": new_shot_id
                     },
                     {
-                        "request_type" : "update",
-                        "entity_type" : "Shot",
-                        "entity_id" : self.shot['id'],
-                        "data" : {
-                            "code" : self.shot['code']
+                        "request_type": "update",
+                        "entity_type": "Shot",
+                        "entity_id": self.shot['id'],
+                        "data": {
+                            "code": self.shot['code']
                             }
                     }
                     ]
@@ -93,9 +93,9 @@ class TestShotgunApi(base.LiveTestBase):
         """Called create, update, delete, revive"""
         data = {
             'project': self.project,
-            'code':'JohnnyApple_Design01_FaceFinal',
+            'code': 'JohnnyApple_Design01_FaceFinal',
             'description': 'fixed rig per director final notes',
-            'sg_status_list':'rev',
+            'sg_status_list': 'rev',
             'entity': self.asset,
             'user': self.human_user
         }
@@ -107,7 +107,7 @@ class TestShotgunApi(base.LiveTestBase):
         #TODO: test returned fields are requested fields
 
         data = data = {
-            "description" : "updated test"
+            "description": "updated test"
         }
         version = self.sg.update("Version", version["id"], data)
         self.assertTrue(isinstance(version, dict))
@@ -139,12 +139,12 @@ class TestShotgunApi(base.LiveTestBase):
         # upload / download only works against a live server because it does
         # not use the standard http interface
         if 'localhost' in self.server_url:
-            print "upload / down tests skipped for localhost"
+            print("upload / down tests skipped for localhost")
             return
 
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
-            os.path.join(this_dir,"sg_logo.jpg")))
+            os.path.join(this_dir, "sg_logo.jpg")))
         size = os.stat(path).st_size
 
         attach_id = self.sg.upload("Ticket",
@@ -215,7 +215,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertRaises(TypeError, self.sg.download_attachment,
                             "/path/to/some/file.jpg")
         self.assertRaises(ValueError, self.sg.download_attachment,
-                            {"id":123, "type":"Shot"})
+                            {"id": 123, "type": "Shot"})
         self.assertRaises(TypeError, self.sg.download_attachment)
 
         # cleanup
@@ -225,7 +225,7 @@ class TestShotgunApi(base.LiveTestBase):
         """Upload a thumbnail via the create method"""
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
-            os.path.join(this_dir,"sg_logo.jpg")))
+            os.path.join(this_dir, "sg_logo.jpg")))
         size = os.stat(path).st_size
 
         # test thumbnail upload
@@ -268,7 +268,7 @@ class TestShotgunApi(base.LiveTestBase):
         """simple upload thumbnail for version test."""
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
-            os.path.join(this_dir,"sg_logo.jpg")))
+            os.path.join(this_dir, "sg_logo.jpg")))
         size = os.stat(path).st_size
 
         # upload thumbnail
@@ -292,7 +292,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         # clear thumbnail
         response_clear_thumbnail = self.sg.update("Version",
-            self.version['id'], {'image':None})
+            self.version['id'], {'image': None})
         expected_clear_thumbnail = {'id': self.version['id'], 'image': None, 'type': 'Version'}
         self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
 
@@ -300,7 +300,7 @@ class TestShotgunApi(base.LiveTestBase):
         """simple upload thumbnail for task test."""
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
-            os.path.join(this_dir,"sg_logo.jpg")))
+            os.path.join(this_dir, "sg_logo.jpg")))
         size = os.stat(path).st_size
 
         # upload thumbnail
@@ -379,7 +379,7 @@ class TestShotgunApi(base.LiveTestBase):
         """share thumbnail between two entities"""
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
-            os.path.join(this_dir,"sg_logo.jpg")))
+            os.path.join(this_dir, "sg_logo.jpg")))
 
         # upload thumbnail to first entity and share it with the rest
         thumbnail_id = self.sg.share_thumbnail(
@@ -396,8 +396,8 @@ class TestShotgunApi(base.LiveTestBase):
             fields=['id', 'code', 'image']
         )
 
-        shot_url = urlparse.urlparse(response_shot_thumbnail.get('image'))
-        version_url = urlparse.urlparse(response_version_thumbnail.get('image'))
+        shot_url = urllib.parse.urlparse(response_shot_thumbnail.get('image'))
+        version_url = urllib.parse.urlparse(response_version_thumbnail.get('image'))
         shot_path = _get_path(shot_url)
         version_path = _get_path(version_url)
         self.assertEqual(shot_path, version_path)
@@ -424,9 +424,9 @@ class TestShotgunApi(base.LiveTestBase):
             fields=['id', 'code', 'image']
         )
 
-        shot_url = urlparse.urlparse(response_shot_thumbnail.get('image'))
-        version_url = urlparse.urlparse(response_version_thumbnail.get('image'))
-        asset_url = urlparse.urlparse(response_asset_thumbnail.get('image'))
+        shot_url = urllib.parse.urlparse(response_shot_thumbnail.get('image'))
+        version_url = urllib.parse.urlparse(response_version_thumbnail.get('image'))
+        asset_url = urllib.parse.urlparse(response_asset_thumbnail.get('image'))
 
         shot_path = _get_path(shot_url)
         version_path = _get_path(version_url)
@@ -466,7 +466,7 @@ class TestShotgunApi(base.LiveTestBase):
         """Test summarize with archived project"""
         if self.sg.server_caps.version > (5, 3, 13):
             # archive project
-            self.sg.update('Project', self.project['id'], {'archived':True})
+            self.sg.update('Project', self.project['id'], {'archived': True})
             # Ticket #25082 ability to hide archived projects in summary
             summaries = [{'field': 'id', 'type': 'count'}]
             grouping = [{'direction': 'asc', 'field': 'id', 'type': 'exact'}]
@@ -477,7 +477,7 @@ class TestShotgunApi(base.LiveTestBase):
                                        grouping=grouping,
                                        include_archived_projects=False)
             self.assertEqual(result['summaries']['id'],  0)
-            self.sg.update('Project', self.project['id'], {'archived':False})
+            self.sg.update('Project', self.project['id'], {'archived': False})
 
     def test_summary_values(self):
         """Test summarize return data"""
@@ -576,7 +576,7 @@ class TestShotgunApi(base.LiveTestBase):
                               self.config.api_key,
                               ensure_ascii=True)
 
-        result = sg_ascii.find_one('Note', [['id','is',self.note['id']]], fields=['content'])
+        result = sg_ascii.find_one('Note', [['id', 'is', self.note['id']]], fields=['content'])
         self.assertFalse(_has_unicode(result))
 
 
@@ -586,7 +586,7 @@ class TestShotgunApi(base.LiveTestBase):
                               self.config.script_name,
                               self.config.api_key,
                               ensure_ascii=False)
-        result = sg_unicode.find_one('Note', [['id','is',self.note['id']]], fields=['content'])
+        result = sg_unicode.find_one('Note', [['id', 'is', self.note['id']]], fields=['content'])
         self.assertTrue(_has_unicode(result))
 
     def test_work_schedule(self):
@@ -746,7 +746,7 @@ class TestDataTypes(base.LiveTestBase):
         entity = 'Note'
         entity_id = self.note['id']
         field_name = 'sg_note_type'
-        pos_values = ['Internal','Client']
+        pos_values = ['Internal', 'Client']
         expected, actual = self.assert_set_field(entity,
                                                  entity_id,
                                                  field_name,
@@ -755,17 +755,17 @@ class TestDataTypes(base.LiveTestBase):
 
 
     def test_set_multi_entity(self):
-        sg = shotgun_api3.Shotgun( self.config.server_url,
+        sg = shotgun_api3.Shotgun(self.config.server_url,
                                    self.config.script_name,
-                                   self.config.api_key )
-        keys = ['project','user','code']
-        data = {'project':self.project,
-                'user':self.human_user,
-                'code':'Alpha'}
+                                   self.config.api_key)
+        keys = ['project', 'user', 'code']
+        data = {'project': self.project,
+                'user': self.human_user,
+                'code': 'Alpha'}
         version_1 = base._find_or_create_entity(sg, 'Version', data, keys)
-        data = {'project':self.project,
-                'user':self.human_user,
-                'code':'Beta'}
+        data = {'project': self.project,
+                'user': self.human_user,
+                'code': 'Beta'}
         version_2 = base._find_or_create_entity(sg, 'Version', data, keys)
 
         entity = 'Playlist'
@@ -788,7 +788,7 @@ class TestDataTypes(base.LiveTestBase):
             field_name, pos_values, multi_entity_update_mode='remove')
         self.assertEqual(1, len(actual))
         self.assertEqual(len(expected), len(actual))
-        self.assertNotEqual(expected[0]['id'],actual[0]['id'])
+        self.assertNotEqual(expected[0]['id'], actual[0]['id'])
         self.assertEqual(version_2['id'], actual[0]['id'])
 
         # Multi-entity add mode
@@ -824,7 +824,7 @@ class TestDataTypes(base.LiveTestBase):
         entity = 'Task'
         entity_id = self.task['id']
         field_name = 'sg_status_list'
-        pos_values = ['rdy','fin']
+        pos_values = ['rdy', 'fin']
         expected, actual = self.assert_set_field(entity,
                                                  entity_id,
                                                  field_name,
@@ -835,7 +835,7 @@ class TestDataTypes(base.LiveTestBase):
         entity = 'Task'
         entity_id = self.task['id']
         field_name = 'sg_status_list'
-        pos_values = ['rdy','fin']
+        pos_values = ['rdy', 'fin']
         expected, actual = self.assert_set_field(entity,
                                                  entity_id,
                                                  field_name,
@@ -846,7 +846,7 @@ class TestDataTypes(base.LiveTestBase):
         entity = 'Task'
         entity_id = self.task['id']
         field_name = 'tag_list'
-        pos_values = [['a','b'],['c']]
+        pos_values = [['a', 'b'], ['c']]
         expected, actual = self.assert_set_field(entity,
                                                  entity_id,
                                                  field_name,
@@ -882,10 +882,10 @@ class TestDataTypes(base.LiveTestBase):
         initial_value = query_result[field_name]
         new_value = (initial_value == pos_values[0] and pos_values[1]) or pos_values[0]
         if multi_entity_update_mode:
-            self.sg.update(entity, entity_id, {field_name:new_value},
-                multi_entity_update_modes={field_name:multi_entity_update_mode})
+            self.sg.update(entity, entity_id, {field_name: new_value},
+                multi_entity_update_modes={field_name: multi_entity_update_mode})
         else:
-            self.sg.update(entity, entity_id, {field_name:new_value})
+            self.sg.update(entity, entity_id, {field_name: new_value})
         new_values = self.sg.find_one(entity,
                                      [['id', 'is', entity_id]],
                                      [field_name])
@@ -924,8 +924,8 @@ class TestUtc(base.LiveTestBase):
         entity_name = 'HumanUser'
         entity_id = self.human_user['id']
         field_name = 'locked_until'
-        sg.update(entity_name, entity_id, {field_name:date_time})
-        result = sg.find_one(entity_name, [['id','is',entity_id]],[field_name])
+        sg.update(entity_name, entity_id, {field_name: date_time})
+        result = sg.find_one(entity_name, [['id', 'is', entity_id]], [field_name])
         self.assertEqual(result[field_name], expected)
 
 
@@ -933,19 +933,19 @@ class TestFind(base.LiveTestBase):
     def setUp(self):
         super(TestFind, self).setUp()
         # We will need the created_at field for the shot
-        fields = self.shot.keys()[:]
+        fields = list(self.shot.keys())[:]
         fields.append('created_at')
         self.shot = self.sg.find_one('Shot', [['id', 'is', self.shot['id']]], fields)
         # We will need the uuid field for our LocalStorage
-        fields = self.local_storage.keys()[:]
+        fields = list(self.local_storage.keys())[:]
         fields.append('uuid')
         self.local_storage = self.sg.find_one('LocalStorage', [['id', 'is', self.local_storage['id']]], fields)
 
     def test_find(self):
         """Called find, find_one for known entities"""
         filters = []
-        filters.append(['project','is', self.project])
-        filters.append(['id','is', self.version['id']])
+        filters.append(['project', 'is', self.project])
+        filters.append(['id', 'is', self.version['id']])
 
         fields = ['id']
 
@@ -1099,9 +1099,9 @@ class TestFind(base.LiveTestBase):
         Test that 'in' relation using commas (old format) works with duration fields.
         """
         # we need to get the duration value
-        new_task_keys = self.task.keys()[:]
+        new_task_keys = list(self.task.keys())[:]
         new_task_keys.append('duration')
-        self.task = self.sg.find_one('Task',[['id', 'is', self.task['id']]], new_task_keys)
+        self.task = self.sg.find_one('Task', [['id', 'is', self.task['id']]], new_task_keys)
         filters = [['duration', 'in', self.task['duration']],
                    ['project', 'is', self.project]]
 
@@ -1113,10 +1113,10 @@ class TestFind(base.LiveTestBase):
         Test that 'in' relation using list (new format) works with duration fields.
         """
         # we need to get the duration value
-        new_task_keys = self.task.keys()[:]
+        new_task_keys = list(self.task.keys())[:]
         new_task_keys.append('duration')
-        self.task = self.sg.find_one('Task',[['id', 'is', self.task['id']]], new_task_keys)
-        filters = [['duration', 'in', [self.task['duration'],]],
+        self.task = self.sg.find_one('Task', [['id', 'is', self.task['id']]], new_task_keys)
+        filters = [['duration', 'in', [self.task['duration'], ]],
                    ['project', 'is', self.project]]
 
         result = self._id_in_result('Task', filters, self.task['id'])
@@ -1127,11 +1127,11 @@ class TestFind(base.LiveTestBase):
         Test that 'not_in' relation using commas (old format) works with duration fields.
         """
         # we need to get the duration value
-        new_task_keys = self.task.keys()[:]
+        new_task_keys = list(self.task.keys())[:]
         new_task_keys.append('duration')
-        self.task = self.sg.find_one('Task',[['id', 'is', self.task['id']]], new_task_keys)
+        self.task = self.sg.find_one('Task', [['id', 'is', self.task['id']]], new_task_keys)
 
-        filters = [['duration', 'not_in', [self.task['duration'],]],
+        filters = [['duration', 'not_in', [self.task['duration'], ]],
                    ['project', 'is', self.project]]
 
         result = self._id_in_result('Task', filters, self.task['id'])
@@ -1349,7 +1349,7 @@ class TestFind(base.LiveTestBase):
         """
         Test that 'in' relation using commas (old format) works with uuid fields.
         """
-        filters = [['uuid', 'in', self.local_storage['uuid'],]]
+        filters = [['uuid', 'in', self.local_storage['uuid'], ]]
 
         result = self._id_in_result('LocalStorage', filters, self.local_storage['id'])
         self.assertTrue(result)
@@ -1358,7 +1358,7 @@ class TestFind(base.LiveTestBase):
         """
         Test that 'in' relation using list (new format) works with uuid fields.
         """
-        filters = [['uuid', 'in', [self.local_storage['uuid'],]]]
+        filters = [['uuid', 'in', [self.local_storage['uuid'], ]]]
 
         result = self._id_in_result('LocalStorage', filters, self.local_storage['id'])
         self.assertTrue(result)
@@ -1367,7 +1367,7 @@ class TestFind(base.LiveTestBase):
         """
         Test that 'not_in' relation using commas (old format) works with uuid fields.
         """
-        filters = [['uuid', 'not_in', [self.local_storage['uuid'],]]]
+        filters = [['uuid', 'not_in', [self.local_storage['uuid'], ]]]
 
         result = self._id_in_result('LocalStorage', filters, self.local_storage['id'])
         self.assertFalse(result)
@@ -1375,8 +1375,8 @@ class TestFind(base.LiveTestBase):
     def test_find(self):
         """Called find, find_one for known entities"""
         filters = []
-        filters.append(['project','is', self.project])
-        filters.append(['id','is', self.version['id']])
+        filters.append(['project', 'is', self.project])
+        filters.append(['id', 'is', self.version['id']])
 
         fields = ['id']
 
@@ -1421,7 +1421,7 @@ class TestFind(base.LiveTestBase):
         self.assertEqual(self.project['id'], project['id'])
 
     def test_unsupported_filters(self):
-        self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'Shot', [['image', 'is_not', [ {"type": "Thumbnail", "id": 9 }]]])
+        self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'Shot', [['image', 'is_not', [{"type": "Thumbnail", "id": 9}]]])
         self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'HumanUser', [['password_proxy', 'is_not', [None]]])
         self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'EventLogEntry', [['meta', 'is_not', [None]]])
         self.assertRaises(shotgun_api3.Fault, self.sg.find_one, 'Revision', [['meta', 'attachment', [None]]])
@@ -1432,54 +1432,54 @@ class TestFind(base.LiveTestBase):
         '''
         # Create a number field if it doesn't already exist
         num_field = 'sg_api_tests_number_field'
-        if num_field not in self.sg.schema_field_read('Asset').keys():
-            self.sg.schema_field_create('Asset', 'number', num_field.replace('sg_','').replace('_',' '))
+        if num_field not in list(self.sg.schema_field_read('Asset').keys()):
+            self.sg.schema_field_create('Asset', 'number', num_field.replace('sg_', '').replace('_', ' '))
 
         # Set to None
-        self.sg.update( 'Asset', self.asset['id'], { num_field: None })
+        self.sg.update('Asset', self.asset['id'], {num_field: None})
 
         # Should be filtered out
-        result = self.sg.find( 'Asset', [['id','is',self.asset['id']],[num_field, 'is_not', None]] ,[num_field] )
-        self.assertEquals([], result)
+        result = self.sg.find('Asset', [['id', 'is', self.asset['id']], [num_field, 'is_not', None]], [num_field])
+        self.assertEqual([], result)
 
         # Set it to zero
-        self.sg.update( 'Asset', self.asset['id'], { num_field: 0 })
+        self.sg.update('Asset', self.asset['id'], {num_field: 0})
 
         # Should not be filtered out
-        result = self.sg.find_one( 'Asset', [['id','is',self.asset['id']],[num_field, 'is_not', None]] ,[num_field] )
+        result = self.sg.find_one('Asset', [['id', 'is', self.asset['id']], [num_field, 'is_not', None]], [num_field])
         self.assertFalse(result == None)
 
 
         # Set it to some other number
-        self.sg.update( 'Asset', self.asset['id'], { num_field: 1 })
+        self.sg.update('Asset', self.asset['id'], {num_field: 1})
 
         # Should not be filtered out
-        result = self.sg.find_one( 'Asset', [['id','is',self.asset['id']],[num_field, 'is_not', None]] ,[num_field] )
+        result = self.sg.find_one('Asset', [['id', 'is', self.asset['id']], [num_field, 'is_not', None]], [num_field])
         self.assertFalse(result == None)
 
     def test_include_archived_projects(self):
         if self.sg.server_caps.version > (5, 3, 13):
             # Ticket #25082
-            result = self.sg.find_one('Shot', [['id','is',self.shot['id']]])
-            self.assertEquals(self.shot['id'], result['id'])
+            result = self.sg.find_one('Shot', [['id', 'is', self.shot['id']]])
+            self.assertEqual(self.shot['id'], result['id'])
 
             # archive project
-            self.sg.update('Project', self.project['id'], {'archived':True})
+            self.sg.update('Project', self.project['id'], {'archived': True})
 
             # setting defaults to True, so we should get result
-            result = self.sg.find_one('Shot', [['id','is',self.shot['id']]])
-            self.assertEquals(self.shot['id'], result['id'])
+            result = self.sg.find_one('Shot', [['id', 'is', self.shot['id']]])
+            self.assertEqual(self.shot['id'], result['id'])
 
-            result = self.sg.find_one('Shot', [['id','is',self.shot['id']]], include_archived_projects=False)
-            self.assertEquals(None, result)
+            result = self.sg.find_one('Shot', [['id', 'is', self.shot['id']]], include_archived_projects=False)
+            self.assertEqual(None, result)
 
             # unarchive project
-            self.sg.update('Project', self.project['id'], {'archived':False})
+            self.sg.update('Project', self.project['id'], {'archived': False})
 
 class TestFollow(base.LiveTestBase):
     def setUp(self):
         super(TestFollow, self).setUp()
-        self.sg.update( 'HumanUser', self.human_user['id'], {'projects':[self.project]})
+        self.sg.update('HumanUser', self.human_user['id'], {'projects': [self.project]})
 
         # As the Follow entity isn't exposed directly, we clear out existing
         # follows for the user before running our tests.
@@ -1509,8 +1509,8 @@ class TestFollow(base.LiveTestBase):
         assert(result['followed'])
 
         result = self.sg.followers(self.shot)
-        self.assertEqual( 1, len(result) )
-        self.assertEqual( self.human_user['id'], result[0]['id'] )
+        self.assertEqual(1, len(result))
+        self.assertEqual(self.human_user['id'], result[0]['id'])
 
     def test_following(self):
         '''Test following method'''
@@ -1523,40 +1523,40 @@ class TestFollow(base.LiveTestBase):
         assert(result['followed'])
 
         result = self.sg.following(self.human_user)
-        self.assertEqual( 1, len(result) )
-        self.assertEqual( self.shot['id'], result[0]['id'] )
+        self.assertEqual(1, len(result))
+        self.assertEqual(self.shot['id'], result[0]['id'])
 
         result = self.sg.follow(self.human_user, self.task)
         assert(result['followed'])
 
         result = self.sg.following(self.human_user)
-        self.assertEqual( 2, len(result) )
+        self.assertEqual(2, len(result))
         result = self.sg.following(self.human_user, entity_type="Task")
-        self.assertEqual( 1, len(result) )
+        self.assertEqual(1, len(result))
         result = self.sg.following(self.human_user, entity_type="Shot")
-        self.assertEqual( 1, len(result) )
+        self.assertEqual(1, len(result))
 
         shot_project_id = self.sg.find_one("Shot",
-            [["id","is",self.shot["id"]]],
+            [["id", "is", self.shot["id"]]],
             ["project.Project.id"])["project.Project.id"]
         task_project_id = self.sg.find_one("Task",
-            [["id","is",self.task["id"]]],
+            [["id", "is", self.task["id"]]],
             ["project.Project.id"])["project.Project.id"]
         project_count = 2 if shot_project_id == task_project_id else 1
-        result = self.sg.following(self.human_user, 
-            project={"type":"Project", "id":shot_project_id})
-        self.assertEqual( project_count, len(result) )
-        result = self.sg.following(self.human_user, 
-            project={"type":"Project", "id":task_project_id})
-        self.assertEqual( project_count, len(result) )
-        result = self.sg.following(self.human_user, 
-            project={"type":"Project", "id":shot_project_id}, 
+        result = self.sg.following(self.human_user,
+            project={"type": "Project", "id": shot_project_id})
+        self.assertEqual(project_count, len(result))
+        result = self.sg.following(self.human_user,
+            project={"type": "Project", "id": task_project_id})
+        self.assertEqual(project_count, len(result))
+        result = self.sg.following(self.human_user,
+            project={"type": "Project", "id": shot_project_id},
             entity_type="Shot")
-        self.assertEqual( 1, len(result) )
-        result = self.sg.following(self.human_user, 
-            project={"type":"Project", "id":task_project_id}, 
+        self.assertEqual(1, len(result))
+        result = self.sg.following(self.human_user,
+            project={"type": "Project", "id": task_project_id},
             entity_type="Task")
-        self.assertEqual( 1, len(result) )
+        self.assertEqual(1, len(result))
 
 class TestErrors(base.TestBase):
     def test_bad_auth(self):
@@ -1585,15 +1585,15 @@ class TestErrors(base.TestBase):
 
         # Test failed authentications
         sg = shotgun_api3.Shotgun(server_url, script_name, api_key)
-        self.assertRaises(shotgun_api3.AuthenticationFault, sg.find_one, 'Shot',[])
+        self.assertRaises(shotgun_api3.AuthenticationFault, sg.find_one, 'Shot', [])
 
         script_name = self.config.script_name
         api_key = 'notrealapikey'
         sg = shotgun_api3.Shotgun(server_url, script_name, api_key)
-        self.assertRaises(shotgun_api3.AuthenticationFault, sg.find_one, 'Shot',[])
+        self.assertRaises(shotgun_api3.AuthenticationFault, sg.find_one, 'Shot', [])
 
         sg = shotgun_api3.Shotgun(server_url, login=login, password='not a real password')
-        self.assertRaises(shotgun_api3.AuthenticationFault, sg.find_one, 'Shot',[])
+        self.assertRaises(shotgun_api3.AuthenticationFault, sg.find_one, 'Shot', [])
 
         # This may trigger an account lockdown. Make sure it is not locked anymore.
         user = self.sg.find_one("HumanUser", [["login", "is", login]])
@@ -1674,10 +1674,10 @@ class TestErrors(base.TestBase):
         if original_env_val is not None:
             os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
 
-    @patch.object(urllib2.OpenerDirector, 'open')
+    @patch.object(urllib.request.OpenerDirector, 'open')
     def test_sanitized_auth_params(self, mock_open):
         # Simulate the server blowing up and giving us a 500 error
-        mock_open.side_effect = urllib2.HTTPError('url', 500, 'message', {}, None)
+        mock_open.side_effect = urllib.error.HTTPError('url', 500, 'message', {}, None)
 
         this_dir, _ = os.path.split(__file__)
         thumbnail_path = os.path.abspath(os.path.join(this_dir, "sg_logo.jpg"))
@@ -1685,7 +1685,7 @@ class TestErrors(base.TestBase):
         try:
             # Try to upload a bogus file
             self.sg.upload('Note', 1234, thumbnail_path)
-        except shotgun_api3.ShotgunError, e:
+        except shotgun_api3.ShotgunError as e:
             self.assertFalse(self.api_key in str(e))
             return
 
@@ -1698,10 +1698,10 @@ class TestErrors(base.TestBase):
         Test uploading an empty file raises an error.
         """
         this_dir, _ = os.path.split(__file__)
-        path = os.path.abspath(os.path.expanduser(os.path.join(this_dir,"empty.txt")))
+        path = os.path.abspath(os.path.expanduser(os.path.join(this_dir, "empty.txt")))
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload, 'Version', 123, path)
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_thumbnail, 'Version', 123, path)
-        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_filmstrip_thumbnail, 'Version', 
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_filmstrip_thumbnail, 'Version',
                           123, path)
 
     def test_upload_missing_file(self):
@@ -1711,7 +1711,7 @@ class TestErrors(base.TestBase):
         path = "/path/to/nowhere/foo.txt"
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload, 'Version', 123, path)
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_thumbnail, 'Version', 123, path)
-        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_filmstrip_thumbnail, 'Version', 
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.upload_filmstrip_thumbnail, 'Version',
                           123, path)
 
 #    def test_malformed_response(self):
@@ -1735,22 +1735,22 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
                     self.config.script_name,
                     self.config.api_key,
                     http_proxy=self.config.http_proxy,
-                    sudo_as_login=self.config.human_login )
+                    sudo_as_login=self.config.human_login)
 
         data = {
             'project': self.project,
-            'code':'JohnnyApple_Design01_FaceFinal',
+            'code': 'JohnnyApple_Design01_FaceFinal',
             'description': 'fixed rig per director final notes',
-            'sg_status_list':'na',
+            'sg_status_list': 'na',
             'entity': self.asset,
             'user': self.human_user
         }
 
-        version = x.create("Version", data, return_fields = ["id","created_by"])
+        version = x.create("Version", data, return_fields = ["id", "created_by"])
         self.assertTrue(isinstance(version, dict))
         self.assertTrue("id" in version)
         self.assertTrue("created_by" in version)
-        self.assertEqual( self.config.human_name, version['created_by']['name'] )
+        self.assertEqual(self.config.human_name, version['created_by']['name'])
 
 class TestHumanUserSudoAuth(base.TestBase):
     def setUp(self):
@@ -1769,17 +1769,17 @@ class TestHumanUserSudoAuth(base.TestBase):
                     login=self.config.human_login,
                     password=self.config.human_password,
                     http_proxy=self.config.http_proxy,
-                    sudo_as_login="blah" )
+                    sudo_as_login="blah")
         self.assertRaises(shotgun_api3.Fault, x.find_one, 'Shot', [])
         expected = "The user does not have permission to 'sudo':"
-        try :
-            x.find_one('Shot',[])
-        except shotgun_api3.Fault, e:
+        try:
+            x.find_one('Shot', [])
+        except shotgun_api3.Fault as e:
             # py24 exceptions don't have message attr
             if hasattr(e, 'message'):
-                self.assert_(e.message.startswith(expected))
+                self.assertTrue(e.message.startswith(expected))
             else:
-                self.assert_(e.args[0].startswith(expected))
+                self.assertTrue(e.args[0].startswith(expected))
 
 
 
@@ -1811,7 +1811,7 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
         """simple upload thumbnail for version test as human user."""
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
-            os.path.join(this_dir,"sg_logo.jpg")))
+            os.path.join(this_dir, "sg_logo.jpg")))
         size = os.stat(path).st_size
 
         # upload thumbnail
@@ -1835,7 +1835,7 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
 
         # clear thumbnail
         response_clear_thumbnail = self.sg.update("Version",
-            self.version['id'], {'image':None})
+            self.version['id'], {'image': None})
         expected_clear_thumbnail = {'id': self.version['id'], 'image': None, 'type': 'Version'}
         self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
 
@@ -1874,7 +1874,7 @@ class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
 
             this_dir, _ = os.path.split(__file__)
             path = os.path.abspath(os.path.expanduser(
-                os.path.join(this_dir,"sg_logo.jpg")))
+                os.path.join(this_dir, "sg_logo.jpg")))
             size = os.stat(path).st_size
 
             # upload thumbnail
@@ -1898,7 +1898,7 @@ class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
 
             # clear thumbnail
             response_clear_thumbnail = self.sg.update("Version",
-                self.version['id'], {'image':None})
+                self.version['id'], {'image': None})
             expected_clear_thumbnail = {'id': self.version['id'], 'image': None, 'type': 'Version'}
             self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
 
@@ -1914,12 +1914,12 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
                     password=self.config.human_password,
                     http_proxy=self.config.http_proxy)
 
-        initial = sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
+        initial = sg.find_one('Project', [['id', 'is', self.project['id']]], ['last_accessed_by_current_user'])
 
         sg.update_project_last_accessed(self.project)
 
-        current =  sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
-        self.assertNotEqual( initial, current )
+        current =  sg.find_one('Project', [['id', 'is', self.project['id']]], ['last_accessed_by_current_user'])
+        self.assertNotEqual(initial, current)
         # it's possible initial is None
         if initial:
             assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
@@ -1929,19 +1929,19 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
         if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 20):
             return
 
-        sg = shotgun_api3.Shotgun( self.config.server_url,
+        sg = shotgun_api3.Shotgun(self.config.server_url,
                                    login=self.config.human_login,
                                    password=self.config.human_password,
-                                   http_proxy=self.config.http_proxy )
+                                   http_proxy=self.config.http_proxy)
 
-        initial = sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
+        initial = sg.find_one('Project', [['id', 'is', self.project['id']]], ['last_accessed_by_current_user'])
         time.sleep(1)
 
         # this instance of the api is not logged in as a user
         self.sg.update_project_last_accessed(self.project, user=self.human_user)
 
-        current =  sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
-        self.assertNotEqual( initial, current )
+        current =  sg.find_one('Project', [['id', 'is', self.project['id']]], ['last_accessed_by_current_user'])
+        self.assertNotEqual(initial, current)
         # it's possible initial is None
         if initial:
             assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
@@ -1950,19 +1950,19 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
         if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 20):
             return
 
-        sg = shotgun_api3.Shotgun( self.config.server_url,
+        sg = shotgun_api3.Shotgun(self.config.server_url,
                                    self.config.script_name,
                                    self.config.api_key,
                                    http_proxy=self.config.http_proxy,
-                                   sudo_as_login=self.config.human_login )
+                                   sudo_as_login=self.config.human_login)
 
-        initial = sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
+        initial = sg.find_one('Project', [['id', 'is', self.project['id']]], ['last_accessed_by_current_user'])
         time.sleep(1)
 
         sg.update_project_last_accessed(self.project)
 
-        current =  sg.find_one('Project', [['id','is',self.project['id']]], ['last_accessed_by_current_user'])
-        self.assertNotEqual( initial, current )
+        current =  sg.find_one('Project', [['id', 'is', self.project['id']]], ['last_accessed_by_current_user'])
+        self.assertNotEqual(initial, current)
         # it's possible initial is None
         if initial:
             assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
@@ -1989,7 +1989,7 @@ class TestActivityStream(base.LiveTestBase):
         # disabled, these tests will fail because the activity stream is
         # connected to events. In this case, print a warning to the user
         d = self.sg.find_one("Shot",
-                             [["id", "is", self._shot["id"] ]],
+                             [["id", "is", self._shot["id"]]],
                              ["created_by.ApiUser.generate_event_log_entries"])
 
         if d["created_by.ApiUser.generate_event_log_entries"] is False:
@@ -2150,7 +2150,7 @@ class TestNoteThreadRead(base.LiveTestBase):
             return
 
         # create note
-        note = self.sg.create( "Note", {"content": "Test!", "project": self.project})
+        note = self.sg.create("Note", {"content": "Test!", "project": self.project})
 
         # for this test, we check that the replies returned also
         # contain the thumbnail associated with the user doing the
@@ -2181,7 +2181,7 @@ class TestNoteThreadRead(base.LiveTestBase):
         self._check_note(result[0], note["id"], additional_fields=[])
 
         # now add a reply
-        reply = self.sg.create( "Reply", {"content": "Reply Content", "entity": note})
+        reply = self.sg.create("Reply", {"content": "Reply Content", "entity": note})
 
         # get thread
         result = self.sg.note_thread_read(note["id"])
@@ -2191,8 +2191,8 @@ class TestNoteThreadRead(base.LiveTestBase):
         # the uploaded thumbnail. strip off any s3 querystring
         # for the comparison
         reply_thumb = result[1]["user"]["image"]
-        url_obj_a = urlparse.urlparse(current_thumbnail)
-        url_obj_b = urlparse.urlparse(reply_thumb)
+        url_obj_a = urllib.parse.urlparse(current_thumbnail)
+        url_obj_b = urllib.parse.urlparse(reply_thumb)
         self.assertEqual("%s/%s" % (url_obj_a.netloc, url_obj_a.path),
                          "%s/%s" % (url_obj_b.netloc, url_obj_b.path),)
 
@@ -2222,13 +2222,13 @@ class TestNoteThreadRead(base.LiveTestBase):
               "Note":       ["created_by.HumanUser.image",
                              "addressings_to",
                              "playlist",
-                             "user" ],
+                             "user"],
               "Reply":      ["content"],
               "Attachment": ["this_file"]
             }
 
         # create note
-        note = self.sg.create( "Note", {"content": "Test!",
+        note = self.sg.create("Note", {"content": "Test!",
                                         "project": self.project,
                                         "addressings_to": [self.human_user]})
 
@@ -2239,7 +2239,7 @@ class TestNoteThreadRead(base.LiveTestBase):
         self._check_note(result[0], note["id"], additional_fields["Note"])
 
         # now add a reply
-        reply = self.sg.create( "Reply", {"content": "Reply Content", "entity": note})
+        reply = self.sg.create("Reply", {"content": "Reply Content", "entity": note})
 
         # get thread
         result = self.sg.note_thread_read(note["id"], additional_fields)
@@ -2271,14 +2271,14 @@ class TestTextSearch(base.LiveTestBase):
 
         batch_data = []
         for i in range(5):
-            data = { "code":"%s Text Search %s" % (self._prefix, i),
-                     "project": self.project }
-            batch_data.append( {"request_type": "create",
+            data = {"code": "%s Text Search %s" % (self._prefix, i),
+                     "project": self.project}
+            batch_data.append({"request_type": "create",
                                 "entity_type": "Shot",
-                                "data": data} )
-            batch_data.append( {"request_type": "create",
+                                "data": data})
+            batch_data.append({"request_type": "create",
                                 "entity_type": "Asset",
-                                "data": data} )
+                                "data": data})
         data = self.sg.batch(batch_data)
 
         self._shot_ids = [x["id"] for x in data if x["type"] == "Shot"]
@@ -2309,7 +2309,7 @@ class TestTextSearch(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
             return
 
-        result = self.sg.text_search("%s Text Search" % self._prefix, {"Shot" : [] } )
+        result = self.sg.text_search("%s Text Search" % self._prefix, {"Shot": []})
 
         self.assertEqual(set(["matches", "terms"]), set(result.keys()))
         self.assertEqual(result["terms"], [self._prefix, "text", "search"])
@@ -2329,7 +2329,7 @@ class TestTextSearch(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
             return
 
-        result = self.sg.text_search("%s Text Search" % self._prefix, {"Shot" : [] }, limit=3 )
+        result = self.sg.text_search("%s Text Search" % self._prefix, {"Shot": []}, limit=3)
         matches = result["matches"]
         self.assertEqual(len(matches), 3)
 
@@ -2341,7 +2341,7 @@ class TestTextSearch(base.LiveTestBase):
             return
 
         result = self.sg.text_search("%s Text Search" % self._prefix,
-                                     {"Shot": [], "Asset": [] } )
+                                     {"Shot": [], "Asset": []})
 
         matches = result["matches"]
 
@@ -2450,7 +2450,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
         fields = ["id"]
 
-        additional_filters = [{"preset_name" : "BAD_FILTER"}]
+        additional_filters = [{"preset_name": "BAD_FILTER"}]
 
         self.assertRaises(shotgun_api3.Fault,
                           self.sg.find,
@@ -2515,17 +2515,17 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
 
 def _has_unicode(data):
-    for k, v in data.items():
-        if isinstance(k, unicode):
+    for k, v in list(data.items()):
+        if isinstance(k, str):
             return True
-        if isinstance(v, unicode):
+        if isinstance(v, str):
             return True
     return False
 
 
 def _get_path(url):
     """Returns path component of a url without the sheme, host, query, anchor, or any other
-    additional elements. 
+    additional elements.
     For example, the url "https://foo.shotgunstudio.com/page/2128#Shot_1190_sr10101_034"
     returns "/page/2128"
     """
