@@ -3038,6 +3038,26 @@ class Shotgun(object):
 
         return session_token
 
+    def preferences_read(self, prefs=None):
+        """
+        Get a subset of the site preferences.
+
+        >>> sg.preferences_read()
+        {
+            "pref_name": "pref value"
+        }
+        :param list prefs: An optional list of preference names to return.
+        :returns: Dictionary of preferences and their values.
+        :rtype: dict
+        """
+        if self.server_caps.version and self.server_caps.version < (7, 10, 0):
+                raise ShotgunError("preferences_read requires server version 7.10.0 or "\
+                    "higher, server is %s" % (self.server_caps.version,))
+
+        prefs = prefs or []
+
+        return self._call_rpc("preferences_read", { "prefs": prefs })
+
     def _build_opener(self, handler):
         """
         Build urllib2 opener with appropriate proxy handler.
