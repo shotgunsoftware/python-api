@@ -220,13 +220,10 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertRaises(TypeError, self.sg.download_attachment)
 
         # test upload of non-ascii, unicode path
-        u_path = unicode(
-            os.path.abspath(
-                os.path.expanduser(
-                    glob.glob(os.path.join(this_dir, 'No*l.jpg'))[0]
-                )
-            ),
-            "utf-8"
+        os.path.abspath(
+            os.path.expanduser(
+                glob.glob(os.path.join(unicode(this_dir), u'No*l.jpg'))[0]
+            )
         )
 
         # If this is a problem, it'll raise with a UnicodeEncodeError. We
