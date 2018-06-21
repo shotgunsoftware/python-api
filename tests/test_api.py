@@ -220,7 +220,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertRaises(TypeError, self.sg.download_attachment)
 
         # test upload of non-ascii, unicode path
-        os.path.abspath(
+        u_path = os.path.abspath(
             os.path.expanduser(
                 glob.glob(os.path.join(unicode(this_dir), u'No*l.jpg'))[0]
             )
