@@ -2365,6 +2365,20 @@ class Shotgun(object):
 
         params.update(self._auth_params())
 
+        # If we ended up with a unicode string path, we need to encode it
+        # as a utf-8 string. If we don't, there's a chance that there will
+        # will be an attempt later on to encode it as an ascii string, and
+        # that will fail ungracefully if the path contains any non-ascii
+        # characters.
+        if isinstance(path, unicode):
+            try:
+                path = path.encode("utf-8")
+            except UnicodeEncodeError:
+                raise ShotgunError(
+                    "Could not upload file successfully. The unicode file path given must "
+                    "be encodable as utf-8 in order to be uploaded to Shotgun."
+                )
+
         if is_thumbnail:
             url = urlparse.urlunparse((self.config.scheme, self.config.server,
                 "/upload/publish_thumbnail", None, None, None))

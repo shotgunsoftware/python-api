@@ -218,6 +218,28 @@ class TestShotgunApi(base.LiveTestBase):
                             {"id":123, "type":"Shot"})
         self.assertRaises(TypeError, self.sg.download_attachment)
 
+        # test upload of non-ascii, unicode path
+        u_path = unicode(
+            os.path.abspath(
+                os.path.expanduser(
+                    os.path.join(this_dir, 'Noe\xcc\x88l.jpg')
+                )
+            ),
+            "utf-8"
+        )
+
+        # If this is a problem, it'll raise with a UnicodeEncodeError. We
+        # don't need to check the results of the upload itself -- we're
+        # only checking that the non-ascii string encoding doesn't trip
+        # us up the way it used to.
+        self.sg.upload(
+            "Ticket",
+            self.ticket['id'],
+            u_path,
+            'attachments',
+            tag_list="monkeys, everywhere, send, help"
+        )
+
         # cleanup
         os.remove(file_path)
 
