@@ -15,6 +15,7 @@ import unittest
 import urlparse
 import urllib2
 import warnings
+import glob
 
 import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http, SSLHandshakeError
@@ -222,7 +223,7 @@ class TestShotgunApi(base.LiveTestBase):
         u_path = unicode(
             os.path.abspath(
                 os.path.expanduser(
-                    os.path.join(this_dir, 'Noe\xcc\x88l.jpg')
+                    glob.glob(os.path.join(this_dir, 'No*l.jpg'))[0]
                 )
             ),
             "utf-8"

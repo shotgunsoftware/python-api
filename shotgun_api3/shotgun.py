@@ -2371,13 +2371,7 @@ class Shotgun(object):
         # that will fail ungracefully if the path contains any non-ascii
         # characters.
         if isinstance(path, unicode):
-            try:
-                path = path.encode("utf-8")
-            except UnicodeEncodeError:
-                raise ShotgunError(
-                    "Could not upload file successfully. The unicode file path given must "
-                    "be encodable as utf-8 in order to be uploaded to Shotgun."
-                )
+            path = path.encode("utf-8")
 
         if is_thumbnail:
             url = urlparse.urlunparse((self.config.scheme, self.config.server,
