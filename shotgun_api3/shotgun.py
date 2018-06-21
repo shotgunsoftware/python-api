@@ -2370,13 +2370,22 @@ class Shotgun(object):
         # will be an attempt later on to encode it as an ascii string, and
         # that will fail ungracefully if the path contains any non-ascii
         # characters.
+        #
+        # On Windows, if the path contains non-ascii characters, the calls
+        # to open later in this method will fail to find the file if given
+        # a utf-8 encoded string path. In that case, we're going to have
+        # to call open on the unicode path, but we'll use the utf-8 encoded
+        # string for everything else.
+        path_to_open = path
         if isinstance(path, unicode):
             path = path.encode("utf-8")
+            if sys.platform != "win32":
+                path_to_open = path
 
         if is_thumbnail:
             url = urlparse.urlunparse((self.config.scheme, self.config.server,
                 "/upload/publish_thumbnail", None, None, None))
-            params["thumb_image"] = open(path, "rb")
+            params["thumb_image"] = open(path_to_open, "rb")
             if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
                 params["filmstrip"] = True
 
@@ -2393,7 +2402,7 @@ class Shotgun(object):
             if tag_list:
                 params["tag_list"] = tag_list
 
-            params["file"] = open(path, "rb")
+            params["file"] = open(path_to_open, "rb")
 
         result = self._send_form(url, params)
 
@@ -3937,7 +3946,15 @@ class FormPostHandler(urllib2.BaseHandler):
             buffer.write('Content-Disposition: form-data; name="%s"' % key)
             buffer.write('\r\n\r\n%s\r\n' % value)
         for (key, fd) in files:
-            filename = fd.name.split('/')[-1]
+            # On Windows, it's possible that we were forced to open a file
+            # with non-ascii characters as unicode. In that case, we need to
+            # encode it as a utf-8 string to remove unicode from the equation.
+            # If we don't, the mix of unicode and strings going into the
+            # buffer can cause UnicodeEncodeErrors to be raised.
+            filename = fd.name
+            if isinstance(filename, unicode):
+                filename = filename.encode("utf-8")
+            filename = filename.split('/')[-1]
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or 'application/octet-stream'
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
