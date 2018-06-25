@@ -2265,7 +2265,7 @@ class Shotgun(object):
                 raise ShotgunError(
                     "Could not upload the given file path. It is encoded as "
                     "something other than utf-8 or ascii. To upload this file, "
-                    "it can be encoded as utf-8, or given as unicode: %s" % path
+                    "it can be string encoded as utf-8, or given as unicode: %s" % path
                 )
 
         if not os.path.isfile(path):
