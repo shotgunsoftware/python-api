@@ -238,6 +238,35 @@ class TestShotgunApi(base.LiveTestBase):
             tag_list="monkeys, everywhere, send, help"
         )
 
+        # Also make sure that we can pass in a utf-8 encoded string path
+        # with non-ascii characters and have it work properly. This is
+        # primarily a concern on Windows, as it doesn't handle that
+        # situation as well as OS X and Linux.
+        self.sg.upload(
+            "Ticket",
+            self.ticket['id'],
+            u_path.encode("utf-8"),
+            'attachments',
+            tag_list="monkeys, everywhere, send, help"
+        )
+
+        # Make sure that non-utf-8 encoded paths raise on Windows.
+        if sys.platform == "win32":
+            u_path = os.path.abspath(
+                os.path.expanduser(
+                    glob.glob(os.path.join(unicode(this_dir), u'*.shift-jis'))[0]
+                )
+            )
+            self.assertRaises(
+                shotgun_api3.ShotgunError,
+                self.sg.upload,
+                "Ticket",
+                self.ticket['id'],
+                u_path.encode("shift-jis"),
+                'attachments',
+                tag_list="monkeys, everywhere, send, help"
+            )
+
         # cleanup
         os.remove(file_path)
 
