@@ -2252,21 +2252,20 @@ class Shotgun(object):
         # Basic validations of the file to upload.
         path = os.path.abspath(os.path.expanduser(path or ""))
 
-        # On Windows, if a path is given as a string encoded as something other
-        # than ascii and it contains non-ascii characters, the os.path calls to
-        # determine its validity will return a false negative. Likewise, later
-        # in the upload process, opening a filehandle will fail in the same way.
-        # To combat this, we'll try to decode the string path into unicode,
-        # which Windows handles well, and that we have proper support for in
-        # upload pipeline here.
-        if not isinstance(path, unicode) and sys.platform == "win32":
+        # We need to check for string encodings that we aren't going to be able
+        # to support later in the upload process. If the given path wasn't already
+        # unicode, we will try to decode it as utf-8, and if that fails then we
+        # have to raise a sane exception. This will always work for ascii and utf-8
+        # encoded strings, but will fail on some others if the string includes non
+        # ascii characters.
+        if not isinstance(path, unicode):
             try:
                 path = path.decode("utf-8")
             except UnicodeDecodeError:
                 raise ShotgunError(
                     "Could not upload the given file path. It is encoded as "
                     "something other than utf-8 or ascii. To upload this file, "
-                    "it can be decoded into unicode prior to upload: %s" % path
+                    "it can be encoded as utf-8, or given as unicode: %s" % path
                 )
 
         if not os.path.isfile(path):

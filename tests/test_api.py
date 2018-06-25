@@ -250,22 +250,31 @@ class TestShotgunApi(base.LiveTestBase):
             tag_list="monkeys, everywhere, send, help"
         )
 
-        # Make sure that non-utf-8 encoded paths raise on Windows.
-        if sys.platform == "win32":
-            u_path = os.path.abspath(
-                os.path.expanduser(
-                    glob.glob(os.path.join(unicode(this_dir), u'*.shift-jis'))[0]
-                )
+        # Make sure that non-utf-8 encoded paths raise when they can't be
+        # converted to utf-8.
+        u_path = os.path.abspath(
+            os.path.expanduser(
+                glob.glob(os.path.join(unicode(this_dir), u'*.shift-jis'))[0]
             )
-            self.assertRaises(
-                shotgun_api3.ShotgunError,
-                self.sg.upload,
-                "Ticket",
-                self.ticket['id'],
-                u_path.encode("shift-jis"),
-                'attachments',
-                tag_list="monkeys, everywhere, send, help"
-            )
+        )
+        self.assertRaises(
+            shotgun_api3.ShotgunError,
+            self.sg.upload,
+            "Ticket",
+            self.ticket['id'],
+            u_path.encode("shift-jis"),
+            'attachments',
+            tag_list="monkeys, everywhere, send, help"
+        )
+
+        # But it should work in all cases if a unicode string is used.
+        self.sg.upload(
+            "Ticket",
+            self.ticket['id'],
+            u_path,
+            'attachments',
+            tag_list="monkeys, everywhere, send, help"
+        )
 
         # cleanup
         os.remove(file_path)
