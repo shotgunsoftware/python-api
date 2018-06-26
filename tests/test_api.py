@@ -15,6 +15,7 @@ import unittest
 import urlparse
 import urllib2
 import warnings
+import glob
 
 import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http, SSLHandshakeError
@@ -217,6 +218,63 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertRaises(ValueError, self.sg.download_attachment,
                             {"id":123, "type":"Shot"})
         self.assertRaises(TypeError, self.sg.download_attachment)
+
+        # test upload of non-ascii, unicode path
+        u_path = os.path.abspath(
+            os.path.expanduser(
+                glob.glob(os.path.join(unicode(this_dir), u'No*l.jpg'))[0]
+            )
+        )
+
+        # If this is a problem, it'll raise with a UnicodeEncodeError. We
+        # don't need to check the results of the upload itself -- we're
+        # only checking that the non-ascii string encoding doesn't trip
+        # us up the way it used to.
+        self.sg.upload(
+            "Ticket",
+            self.ticket['id'],
+            u_path,
+            'attachments',
+            tag_list="monkeys, everywhere, send, help"
+        )
+
+        # Also make sure that we can pass in a utf-8 encoded string path
+        # with non-ascii characters and have it work properly. This is
+        # primarily a concern on Windows, as it doesn't handle that
+        # situation as well as OS X and Linux.
+        self.sg.upload(
+            "Ticket",
+            self.ticket['id'],
+            u_path.encode("utf-8"),
+            'attachments',
+            tag_list="monkeys, everywhere, send, help"
+        )
+
+        # Make sure that non-utf-8 encoded paths raise when they can't be
+        # converted to utf-8.
+        u_path = os.path.abspath(
+            os.path.expanduser(
+                glob.glob(os.path.join(unicode(this_dir), u'*.shift-jis'))[0]
+            )
+        )
+        self.assertRaises(
+            shotgun_api3.ShotgunError,
+            self.sg.upload,
+            "Ticket",
+            self.ticket['id'],
+            u_path.encode("shift-jis"),
+            'attachments',
+            tag_list="monkeys, everywhere, send, help"
+        )
+
+        # But it should work in all cases if a unicode string is used.
+        self.sg.upload(
+            "Ticket",
+            self.ticket['id'],
+            u_path,
+            'attachments',
+            tag_list="monkeys, everywhere, send, help"
+        )
 
         # cleanup
         os.remove(file_path)

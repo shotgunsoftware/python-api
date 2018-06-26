@@ -2251,6 +2251,23 @@ class Shotgun(object):
         """
         # Basic validations of the file to upload.
         path = os.path.abspath(os.path.expanduser(path or ""))
+
+        # We need to check for string encodings that we aren't going to be able
+        # to support later in the upload process. If the given path wasn't already
+        # unicode, we will try to decode it as utf-8, and if that fails then we
+        # have to raise a sane exception. This will always work for ascii and utf-8
+        # encoded strings, but will fail on some others if the string includes non
+        # ascii characters.
+        if not isinstance(path, unicode):
+            try:
+                path = path.decode("utf-8")
+            except UnicodeDecodeError:
+                raise ShotgunError(
+                    "Could not upload the given file path. It is encoded as "
+                    "something other than utf-8 or ascii. To upload this file, "
+                    "it can be string encoded as utf-8, or given as unicode: %s" % path
+                )
+
         if not os.path.isfile(path):
             raise ShotgunError("Path must be a valid file, got '%s'" % path)
         if os.path.getsize(path) == 0:
@@ -2365,10 +2382,27 @@ class Shotgun(object):
 
         params.update(self._auth_params())
 
+        # If we ended up with a unicode string path, we need to encode it
+        # as a utf-8 string. If we don't, there's a chance that there will
+        # will be an attempt later on to encode it as an ascii string, and
+        # that will fail ungracefully if the path contains any non-ascii
+        # characters.
+        #
+        # On Windows, if the path contains non-ascii characters, the calls
+        # to open later in this method will fail to find the file if given
+        # a non-ascii-encoded string path. In that case, we're going to have
+        # to call open on the unicode path, but we'll use the encoded string
+        # for everything else.
+        path_to_open = path
+        if isinstance(path, unicode):
+            path = path.encode("utf-8")
+            if sys.platform != "win32":
+                path_to_open = path
+
         if is_thumbnail:
             url = urlparse.urlunparse((self.config.scheme, self.config.server,
                 "/upload/publish_thumbnail", None, None, None))
-            params["thumb_image"] = open(path, "rb")
+            params["thumb_image"] = open(path_to_open, "rb")
             if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
                 params["filmstrip"] = True
 
@@ -2385,7 +2419,7 @@ class Shotgun(object):
             if tag_list:
                 params["tag_list"] = tag_list
 
-            params["file"] = open(path, "rb")
+            params["file"] = open(path_to_open, "rb")
 
         result = self._send_form(url, params)
 
@@ -3929,7 +3963,15 @@ class FormPostHandler(urllib2.BaseHandler):
             buffer.write('Content-Disposition: form-data; name="%s"' % key)
             buffer.write('\r\n\r\n%s\r\n' % value)
         for (key, fd) in files:
-            filename = fd.name.split('/')[-1]
+            # On Windows, it's possible that we were forced to open a file
+            # with non-ascii characters as unicode. In that case, we need to
+            # encode it as a utf-8 string to remove unicode from the equation.
+            # If we don't, the mix of unicode and strings going into the
+            # buffer can cause UnicodeEncodeErrors to be raised.
+            filename = fd.name
+            if isinstance(filename, unicode):
+                filename = filename.encode("utf-8")
+            filename = filename.split('/')[-1]
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or 'application/octet-stream'
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
