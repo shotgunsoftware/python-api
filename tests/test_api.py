@@ -252,6 +252,23 @@ class TestShotgunApi(base.LiveTestBase):
 
         # Make sure that non-utf-8 encoded paths raise when they can't be
         # converted to utf-8.
+        #
+        # We need to touch the file we're going to test with first. We can't
+        # bundle a file with this filename in the repo due to some pip install
+        # problems on Windows. Note that the path below is utf-8 encoding of
+        # what we'll eventually encode as shift-jis.
+        file_path_s = os.path.join(this_dir, "./\xe3\x81\x94.shift-jis")
+        file_path_u = file_path_s.decode("utf-8")
+        if sys.platform.startswith("win"):
+            fh = open(file_path_u, "w")
+        else:
+            fh = open(file_path_s, "w")
+
+        try:
+            fh.write("This is just a test file with some random data in it.")
+        finally:
+            fh.close()
+
         u_path = os.path.abspath(
             os.path.expanduser(
                 glob.glob(os.path.join(unicode(this_dir), u'*.shift-jis'))[0]
@@ -278,6 +295,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         # cleanup
         os.remove(file_path)
+        os.remove(u_path)
 
     def test_upload_thumbnail_in_create(self):
         """Upload a thumbnail via the create method"""
