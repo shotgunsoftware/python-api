@@ -4,6 +4,12 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.0.37
+=====================
+
+- Proper support added for unicode and utf-8 string paths given to upload methods, and a sane error is raised when an unusable string encoding is used.
+- Adds support for querying preferences from Shotgun via the new preferences_read method.
+
 v3.0.36
 =====================
 
