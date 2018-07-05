@@ -257,7 +257,13 @@ class TestShotgunApi(base.LiveTestBase):
         # bundle a file with this filename in the repo due to some pip install
         # problems on Windows. Note that the path below is utf-8 encoding of
         # what we'll eventually encode as shift-jis.
-        fh = open(os.path.join(this_dir, "./\xe3\x81\x94.shift-jis"), "w")
+        file_path_s = os.path.join(this_dir, "./\xe3\x81\x94.shift-jis")
+        file_path_u = file_path_s.decode("utf-8")
+        if sys.platform.startswith("win"):
+            fh = open(file_path_u, "w")
+        else:
+            fh = open(file_path_s, "w")
+
         try:
             fh.write("This is just a test file with some random data in it.")
         finally:
