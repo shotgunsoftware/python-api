@@ -2276,11 +2276,11 @@ class Shotgun(object):
         is_thumbnail = (field_name in ["thumb_image", "filmstrip_thumb_image", "image",
                                        "filmstrip_image"])
 
-        # Version.sg_uploaded_movie is handled as a special case and uploaded
-        # directly to Cloud storage
+        # Supported types can be directly uploaded to Cloud storage
+        supported_s3_types = self.server_info.get('s3_enabled_upload_types', {})
         if self.server_info.get("s3_direct_uploads_enabled", False) \
-                and entity_type == "Version" and field_name == "sg_uploaded_movie":
-            return self._upload_to_storage(entity_type, entity_id, path, field_name, display_name,
+                and field_name in supported_s3_types[entity_type]:
+             return self._upload_to_storage(entity_type, entity_id, path, field_name, display_name,
                                            tag_list, is_thumbnail)
         else:
             return self._upload_to_sg(entity_type, entity_id, path, field_name, display_name,
