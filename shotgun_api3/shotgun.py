@@ -2279,7 +2279,7 @@ class Shotgun(object):
         # Supported types can be directly uploaded to Cloud storage
         supported_s3_types = self.server_info.get('s3_enabled_upload_types', {})
         if self.server_info.get("s3_direct_uploads_enabled", False) \
-                and field_name in supported_s3_types[entity_type]:
+                and field_name in supported_s3_types.get(entity_type, []):
              return self._upload_to_storage(entity_type, entity_id, path, field_name, display_name,
                                            tag_list, is_thumbnail)
         else:
