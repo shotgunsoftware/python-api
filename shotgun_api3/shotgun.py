@@ -2277,13 +2277,7 @@ class Shotgun(object):
                                        "filmstrip_image"])
 
         # Supported types can be directly uploaded to Cloud storage
-        supported_s3_types = self.server_info.get('s3_enabled_upload_types', {})
-        supported_fields = supported_s3_types.get(entity_type, [])
-        if self.server_info.get("s3_direct_uploads_enabled", False) \
-                and (field_name in supported_fields or
-                        field_name in supported_s3_types.get("*", []) or
-                        (isinstance(supported_fields, list) and "*" in supported_fields) or
-                            supported_fields == "*"):
+        if self._requires_direct_s3_upload(entity_type, field_name):
             return self._upload_to_storage(entity_type, entity_id, path, field_name, display_name,
                                            tag_list, is_thumbnail)
         else:
@@ -3856,6 +3850,23 @@ class Shotgun(object):
         # Response is of the form: 1\n or 0\n to indicate success or failure of the call.
         if not str(result).startswith("1"):
             raise ShotgunError("Unable get upload part link: %s" % result)
+
+    def _requires_direct_s3_upload(self, entity_type, field_name):
+        """
+        Internal function that determines if an entity_type + field_name combination
+        should be uploaded to cloud storage.
+
+        :param str entity_type: The entity type of the file being uploaded.
+        :param str field_name: The matching field name for the file being uploaded.
+
+        :returns: Whether the field + entity type combination should be uploaded to cloud storage.
+        :rtype: bool
+        """
+        supported_s3_types = self.server_info.get('s3_enabled_upload_types', {})
+        supported_fields = supported_s3_types.get(entity_type, [])
+        return self.server_info.get("s3_direct_uploads_enabled", False) and \
+            (field_name in supported_fields or field_name in supported_s3_types.get("*", []) or
+                (isinstance(supported_fields, list) and "*" in supported_fields) or supported_fields == "*")
 
     def _send_form(self, url, params):
         """
