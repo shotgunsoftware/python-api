@@ -3856,17 +3856,41 @@ class Shotgun(object):
         Internal function that determines if an entity_type + field_name combination
         should be uploaded to cloud storage.
 
+        The info endpoint should return `s3_enabled_upload_types` which contains an object like the following:
+            {
+                'Version': ['sg_uploaded_movie'],
+                'Attachment': '*',
+                '*': ['this_file']
+            }
+
         :param str entity_type: The entity type of the file being uploaded.
         :param str field_name: The matching field name for the file being uploaded.
 
         :returns: Whether the field + entity type combination should be uploaded to cloud storage.
         :rtype: bool
         """
-        supported_s3_types = self.server_info.get('s3_enabled_upload_types', {})
-        supported_fields = supported_s3_types.get(entity_type, [])
-        return self.server_info.get("s3_direct_uploads_enabled", False) and \
-            (field_name in supported_fields or field_name in supported_s3_types.get("*", []) or
-                (isinstance(supported_fields, list) and "*" in supported_fields) or supported_fields == "*")
+        supported_s3_types = self.server_info.get('s3_enabled_upload_types') or {}
+        supported_fields = supported_s3_types.get(entity_type) or []
+        supported_star_fields = supported_s3_types.get("*") or []
+        # If direct uploads are enabled
+        if self.server_info.get("s3_direct_uploads_enabled", False):
+            # If field_name is part of a supported entity_type
+            if field_name in supported_fields or field_name in supported_star_fields:
+                return True
+            # If supported_fields is a string or a list with *
+            if isinstance(supported_fields, list) and "*" in supported_fields:
+                return True
+            elif supported_fields == "*":
+                return True
+            # If supported_star_fields is a list containing * or * as a string
+            if isinstance(supported_star_fields, list) and "*" in supported_star_fields:
+                return True
+            elif supported_star_fields == "*":
+                return True
+            # Support direct upload for old versions of shotgun
+            return entity_type == "Version" and field_name == "sg_uploaded_movie"
+        else:
+            return False
 
     def _send_form(self, url, params):
         """
