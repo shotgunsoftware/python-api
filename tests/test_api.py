@@ -415,6 +415,69 @@ class TestShotgunApi(base.LiveTestBase):
         f_thumb_id = self.sg.upload("Task", self.task['id'], path, 'filmstrip_image')
         self.assertTrue(isinstance(f_thumb_id, int))
 
+    def test_requires_direct_s3_upload(self):
+        """Test _requires_direct_s3_upload"""
+
+        upload_types = self.sg.server_info["s3_enabled_upload_types"]
+        direct_uploads_enabled = self.sg.server_info["s3_direct_uploads_enabled"]
+
+        self.sg.server_info["s3_enabled_upload_types"] = None
+        self.sg.server_info["s3_direct_uploads_enabled"] = None
+
+
+        # Test s3_enabled_upload_types and s3_direct_uploads_enabled not set
+        self.assertFalse(self.sg._requires_direct_s3_upload("Version", "sg_uploaded_movie"))
+
+        self.sg.server_info["s3_enabled_upload_types"] = {
+            "Version": ["sg_uploaded_movie"]
+        }
+
+        # Test direct_uploads_enabled not set
+        self.assertFalse(self.sg._requires_direct_s3_upload("Version", "sg_uploaded_movie"))
+
+        self.sg.server_info["s3_direct_uploads_enabled"] = True
+
+        # Test regular path
+        self.assertTrue(self.sg._requires_direct_s3_upload("Version", "sg_uploaded_movie"))
+        self.assertFalse(self.sg._requires_direct_s3_upload("Version", "abc"))
+        self.assertFalse(self.sg._requires_direct_s3_upload("Abc", "abc"))
+
+        # Test star field wildcard and arrays of fields
+        self.sg.server_info["s3_enabled_upload_types"] = {
+            "Version": ["sg_uploaded_movie", "test", "other"],
+            "Test": ["*"],
+            "Asset": "*"
+        }
+
+        self.assertTrue(self.sg._requires_direct_s3_upload("Version", "sg_uploaded_movie"))
+        self.assertTrue(self.sg._requires_direct_s3_upload("Version", "test"))
+        self.assertTrue(self.sg._requires_direct_s3_upload("Version", "other"))
+        self.assertTrue(self.sg._requires_direct_s3_upload("Test", "abc"))
+        self.assertTrue(self.sg._requires_direct_s3_upload("Asset", "test"))
+
+        # Test default allowed upload type
+        self.sg.server_info["s3_enabled_upload_types"] = None
+        self.assertTrue(self.sg._requires_direct_s3_upload("Version", "sg_uploaded_movie"))
+        self.assertFalse(self.sg._requires_direct_s3_upload("Version", "test"))
+
+        # Test star entity_type
+        self.sg.server_info["s3_enabled_upload_types"] = {
+            "*": ["sg_uploaded_movie", "test"]
+        }
+        self.assertTrue(self.sg._requires_direct_s3_upload("Something", "sg_uploaded_movie"))
+        self.assertTrue(self.sg._requires_direct_s3_upload("Version", "test"))
+        self.assertFalse(self.sg._requires_direct_s3_upload("Version", "other"))
+
+        # Test entity_type and field_name wildcard
+        self.sg.server_info["s3_enabled_upload_types"] = {
+            "*": "*"
+        }
+        self.assertTrue(self.sg._requires_direct_s3_upload("Something", "sg_uploaded_movie"))
+        self.assertTrue(self.sg._requires_direct_s3_upload("Version", "abc"))
+
+        self.sg.server_info["s3_enabled_upload_types"] = upload_types
+        self.sg.server_info["s3_direct_uploads_enabled"] = direct_uploads_enabled
+
     def test_linked_thumbnail_url(self):
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
