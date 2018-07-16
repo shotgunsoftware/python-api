@@ -424,7 +424,6 @@ class TestShotgunApi(base.LiveTestBase):
         self.sg.server_info["s3_enabled_upload_types"] = None
         self.sg.server_info["s3_direct_uploads_enabled"] = None
 
-
         # Test s3_enabled_upload_types and s3_direct_uploads_enabled not set
         self.assertFalse(self.sg._requires_direct_s3_upload("Version", "sg_uploaded_movie"))
 
