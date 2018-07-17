@@ -418,8 +418,8 @@ class TestShotgunApi(base.LiveTestBase):
     def test_requires_direct_s3_upload(self):
         """Test _requires_direct_s3_upload"""
 
-        upload_types = self.sg.server_info["s3_enabled_upload_types"]
-        direct_uploads_enabled = self.sg.server_info["s3_direct_uploads_enabled"]
+        upload_types = self.sg.server_info.get("s3_enabled_upload_types")
+        direct_uploads_enabled = self.sg.server_info.get("s3_direct_uploads_enabled")
 
         self.sg.server_info["s3_enabled_upload_types"] = None
         self.sg.server_info["s3_direct_uploads_enabled"] = None
