@@ -10,9 +10,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Authentication &mdash; python-api v3.0.34 documentation</title>
+  <title>Authentication &mdash; python-api v3.0.37 documentation</title>
   
 
+  
+  
   
   
 
@@ -24,24 +26,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="python-api v3.0.34 documentation" href="index.html"/>
-        <link rel="next" title="API Reference" href="reference.html"/>
-        <link rel="prev" title="Installation" href="installation.html"/> 
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="reference.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -90,7 +87,10 @@
     
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Authentication</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#user-based-authentication">User-based Authentication</a></li>
@@ -113,7 +113,9 @@
 
             
           
-       
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
     <div style='margin-top: 50px;
                 margin-left: 10px;
                 margin-right: 10px;
@@ -130,7 +132,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.34.<br>
+    <b>python-api</b> v3.0.37.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -139,6 +141,8 @@
 
     </div>
 
+
+
         </div>
       </div>
     </nav>
@@ -146,7 +150,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">python-api</a>
@@ -154,9 +158,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -171,7 +176,10 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
     
       <li><a href="index.html">Docs</a> &raquo;</li>
@@ -186,6 +194,8 @@
       </li>
     
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -196,8 +206,8 @@
 <p>In order to communicate with your Shotgun server via the API, you must provide valid authentication credentials. The API allows you to authenticate with user-based, or script-based credentials.</p>
 <div class="section" id="user-based-authentication">
 <h2>User-based Authentication<a class="headerlink" href="#user-based-authentication" title="Permalink to this headline">¶</a></h2>
-<p>When authenticating as a user, you provide your normal login and password when instantiating your <code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code> object. The actions performed by this instance will be limited to your permission level just as they are in the Shotgun web application.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
+<p>When authenticating as a user, you provide your normal login and password when instantiating your <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun</span></code> object. The actions performed by this instance will be limited to your permission level just as they are in the Shotgun web application.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
                           <span class="n">login</span><span class="o">=</span><span class="s2">&quot;rhendriks&quot;</span><span class="p">,</span>
                           <span class="n">password</span><span class="o">=</span><span class="s2">&quot;c0mPre$Hi0n&quot;</span><span class="p">)</span>
 </pre></div>
@@ -205,8 +215,8 @@
 </div>
 <div class="section" id="script-based-authentication">
 <h2>Script-based Authentication<a class="headerlink" href="#script-based-authentication" title="Permalink to this headline">¶</a></h2>
-<p>In order to authenticate as a script, your script must be <a class="reference internal" href="#setting-up-shotgun"><span class="std std-ref">registered with Shotgun and have a valid API key</span></a>. When creating your <code class="xref py py-class docutils literal"><span class="pre">shotgun_api3.Shotgun</span></code> object, provide the <code class="docutils literal"><span class="pre">script_name</span></code> and <code class="docutils literal"><span class="pre">api_key</span></code>.:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
+<p>In order to authenticate as a script, your script must be <a class="reference internal" href="#setting-up-shotgun"><span class="std std-ref">registered with Shotgun and have a valid API key</span></a>. When creating your <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun</span></code> object, provide the <code class="docutils literal notranslate"><span class="pre">script_name</span></code> and <code class="docutils literal notranslate"><span class="pre">api_key</span></code>.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
                           <span class="n">script_name</span><span class="o">=</span><span class="s2">&quot;compress&quot;</span><span class="p">,</span>
                           <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef&quot;</span><span class="p">)</span>
 </pre></div>
@@ -217,33 +227,33 @@
 </div>
 <div class="section" id="adding-script-users">
 <span id="setting-up-shotgun"></span><h3>Adding Script Users<a class="headerlink" href="#adding-script-users" title="Permalink to this headline">¶</a></h3>
-<p>If you&#8217;ll be using script-based authentication, you need to create a Script entity in Shotgun. To create a new key, click the + button on the &#8220;Scripts&#8221; page in the Admin section and give your script a useful name. It&#8217;s a good idea to add any other relevant information that be be helpful to your other friendly Shotgun users such as a description of what the script does that is using this key, the email address of the maintainer, etc.:</p>
+<p>If you’ll be using script-based authentication, you need to create a Script entity in Shotgun. To create a new key, click the + button on the “Scripts” page in the Admin section and give your script a useful name. It’s a good idea to add any other relevant information that be be helpful to your other friendly Shotgun users such as a description of what the script does that is using this key, the email address of the maintainer, etc.:</p>
 <img alt="_images/scripts_page.png" src="_images/scripts_page.png" />
-<p>Once you save your new Script entity, Shotgun will automatically generate an application key which will act as the script&#8217;s password. The key will look something like this: <code class="docutils literal"><span class="pre">0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef</span></code>.</p>
+<p>Once you save your new Script entity, Shotgun will automatically generate an application key which will act as the script’s password. The key will look something like this: <code class="docutils literal notranslate"><span class="pre">0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef</span></code>.</p>
 </div>
 <div class="section" id="why-have-different-application-keys-for-different-scripts">
 <h3>Why have different application keys for different scripts?<a class="headerlink" href="#why-have-different-application-keys-for-different-scripts" title="Permalink to this headline">¶</a></h3>
-<p>We recommend you create a new Script entity (and application key) for each script that is using script-based authentication so you can accurately log what scripts are doing what in case one of them causes problems. This will also allow you to better see what scripts are performing what actions in the EventLog. We&#8217;ve found that even though you may <em>think</em> you&#8217;ll probably never need to know, the extra 2 minutes of setup now can prevent hours of headache in the future.</p>
+<p>We recommend you create a new Script entity (and application key) for each script that is using script-based authentication so you can accurately log what scripts are doing what in case one of them causes problems. This will also allow you to better see what scripts are performing what actions in the EventLog. We’ve found that even though you may <em>think</em> you’ll probably never need to know, the extra 2 minutes of setup now can prevent hours of headache in the future.</p>
 </div>
 <div class="section" id="event-logging">
 <h3>Event Logging<a class="headerlink" href="#event-logging" title="Permalink to this headline">¶</a></h3>
-<p>By default, events generated by scripts using an script-based authentication are logged in Shotgun&#8217;s event log. You can turn this off by un-checking the &#8220;Generate Events&#8221; checkbox either in the script detail page or from the main Scripts admin page in Shotgun.</p>
+<p>By default, events generated by scripts using an script-based authentication are logged in Shotgun’s event log. You can turn this off by un-checking the “Generate Events” checkbox either in the script detail page or from the main Scripts admin page in Shotgun.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Turning off event logging will also prevent any email notifications from being triggered by your scripts since the email notifier relies on the event log to find events to notify for.</p>
 </div>
-<p>Scripts using user-based authentication will generate events similarly to if you were performing the same actions in the Shotgun web application, though there is some additional metadata stored in the <code class="docutils literal"><span class="pre">EventLogEntry</span></code> that identifies the event as created from a script acting on behalf of the user.</p>
+<p>Scripts using user-based authentication will generate events similarly to if you were performing the same actions in the Shotgun web application, though there is some additional metadata stored in the <code class="docutils literal notranslate"><span class="pre">EventLogEntry</span></code> that identifies the event as created from a script acting on behalf of the user.</p>
 <div class="section" id="why-would-you-want-to-turn-event-logging-off-for-scripts">
 <h4>Why would you want to turn event logging off for scripts?<a class="headerlink" href="#why-would-you-want-to-turn-event-logging-off-for-scripts" title="Permalink to this headline">¶</a></h4>
-<p>It is an optimization that is not used often, but some users have integration scripts that are pushing data into Shotgun just for reference, like publishes from their asset management system. This publish data is never changed later, so the data itself has the entire history, and the events would just clutter the event log. The event log can grow very large. So if you have no need to audit the history of what your script does, and it&#8217;s generating an large amount of event log entries, you may find it&#8217;s not necessary to create these events.</p>
+<p>It is an optimization that is not used often, but some users have integration scripts that are pushing data into Shotgun just for reference, like publishes from their asset management system. This publish data is never changed later, so the data itself has the entire history, and the events would just clutter the event log. The event log can grow very large. So if you have no need to audit the history of what your script does, and it’s generating an large amount of event log entries, you may find it’s not necessary to create these events.</p>
 </div>
 </div>
 </div>
 <div class="section" id="permissions">
 <h2>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h2>
 <p>Users and scripts are both bound by the restrictions of their permission role in Shotgun. The permission role is assigned by the <strong>Permission Role</strong> field for each entity type.</p>
-<p>For Scripts, the default permission role is &#8220;API Admin User&#8221; which allows full access to create, update, and delete entities and fields, including editing the &#8220;date created&#8221; audit field and creating event log entries. If you have other permission roles for ApiUsers, you can set the default role that will be assigned when a new script is created, in your Shotgun site preferences.</p>
-<p>When using user-based authentication in your script, it will be bound by the permission role assigned to you in Shotgun. For example, if you don&#8217;t have access to edit the status field on Shots, your script won&#8217;t be able to either. Attempting to perform actions that are prohibited by permissions will raise an appropriate exception.</p>
+<p>For Scripts, the default permission role is “API Admin User” which allows full access to create, update, and delete entities and fields, including editing the “date created” audit field and creating event log entries. If you have other permission roles for ApiUsers, you can set the default role that will be assigned when a new script is created, in your Shotgun site preferences.</p>
+<p>When using user-based authentication in your script, it will be bound by the permission role assigned to you in Shotgun. For example, if you don’t have access to edit the status field on Shots, your script won’t be able to either. Attempting to perform actions that are prohibited by permissions will raise an appropriate exception.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
 <p class="last"><a class="reference external" href="https://support.shotgunsoftware.com/entries/122037-Permissions">Shotgun Support: Permissions</a></p>
@@ -253,15 +263,16 @@
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="reference.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="reference.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -270,7 +281,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Autodesk.
+        &copy; Copyright 2018, Autodesk.
 
     </p>
   </div> 
@@ -291,10 +302,12 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v3.0.34',
+            VERSION:'v3.0.37',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>
@@ -303,19 +316,13 @@
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-  
  
 
 <script>

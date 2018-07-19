@@ -10,9 +10,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Update A Shot &mdash; python-api v3.0.34 documentation</title>
+  <title>Update A Shot &mdash; python-api v3.0.37 documentation</title>
   
 
+  
+  
   
   
 
@@ -24,25 +26,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="python-api v3.0.34 documentation" href="../../index.html"/>
-        <link rel="up" title="Examples" href="../tutorials.html"/>
-        <link rel="next" title="Delete A Shot" href="basic_delete_shot.html"/>
-        <link rel="prev" title="Find a Shot" href="basic_find_shot.html"/> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Delete A Shot" href="basic_delete_shot.html" />
+    <link rel="prev" title="Find a Shot" href="basic_find_shot.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -91,7 +87,10 @@
     
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
@@ -102,12 +101,7 @@
 <li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a Shotgun API instance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_create_shot.html">Create A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_find_shot.html">Find a Shot</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Update A Shot</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#building-the-data-and-calling-update">Building the data and calling <code class="docutils literal"><span class="pre">update()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="#result">Result</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#the-complete-example">The Complete Example</a></li>
-</ul>
-</li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Update A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_delete_shot.html">Delete A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_create_shot_task_template.html">Create a Shot with a Task Template</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_create_version_link_shot.html">Create a Version Linked to a Shot</a></li>
@@ -127,7 +121,9 @@
 
             
           
-       
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
     <div style='margin-top: 50px;
                 margin-left: 10px;
                 margin-right: 10px;
@@ -144,7 +140,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.34.<br>
+    <b>python-api</b> v3.0.37.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -153,6 +149,8 @@
 
     </div>
 
+
+
         </div>
       </div>
     </nav>
@@ -160,7 +158,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -168,9 +166,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -185,7 +184,10 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
@@ -204,6 +206,8 @@
       </li>
     
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -212,31 +216,31 @@
   <div class="section" id="update-a-shot">
 <h1>Update A Shot<a class="headerlink" href="#update-a-shot" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="building-the-data-and-calling-update">
-<h2>Building the data and calling <code class="xref py py-meth docutils literal"><span class="pre">update()</span></code><a class="headerlink" href="#building-the-data-and-calling-update" title="Permalink to this headline">¶</a></h2>
-<p>To update a Shot, you need to provide the <code class="docutils literal"><span class="pre">id</span></code> of the Shot and a list of fields you want to
+<h2>Building the data and calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code><a class="headerlink" href="#building-the-data-and-calling-update" title="Permalink to this headline">¶</a></h2>
+<p>To update a Shot, you need to provide the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the Shot and a list of fields you want to
 update.:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
     <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span>
     <span class="p">}</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="mi">40435</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will update the <code class="docutils literal"><span class="pre">description</span></code> and the <code class="docutils literal"><span class="pre">sg_status_list</span></code> fields for the Shot with <code class="docutils literal"><span class="pre">id</span></code> of
+<p>This will update the <code class="docutils literal notranslate"><span class="pre">description</span></code> and the <code class="docutils literal notranslate"><span class="pre">sg_status_list</span></code> fields for the Shot with <code class="docutils literal notranslate"><span class="pre">id</span></code> of
 <strong>40435</strong>.</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">data</span></code> is a list of key/value pairs where the key is the field name to update and the value to
+<li><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the field name to update and the value to
 update it to.</li>
-<li><code class="docutils literal"><span class="pre">sg</span></code> is the Shotgun API instance.</li>
-<li><code class="docutils literal"><span class="pre">update()</span></code> is the <code class="xref py py-meth docutils literal"><span class="pre">shotgun_api3.Shotgun.update()</span></code> API method we are calling. We provide it
-with the entity type we&#8217;re updating, the <code class="docutils literal"><span class="pre">id</span></code> of the entity, and the data we&#8217;re updating it
+<li><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the Shotgun API instance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">update()</span></code> is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun.update()</span></code> API method we are calling. We provide it
+with the entity type we’re updating, the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the entity, and the data we’re updating it
 with.</li>
 </ul>
 </div>
 <div class="section" id="result">
 <h2>Result<a class="headerlink" href="#result" title="Permalink to this headline">¶</a></h2>
-<p>The variable <code class="docutils literal"><span class="pre">result</span></code> now contains the Shot object that with the updated values.:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<p>The variable <code class="docutils literal notranslate"><span class="pre">result</span></code> now contains the Shot object that with the updated values.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Opening establishing shot with titles and fuzzy bunnies&#39;</span><span class="p">,</span>
     <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span>
     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">,</span>
@@ -244,15 +248,15 @@ with.</li>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>In addition, Shotgun has returned the <code class="docutils literal"><span class="pre">id</span></code> for the Shot, as well as a <code class="docutils literal"><span class="pre">type</span></code> value. <code class="docutils literal"><span class="pre">type</span></code>
+<p>In addition, Shotgun has returned the <code class="docutils literal notranslate"><span class="pre">id</span></code> for the Shot, as well as a <code class="docutils literal notranslate"><span class="pre">type</span></code> value. <code class="docutils literal notranslate"><span class="pre">type</span></code>
 is provided for convenience simply to help you identify what entity type this dictionary represents.
 It does not correspond to any field in Shotgun.</p>
-<p>Shotgun will <em>always</em> return the <code class="docutils literal"><span class="pre">id</span></code> and <code class="docutils literal"><span class="pre">type</span></code> keys in the dictionary when there are results
+<p>Shotgun will <em>always</em> return the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys in the dictionary when there are results
 representing an entity.</p>
 </div>
 <div class="section" id="the-complete-example">
 <h2>The Complete Example<a class="headerlink" href="#the-complete-example" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Imports</span>
@@ -271,7 +275,7 @@ representing an entity.</p>
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Main</span>
 <span class="c1"># --------------------------------------</span>
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
 
     <span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="n">SERVER_PATH</span><span class="p">,</span> <span class="n">SCRIPT_NAME</span><span class="p">,</span> <span class="n">SCRIPT_KEY</span><span class="p">)</span>
 
@@ -287,7 +291,7 @@ representing an entity.</p>
 </pre></div>
 </div>
 <p>And here is the output:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Opening establishing shot with titles and fuzzy bunnies&#39;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Opening establishing shot with titles and fuzzy bunnies&#39;</span><span class="p">,</span>
  <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">40435</span><span class="p">,</span>
  <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span>
  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">}</span>
@@ -298,15 +302,16 @@ representing an entity.</p>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="basic_delete_shot.html" class="btn btn-neutral float-right" title="Delete A Shot" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="basic_delete_shot.html" class="btn btn-neutral float-right" title="Delete A Shot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="basic_find_shot.html" class="btn btn-neutral" title="Find a Shot" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="basic_find_shot.html" class="btn btn-neutral" title="Find a Shot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -315,7 +320,7 @@ representing an entity.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Autodesk.
+        &copy; Copyright 2018, Autodesk.
 
     </p>
   </div> 
@@ -336,10 +341,12 @@ representing an entity.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v3.0.34',
+            VERSION:'v3.0.37',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -348,19 +355,13 @@ representing an entity.</p>
 
   
 
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-  
  
 
 <script>

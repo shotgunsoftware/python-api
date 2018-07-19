@@ -10,9 +10,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>logging &mdash; python-api v3.0.34 documentation</title>
+  <title>logging &mdash; python-api v3.0.37 documentation</title>
   
 
+  
+  
   
   
 
@@ -24,23 +26,17 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="python-api v3.0.34 documentation" href="../index.html"/>
-        <link rel="up" title="Module code" href="index.html"/> 
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -89,7 +85,10 @@
     
             
             
-                <ul>
+              
+            
+            
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference.html">API Reference</a></li>
@@ -99,7 +98,9 @@
 
             
           
-       
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
     <div style='margin-top: 50px;
                 margin-left: 10px;
                 margin-right: 10px;
@@ -116,7 +117,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.34.<br>
+    <b>python-api</b> v3.0.37.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -125,6 +126,8 @@
 
     </div>
 
+
+
         </div>
       </div>
     </nav>
@@ -132,7 +135,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">python-api</a>
@@ -140,9 +143,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -157,7 +161,10 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
@@ -169,11 +176,11 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
-        
       </li>
     
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -256,7 +263,7 @@
 <span class="c1"># _srcfile is used when walking the stack to check when we&#39;ve got the first</span>
 <span class="c1"># caller stack frame.</span>
 <span class="c1">#</span>
-<span class="n">_srcfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">currentframe</span><span class="o">.</span><span class="n">__code__</span><span class="o">.</span><span class="n">co_filename</span><span class="p">)</span>
+<span class="n">_srcfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">currentframe</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_filename</span><span class="p">)</span>
 
 <span class="c1"># _srcfile is only used in conjunction with sys._getframe().</span>
 <span class="c1"># To provide compatibility with older versions of Python, set _srcfile</span>
@@ -519,7 +526,7 @@
 <span class="sd">    instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">rv</span> <span class="o">=</span> <span class="n">LogRecord</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">rv</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="n">rv</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rv</span>
 
 <span class="c1">#---------------------------------------------------------------------------</span>
@@ -647,7 +654,15 @@
         <span class="n">record</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">usesTime</span><span class="p">():</span>
             <span class="n">record</span><span class="o">.</span><span class="n">asctime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatTime</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datefmt</span><span class="p">)</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span> <span class="o">%</span> <span class="n">record</span><span class="o">.</span><span class="n">__dict__</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span> <span class="o">%</span> <span class="n">record</span><span class="o">.</span><span class="vm">__dict__</span>
+        <span class="k">except</span> <span class="ne">UnicodeDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Issue 25664. The logger name may be Unicode. Try again ...</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">record</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span> <span class="o">%</span> <span class="n">record</span><span class="o">.</span><span class="vm">__dict__</span>
+            <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span>
         <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">exc_info</span><span class="p">:</span>
             <span class="c1"># Cache the traceback text to avoid converting it multiple times</span>
             <span class="c1"># (it&#39;s constant anyway)</span>
@@ -810,12 +825,19 @@
     <span class="c1"># to prevent race conditions and failures during interpreter shutdown.</span>
     <span class="n">acquire</span><span class="p">,</span> <span class="n">release</span><span class="p">,</span> <span class="n">handlers</span> <span class="o">=</span> <span class="n">_acquireLock</span><span class="p">,</span> <span class="n">_releaseLock</span><span class="p">,</span> <span class="n">_handlerList</span>
     <span class="k">if</span> <span class="n">acquire</span> <span class="ow">and</span> <span class="n">release</span> <span class="ow">and</span> <span class="n">handlers</span><span class="p">:</span>
-        <span class="n">acquire</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">wr</span> <span class="ow">in</span> <span class="n">handlers</span><span class="p">:</span>
-                <span class="n">handlers</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wr</span><span class="p">)</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="n">release</span><span class="p">()</span>
+            <span class="n">acquire</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">wr</span> <span class="ow">in</span> <span class="n">handlers</span><span class="p">:</span>
+                    <span class="n">handlers</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wr</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="n">release</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="c1"># https://bugs.python.org/issue21149 - If the RLock object behind</span>
+            <span class="c1"># acquire() and release() has been partially finalized you may see</span>
+            <span class="c1"># an error about NoneType not being callable.  Absolutely nothing</span>
+            <span class="c1"># we can do in this GC during process shutdown situation.  Eat it.</span>
+            <span class="k">pass</span>
 
 <span class="k">def</span> <span class="nf">_addHandlerRef</span><span class="p">(</span><span class="n">handler</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -841,7 +863,7 @@
 <span class="sd">        Initializes the instance - basically setting the formatter to None</span>
 <span class="sd">        and the filter list to empty.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">Filterer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">Filterer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">_checkLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1004,7 +1026,7 @@
 
 <span class="sd">        If stream is not specified, sys.stderr is used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">Handler</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">Handler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">stream</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">stream</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">stream</span>
@@ -1041,7 +1063,7 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">unicode</span><span class="p">)</span> <span class="ow">and</span>
                         <span class="nb">getattr</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="s1">&#39;encoding&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
-                        <span class="n">ufs</span> <span class="o">=</span> <span class="s1">u&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="n">ufs</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;</span><span class="si">%s</span><span class="se">\n</span><span class="s1">&#39;</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ufs</span> <span class="o">%</span> <span class="n">msg</span><span class="p">)</span>
                         <span class="k">except</span> <span class="ne">UnicodeEncodeError</span><span class="p">:</span>
@@ -1081,10 +1103,10 @@
         <span class="k">if</span> <span class="n">delay</span><span class="p">:</span>
             <span class="c1">#We don&#39;t open the stream, but we still need to call the</span>
             <span class="c1">#Handler constructor to set level, formatter, lock etc.</span>
-            <span class="n">Handler</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">Handler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">StreamHandler</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">())</span>
+            <span class="n">StreamHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1170,7 +1192,7 @@
     <span class="k">if</span> <span class="n">klass</span> <span class="o">!=</span> <span class="n">Logger</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="n">Logger</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;logger not derived from logging.Logger: &quot;</span>
-                            <span class="o">+</span> <span class="n">klass</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+                            <span class="o">+</span> <span class="n">klass</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
     <span class="k">global</span> <span class="n">_loggerClass</span>
     <span class="n">_loggerClass</span> <span class="o">=</span> <span class="n">klass</span>
 
@@ -1239,7 +1261,7 @@
         <span class="k">if</span> <span class="n">klass</span> <span class="o">!=</span> <span class="n">Logger</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="n">Logger</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;logger not derived from logging.Logger: &quot;</span>
-                                <span class="o">+</span> <span class="n">klass</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+                                <span class="o">+</span> <span class="n">klass</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loggerClass</span> <span class="o">=</span> <span class="n">klass</span>
 
     <span class="k">def</span> <span class="nf">_fixupParents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alogger</span><span class="p">):</span>
@@ -1302,7 +1324,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the logger with a name and an optional level.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">Filterer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">Filterer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">_checkLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1396,7 +1418,7 @@
 
 <span class="sd">        logger.log(level, &quot;We have a %s&quot;, &quot;mysterious problem&quot;, exc_info=1)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">long</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">raiseExceptions</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;level must be an integer&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1433,9 +1455,9 @@
         <span class="n">rv</span> <span class="o">=</span> <span class="n">LogRecord</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">lno</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">exc_info</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">extra</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">extra</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;asctime&quot;</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="n">rv</span><span class="o">.</span><span class="n">__dict__</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;asctime&quot;</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="n">rv</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Attempt to overwrite </span><span class="si">%r</span><span class="s2"> in LogRecord&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
-                <span class="n">rv</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">extra</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="n">rv</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">extra</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">rv</span>
 
     <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1568,7 +1590,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the logger with the name &quot;root&quot;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
 
 <span class="n">_loggerClass</span> <span class="o">=</span> <span class="n">Logger</span>
 
@@ -1919,6 +1941,7 @@
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
   
@@ -1927,7 +1950,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Autodesk.
+        &copy; Copyright 2018, Autodesk.
 
     </p>
   </div> 
@@ -1948,10 +1971,12 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'v3.0.34',
+            VERSION:'v3.0.37',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../_static/jquery.js"></script>
@@ -1960,19 +1985,13 @@
 
   
 
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-  
  
 
 <script>

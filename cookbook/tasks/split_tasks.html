@@ -10,9 +10,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Split Tasks &mdash; python-api v3.0.34 documentation</title>
+  <title>Split Tasks &mdash; python-api v3.0.37 documentation</title>
   
 
+  
+  
   
   
 
@@ -24,25 +26,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="python-api v3.0.34 documentation" href="../../index.html"/>
-        <link rel="up" title="Working With Tasks" href="../tasks.html"/>
-        <link rel="next" title="Smart Cut Fields" href="../smart_cut_fields.html"/>
-        <link rel="prev" title="Task Dependencies" href="task_dependencies.html"/> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Smart Cut Fields" href="../smart_cut_fields.html" />
+    <link rel="prev" title="Task Dependencies" href="task_dependencies.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -91,7 +87,10 @@
     
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
@@ -104,19 +103,7 @@
 <li class="toctree-l3"><a class="reference internal" href="task_dependencies.html">Task Dependencies</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Split Tasks</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#how-do-splits-influence-dates-and-dates-influence-splits">How Do Splits Influence Dates And Dates Influence Splits</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#examples">Examples</a><ul>
-<li class="toctree-l6"><a class="reference internal" href="#start-date-due-date-and-duration-being-ignored">start_date, due_date and duration being ignored</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#moving-the-start-date-of-a-split-task">Moving the start_date of a split task</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#moving-the-due-date-of-a-split-task">Moving the due_date of a split task</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#setting-a-longer-duration">Setting a longer duration</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#setting-a-shorter-duration">Setting a shorter duration</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#another-example-of-shorter-duration">Another example of shorter duration</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#setting-the-due-date-in-a-gap">Setting the due_date in a gap</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="#how-do-splits-influence-dates-and-dates-influence-splits">How Do Splits Influence Dates And Dates Influence Splits</a></li>
 </ul>
 </li>
 </ul>
@@ -129,7 +116,9 @@
 
             
           
-       
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
     <div style='margin-top: 50px;
                 margin-left: 10px;
                 margin-right: 10px;
@@ -146,7 +135,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.34.<br>
+    <b>python-api</b> v3.0.37.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -155,6 +144,8 @@
 
     </div>
 
+
+
         </div>
       </div>
     </nav>
@@ -162,7 +153,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -170,9 +161,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -187,7 +179,10 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
@@ -206,6 +201,8 @@
       </li>
     
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -217,10 +214,10 @@
 further, a good understanding of <a class="reference internal" href="updating_tasks.html#updating-tasks"><span class="std std-ref">how Shotgun handles task dates is useful</span></a>.</p>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>The Task entity has a field called <code class="docutils literal"><span class="pre">splits</span></code> which is a list of dictionaries. Each dictionary
-in the list has two string keys, <code class="docutils literal"><span class="pre">start</span></code> and <code class="docutils literal"><span class="pre">end</span></code>, who&#8217;s values are strings representing dates
-in the <code class="docutils literal"><span class="pre">YYYY-mm-dd</span></code> format.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-11&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-12&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-18&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-19&#39;</span><span class="p">}]</span>
+<p>The Task entity has a field called <code class="docutils literal notranslate"><span class="pre">splits</span></code> which is a list of dictionaries. Each dictionary
+in the list has two string keys, <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code>, who’s values are strings representing dates
+in the <code class="docutils literal notranslate"><span class="pre">YYYY-mm-dd</span></code> format.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-11&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-12&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-18&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-19&#39;</span><span class="p">}]</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -233,7 +230,7 @@ are not gaps.</li>
 </ul>
 <p>If there are multiple splits but there between two or more splits there is no gap, an error will be
 raised. For example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;splits&#39;</span><span class="p">:[{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-10&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-11&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-12&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-14&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-19&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-20&#39;</span><span class="p">}]})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;splits&#39;</span><span class="p">:[{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-10&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-11&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-12&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-14&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-19&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-20&#39;</span><span class="p">}]})</span>
 <span class="gt">Traceback (most recent call last):</span>
   File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
   File <span class="nb">&quot;/shotgun/src/python-api/shotgun_api3/shotgun.py&quot;</span>, line <span class="m">600</span>, in <span class="n">update</span>
@@ -245,28 +242,28 @@ raised. For example:</p>
     <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">Fault</span><span class="p">:</span> <span class="n">API</span> <span class="n">update</span><span class="p">()</span> <span class="n">CRUD</span> <span class="n">ERROR</span> <span class="c1">#5: Update failed for [Task.splits]: (task.rb) The start date in split segment 2 is only one calendar day away from  the end date of the previous segment. There must be calendar days between split segments.</span>
 </pre></div>
 </div>
-<p>Alternately, a split value can be set to <code class="docutils literal"><span class="pre">None</span></code> to remove splits (you can also use an empty list).
-This will preserve the <code class="docutils literal"><span class="pre">start_date</span></code> and <code class="docutils literal"><span class="pre">due_date</span></code> values but recalculate the <code class="docutils literal"><span class="pre">duration</span></code> value
+<p>Alternately, a split value can be set to <code class="docutils literal notranslate"><span class="pre">None</span></code> to remove splits (you can also use an empty list).
+This will preserve the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">due_date</span></code> values but recalculate the <code class="docutils literal notranslate"><span class="pre">duration</span></code> value
 while appropriately considering all workday rules in effect.</p>
 </div>
 <div class="section" id="how-do-splits-influence-dates-and-dates-influence-splits">
 <h2>How Do Splits Influence Dates And Dates Influence Splits<a class="headerlink" href="#how-do-splits-influence-dates-and-dates-influence-splits" title="Permalink to this headline">¶</a></h2>
 <ul>
-<li><p class="first">If splits are specified the supplied <code class="docutils literal"><span class="pre">start_date</span></code>, <code class="docutils literal"><span class="pre">due_date</span></code> and <code class="docutils literal"><span class="pre">duration</span></code> fields will be ignored.</p>
+<li><p class="first">If splits are specified the supplied <code class="docutils literal notranslate"><span class="pre">start_date</span></code>, <code class="docutils literal notranslate"><span class="pre">due_date</span></code> and <code class="docutils literal notranslate"><span class="pre">duration</span></code> fields will be ignored.</p>
 </li>
-<li><p class="first">The <code class="docutils literal"><span class="pre">start_date</span></code> will be inferred from the earliest split.</p>
+<li><p class="first">The <code class="docutils literal notranslate"><span class="pre">start_date</span></code> will be inferred from the earliest split.</p>
 </li>
-<li><p class="first">The <code class="docutils literal"><span class="pre">due_date</span></code> will be inferred from the last split.</p>
+<li><p class="first">The <code class="docutils literal notranslate"><span class="pre">due_date</span></code> will be inferred from the last split.</p>
 </li>
-<li><p class="first">If the <code class="docutils literal"><span class="pre">start_date</span></code> is changed on a task that has splits the first split will be moved to start
-on the new <code class="docutils literal"><span class="pre">start_date</span></code> and all further splits will be moved while maintaining gap lengths
+<li><p class="first">If the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> is changed on a task that has splits the first split will be moved to start
+on the new <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and all further splits will be moved while maintaining gap lengths
 between splits and respecting workday rules.</p>
 </li>
-<li><p class="first">If the <code class="docutils literal"><span class="pre">due_date</span></code> is changed on a task that has splits the last split will be moved to end on
-the new <code class="docutils literal"><span class="pre">due_date</span></code> and all prior splits will be moved while maintaining gap lengths between
+<li><p class="first">If the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> is changed on a task that has splits the last split will be moved to end on
+the new <code class="docutils literal notranslate"><span class="pre">due_date</span></code> and all prior splits will be moved while maintaining gap lengths between
 splits and respecting workday rules.</p>
 </li>
-<li><p class="first">If the <code class="docutils literal"><span class="pre">duration</span></code> is changed two scenarios are possible</p>
+<li><p class="first">If the <code class="docutils literal notranslate"><span class="pre">duration</span></code> is changed two scenarios are possible</p>
 <blockquote>
 <div><ul class="simple">
 <li>In the case of a longer duration, additional days will be added to the end of the last split</li>
@@ -281,7 +278,7 @@ removed or shortened until the new duration is met.</li>
 <p>Throughout the following examples, each successive one will build on the previous.</p>
 <div class="section" id="start-date-due-date-and-duration-being-ignored">
 <h4>start_date, due_date and duration being ignored<a class="headerlink" href="#start-date-due-date-and-duration-being-ignored" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
     <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-06&#39;</span><span class="p">,</span>
     <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-23&#39;</span><span class="p">,</span>
     <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
@@ -307,7 +304,7 @@ removed or shortened until the new duration is met.</li>
 </div>
 <div class="section" id="moving-the-start-date-of-a-split-task">
 <h4>Moving the start_date of a split task<a class="headerlink" href="#moving-the-start-date-of-a-split-task" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
     <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-10&#39;</span>
 <span class="p">})</span>
 
@@ -326,7 +323,7 @@ removed or shortened until the new duration is met.</li>
 </div>
 <div class="section" id="moving-the-due-date-of-a-split-task">
 <h4>Moving the due_date of a split task<a class="headerlink" href="#moving-the-due-date-of-a-split-task" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
     <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-19&#39;</span>
 <span class="p">})</span>
 
@@ -345,7 +342,7 @@ removed or shortened until the new duration is met.</li>
 </div>
 <div class="section" id="setting-a-longer-duration">
 <h4>Setting a longer duration<a class="headerlink" href="#setting-a-longer-duration" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
     <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">4200</span>
 <span class="p">})</span>
 
@@ -365,7 +362,7 @@ removed or shortened until the new duration is met.</li>
 </div>
 <div class="section" id="setting-a-shorter-duration">
 <h4>Setting a shorter duration<a class="headerlink" href="#setting-a-shorter-duration" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
     <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">2400</span>
 <span class="p">})</span>
 
@@ -385,10 +382,10 @@ removed or shortened until the new duration is met.</li>
 </div>
 <div class="section" id="another-example-of-shorter-duration">
 <h4>Another example of shorter duration<a class="headerlink" href="#another-example-of-shorter-duration" title="Permalink to this headline">¶</a></h4>
-<p>We won&#8217;t be using the previous result for this example but rather, the following:</p>
+<p>We won’t be using the previous result for this example but rather, the following:</p>
 <img alt="../../_images/split_tasks_6.png" src="../../_images/split_tasks_6.png" />
-<p>who&#8217;s duration we will shorten past the last split.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+<p>who’s duration we will shorten past the last split.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
     <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">1800</span>
 <span class="p">})</span>
 
@@ -410,9 +407,9 @@ removed or shortened until the new duration is met.</li>
 <h4>Setting the due_date in a gap<a class="headerlink" href="#setting-the-due-date-in-a-gap" title="Permalink to this headline">¶</a></h4>
 <p>When a due date is set in a gap later splits are removed and the day of the due date is considered
 a day when work will be done.</p>
-<p>For this example let&#8217;s assume as a starting point the result of the 5th example:</p>
+<p>For this example let’s assume as a starting point the result of the 5th example:</p>
 <img alt="../../_images/split_tasks_8.png" src="../../_images/split_tasks_8.png" />
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
     <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-13&#39;</span>
 <span class="p">})</span>
 
@@ -436,15 +433,16 @@ a day when work will be done.</p>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../smart_cut_fields.html" class="btn btn-neutral float-right" title="Smart Cut Fields" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../smart_cut_fields.html" class="btn btn-neutral float-right" title="Smart Cut Fields" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="task_dependencies.html" class="btn btn-neutral" title="Task Dependencies" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="task_dependencies.html" class="btn btn-neutral" title="Task Dependencies" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -453,7 +451,7 @@ a day when work will be done.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Autodesk.
+        &copy; Copyright 2018, Autodesk.
 
     </p>
   </div> 
@@ -474,10 +472,12 @@ a day when work will be done.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v3.0.34',
+            VERSION:'v3.0.37',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -486,19 +486,13 @@ a day when work will be done.</p>
 
   
 
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-  
  
 
 <script>

@@ -10,9 +10,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Create a Shot with a Task Template &mdash; python-api v3.0.34 documentation</title>
+  <title>Create a Shot with a Task Template &mdash; python-api v3.0.37 documentation</title>
   
 
+  
+  
   
   
 
@@ -24,25 +26,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="python-api v3.0.34 documentation" href="../../index.html"/>
-        <link rel="up" title="Examples" href="../tutorials.html"/>
-        <link rel="next" title="Create a Version Linked to a Shot" href="basic_create_version_link_shot.html"/>
-        <link rel="prev" title="Delete A Shot" href="basic_delete_shot.html"/> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Create a Version Linked to a Shot" href="basic_create_version_link_shot.html" />
+    <link rel="prev" title="Delete A Shot" href="basic_delete_shot.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -91,7 +87,10 @@
     
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
@@ -104,13 +103,7 @@
 <li class="toctree-l4"><a class="reference internal" href="basic_find_shot.html">Find a Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_update_shot.html">Update A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_delete_shot.html">Delete A Shot</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Create a Shot with a Task Template</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#find-the-task-template">Find the Task Template</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#the-resulting-task-template">The Resulting Task Template</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#create-the-shot">Create the Shot</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#result">Result</a></li>
-</ul>
-</li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Create a Shot with a Task Template</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_create_version_link_shot.html">Create a Version Linked to a Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_upload_thumbnail_version.html">Upload a Thumbnail for a Version</a></li>
 </ul>
@@ -128,7 +121,9 @@
 
             
           
-       
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
     <div style='margin-top: 50px;
                 margin-left: 10px;
                 margin-right: 10px;
@@ -145,7 +140,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.34.<br>
+    <b>python-api</b> v3.0.37.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -154,6 +149,8 @@
 
     </div>
 
+
+
         </div>
       </div>
     </nav>
@@ -161,7 +158,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -169,9 +166,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -186,7 +184,10 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
@@ -205,6 +206,8 @@
       </li>
     
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -215,47 +218,47 @@
 <p>Creating a new Shot with a Task Template is just like linking it to another entity, but Shotgun will apply the Task Template in the background and create the appropriate Tasks on the Shot for you.</p>
 <div class="section" id="find-the-task-template">
 <h2>Find the Task Template<a class="headerlink" href="#find-the-task-template" title="Permalink to this headline">¶</a></h2>
-<p>First we need to find the Task Template we&#8217;re going to apply. We&#8217;ll assume you know the name of the Task Template you want to use.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span><span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;3D Shot Template&#39;</span> <span class="p">]]</span>
+<p>First we need to find the Task Template we’re going to apply. We’ll assume you know the name of the Task Template you want to use.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span><span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;3D Shot Template&#39;</span> <span class="p">]]</span>
 <span class="n">template</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">&#39;TaskTemplate&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="the-resulting-task-template">
 <h2>The Resulting Task Template<a class="headerlink" href="#the-resulting-task-template" title="Permalink to this headline">¶</a></h2>
-<p>Assuming the task template was found, we will now have something like this in our <code class="docutils literal"><span class="pre">template</span></code>
+<p>Assuming the task template was found, we will now have something like this in our <code class="docutils literal notranslate"><span class="pre">template</span></code>
 variable:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;TaskTemplate&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;TaskTemplate&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="create-the-shot">
 <h2>Create the Shot<a class="headerlink" href="#create-the-shot" title="Permalink to this headline">¶</a></h2>
-<p>Now we can create the Shot with the link to the <code class="docutils literal"><span class="pre">TaskTemplate</span></code> to apply.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+<p>Now we can create the Shot with the link to the <code class="docutils literal notranslate"><span class="pre">TaskTemplate</span></code> to apply.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
         <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010&#39;</span><span class="p">,</span>
         <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;dark shot with wicked cool ninjas&#39;</span><span class="p">,</span>
         <span class="s1">&#39;task_template&#39;</span><span class="p">:</span> <span class="n">template</span> <span class="p">}</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will create a new Shot named &#8220;100_010&#8221; linked to the TaskTemplate &#8220;3D Shot Template&#8221; and
+<p>This will create a new Shot named “100_010” linked to the TaskTemplate “3D Shot Template” and
 Shotgun will then create the Tasks defined in the template and link them to the Shot you just
 created.</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value is
+<li><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value is
 the value.</li>
-<li><code class="docutils literal"><span class="pre">project</span></code> and <cite>code</cite> are required</li>
-<li><code class="docutils literal"><span class="pre">description</span></code> is just a text field that you might want to update as well</li>
-<li><code class="docutils literal"><span class="pre">task_template</span></code> is another entity column where we set the Task Template which has the Tasks we
+<li><code class="docutils literal notranslate"><span class="pre">project</span></code> and <cite>code</cite> are required</li>
+<li><code class="docutils literal notranslate"><span class="pre">description</span></code> is just a text field that you might want to update as well</li>
+<li><code class="docutils literal notranslate"><span class="pre">task_template</span></code> is another entity column where we set the Task Template which has the Tasks we
 wish to create by default on this Shot. We found the specific template we wanted to assign in the
 previous block by searching</li>
 </ul>
 </div>
 <div class="section" id="result">
 <h2>Result<a class="headerlink" href="#result" title="Permalink to this headline">¶</a></h2>
-<p>The variable <code class="docutils literal"><span class="pre">result</span></code> now contains the dictionary of the new Shot that was created.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
+<p>The variable <code class="docutils literal notranslate"><span class="pre">result</span></code> now contains the dictionary of the new Shot that was created.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;010_010&#39;</span><span class="p">,</span>
     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;dark shot with wicked cool ninjas&#39;</span><span class="p">,</span>
     <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">2345</span><span class="p">,</span>
@@ -267,19 +270,19 @@ previous block by searching</li>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>If we now search for the Tasks linked to the Shot, we&#8217;ll find the Tasks that match our
-<code class="docutils literal"><span class="pre">TaskTemplate</span></code>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">tasks</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;entity&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">result</span><span class="p">]])</span>
+<p>If we now search for the Tasks linked to the Shot, we’ll find the Tasks that match our
+<code class="docutils literal notranslate"><span class="pre">TaskTemplate</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tasks</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;entity&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">result</span><span class="p">]])</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">You can use an entity dictionary that was returned from the API in a filter as we have
-done above. Shotgun will only look at the <code class="docutils literal"><span class="pre">id</span></code> and <code class="docutils literal"><span class="pre">type</span></code> keys and will ignore the rest.
+done above. Shotgun will only look at the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys and will ignore the rest.
 This is a handy way to pass around entity dictionaries without having to reformat them.</p>
 </div>
-<p>Now the <code class="docutils literal"><span class="pre">tasks</span></code> variable contains the following:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3253</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">},</span>
+<p>Now the <code class="docutils literal notranslate"><span class="pre">tasks</span></code> variable contains the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3253</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">},</span>
  <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3254</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">},</span>
  <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3255</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">},</span>
  <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3256</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">},</span>
@@ -291,15 +294,16 @@ This is a handy way to pass around entity dictionaries without having to reforma
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="basic_create_version_link_shot.html" class="btn btn-neutral float-right" title="Create a Version Linked to a Shot" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="basic_create_version_link_shot.html" class="btn btn-neutral float-right" title="Create a Version Linked to a Shot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="basic_delete_shot.html" class="btn btn-neutral" title="Delete A Shot" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="basic_delete_shot.html" class="btn btn-neutral" title="Delete A Shot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -308,7 +312,7 @@ This is a handy way to pass around entity dictionaries without having to reforma
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Autodesk.
+        &copy; Copyright 2018, Autodesk.
 
     </p>
   </div> 
@@ -329,10 +333,12 @@ This is a handy way to pass around entity dictionaries without having to reforma
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v3.0.34',
+            VERSION:'v3.0.37',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -341,19 +347,13 @@ This is a handy way to pass around entity dictionaries without having to reforma
 
   
 
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-  
  
 
 <script>

@@ -10,9 +10,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Smart Cut Fields &mdash; python-api v3.0.34 documentation</title>
+  <title>Smart Cut Fields &mdash; python-api v3.0.37 documentation</title>
   
 
+  
+  
   
   
 
@@ -24,25 +26,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="python-api v3.0.34 documentation" href="../index.html"/>
-        <link rel="up" title="API Cookbook" href="../cookbook.html"/>
-        <link rel="next" title="Advanced Topics" href="../advanced.html"/>
-        <link rel="prev" title="Split Tasks" href="tasks/split_tasks.html"/> 
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Advanced Topics" href="../advanced.html" />
+    <link rel="prev" title="Split Tasks" href="tasks/split_tasks.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -91,7 +87,10 @@
     
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference.html">API Reference</a></li>
@@ -112,7 +111,9 @@
 
             
           
-       
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
     <div style='margin-top: 50px;
                 margin-left: 10px;
                 margin-right: 10px;
@@ -129,7 +130,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.34.<br>
+    <b>python-api</b> v3.0.37.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -138,6 +139,8 @@
 
     </div>
 
+
+
         </div>
       </div>
     </nav>
@@ -145,7 +148,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">python-api</a>
@@ -153,9 +156,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -170,7 +174,10 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
@@ -187,6 +194,8 @@
       </li>
     
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -199,9 +208,9 @@
 <p class="last">Smart Cut Fields should be considered deprecated. Shotgun v7.0, introduced a new version of
 cut support. <a class="reference external" href="https://support.shotgunsoftware.com/hc/en-us/articles/222840748">Read the Cut Support Documentation here</a>.</p>
 </div>
-<p>If you want to work with &#8216;smart&#8217; cut fields through the API, your script should use a corresponding
-&#8216;raw&#8217; fields for all updates. The &#8216;smart_cut_fields&#8217; are primarily for display in the UI, the real
-data is stored in a set of &#8216;raw&#8217; fields that have different names.</p>
+<p>If you want to work with ‘smart’ cut fields through the API, your script should use a corresponding
+‘raw’ fields for all updates. The ‘smart_cut_fields’ are primarily for display in the UI, the real
+data is stored in a set of ‘raw’ fields that have different names.</p>
 <div class="section" id="smart-fields">
 <h2>Smart Fields<a class="headerlink" href="#smart-fields" title="Permalink to this headline">¶</a></h2>
 <p>In the UI these fields attempt to calculate values based on data entered into the various fields.
@@ -209,52 +218,53 @@ These fields can be queried via the API using the find() method, but not updated
 deprecating this feature and recommend creating your own cut fields from scratch, which will not
 contain any calculations which have proven to be too magical at times.</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">smart_cut_duration</span></code></li>
-<li><code class="docutils literal"><span class="pre">smart_cut_in</span></code></li>
-<li><code class="docutils literal"><span class="pre">smart_cut_out</span></code></li>
-<li><code class="docutils literal"><span class="pre">smart_cut_summary_display</span></code> *</li>
-<li><code class="docutils literal"><span class="pre">smart_cut_duration_display</span></code> *</li>
-<li><code class="docutils literal"><span class="pre">smart_head_duration</span></code></li>
-<li><code class="docutils literal"><span class="pre">smart_head_in</span></code></li>
-<li><code class="docutils literal"><span class="pre">smart_head_out</span></code></li>
-<li><code class="docutils literal"><span class="pre">smart_tail_duration</span></code></li>
-<li><code class="docutils literal"><span class="pre">smart_tail_in</span></code></li>
-<li><code class="docutils literal"><span class="pre">smart_tail_out</span></code></li>
-<li><code class="docutils literal"><span class="pre">smart_working_duration</span></code> *</li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_cut_duration</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_cut_in</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_cut_out</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_cut_summary_display</span></code> *</li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_cut_duration_display</span></code> *</li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_head_duration</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_head_in</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_head_out</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_tail_duration</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_tail_in</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_tail_out</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_working_duration</span></code> *</li>
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">* these are special summary fields that have no corresponding &#8220;raw&#8221; field.</p>
+<p class="last">* these are special summary fields that have no corresponding “raw” field.</p>
 </div>
 </div>
 <div class="section" id="raw-fields">
 <h2>Raw Fields<a class="headerlink" href="#raw-fields" title="Permalink to this headline">¶</a></h2>
-<p>These are the &#8220;raw&#8221; fields that can be queried and updated through the API:</p>
+<p>These are the “raw” fields that can be queried and updated through the API:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">cut_duration</span></code></li>
-<li><code class="docutils literal"><span class="pre">cut_in</span></code></li>
-<li><code class="docutils literal"><span class="pre">cut_out</span></code></li>
-<li><code class="docutils literal"><span class="pre">head_duration</span></code></li>
-<li><code class="docutils literal"><span class="pre">head_in</span></code></li>
-<li><code class="docutils literal"><span class="pre">head_out</span></code></li>
-<li><code class="docutils literal"><span class="pre">tail_duration</span></code></li>
-<li><code class="docutils literal"><span class="pre">tail_in</span></code></li>
-<li><code class="docutils literal"><span class="pre">tail_out</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">cut_duration</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">cut_in</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">cut_out</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">head_duration</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">head_in</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">head_out</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">tail_duration</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">tail_in</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">tail_out</span></code></li>
 </ul>
 </div>
 </div>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../advanced.html" class="btn btn-neutral float-right" title="Advanced Topics" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../advanced.html" class="btn btn-neutral float-right" title="Advanced Topics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="tasks/split_tasks.html" class="btn btn-neutral" title="Split Tasks" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="tasks/split_tasks.html" class="btn btn-neutral" title="Split Tasks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -263,7 +273,7 @@ contain any calculations which have proven to be too magical at times.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Autodesk.
+        &copy; Copyright 2018, Autodesk.
 
     </p>
   </div> 
@@ -284,10 +294,12 @@ contain any calculations which have proven to be too magical at times.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'v3.0.34',
+            VERSION:'v3.0.37',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../_static/jquery.js"></script>
@@ -296,19 +308,13 @@ contain any calculations which have proven to be too magical at times.</p>
 
   
 
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-  
  
 
 <script>

@@ -10,9 +10,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Delete A Shot &mdash; python-api v3.0.34 documentation</title>
+  <title>Delete A Shot &mdash; python-api v3.0.37 documentation</title>
   
 
+  
+  
   
   
 
@@ -24,25 +26,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="python-api v3.0.34 documentation" href="../../index.html"/>
-        <link rel="up" title="Examples" href="../tutorials.html"/>
-        <link rel="next" title="Create a Shot with a Task Template" href="basic_create_shot_task_template.html"/>
-        <link rel="prev" title="Update A Shot" href="basic_update_shot.html"/> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Create a Shot with a Task Template" href="basic_create_shot_task_template.html" />
+    <link rel="prev" title="Update A Shot" href="basic_update_shot.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -91,7 +87,10 @@
     
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
@@ -103,12 +102,7 @@
 <li class="toctree-l4"><a class="reference internal" href="basic_create_shot.html">Create A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_find_shot.html">Find a Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_update_shot.html">Update A Shot</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Delete A Shot</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#calling-delete">Calling <code class="docutils literal"><span class="pre">delete()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="#result">Result</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#the-complete-example">The Complete Example</a></li>
-</ul>
-</li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Delete A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_create_shot_task_template.html">Create a Shot with a Task Template</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_create_version_link_shot.html">Create a Version Linked to a Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_upload_thumbnail_version.html">Upload a Thumbnail for a Version</a></li>
@@ -127,7 +121,9 @@
 
             
           
-       
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
     <div style='margin-top: 50px;
                 margin-left: 10px;
                 margin-right: 10px;
@@ -144,7 +140,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.34.<br>
+    <b>python-api</b> v3.0.37.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -153,6 +149,8 @@
 
     </div>
 
+
+
         </div>
       </div>
     </nav>
@@ -160,7 +158,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -168,9 +166,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -185,7 +184,10 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
@@ -204,6 +206,8 @@
       </li>
     
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -212,22 +216,22 @@
   <div class="section" id="delete-a-shot">
 <h1>Delete A Shot<a class="headerlink" href="#delete-a-shot" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="calling-delete">
-<h2>Calling <code class="xref py py-meth docutils literal"><span class="pre">delete()</span></code><a class="headerlink" href="#calling-delete" title="Permalink to this headline">¶</a></h2>
+<h2>Calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">delete()</span></code><a class="headerlink" href="#calling-delete" title="Permalink to this headline">¶</a></h2>
 <p>Deleting an entity in Shotgun is pretty straight-forward. No extraneous steps required.:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;Shot&quot;</span><span class="p">,</span> <span class="mi">40435</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;Shot&quot;</span><span class="p">,</span> <span class="mi">40435</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="result">
 <h2>Result<a class="headerlink" href="#result" title="Permalink to this headline">¶</a></h2>
-<p>If the Shot was deleted successfully <code class="docutils literal"><span class="pre">result</span></code> will contain:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kc">True</span>
+<p>If the Shot was deleted successfully <code class="docutils literal notranslate"><span class="pre">result</span></code> will contain:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kc">True</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="the-complete-example">
 <h2>The Complete Example<a class="headerlink" href="#the-complete-example" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Imports</span>
@@ -246,7 +250,7 @@
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Main</span>
 <span class="c1"># --------------------------------------</span>
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
 
     <span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="n">SERVER_PATH</span><span class="p">,</span> <span class="n">SCRIPT_NAME</span><span class="p">,</span> <span class="n">SCRIPT_KEY</span><span class="p">)</span>
 
@@ -258,7 +262,7 @@
 </pre></div>
 </div>
 <p>And here is the output:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kc">True</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kc">True</span>
 </pre></div>
 </div>
 </div>
@@ -266,15 +270,16 @@
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="basic_create_shot_task_template.html" class="btn btn-neutral float-right" title="Create a Shot with a Task Template" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="basic_create_shot_task_template.html" class="btn btn-neutral float-right" title="Create a Shot with a Task Template" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="basic_update_shot.html" class="btn btn-neutral" title="Update A Shot" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="basic_update_shot.html" class="btn btn-neutral" title="Update A Shot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -283,7 +288,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Autodesk.
+        &copy; Copyright 2018, Autodesk.
 
     </p>
   </div> 
@@ -304,10 +309,12 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v3.0.34',
+            VERSION:'v3.0.37',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -316,19 +323,13 @@
 
   
 
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-  
  
 
 <script>

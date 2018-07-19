@@ -10,9 +10,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Using an ActionMenuItem to Package Versions for a Client &mdash; python-api v3.0.34 documentation</title>
+  <title>Using an ActionMenuItem to Package Versions for a Client &mdash; python-api v3.0.37 documentation</title>
   
 
+  
+  
   
   
 
@@ -24,25 +26,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="python-api v3.0.34 documentation" href="../../index.html"/>
-        <link rel="up" title="Examples" href="../tutorials.html"/>
-        <link rel="next" title="Subversion (SVN) Integration" href="svn_integration.html"/>
-        <link rel="prev" title="Handling Action Menu Item Calls" href="ami_handler.html"/> 
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Subversion (SVN) Integration" href="svn_integration.html" />
+    <link rel="prev" title="Handling Action Menu Item Calls" href="ami_handler.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -91,7 +87,10 @@
     
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
@@ -117,7 +116,9 @@
 
             
           
-       
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
     <div style='margin-top: 50px;
                 margin-left: 10px;
                 margin-right: 10px;
@@ -134,7 +135,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.34.<br>
+    <b>python-api</b> v3.0.37.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -143,6 +144,8 @@
 
     </div>
 
+
+
         </div>
       </div>
     </nav>
@@ -150,7 +153,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -158,9 +161,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -175,7 +179,10 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
     
       <li><a href="../../index.html">Docs</a> &raquo;</li>
@@ -194,6 +201,8 @@
       </li>
     
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -209,7 +218,7 @@ script to package up files for a client. It performs the following:</p>
 <li>Copies the archive to a specified directory.</li>
 </ul>
 <p>It is intended to be used in conjunction with the script dicussed in <a class="reference internal" href="ami_handler.html#ami-handler"><span class="std std-ref">Handling Action Menu Item Calls</span></a>.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># encoding: utf-8</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">version_packager.py</span>
@@ -403,7 +412,7 @@ script to package up files for a client. It performs the following:</p>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> #</span><span class="si">%s</span><span class="s2">: No file exists. Skippinsa.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;entity_type&#39;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> #</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;entity_type&#39;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="n">file_field</span><span class="p">]))</span>
-            <span class="n">path_to_file</span> <span class="o">=</span> <span class="n">file_dir</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">r&quot;\s+&quot;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="n">file_field</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+            <span class="n">path_to_file</span> <span class="o">=</span> <span class="n">file_dir</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="n">file_field</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">download_attachment_to_disk</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="n">file_field</span><span class="p">],</span> <span class="n">path_to_file</span> <span class="p">)</span>
 
             <span class="c1"># only include attachments. urls won&#39;t return true</span>
@@ -414,7 +423,7 @@ script to package up files for a client. It performs the following:</p>
     <span class="c1"># create a nice valid destination filename</span>
     <span class="n">project_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">if</span> <span class="s1">&#39;project_name&#39;</span> <span class="ow">in</span> <span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
-        <span class="n">project_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">r&quot;\s+&quot;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;project_name&#39;</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;_&#39;</span>
+        <span class="n">project_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;project_name&#39;</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;_&#39;</span>
     <span class="n">dest_filename</span> <span class="o">=</span> <span class="n">project_name</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">-%H%M%S&#39;</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;user_login&#39;</span><span class="p">]</span>
     <span class="n">archive</span> <span class="o">=</span> <span class="n">compress_files</span><span class="p">(</span><span class="n">files</span><span class="p">,</span><span class="n">file_dir</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">dest_filename</span><span class="p">)</span>
 
@@ -430,7 +439,7 @@ script to package up files for a client. It performs the following:</p>
 <span class="c1"># ----------------------------------------------</span>
 <span class="c1"># Main Block</span>
 <span class="c1"># ----------------------------------------------</span>
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">init_log</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -454,15 +463,16 @@ script to package up files for a client. It performs the following:</p>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="svn_integration.html" class="btn btn-neutral float-right" title="Subversion (SVN) Integration" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="svn_integration.html" class="btn btn-neutral float-right" title="Subversion (SVN) Integration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="ami_handler.html" class="btn btn-neutral" title="Handling Action Menu Item Calls" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="ami_handler.html" class="btn btn-neutral" title="Handling Action Menu Item Calls" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -471,7 +481,7 @@ script to package up files for a client. It performs the following:</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Autodesk.
+        &copy; Copyright 2018, Autodesk.
 
     </p>
   </div> 
@@ -492,10 +502,12 @@ script to package up files for a client. It performs the following:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v3.0.34',
+            VERSION:'v3.0.37',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -504,19 +516,13 @@ script to package up files for a client. It performs the following:</p>
 
   
 
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-  
  
 
 <script>

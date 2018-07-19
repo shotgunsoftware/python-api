@@ -10,9 +10,11 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Working With Tasks &mdash; python-api v3.0.34 documentation</title>
+  <title>Working With Tasks &mdash; python-api v3.0.37 documentation</title>
   
 
+  
+  
   
   
 
@@ -24,25 +26,19 @@
 
   
 
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="python-api v3.0.34 documentation" href="../index.html"/>
-        <link rel="up" title="API Cookbook" href="../cookbook.html"/>
-        <link rel="next" title="Updating Task Dates: How Shotgun Thinks" href="tasks/updating_tasks.html"/>
-        <link rel="prev" title="Details About Working With Files" href="attachments.html"/> 
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Updating Task Dates: How Shotgun Thinks" href="tasks/updating_tasks.html" />
+    <link rel="prev" title="Details About Working With Files" href="attachments.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -91,7 +87,10 @@
     
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference.html">API Reference</a></li>
@@ -113,7 +112,9 @@
 
             
           
-       
+
+    <a href='genindex.html'>Alphabetic Index</a>
+
     <div style='margin-top: 50px;
                 margin-left: 10px;
                 margin-right: 10px;
@@ -130,7 +131,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.34.<br>
+    <b>python-api</b> v3.0.37.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -139,6 +140,8 @@
 
     </div>
 
+
+
         </div>
       </div>
     </nav>
@@ -146,7 +149,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">python-api</a>
@@ -154,9 +157,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -171,7 +175,10 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
@@ -188,6 +195,8 @@
       </li>
     
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -211,8 +220,8 @@ manipulated through the API. The sections below cover these topics.</p>
 <li class="toctree-l2"><a class="reference internal" href="tasks/task_dependencies.html#updating-the-end-date-on-a-task-with-downstream-task-dependencies">Updating the End Date on a Task with Downstream Task Dependencies</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tasks/task_dependencies.html#creating-a-dependency-violation-by-pushing-up-a-start-date">Creating a Dependency Violation by pushing up a Start Date</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tasks/task_dependencies.html#resolving-a-dependency-violation-by-updating-the-start-date">Resolving a Dependency Violation by updating the Start Date</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tasks/task_dependencies.html#updating-the-pinned-field-on-a-task-with-a-dependency-violation">Updating the <code class="docutils literal"><span class="pre">pinned</span></code> field on a Task with a Dependency Violation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tasks/task_dependencies.html#dependency-violation-field-is-read-only"><code class="docutils literal"><span class="pre">dependency_violation</span></code> field is read-only</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks/task_dependencies.html#updating-the-pinned-field-on-a-task-with-a-dependency-violation">Updating the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field on a Task with a Dependency Violation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tasks/task_dependencies.html#dependency-violation-field-is-read-only"><code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> field is read-only</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tasks/split_tasks.html">Split Tasks</a><ul>
@@ -226,15 +235,16 @@ manipulated through the API. The sections below cover these topics.</p>
 
 
            </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="tasks/updating_tasks.html" class="btn btn-neutral float-right" title="Updating Task Dates: How Shotgun Thinks" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tasks/updating_tasks.html" class="btn btn-neutral float-right" title="Updating Task Dates: How Shotgun Thinks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="attachments.html" class="btn btn-neutral" title="Details About Working With Files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="attachments.html" class="btn btn-neutral" title="Details About Working With Files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -243,7 +253,7 @@ manipulated through the API. The sections below cover these topics.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, Autodesk.
+        &copy; Copyright 2018, Autodesk.
 
     </p>
   </div> 
@@ -264,10 +274,12 @@ manipulated through the API. The sections below cover these topics.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'v3.0.34',
+            VERSION:'v3.0.37',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="../_static/jquery.js"></script>
@@ -276,19 +288,13 @@ manipulated through the API. The sections below cover these topics.</p>
 
   
 
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-  
  
 
 <script>
