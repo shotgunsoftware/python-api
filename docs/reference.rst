@@ -140,6 +140,7 @@ also some specialized convenience methods for accessing particular types of info
 .. automethod:: Shotgun.update_project_last_accessed
 .. automethod:: Shotgun.work_schedule_read
 .. automethod:: Shotgun.work_schedule_update
+.. automethod:: Shotgun.preferences_read
 
 Working With Files
 ==================

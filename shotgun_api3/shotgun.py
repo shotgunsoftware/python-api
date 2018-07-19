@@ -3078,6 +3078,7 @@ class Shotgun(object):
         {
             "pref_name": "pref value"
         }
+
         :param list prefs: An optional list of preference names to return.
         :returns: Dictionary of preferences and their values.
         :rtype: dict

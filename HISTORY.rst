@@ -9,6 +9,7 @@ v3.0.37
 
 - Proper support added for unicode and utf-8 string paths given to upload methods, and a sane error is raised when an unusable string encoding is used.
 - Adds support for querying preferences from Shotgun via the new preferences_read method.
+- Under-the-hood changes to add support for direct to s3 uploads to Shotgun. This change should be transparent to users.
 
 v3.0.36
 =====================
