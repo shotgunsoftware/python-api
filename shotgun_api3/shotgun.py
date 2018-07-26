@@ -3812,8 +3812,8 @@ class Shotgun(object):
         try:
             if self.config.raw_http_proxy is not None:
                 handler = urllib2.ProxyHandler(
-                                        {'https': self.config.raw_http_proxy}
-                                        )
+                              {'https': self.config.raw_http_proxy}
+                          )
             else:
                 handler = urllib2.HTTPHandler
 
