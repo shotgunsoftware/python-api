@@ -3810,7 +3810,14 @@ class Shotgun(object):
         :rtype: str
         """
         try:
-            opener = urllib2.build_opener(urllib2.HTTPHandler)
+            if self.config.raw_http_proxy is not None:
+                handler = urllib2.ProxyHandler(
+                                        {'https': self.config.raw_http_proxy}
+                                        )
+            else:
+                handler = urllib2.HTTPHandler
+
+            opener = urllib2.build_opener(handler)
 
             request = urllib2.Request(storage_url, data=data)
             request.add_header("Content-Type", content_type)
