@@ -211,8 +211,6 @@ class LiveTestBase(TestBase):
                 'password_proxy':self.config.human_password}
         if self.sg_version >= (3, 0, 0):
             data['locked_until'] = None
-
-
         self.human_user = _find_or_create_entity(self.sg, 'HumanUser', data)
 
         data = {'code':self.config.asset_code,
@@ -273,6 +271,10 @@ class LiveTestBase(TestBase):
                 'linux_path':'nowhere'}
         self.local_storage = _find_or_create_entity(self.sg, 'LocalStorage', data, keys)
 
+    def tearDown(self):
+        self.sg.delete("HumanUser", self.human_user["id"])
+        super(LiveTestBase, self).tearDown()
+
 
 class HumanUserAuthLiveTestBase(LiveTestBase):
     '''
@@ -296,13 +298,15 @@ class SgTestConfig(object):
     def __init__(self):
 
         for key in self.config_keys():
-
             # Look for any environment variables that match our test
             # configuration naming of "SG_{KEY}". Default is None.
             value = os.environ.get('SG_%s' % (str(key).upper()))
             if key in ['mock']:
                 value = (value == None) or (str(value).lower() in ['true','1'])
             setattr(self, key, value)
+
+        if not getattr(self, "human_password", None):
+            setattr(self, "human_password", os.urandom(16).encode('hex'))
 
     def config_keys(self):
         return [

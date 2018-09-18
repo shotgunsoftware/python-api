@@ -17,7 +17,6 @@ project_name   : SG unittest project
 
 human_name     : Sg unittest human
 human_login    : sgunittesthuman
-human_password : human password
 
 asset_code     : Sg unittest asset
 version_code   : Sg unittest version
