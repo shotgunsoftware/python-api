@@ -1,3 +1,6 @@
+.idea/*
+venv
+
 #python specific
 *.pyc
 

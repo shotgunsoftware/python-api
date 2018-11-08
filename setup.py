@@ -26,7 +26,8 @@ setup(
     license=license,
     packages=find_packages(exclude=('tests',)),
     script_args=script_args,
-    include_package_data=True,
+    # include_package_data=True,  # This is not compatible with package_data (this uses the manifest file to specify files to include)
     package_data={'': ['cacerts.txt']},
+    data_files=[('', ['LICENSE'])],
     zip_safe=False,
 )
