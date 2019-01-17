@@ -36,6 +36,11 @@ Some useful direct links:
 
 You can see the [full history of the Python API on the documentation site](http://developer.shotgunsoftware.com/python-api/changelog.html).
 
+## Updating HTTPLib2
+
+1. Download the latest version of HTTPLib2 at https://pypi.org/project/httplib2.
+2. Extract the python2/httplib2 into shotgun_api3/lib/http2lib without the test folder.
+
 ## Tests 
 
 Integration and unit tests are provided. 
