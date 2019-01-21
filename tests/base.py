@@ -18,26 +18,29 @@ class TestBase(unittest.TestCase):
 
     Sets up mocking and database test data.'''
 
+    human_user     = None
+    project        = None
+    shot           = None
+    asset          = None
+    version        = None
+    note           = None
+    playlist       = None
+    task           = None
+    ticket         = None
+    human_password = None
+    server_url     = None
+    server_address = None
+    session_token  = None
+
     def __init__(self, *args, **kws):
         unittest.TestCase.__init__(self, *args, **kws)
-        self.human_user     = None
-        self.project        = None
-        self.shot           = None
-        self.asset          = None
-        self.version        = None
-        self.note           = None
-        self.playlist       = None
-        self.task           = None
-        self.ticket         = None
-        self.human_password = None
-        self.server_url     = None
-        self.server_address = None
-        self.session_token  = None
         self.connect        = False
 
+    @classmethod
+    def setUpClass(cls):
+        cls.config = SgTestConfig()
 
     def setUp(self, auth_mode='ApiUser'):
-        self.config = SgTestConfig()
         self.config.read_config(CONFIG_PATH)
         self.human_login    = self.config.human_login
         self.human_password = self.config.human_password
@@ -192,8 +195,6 @@ class LiveTestBase(TestBase):
     '''Test base for tests relying on connection to server.'''
     def setUp(self, auth_mode='ApiUser'):
         super(LiveTestBase, self).setUp(auth_mode)
-        self.sg_version = tuple(self.sg.info()['version'][:3])
-        self._setup_db(self.config)
         if self.sg.server_caps.version and \
            self.sg.server_caps.version >= (3, 3, 0) and \
            (self.sg.server_caps.host.startswith('0.0.0.0') or \
@@ -202,76 +203,87 @@ class LiveTestBase(TestBase):
         else:
             self.server_address = self.sg.server_caps.host
 
-    def _setup_db(self, config):
-        data = {'name':self.config.project_name}
-        self.project = _find_or_create_entity(self.sg, 'Project', data)
+    @classmethod
+    def setUpClass(cls):
+        super(LiveTestBase, cls).setUpClass()
+        sg = api.Shotgun(
+            cls.config.server_url,
+            cls.config.script_name,
+            cls.config.api_key
+        )
+        cls.sg_version = tuple(sg.info()['version'][:3])
+        cls._setup_db(cls.config, sg)
 
-        data = {'name':self.config.human_name,
-                'login':self.config.human_login,
-                'password_proxy':self.config.human_password}
-        if self.sg_version >= (3, 0, 0):
+    @classmethod
+    def _setup_db(cls, config, sg):
+        data = {'name':cls.config.project_name}
+        cls.project = _find_or_create_entity(sg, 'Project', data)
+
+        data = {'name':cls.config.human_name,
+                'login':cls.config.human_login,
+                'password_proxy':cls.config.human_password}
+        if cls.sg_version >= (3, 0, 0):
             data['locked_until'] = None
 
+        cls.human_user = _find_or_create_entity(sg, 'HumanUser', data)
 
-        self.human_user = _find_or_create_entity(self.sg, 'HumanUser', data)
-
-        data = {'code':self.config.asset_code,
-                'project':self.project}
+        data = {'code':cls.config.asset_code,
+                'project':cls.project}
         keys = ['code']
-        self.asset = _find_or_create_entity(self.sg, 'Asset', data, keys)
+        cls.asset = _find_or_create_entity(sg, 'Asset', data, keys)
 
-        data = {'project':self.project,
-                'code':self.config.version_code,
-                'entity':self.asset,
-                'user':self.human_user,
+        data = {'project':cls.project,
+                'code':cls.config.version_code,
+                'entity':cls.asset,
+                'user':cls.human_user,
                 'sg_frames_aspect_ratio': 13.3,
                 'frame_count': 33}
         keys = ['code','project']
-        self.version = _find_or_create_entity(self.sg, 'Version', data, keys)
+        cls.version = _find_or_create_entity(sg, 'Version', data, keys)
 
         keys = ['code','project']
-        data = {'code':self.config.shot_code,
-                'project':self.project}
-        self.shot = _find_or_create_entity(self.sg, 'Shot', data, keys)
+        data = {'code':cls.config.shot_code,
+                'project':cls.project}
+        cls.shot = _find_or_create_entity(sg, 'Shot', data, keys)
 
         keys = ['project','user']
-        data = {'project':self.project,
-                'user':self.human_user,
+        data = {'project':cls.project,
+                'user':cls.human_user,
                 'content':'anything'}
-        self.note = _find_or_create_entity(self.sg, 'Note', data, keys)
+        cls.note = _find_or_create_entity(sg, 'Note', data, keys)
 
         keys = ['code','project']
-        data = {'project':self.project,
-                'code':self.config.playlist_code}
-        self.playlist = _find_or_create_entity(self.sg, 'Playlist', data, keys)
+        data = {'project':cls.project,
+                'code':cls.config.playlist_code}
+        cls.playlist = _find_or_create_entity(sg, 'Playlist', data, keys)
 
         keys = ['code', 'entity_type']
         data = {'code': 'wrapper test step',
                 'entity_type': 'Shot'}
-        self.step = _find_or_create_entity(self.sg, 'Step', data, keys)
+        cls.step = _find_or_create_entity(sg, 'Step', data, keys)
 
         keys = ['project', 'entity', 'content']
-        data = {'project':self.project,
-                'entity':self.asset,
-                'content':self.config.task_content,
+        data = {'project':cls.project,
+                'entity':cls.asset,
+                'content':cls.config.task_content,
                 'color':'Black',
                 'due_date':'1968-10-13',
-                'task_assignees': [self.human_user],
+                'task_assignees': [cls.human_user],
                 'sg_status_list': 'ip'}
-        self.task =  _find_or_create_entity(self.sg, 'Task', data, keys)
+        cls.task =  _find_or_create_entity(sg, 'Task', data, keys)
 
-        data = {'project':self.project,
-                'title':self.config.ticket_title,
+        data = {'project':cls.project,
+                'title':cls.config.ticket_title,
                 'sg_priority': '3'}
         keys = ['title','project', 'sg_priority']
-        self.ticket = _find_or_create_entity(self.sg, 'Ticket', data, keys)
+        cls.ticket = _find_or_create_entity(sg, 'Ticket', data, keys)
 
         keys = ['code']
         data = {'code':'api wrapper test storage',
                 'mac_path':'nowhere',
                 'windows_path':'nowhere',
                 'linux_path':'nowhere'}
-        self.local_storage = _find_or_create_entity(self.sg, 'LocalStorage', data, keys)
+        cls.local_storage = _find_or_create_entity(sg, 'LocalStorage', data, keys)
 
 
 class HumanUserAuthLiveTestBase(LiveTestBase):
@@ -294,9 +306,7 @@ class SessionTokenAuthLiveTestBase(LiveTestBase):
 class SgTestConfig(object):
     '''Reads test config and holds values'''
     def __init__(self):
-
         for key in self.config_keys():
-
             # Look for any environment variables that match our test
             # configuration naming of "SG_{KEY}". Default is None.
             value = os.environ.get('SG_%s' % (str(key).upper()))
@@ -309,7 +319,7 @@ class SgTestConfig(object):
             'api_key', 'asset_code', 'http_proxy', 'human_login', 'human_name',
             'human_password', 'mock', 'project_name', 'script_name', 
             'server_url', 'session_uuid', 'shot_code', 'task_content', 
-            'version_code', 'playlist_code'
+            'version_code', 'playlist_code', 'ticket_title'
         ]
 
     def read_config(self, config_path):
