@@ -44,9 +44,9 @@ class TestBase(unittest.TestCase):
         # Since the file is read and never modified, we will only read
         # it once in memory and be done.
         cls.config = SgTestConfig()
+        cls.config.read_config(CONFIG_PATH)
 
     def setUp(self, auth_mode='ApiUser'):
-        self.config.read_config(CONFIG_PATH)
         self.human_login    = self.config.human_login
         self.human_password = self.config.human_password
         self.server_url     = self.config.server_url
