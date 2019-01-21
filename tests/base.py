@@ -38,6 +38,11 @@ class TestBase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """
+        Loads the configuration file from disk.
+        """
+        # Since the file is read and never modified, we will only read
+        # it once in memory and be done.
         cls.config = SgTestConfig()
 
     def setUp(self, auth_mode='ApiUser'):
@@ -205,6 +210,15 @@ class LiveTestBase(TestBase):
 
     @classmethod
     def setUpClass(cls):
+        """
+        Sets up common and recurring operations for all tests.
+        """
+        # The code below simply retrieves entities from Shotgun, or creates
+        # them the very first time the test suite is run againt the site.
+        # As such, since the operation is read-only, there's no sense
+        # reloading stuff from Shotgun over and over again during each test.
+        # As such, we are using setUpClass to load them once during the
+        # entire duration of the tests.
         super(LiveTestBase, cls).setUpClass()
         sg = api.Shotgun(
             cls.config.server_url,
@@ -216,45 +230,45 @@ class LiveTestBase(TestBase):
 
     @classmethod
     def _setup_db(cls, config, sg):
-        data = {'name':cls.config.project_name}
+        data = {'name': cls.config.project_name}
         cls.project = _find_or_create_entity(sg, 'Project', data)
 
-        data = {'name':cls.config.human_name,
-                'login':cls.config.human_login,
-                'password_proxy':cls.config.human_password}
+        data = {'name': cls.config.human_name,
+                'login': cls.config.human_login,
+                'password_proxy': cls.config.human_password}
         if cls.sg_version >= (3, 0, 0):
             data['locked_until'] = None
 
         cls.human_user = _find_or_create_entity(sg, 'HumanUser', data)
 
-        data = {'code':cls.config.asset_code,
-                'project':cls.project}
+        data = {'code': cls.config.asset_code,
+                'project': cls.project}
         keys = ['code']
         cls.asset = _find_or_create_entity(sg, 'Asset', data, keys)
 
-        data = {'project':cls.project,
-                'code':cls.config.version_code,
-                'entity':cls.asset,
-                'user':cls.human_user,
+        data = {'project': cls.project,
+                'code': cls.config.version_code,
+                'entity': cls.asset,
+                'user': cls.human_user,
                 'sg_frames_aspect_ratio': 13.3,
                 'frame_count': 33}
         keys = ['code','project']
         cls.version = _find_or_create_entity(sg, 'Version', data, keys)
 
         keys = ['code','project']
-        data = {'code':cls.config.shot_code,
-                'project':cls.project}
+        data = {'code': cls.config.shot_code,
+                'project': cls.project}
         cls.shot = _find_or_create_entity(sg, 'Shot', data, keys)
 
         keys = ['project','user']
-        data = {'project':cls.project,
-                'user':cls.human_user,
+        data = {'project': cls.project,
+                'user': cls.human_user,
                 'content':'anything'}
         cls.note = _find_or_create_entity(sg, 'Note', data, keys)
 
         keys = ['code','project']
-        data = {'project':cls.project,
-                'code':cls.config.playlist_code}
+        data = {'project': cls.project,
+                'code': cls.config.playlist_code}
         cls.playlist = _find_or_create_entity(sg, 'Playlist', data, keys)
 
         keys = ['code', 'entity_type']
@@ -263,17 +277,17 @@ class LiveTestBase(TestBase):
         cls.step = _find_or_create_entity(sg, 'Step', data, keys)
 
         keys = ['project', 'entity', 'content']
-        data = {'project':cls.project,
-                'entity':cls.asset,
-                'content':cls.config.task_content,
+        data = {'project': cls.project,
+                'entity': cls.asset,
+                'content': cls.config.task_content,
                 'color':'Black',
                 'due_date':'1968-10-13',
                 'task_assignees': [cls.human_user],
                 'sg_status_list': 'ip'}
         cls.task =  _find_or_create_entity(sg, 'Task', data, keys)
 
-        data = {'project':cls.project,
-                'title':cls.config.ticket_title,
+        data = {'project': cls.project,
+                'title': cls.config.ticket_title,
                 'sg_priority': '3'}
         keys = ['title','project', 'sg_priority']
         cls.ticket = _find_or_create_entity(sg, 'Ticket', data, keys)
