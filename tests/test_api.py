@@ -793,6 +793,9 @@ class TestShotgunApi(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (7, 10, 0):
             return
 
+        # This is a big diff if it fails, so show everything.
+        self.maxDiff = None
+
         # all prefs
         resp = self.sg.preferences_read()
 
@@ -807,7 +810,7 @@ class TestShotgunApi(base.LiveTestBase):
             'format_footage_fields': '10-05',
             'format_number_fields': '1,000',
             'format_time_hour_fields': '12 hour',
-            'support_local_storage': False
+            'support_local_storage': True
         }
         self.assertEqual(expected, resp)
 
@@ -816,7 +819,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         expected = {
             'date_component_order': 'month_day',
-            'support_local_storage': False
+            'support_local_storage': True
         }
         self.assertEqual(expected, resp)
 
@@ -825,7 +828,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         expected = {
             'date_component_order': 'month_day',
-            'support_local_storage': False
+            'support_local_storage': True
         }
         self.assertEqual(expected, resp)
 
