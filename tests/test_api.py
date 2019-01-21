@@ -810,7 +810,7 @@ class TestShotgunApi(base.LiveTestBase):
             'format_footage_fields': '10-05',
             'format_number_fields': '1,000',
             'format_time_hour_fields': '12 hour',
-            'support_local_storage': True
+            'support_local_storage': False
         }
         self.assertEqual(expected, resp)
 
