@@ -793,6 +793,9 @@ class TestShotgunApi(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (7, 10, 0):
             return
 
+        # This is a big diff if it fails, so show everything.
+        self.maxDiff = None
+
         # all prefs
         resp = self.sg.preferences_read()
 
@@ -807,7 +810,8 @@ class TestShotgunApi(base.LiveTestBase):
             'format_footage_fields': '10-05',
             'format_number_fields': '1,000',
             'format_time_hour_fields': '12 hour',
-            'support_local_storage': False
+            'support_local_storage': False,
+            'view_master_settings': '{"status_groups":[{"name":"Upcoming","code":"upc_stgr","status_list":["wtg","rdy"]},{"name":"Active","code":"act_stgr","status_list":["ip","kickbk","rev","act","rsk","blk","late","opn","pndng","tkt","push","rrq","vwd","out"]},{"name":"Done","code":"done_stgr","status_list":["fin","cmpt","apr","cbb","clsd","cfrm","dlvr","recd","res"]}],"entity_fields":{"Task":["content","sg_description","sg_status_list","due_date","task_assignees","task_reviewers"],"Shot":["code","description","sg_status_list","created_at","sg_cut_in","sg_cut_out","sg_cut_duration","sg_cut_order"],"Asset":["code","description","sg_status_list","created_at"],"Scene":["code","sg_status_list","created_at"],"Element":["code","sg_status_list","created_at"],"Release":["code","sg_status_list","created_at"],"ShootDay":["code","sg_status_list","created_at"],"MocapTake":["code","sg_status_list","created_at"],"MocapSetup":["code","sg_status_list","created_at"],"Camera":["code","sg_status_list","created_at"],"MocapTakeRange":["code","sg_status_list","created_at"],"Sequence":["code","sg_status_list","created_at"],"Level":["code","sg_status_list","created_at"],"Episode":["code","sg_status_list","created_at"]},"entity_fields_fixed":{"Asset":["code","description","sg_status_list"],"Shot":["code","description","sg_status_list"],"Task":["content","sg_status_list","due_date","task_assignees","task_reviewers"],"Scene":["code","description","sg_status_list"],"Element":["code","description","sg_status_list"],"Release":["code","description","sg_status_list"],"ShootDay":["code","description","sg_status_list"],"MocapTake":["code","description","sg_status_list"],"MocapSetup":["code","description","sg_status_list"],"Camera":["code","description","sg_status_list"],"MocapTakeRange":["code","description","sg_status_list"],"Sequence":["code","description","sg_status_list"],"Level":["code","description","sg_status_list"],"Episode":["code","description","sg_status_list"]}}' # noqa
         }
         self.assertEqual(expected, resp)
 
