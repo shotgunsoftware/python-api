@@ -3102,7 +3102,8 @@ class Shotgun(object):
         if self.config.proxy_handler:
             handlers.append(self.config.proxy_handler)
 
-        handlers.append(handler)
+        if handler is not None:
+            handlers.append(handler)
         return urllib2.build_opener(*handlers)
 
     def _turn_off_ssl_validation(self):
@@ -3810,7 +3811,7 @@ class Shotgun(object):
         :rtype: str
         """
         try:
-            opener = urllib2.build_opener(urllib2.HTTPHandler)
+            opener = self._build_opener(urllib2.HTTPHandler)
 
             request = urllib2.Request(storage_url, data=data)
             request.add_header("Content-Type", content_type)
