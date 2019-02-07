@@ -4,18 +4,20 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
-v3.0.38.dev
+v3.0.38 (2019 February 7)
 =====================
-- TBD
+- Upgrades the version of ``httplib2`` to ``0.12.0``, which fixes SNI issues. Note this
+  version contains a more recent list of certificate authorities. If you are running Shotgun locally and have
+  signed your https certificate with an outdated certificate authority, the Shotgun connection will be rejected.
 
-v3.0.37
+v3.0.37 (2018 July 19)
 =====================
 
 - Proper support added for unicode and utf-8 string paths given to upload methods, and a sane error is raised when an unusable string encoding is used.
 - Adds support for querying preferences from Shotgun via the new preferences_read method.
 - Under-the-hood changes to add support for direct to s3 uploads to Shotgun. This change should be transparent to users.
 
-v3.0.36
+v3.0.36 (2018 April 3)
 =====================
 
 - Fixes an error where ``connect=False`` during ``__init__`` would still connect to Shotgun.
