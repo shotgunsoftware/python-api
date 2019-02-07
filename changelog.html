@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Shotgun Python API Changelog &mdash; python-api v3.0.37 documentation</title>
+  <title>Shotgun Python API Changelog &mdash; python-api v3.0.38 documentation</title>
   
 
   
@@ -28,6 +28,7 @@
 
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="IronPython" href="advanced/iron_python.html" /> 
@@ -98,8 +99,9 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced/packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/iron_python.html">IronPython</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Shotgun Python API Changelog</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#v3-0-37">v3.0.37</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#v3-0-36">v3.0.36</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-0-38-2019-february-7">v3.0.38 (2019 February 7)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-0-37-2018-july-19">v3.0.37 (2018 July 19)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-0-36-2018-april-3">v3.0.36 (2018 April 3)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-35-2017-december-8">v3.0.35 (2017 December 8)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-34-2017-september-18">v3.0.34 (2017 September 18)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-33-2017-july-18">v3.0.33 (2017 July 18)</a></li>
@@ -171,7 +173,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.37.<br>
+    <b>python-api</b> v3.0.38.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -245,16 +247,24 @@
   <div class="section" id="shotgun-python-api-changelog">
 <h1>Shotgun Python API Changelog<a class="headerlink" href="#shotgun-python-api-changelog" title="Permalink to this headline">¶</a></h1>
 <p>Here you can see the full list of changes between each Python API release.</p>
-<div class="section" id="v3-0-37">
-<h2>v3.0.37<a class="headerlink" href="#v3-0-37" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="v3-0-38-2019-february-7">
+<h2>v3.0.38 (2019 February 7)<a class="headerlink" href="#v3-0-38-2019-february-7" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Upgrades the version of <code class="docutils literal notranslate"><span class="pre">httplib2</span></code> to <code class="docutils literal notranslate"><span class="pre">0.12.0</span></code>, which fixes SNI issues. Note this
+version contains a more recent list of certificate authorities. If you are running Shotgun locally and have
+signed your https certificate with an outdated certificate authority, the Shotgun connection will be rejected.</li>
+</ul>
+</div>
+<div class="section" id="v3-0-37-2018-july-19">
+<h2>v3.0.37 (2018 July 19)<a class="headerlink" href="#v3-0-37-2018-july-19" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Proper support added for unicode and utf-8 string paths given to upload methods, and a sane error is raised when an unusable string encoding is used.</li>
 <li>Adds support for querying preferences from Shotgun via the new preferences_read method.</li>
 <li>Under-the-hood changes to add support for direct to s3 uploads to Shotgun. This change should be transparent to users.</li>
 </ul>
 </div>
-<div class="section" id="v3-0-36">
-<h2>v3.0.36<a class="headerlink" href="#v3-0-36" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="v3-0-36-2018-april-3">
+<h2>v3.0.36 (2018 April 3)<a class="headerlink" href="#v3-0-36-2018-april-3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fixes an error where <code class="docutils literal notranslate"><span class="pre">connect=False</span></code> during <code class="docutils literal notranslate"><span class="pre">__init__</span></code> would still connect to Shotgun.</li>
 <li>Adds support for <code class="docutils literal notranslate"><span class="pre">SHOTGUN_API_CACERTS</span></code> when uploading and downloading files.</li>
@@ -658,7 +668,7 @@ after initializing it).</li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Autodesk.
+        &copy; Copyright 2019, Autodesk
 
     </p>
   </div> 
@@ -676,20 +686,14 @@ after initializing it).</li>
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'v3.0.37',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
 
   
 

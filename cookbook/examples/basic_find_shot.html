@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Find a Shot &mdash; python-api v3.0.37 documentation</title>
+  <title>Find a Shot &mdash; python-api v3.0.38 documentation</title>
   
 
   
@@ -28,6 +28,7 @@
 
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Update A Shot" href="basic_update_shot.html" />
@@ -140,7 +141,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.37.<br>
+    <b>python-api</b> v3.0.38.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -241,7 +242,7 @@ provide it with the entity type we’re searching for and our filters.</li>
 the <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">id</span></code> fields. So in this example, we found a Shot matching that id, and Shotgun
 returned it as a dictionary object with <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">id</span></code> keys .</p>
 <p>How do we know that result contains the Shot dictionary object? You can trust us… but just to be
-sure, the <a class="reference external" href="https://docs.python.org/3/library/pprint.html#module-pprint" title="(in Python v3.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pprint</span></code></a> (PrettyPrint) module from the Python standard library is a really good tool
+sure, the <a class="reference external" href="https://docs.python.org/2/library/pprint.html#module-pprint" title="(in Python v2.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pprint</span></code></a> (PrettyPrint) module from the Python standard library is a really good tool
 to help with debugging. It will print out objects in a nicely formatted way that makes things
 easier to read. So we’ll add that to the import section of our script.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shotgun_api3</span>
@@ -309,7 +310,7 @@ easier to read. So we’ll add that to the import section of our script.:</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Autodesk.
+        &copy; Copyright 2019, Autodesk
 
     </p>
   </div> 
@@ -327,20 +328,14 @@ easier to read. So we’ll add that to the import section of our script.:</p>
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'v3.0.37',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
 
   
 

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Details About Working With Files &mdash; python-api v3.0.37 documentation</title>
+  <title>Details About Working With Files &mdash; python-api v3.0.38 documentation</title>
   
 
   
@@ -28,6 +28,7 @@
 
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Working With Tasks" href="tasks.html" />
@@ -148,7 +149,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.37.<br>
+    <b>python-api</b> v3.0.38.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -245,12 +246,12 @@ optional and some are automatically filled in. These exceptions are listed below
 descriptions of each field.</p>
 <ul class="simple">
 <li><dl class="first docutils">
-<dt><strong>description</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
+<dt><strong>description</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
 <dd>Optional field to provide descriptive text about the file.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>this_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>):</dt>
+<dt><strong>this_file</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>):</dt>
 <dd>The actual file reference. Within the dictionary is a <code class="docutils literal notranslate"><span class="pre">link_type</span></code> key which designates the
 Attachment as an uploaded file, a url link, or a local file. There are additional keys
 returned for <a class="reference internal" href="#id1"><span class="std std-ref">Working With Local File Types</span></a>. You cannot modify this field after you have created an
@@ -258,70 +259,70 @@ Attachment. See below for examples of this field.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
+<dt><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
 <dd>For uploaded files only. This is automatically assigned when the file is uploaded and stores
 the filename of the file.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>file_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt>
+<dt><strong>file_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt>
 <dd>For uploaded files only. This is automatically assigned when the file is uploaded and stores
 the size of the file in bytes.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt>
+<dt><strong>id</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt>
 <dd>The internal Shotgun id for this Attachment entity.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>attachment_links</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>):</dt>
+<dt><strong>attachment_links</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>):</dt>
 <dd>A list of entity dictionaries used for linking Attachments to multiple entities.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>open_notes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>):</dt>
+<dt><strong>open_notes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>):</dt>
 <dd>A List of Note entities linked to the current Attachment that have a status that does not
 equal ‘clsd’. <em>Read-only</em></dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>open_notes_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt>
+<dt><strong>open_notes_count</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt>
 <dd>An integer count of the list of Note entities linked to the current Attachment that have a
 status that does not equal ‘clsd’. <em>(Read-only)</em></dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>project</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>):</dt>
+<dt><strong>project</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>):</dt>
 <dd><em>(Required)</em> The Project entity that this Attachment belongs to. This must be assigned when
 creating an Attachment.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>attachment_reference_links</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>):</dt>
+<dt><strong>attachment_reference_links</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>):</dt>
 <dd>Similar to <code class="docutils literal notranslate"><span class="pre">attachment_links</span></code> but used specifically for linking files to multiple entities as
 reference.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>sg_status_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
+<dt><strong>sg_status_list</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
 <dd>Status value returned as the short code.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>tag_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>):</dt>
+<dt><strong>tag_list</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>):</dt>
 <dd>List of tags (as strings) that are currently assigned to the Attachment.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
+<dt><strong>image</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
 <dd>The url location of the thumbnail image assigned to this Attachment. For uploads, Shotgun
 automatically tries to create a thumbnail from the file. Alternatively, you can assign your
 own thumbnail to an Attachment using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code> method.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>sg_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
+<dt><strong>sg_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
 <dd>An optional field for designating different types of Attachments</dd>
 </dl>
 </li>
@@ -443,53 +444,53 @@ contains. For local files this value is always <code class="docutils literal not
 are available:</p>
 <ul class="simple">
 <li><dl class="first docutils">
-<dt><strong>content_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
+<dt><strong>content_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
 <dd>The mime-type of the associated local file. This is assigned
 automatically using a best-guess based on the file extension. You can override this by setting
 this explicitly.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>link_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
+<dt><strong>link_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
 <dd>Always ‘local’ for local files.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
+<dt><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
 <dd>the display name of the local file. This is set to the filename by
 default but can be overridden by setting this explicitly.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>local_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
+<dt><strong>local_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
 <dd>The full path to the file on the current platform. The Python API tries to determine the
 platform it is currently running on and then copies the value from the corresponding key above
 to this field for convenience.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>local_path_linux</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
+<dt><strong>local_path_linux</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
 <dd>Full path to file on Linux as defined by the LocalStorage (or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no Linux path is set)</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>local_path_mac</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
+<dt><strong>local_path_mac</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
 <dd>Full path to file on Mac OS X as defined by the LocalStorage (or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no Mac path is set)</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>local_path_windows</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
+<dt><strong>local_path_windows</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
 <dd>Full path to file on Windows as defined by the LocalStorage (or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no Windows path
 is set)</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>local_storage</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) <em>read-only</em>:</dt>
+<dt><strong>local_storage</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) <em>read-only</em>:</dt>
 <dd>A dictionary representing which LocalStorage entity is applied for this local file link.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
+<dt><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
 <dd>A <a class="reference external" href="file://">file://</a> link provided for convenience pointing to the value in the <code class="docutils literal notranslate"><span class="pre">local_path</span></code></dd>
 </dl>
 </li>
@@ -533,18 +534,18 @@ You can optionally specify the <code class="docutils literal notranslate"><span 
 defaults. Any other keys that are provided will be ignored.</p>
 <ul class="simple">
 <li><dl class="first docutils">
-<dt><strong>content_type</strong> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt>
+<dt><strong>content_type</strong> <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt>
 <dd>Optionally set the mime-type of the associated local file. This is assigned automatically
 using a best-guess based on the file extension.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>name</strong> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt>
+<dt><strong>name</strong> <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt>
 <dd>Optional display name of the local file. This is set to the filename by default.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>local_path</strong> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt>
+<dt><strong>local_path</strong> <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt>
 <dd>The full local path to the file. Shotgun will find the LocalStorage
 that has the most specific match to this path and automatically assign that LocalStorage to
 the file.</dd>
@@ -612,7 +613,7 @@ the most appropriate specific LocalStorage match and assigned it to local_storag
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, Autodesk.
+        &copy; Copyright 2019, Autodesk
 
     </p>
   </div> 
@@ -630,20 +631,14 @@ the most appropriate specific LocalStorage match and assigned it to local_storag
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'v3.0.37',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
 
   
 
