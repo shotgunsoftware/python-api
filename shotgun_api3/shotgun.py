@@ -706,16 +706,11 @@ class Shotgun(object):
                                         [major, minor, patch, hotfix]
             version                     An ordered array of the Shotgun version.
                                         [major, minor, patch]
-            user_authentication_method  Indicate the authentication method used by Shotgun.
-                                        Will be one of the following value:
+            user_authentication_method  Indicates the authentication method used by Shotgun.
+                                        Will be one of the following values:
                                             default: regular username/password.
                                             ldap:    username/password from the company's LDAP.
                                             saml2:   SSO used, over SAML2.
-            unified_login_flow_enabled  Indicate if the /auth/renew endpoint is enabled.
-                                        Following a successful authentication, the browser will
-                                        be redirected to /auth/landing.
-                                        True for any Shotgun sites starting from version 8.
-                                        False for older sites where the feature is not enabled.
 
         .. note::
 
