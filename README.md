@@ -15,11 +15,7 @@ The latest version can always be found at http://github.com/shotgunsoftware/pyth
 ## Minimum Requirements
 
 * Shotgun server v2.4.12+.
-* Python v2.6 - v2.7.
-
-## High Performance Requirements
-
-* Install [simplejson 2.1.6](http://pypi.python.org/pypi/simplejson/2.1.6)
+* Python v2.7, and v3.6+
 
 ## Documentation
 Tutorials and detailed documentation about the Python API are available at http://developer.shotgunsoftware.com/python-api). 

@@ -35,11 +35,12 @@ Unit tests for Mockgun. Does not require an Internet connection
 and can be run on their own by typing "python test_mockgun.py".
 """
 
+import six
 import re
 import os
 import unittest
 from shotgun_api3.lib.mockgun import Shotgun as Mockgun
-from shotgun_api3 import ShotgunError
+from shotgun_api3.errors import ShotgunError
 
 
 mockgun_schema_folder = os.path.join(
@@ -47,10 +48,16 @@ mockgun_schema_folder = os.path.join(
     "mockgun"
 )
 
-Mockgun.set_schema_paths(
-    os.path.join(mockgun_schema_folder, "schema.pickle"),
-    os.path.join(mockgun_schema_folder, "schema_entity.pickle")
-)
+if six.PY3:
+    Mockgun.set_schema_paths(
+        os.path.join(mockgun_schema_folder, "py3", "schema.pickle"),
+        os.path.join(mockgun_schema_folder, "py3", "schema_entity.pickle")
+    )
+else:
+    Mockgun.set_schema_paths(
+        os.path.join(mockgun_schema_folder, "py2", "schema.pickle"),
+        os.path.join(mockgun_schema_folder, "py2", "schema_entity.pickle")
+    )
 
 
 # FIXME: This should probably be refactored into a base class for
@@ -63,13 +70,13 @@ class TestBaseWithExceptionTests(unittest.TestCase):
     def assertRaisesRegexp(self, exception_type, re_msg, func):
         try:
             func()
-        except exception_type, exception:
+        except exception_type as exception:
             matches = re.findall(re_msg, str(exception))
             if not matches:
                 self.fail("Expected exception to match '%s', got '%s' instead." % (
                     re_msg, str(exception)
                 ))
-        except Exception, ex:
+        except Exception as ex:
             self.fail("Expected exception of type %s, got %s" % (exception_type, type(ex)))
         else:
             self.fail("Expected %s was not raised." % exception_type)

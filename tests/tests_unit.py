@@ -1,8 +1,15 @@
 #! /opt/local/bin/python
+import inspect
+import os
+import sys
 import unittest
-from mock import patch, Mock
+from .mock import patch, Mock
+
+import six
+
 import shotgun_api3 as api
-from shotgun_api3.sg_26 import _is_mimetypes_broken
+from shotgun_api3.lib import mimetypes
+
 
 class TestShotgunInit(unittest.TestCase):
     '''Test case for Shotgun.__init__'''
@@ -175,7 +182,7 @@ class TestShotgunSummarize(unittest.TestCase):
 
     def test_grouping(self):
         result = self.get_call_rpc_params(None, {})
-        self.assertFalse(result.has_key('grouping'))
+        self.assertFalse("grouping" in result)
         grouping = ['something']
         kws = {'grouping':grouping} 
         result = self.get_call_rpc_params(None, kws)
@@ -195,35 +202,35 @@ class TestShotgunBatch(unittest.TestCase):
     def test_missing_required_key(self):
         req = {}
         # requires keys request_type and entity_type
-        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        self.assertRaises(api.errors.ShotgunError, self.sg.batch, [req])
         req['entity_type'] = 'Entity'
-        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        self.assertRaises(api.errors.ShotgunError, self.sg.batch, [req])
         req['request_type'] = 'not_real_type'
-        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        self.assertRaises(api.errors.ShotgunError, self.sg.batch, [req])
         # create requires data key
         req['request_type'] = 'create'
-        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        self.assertRaises(api.errors.ShotgunError, self.sg.batch, [req])
         # update requires entity_id and data
         req['request_type'] = 'update'
         req['data'] = {}
-        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        self.assertRaises(api.errors.ShotgunError, self.sg.batch, [req])
         del req['data']
         req['entity_id'] = 2334
-        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        self.assertRaises(api.errors.ShotgunError, self.sg.batch, [req])
         # delete requires entity_id
         req['request_type'] = 'delete'
         del req['entity_id']
-        self.assertRaises(api.ShotgunError, self.sg.batch, [req])
+        self.assertRaises(api.errors.ShotgunError, self.sg.batch, [req])
 
 
 class TestServerCapabilities(unittest.TestCase):
     def test_no_server_version(self):
-        self.assertRaises(api.ShotgunError, api.shotgun.ServerCapabilities, 'host', {})
+        self.assertRaises(api.errors.ShotgunError, api.shotgun.ServerCapabilities, 'host', {})
 
 
     def test_bad_version(self):
         '''test_bad_meta tests passing bad meta data type'''
-        self.assertRaises(api.ShotgunError, api.shotgun.ServerCapabilities, 'host', {'version':(0,0,0)})
+        self.assertRaises(api.errors.ShotgunError, api.shotgun.ServerCapabilities, 'host', {'version':(0,0,0)})
 
     def test_dev_version(self):
         serverCapabilities = api.shotgun.ServerCapabilities('host', {'version':(3,4,0,'Dev')})
@@ -269,9 +276,9 @@ class TestClientCapabilities(unittest.TestCase):
         
     @patch('shotgun_api3.shotgun.sys')
     def test_py_version(self, mock_sys):
-        major = 2
-        minor = 7
-        micro = 3
+        major = sys.version_info[0]
+        minor = sys.version_info[1]
+        micro = sys.version_info[2]
         mock_sys.version_info = (major, minor, micro, 'final', 0)
         expected_py_version = "%s.%s" % (major, minor)
         client_caps = api.shotgun.ClientCapabilities()
@@ -371,28 +378,28 @@ class TestFilters(unittest.TestCase):
         self.assertEquals(result, expected)
     
     def test_invalid(self):
-        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, [], "bogus")
-        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, ["bogus"], "all")
+        self.assertRaises(api.errors.ShotgunError, api.shotgun._translate_filters, [], "bogus")
+        self.assertRaises(api.errors.ShotgunError, api.shotgun._translate_filters, ["bogus"], "all")
         
         filters = [{
             "filter_operator": "bogus",
             "filters": []
         }]
         
-        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
+        self.assertRaises(api.errors.ShotgunError, api.shotgun._translate_filters, filters, "all")
         
         filters = [{
             "filters": []
         }]
         
-        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
+        self.assertRaises(api.errors.ShotgunError, api.shotgun._translate_filters, filters, "all")
         
         filters = [{
             "filter_operator": "all",
             "filters": { "bogus": "bogus" }
         }]
         
-        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
+        self.assertRaises(api.errors.ShotgunError, api.shotgun._translate_filters, filters, "all")
 
 
 class TestMimetypesFix(unittest.TestCase):
@@ -400,26 +407,29 @@ class TestMimetypesFix(unittest.TestCase):
     Makes sure that the mimetypes fix will be imported.
     """
 
-    @patch('shotgun_api3.sg_26.sys')
-    def _test_mimetypes_import(self, platform, major, minor, patch, result, mock):
-        """
-        Mocks sys.platform and sys.version_info to test the mimetypes import code.
-        """
-
-        mock.version_info = [major, minor, patch]
-        mock.platform = platform
-        self.assertEqual(_is_mimetypes_broken(), result)
-
     def test_correct_mimetypes_imported(self):
         """
         Makes sure fix is imported for only for Python 2.7.0 to 2.7.7 on win32
         """
-        self._test_mimetypes_import("win32", 2, 6, 9, False)
-        for patch in range(0, 10): # 0 to 9 inclusively
-            self._test_mimetypes_import("win32", 2, 7, patch, True)
-        self._test_mimetypes_import("win32", 2, 7, 10, False)
-        self._test_mimetypes_import("win32", 3, 0, 0, False)
-        self._test_mimetypes_import("darwin", 2, 7, 0, False)
+
+        major, minor, micro, releaselevel, serial = sys.version_info
+
+        lib_mimetypes_path = os.path.join(
+            os.path.dirname(__file__),
+            os.pardir,
+            "shotgun_api3",
+            "lib",
+            "python2",
+            "mimetypes.py"
+        )
+
+        imported_mimetypes_path = inspect.getmodule(mimetypes).__file__
+
+        if six.PY2 and sys.platform == "win32" and minor == 7 and (0 <= micro <= 9):
+            self.assertTrue(imported_mimetypes_path == lib_mimetypes_path)
+        else:
+            self.assertTrue(imported_mimetypes_path != lib_mimetypes_path)
+
 
 if __name__ == '__main__':
     unittest.main()

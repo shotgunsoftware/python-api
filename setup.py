@@ -6,7 +6,7 @@ f = open('README.md')
 readme = f.read().strip()
 
 f = open('LICENSE')
-license = f.read().strip()
+license_content = f.read().strip()
 
 # For python 2.4 support
 script_args = sys.argv[1:]
@@ -23,10 +23,11 @@ setup(
     author='Shotgun Software',
     author_email='support@shotgunsoftware.com',
     url='https://github.com/shotgunsoftware/python-api',
-    license=license,
+    license=license_content,
     packages=find_packages(exclude=('tests',)),
     script_args=script_args,
     include_package_data=True,
     package_data={'': ['cacerts.txt']},
     zip_safe=False,
+    install_required=["six"],
 )

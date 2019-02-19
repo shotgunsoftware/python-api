@@ -1,6 +1,9 @@
 #python specific
 *.pyc
 
+# pycharm
+.idea/
+
 ## generic files to ignore
 *~
 *.lock

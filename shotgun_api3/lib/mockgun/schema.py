@@ -30,9 +30,9 @@
 -----------------------------------------------------------------------------
 """
 
-import cPickle as pickle
 import os
-import copy
+
+from six.moves import cPickle as pickle
 
 from .errors import MockgunError
 
@@ -102,9 +102,7 @@ def generate_schema(shotgun, schema_file_path, schema_entity_file_path):
     and downloading the schema information for that site. Once the generated schema
     files are being passed to mockgun, it will mimic the site's schema structure.
 
-    :param sg_url: Shotgun site url
-    :param sg_script: Script name to connect with
-    :param sg_key: Script key to connect with
+    :param shotgun: An open SG connection.
     :param schema_file_path: Path where to write the main schema file to
     :param schema_entity_file_path: Path where to write the entity schema file to
     """

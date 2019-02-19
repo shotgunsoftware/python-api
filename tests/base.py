@@ -2,21 +2,28 @@
 import os
 import re
 import unittest
-from ConfigParser import ConfigParser
 
+import six
 
-import mock
+if six.PY3:
+    from configparser import ConfigParser
+else:
+    from ConfigParser import ConfigParser
+
+from . import mock
 
 import shotgun_api3 as api
 from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
+from shotgun_api3.lib import httplib2
 
 CONFIG_PATH = 'tests/config'
 
-class TestBase(unittest.TestCase):
-    '''Base class for tests.
 
-    Sets up mocking and database test data.'''
+class TestBase(unittest.TestCase):
+    """Base class for tests.
+
+    Sets up mocking and database test data."""
 
     human_user     = None
     project        = None
@@ -44,7 +51,11 @@ class TestBase(unittest.TestCase):
         # Since the file is read and never modified, we will only read
         # it once in memory and be done.
         cls.config = SgTestConfig()
-        cls.config.read_config(CONFIG_PATH)
+        config_path = os.path.join(
+            os.path.dirname(__file__),
+            "config"
+        )
+        cls.config.read_config(config_path)
 
     def setUp(self, auth_mode='ApiUser'):
         self.human_login    = self.config.human_login
@@ -92,7 +103,7 @@ class TestBase(unittest.TestCase):
 
 
 class MockTestBase(TestBase):
-    '''Test base for tests mocking server interactions.'''
+    """Test base for tests mocking server interactions."""
     def setUp(self):
         super(MockTestBase, self).setUp()
         #TODO see if there is another way to stop sg connecting
@@ -111,7 +122,7 @@ class MockTestBase(TestBase):
         #also replace the function that is called to get the http connection
         #to avoid calling the server. OK to return a mock as we will not use
         #it
-        self.mock_conn = mock.Mock(spec=api.lib.httplib2.Http)
+        self.mock_conn = mock.Mock(spec=httplib2.Http)
         #The Http objects connection property is a dict of connections
         #it is holding
         self.mock_conn.connections = dict()
@@ -133,8 +144,18 @@ class MockTestBase(TestBase):
         if not isinstance(self.sg._http_request, mock.Mock):
             return
 
-        if not isinstance(data, basestring):
-            data = json.dumps(data, ensure_ascii=False, encoding="utf-8")
+        if not isinstance(data, six.string_types):
+            if six.PY2:
+                data = json.dumps(
+                    data,
+                    ensure_ascii=False,
+                    encoding="utf-8"
+                )
+            else:
+                data = json.dumps(
+                    data,
+                    ensure_ascii=False,
+                )
 
         resp_headers = { 'cache-control': 'no-cache',
                          'connection': 'close',
@@ -157,7 +178,10 @@ class MockTestBase(TestBase):
         """Asserts _http_request is called with the method and params."""
         args, _ = self.sg._http_request.call_args
         arg_body = args[2]
-        assert isinstance(arg_body, basestring)
+        if six.PY3:
+            assert isinstance(arg_body, bytes)
+        else:
+            assert isinstance(arg_body, basestring)
         arg_body = json.loads(arg_body)
 
         arg_params = arg_body.get("params")
@@ -197,7 +221,7 @@ class MockTestBase(TestBase):
                             'type':'Playlist'}
 
 class LiveTestBase(TestBase):
-    '''Test base for tests relying on connection to server.'''
+    """Test base for tests relying on connection to server."""
     def setUp(self, auth_mode='ApiUser'):
         super(LiveTestBase, self).setUp(auth_mode)
         if self.sg.server_caps.version and \
@@ -301,24 +325,24 @@ class LiveTestBase(TestBase):
 
 
 class HumanUserAuthLiveTestBase(LiveTestBase):
-    '''
+    """
     Test base for relying on a Shotgun connection authenticate through the
     configured login/password pair.
-    '''
+    """
     def setUp(self):
         super(HumanUserAuthLiveTestBase, self).setUp('HumanUser')
 
 class SessionTokenAuthLiveTestBase(LiveTestBase):
-    '''
+    """
     Test base for relying on a Shotgun connection authenticate through the
     configured session_token parameter.
-    '''
+    """
     def setUp(self):
         super(SessionTokenAuthLiveTestBase, self).setUp('SessionToken')
 
 
 class SgTestConfig(object):
-    '''Reads test config and holds values'''
+    """Reads test config and holds values"""
     def __init__(self):
         for key in self.config_keys():
             # Look for any environment variables that match our test
@@ -348,21 +372,21 @@ class SgTestConfig(object):
                     setattr(self, option, value)
 
 
-def _find_or_create_entity(sg, entity_type, data, identifyiers=None):
-    '''Finds or creates entities.
+def _find_or_create_entity(sg, entity_type, data, identifiers=None):
+    """Finds or creates entities.
     @params:
         sg           - shogun_json.Shotgun instance
         entity_type  - entity type
         data         - dictionary of data for the entity
-        identifyiers -list of subset of keys from data which should be used to
+        identifiers -list of subset of keys from data which should be used to
                       uniquely identity the entity
-    @returns dicitonary of the entity values
-    '''
-    identifyiers = identifyiers or ['name']
-    fields = data.keys()
-    filters = [[key, 'is', data[key]] for key in identifyiers]
+    @returns dictionary of the entity values
+    """
+    identifiers = identifiers or ['name']
+    fields = list(data.keys())
+    filters = [[key, 'is', data[key]] for key in identifiers]
     entity = sg.find_one(entity_type, filters, fields=fields)
     entity = entity or sg.create(entity_type, data, return_fields=fields)
-    assert(entity)
+    assert entity
     return entity
 

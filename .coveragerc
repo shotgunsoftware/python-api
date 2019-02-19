@@ -16,5 +16,4 @@
 source=shotgun_api3
 omit=
     shotgun_api3/lib/httplib2/*
-    shotgun_api3/lib/simplejson/*
-    shotgun_api3/lib/xmlrpclib.py
+    shotgun_api3/lib/python2/*

@@ -4,26 +4,27 @@ need a live server to run against."""
 
 import base64
 import datetime
-import urllib
 import re
-try:
-    import simplejson as json
-except ImportError:
-    try:
-        import json as json
-    except ImportError:
-        import shotgun_api3.lib.simplejson as json
+import json as json
 
 import platform
 import sys
 import time
 import unittest
-import mock
 
-import shotgun_api3.lib.httplib2 as httplib2
+import six
+
+from six.moves.urllib.parse import unquote
+from six.moves import xmlrpc_client
+
+from shotgun_api3.lib import httplib2
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
-import base
+
+from . import base
+from . import mock
+
+
 
 class TestShotgunClient(base.MockTestBase):
     '''Test case for shotgun api with server interactions mocked.'''
@@ -77,12 +78,12 @@ class TestShotgunClient(base.MockTestBase):
         sc = ServerCapabilities("foo", {"version" : (2,4,0)})
 
         sc.version = (2,3,99)
-        self.assertRaises(api.ShotgunError, sc._ensure_json_supported)
-        self.assertRaises(api.ShotgunError, ServerCapabilities, "foo",
+        self.assertRaises(api.errors.ShotgunError, sc._ensure_json_supported)
+        self.assertRaises(api.errors.ShotgunError, ServerCapabilities, "foo",
             {"version" : (2,2,0)})
 
         sc.version = (0,0,0)
-        self.assertRaises(api.ShotgunError, sc._ensure_json_supported)
+        self.assertRaises(api.errors.ShotgunError, sc._ensure_json_supported)
 
         sc.version = (2,4,0)
         sc._ensure_json_supported()
@@ -104,11 +105,11 @@ class TestShotgunClient(base.MockTestBase):
             return body["params"][0]
 
         self.sg.config.extra_auth_params = None
-        self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
+        self.assertRaises(api.errors.Fault, self.sg.delete, "FakeType", 1)
         self.assertTrue("product" not in auth_args())
 
         self.sg.config.extra_auth_params = {"product":"rv"}
-        self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
+        self.assertRaises(api.errors.Fault, self.sg.delete, "FakeType", 1)
         self.assertEqual("rv", auth_args()["product"])
 
     def test_session_uuid(self):
@@ -125,12 +126,12 @@ class TestShotgunClient(base.MockTestBase):
             return body["params"][0]
 
         self.sg.set_session_uuid(None)
-        self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
+        self.assertRaises(api.errors.Fault, self.sg.delete, "FakeType", 1)
         self.assertTrue("session_uuid" not in auth_args())
 
         my_uuid = '5a1d49b0-0c69-11e0-a24c-003048d17544'
         self.sg.set_session_uuid(my_uuid)
-        self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
+        self.assertRaises(api.errors.Fault, self.sg.delete, "FakeType", 1)
         self.assertEqual(my_uuid, auth_args()["session_uuid"])
 
     def test_url(self):
@@ -148,7 +149,7 @@ class TestShotgunClient(base.MockTestBase):
         # login:password@domain
         auth_url = "%s%s@%s" % (self.uri_prefix, login_password, self.domain)
         sg = api.Shotgun(auth_url, None, None, connect=False)
-        expected = "Basic " + base64.encodestring(urllib.unquote(login_password)).strip()
+        expected = "Basic " + b64encode(unquote(login_password)).strip()
         self.assertEqual(expected, sg.config.authorization)
 
     def test_authorization(self):
@@ -168,7 +169,7 @@ class TestShotgunClient(base.MockTestBase):
         args, _ = self.sg._http_request.call_args
         verb, path, body, headers = args
 
-        expected = "Basic " + base64.encodestring(urllib.unquote(login_password)).strip()
+        expected = "Basic " + b64encode(unquote(login_password)).strip()
         self.assertEqual(expected, headers.get("Authorization"))
 
     def test_user_agent(self):
@@ -241,7 +242,7 @@ class TestShotgunClient(base.MockTestBase):
         self._mock_http( "big old error string",
                        status=(500, "Internal Server Error"))
 
-        self.assertRaises(api.ProtocolError, self.sg.info)
+        self.assertRaises(xmlrpc_client.ProtocolError, self.sg.info)
         self.assertEqual(1,
                         self.sg._http_request.call_count,
                         "Call is not repeated")
@@ -252,11 +253,11 @@ class TestShotgunClient(base.MockTestBase):
         self._mock_http({ "message":"Go BANG",
                           "exception":True })
 
-        self.assertRaises(api.Fault, self.sg.info)
+        self.assertRaises(api.errors.Fault, self.sg.info)
 
         try:
             self.sg.info()
-        except api.Fault, e:
+        except api.errors.Fault as e:
             self.assertEqual("Go BANG", str(e))
 
     def test_call_rpc(self):
@@ -294,7 +295,10 @@ class TestShotgunClient(base.MockTestBase):
 
         # Test unicode mixed with utf-8 as reported in Ticket #17959
         d = { "results" : ["foo", "bar"] }
-        a = { "utf_str": "\xe2\x88\x9a", "unicode_str": "\xe2\x88\x9a".decode("utf-8") }
+        if six.PY3:
+            a = { "utf_str": "\xe2\x88\x9a", "unicode_str": b"\xe2\x88\x9a".decode("utf-8") }
+        else:
+            a = { "utf_str": "\xe2\x88\x9a", "unicode_str": "\xe2\x88\x9a".decode("utf-8") }
         self._mock_http(d)
         rv = self.sg._call_rpc("list", a)
         expected = "rpc response with list result"
@@ -326,14 +330,14 @@ class TestShotgunClient(base.MockTestBase):
             return datetime.datetime(*time.strptime(s, f)[:6])
 
         def assert_wire(wire, match):
-            self.assertTrue(isinstance(wire["date"], basestring))
+            self.assertTrue(isinstance(wire["date"], six.string_types))
             d = _datetime(wire["date"], "%Y-%m-%d").date()
             d = wire['date']
             self.assertEqual(match["date"], d)
-            self.assertTrue(isinstance(wire["datetime"], basestring))
+            self.assertTrue(isinstance(wire["datetime"], six.string_types))
             d = _datetime(wire["datetime"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["datetime"], d)
-            self.assertTrue(isinstance(wire["time"], basestring))
+            self.assertTrue(isinstance(wire["time"], six.string_types))
             d = _datetime(wire["time"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["time"], d.time())
 
@@ -364,28 +368,42 @@ class TestShotgunClient(base.MockTestBase):
             "this is " : u"my data \u00E0"
         }
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, str))
+
+        # in py3, payload should be bytes
+        if six.PY3:
+            self.assertTrue(isinstance(j, bytes))
+        else:
+            self.assertTrue(isinstance(j, str))
 
         d = {
             "this is " : u"my data"
         }
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, str))
+
+        # in py3, payload should be bytes
+        if six.PY3:
+            self.assertTrue(isinstance(j, bytes))
+        else:
+            self.assertTrue(isinstance(j, str))
 
     def test_decode_response_ascii(self):
-        self._assert_decode_resonse(True, u"my data \u00E0".encode('utf8'))
+        if six.PY2:
+            self._assert_decode_response(True, u"my data \u00E0".encode('utf8'))
 
     def test_decode_response_unicode(self):
-        self._assert_decode_resonse(False, u"my data \u00E0")
+        if six.PY3:
+            self._assert_decode_response(False, "my data \u00E0")
+        else:
+            self._assert_decode_response(False, u"my data \u00E0")
 
-    def _assert_decode_resonse(self, ensure_ascii, data):
+    def _assert_decode_response(self, ensure_ascii, data):
         """HTTP Response is decoded as JSON or text"""
 
         headers = {
             "content-type" : "application/json;charset=utf-8"
         }
         d = {
-            "this is " : data
+            "this is ": data
         }
         sg = api.Shotgun(self.config.server_url,
                          self.config.script_name,
@@ -394,7 +412,10 @@ class TestShotgunClient(base.MockTestBase):
                          ensure_ascii = ensure_ascii,
                          connect=False)
 
-        j = json.dumps(d, ensure_ascii=ensure_ascii, encoding="utf-8")
+        if six.PY3:
+            j = json.dumps(d, ensure_ascii=ensure_ascii)
+        else:
+            j = json.dumps(d, ensure_ascii=ensure_ascii, encoding="utf-8")
         self.assertEqual(d, sg._decode_response(headers, j))
 
         headers["content-type"] = "text/javascript"
@@ -464,7 +485,7 @@ class TestShotgunClient(base.MockTestBase):
 
         resp = "0\nSome Error"
         self._mock_http(resp, headers={"content-type" : "text/plain"})
-        self.assertRaises(api.ShotgunError, self.sg._build_thumb_url,
+        self.assertRaises(api.errors.ShotgunError, self.sg._build_thumb_url,
             "FakeAsset", 456)
 
         resp = "99\nSome Error"
@@ -486,13 +507,19 @@ class TestShotgunClientInterface(base.MockTestBase):
 
     def test_module_interface(self):
         import shotgun_api3
-        expected_contents = ['Shotgun', 'ShotgunError', 'Fault',
-                             'ProtocolError', 'ResponseError', 'Error',
-                             'sg_timezone', '__version__']
+        expected_contents = ['__version__', 'Shotgun', 'errors', 'sg_timezone']
         for expected_content in expected_contents:
             if not hasattr(shotgun_api3, expected_content):
                 assert False, '%s not found on module %s' % (expected_content,
                                                             shotgun_api3)
+
+
+# here we add a method to base64 encode a string properly in both py2 & py3.
+def b64encode(source):
+    if six.PY3:
+        # ensures a utf-8 encoded string as a bytes object
+        source = source.encode()
+    return base64.b64encode(source).decode("utf-8")
 
 
 if __name__ == '__main__':

@@ -10,6 +10,7 @@
 
 # https://www.appveyor.com/ Windows CI configuration file.
 
+# TODO: python 3.6 and 3.7
 environment:
   matrix:
     - PYTHON: "C:\\Python27"

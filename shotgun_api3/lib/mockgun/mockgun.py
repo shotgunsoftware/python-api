@@ -116,7 +116,9 @@ Below is a non-exhaustive list of things that we still need to implement:
 
 import datetime
 
-from ... import ShotgunError
+import six
+
+from ...errors import ShotgunError
 from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
@@ -157,6 +159,7 @@ class Shotgun(object):
         changing the default value.
 
         :param schema_path: Directory path where schema files are.
+        :param schema_entity_path: Directory path where entity schema files are.
         """
         cls.__schema_path = schema_path
         cls.__schema_entity_path = schema_entity_path
@@ -169,7 +172,7 @@ class Shotgun(object):
 
         :returns: A tuple with schema_file_path and schema_entity_file_path
         """
-        return (cls.__schema_path, cls.__schema_entity_path)
+        return cls.__schema_path, cls.__schema_entity_path
 
     def __init__(self,
                  base_url,
@@ -210,7 +213,7 @@ class Shotgun(object):
 
         # bootstrap the event log
         # let's make sure there is at least one event log id in our mock db
-        data = {}
+        data = dict()
         data["event_type"] = "Hello_Mockgun_World"
         data["description"] = "Mockgun was born. Yay."
         self.create("EventLogEntry", data)
@@ -491,12 +494,12 @@ class Shotgun(object):
                                    "float": float,
                                    "checkbox": bool,
                                    "percent": int,
-                                   "text": basestring,
+                                   "text": six.string_types,
                                    "serializable": dict,
                                    "date": datetime.date,
                                    "date_time": datetime.datetime,
-                                   "list": basestring,
-                                   "status_list": basestring,
+                                   "list": six.string_types,
+                                   "status_list": six.string_types,
                                    "url": dict}[sg_type]
                 except KeyError:
                     raise ShotgunError(
@@ -799,9 +802,9 @@ class Shotgun(object):
             # ignore live rows if the retired_only flag is set
             return False
         elif filter_operator in ("all", None):
-            return all(self._row_matches_filter(entity_type, row, filter, retired_only) for filter in filters)
+            return all(self._row_matches_filter(entity_type, row, f, retired_only) for f in filters)
         elif filter_operator == "any":
-            return any(self._row_matches_filter(entity_type, row, filter, retired_only) for filter in filters)
+            return any(self._row_matches_filter(entity_type, row, f, retired_only) for f in filters)
         else:
             raise ShotgunError("%s is not a valid filter operator" % filter_operator)
 

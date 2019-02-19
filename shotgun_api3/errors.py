@@ -27,33 +27,55 @@
  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-import sys
 
-import six
 
-from . import httplib2
-from . import sgtimezone
+class ShotgunError(Exception):
+    """
+    Base for all Shotgun API Errors.
+    """
+    pass
 
-# mimetypes is broken on Windows only and for Python 2.7.0 to 2.7.9 inclusively.
-# We're bundling the version from 2.7.10.
-# See bugs :
-# http://bugs.python.org/issue9291  <- Fixed in 2.7.7
-# http://bugs.python.org/issue21652 <- Fixed in 2.7.8
-# http://bugs.python.org/issue22028 <- Fixed in 2.7.10
-if (
-    sys.platform == "win32" and      # windows
-    six.PY2 and                      # python 2
-    sys.version_info[1] == 7 and     # minor version 7
-    0 <= sys.version_info[2] <= 9    # a release before 2.7.10
-):
-    # import the bundled mimetypes (2.7.10)
-    from .python2 import mimetypes
-else:
-    import mimetypes
 
-# make these publicly available via the lib submodule
-__all__ = [
-    httplib2,
-    mimetypes,
-    sgtimezone,
-]
+class ShotgunFileDownloadError(ShotgunError):
+    """
+    Exception for file download-related errors.
+    """
+    pass
+
+
+class Fault(ShotgunError):
+    """
+    Exception when server-side exception detected.
+    """
+    pass
+
+
+class AuthenticationFault(Fault):
+    """
+    Exception when the server side reports an error related to authentication.
+    """
+    pass
+
+
+class MissingTwoFactorAuthenticationFault(Fault):
+    """
+    Exception when the server side reports an error related to missing two-factor authentication
+    credentials.
+    """
+    pass
+
+
+class UserCredentialsNotAllowedForSSOAuthenticationFault(Fault):
+    """
+    Exception when the server is configured to use SSO. It is not possible to use
+    a username/password pair to authenticate on such server.
+    """
+    pass
+
+
+class UserCredentialsNotAllowedForOxygenAuthenticationFault(Fault):
+    """
+    Exception when the server is configured to use Oxygen. It is not possible to use
+    a username/password pair to authenticate on such server.
+    """
+    pass
