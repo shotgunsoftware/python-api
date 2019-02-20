@@ -693,7 +693,7 @@ class Shotgun(object):
         Get API-related metadata from the Shotgun server.
 
         >>> sg.info()
-        {'full_version': [8, 2, 1, 0], 'version': [8, 2, 1], 'user_authentication_method': 'default', 'unified_login_flow_enabled': True, ...}
+        {'full_version': [8, 2, 1, 0], 'version': [8, 2, 1], 'user_authentication_method': 'default', ...}
 
         Tokens and values
         -----------------
