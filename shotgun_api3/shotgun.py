@@ -693,12 +693,29 @@ class Shotgun(object):
         Get API-related metadata from the Shotgun server.
 
         >>> sg.info()
-        {'full_version': [6, 3, 15, 0], 'version': [6, 3, 15], ...}
+        {'full_version': [8, 2, 1, 0], 'version': [8, 2, 1], 'user_authentication_method': 'default', ...}
+
+        Tokens and values
+        -----------------
+
+        ::
+
+            Token                       Value
+            --------                    ---------
+            full_version                An ordered array of the full Shotgun version.
+                                        [major, minor, patch, hotfix]
+            version                     An ordered array of the Shotgun version.
+                                        [major, minor, patch]
+            user_authentication_method  Indicates the authentication method used by Shotgun.
+                                        Will be one of the following values:
+                                            default: regular username/password.
+                                            ldap:    username/password from the company's LDAP.
+                                            saml2:   SSO used, over SAML2.
 
         .. note::
 
-            Beyond ``full_version`` and ``version`` which differ by the inclusion of the bugfix number, you should expect
-            these values to be unsupported and for internal use only.
+            Beyond the documented tokens, you should expect
+            the other values to be unsupported and for internal use only.
 
         :returns: dict of the server metadata.
         :rtype: dict
