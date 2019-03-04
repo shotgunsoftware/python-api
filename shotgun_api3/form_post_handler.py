@@ -33,14 +33,14 @@ import io
 import os
 import stat
 
-# py2 & py3 compatibility issues
-import six
-from six.moves import cStringIO
-from six.moves.urllib import request as url_request
-from six.moves.urllib.parse import urlencode
-
 # proper import handled by __init__.py
 from .lib import mimetypes
+from .lib import six
+
+# py2 & py3 compatibility issues
+cStringIO = six.moves.cStringIO
+url_request = six.moves.urllib.request
+urlencode = six.moves.urllib.parse.urlencode
 
 # allows file type checking in py2 & py3
 if six.PY3:

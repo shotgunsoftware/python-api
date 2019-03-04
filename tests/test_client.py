@@ -12,18 +12,17 @@ import sys
 import time
 import unittest
 
-import six
 
-from six.moves.urllib.parse import unquote
-from six.moves import xmlrpc_client
-
-from shotgun_api3.lib import httplib2
 import shotgun_api3 as api
+from shotgun_api3.lib import httplib2
+from shotgun_api3.lib import six
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 
 from . import base
 from . import mock
 
+unquote = six.moves.urllib.parse.unquote
+xmlrpc_client = six.moves.xmlrpc_client
 
 
 class TestShotgunClient(base.MockTestBase):

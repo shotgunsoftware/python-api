@@ -15,14 +15,15 @@ import unittest
 import warnings
 import glob
 
-import six
-from six.moves.urllib.parse import urlparse
-from six.moves.urllib.request import OpenerDirector
-from six.moves.urllib.error import HTTPError
-from six.moves import xmlrpc_client
-
 import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http
+from shotgun_api3.lib import six
+
+urlparse = six.moves.urllib.parse.urlparse
+OpenerDirector = six.moves.urllib.request.OpenerDirector
+HTTPError = six.moves.urllib.error.HTTPError
+xmlrpc_client = six.moves.xmlrpc_client
+
 
 if six.PY3:
     import ssl

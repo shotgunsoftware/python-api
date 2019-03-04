@@ -5,10 +5,9 @@ import sys
 import unittest
 from .mock import patch, Mock
 
-import six
-
 import shotgun_api3 as api
 from shotgun_api3.lib import mimetypes
+from shotgun_api3.lib import six
 
 
 class TestShotgunInit(unittest.TestCase):

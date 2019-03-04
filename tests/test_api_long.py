@@ -6,10 +6,9 @@ Includes the schema functions and the automated searching for all entity types
 from . import base
 import random
 import shotgun_api3
-import os
-import time
 
-import six
+from shotgun_api3.lib import six
+
 
 class TestShotgunApiLong(base.LiveTestBase):
 

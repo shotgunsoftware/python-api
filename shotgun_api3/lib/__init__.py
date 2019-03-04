@@ -29,10 +29,9 @@
 """
 import sys
 
-import six
-
 from . import httplib2
 from . import sgtimezone
+from . import six
 
 # mimetypes is broken on Windows only and for Python 2.7.0 to 2.7.9 inclusively.
 # We're bundling the version from 2.7.10.
@@ -56,4 +55,5 @@ __all__ = [
     httplib2,
     mimetypes,
     sgtimezone,
+    six
 ]

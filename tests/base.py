@@ -3,19 +3,18 @@ import os
 import re
 import unittest
 
-import six
-
-if six.PY3:
-    from configparser import ConfigParser
-else:
-    from ConfigParser import ConfigParser
-
 from . import mock
 
 import shotgun_api3 as api
 from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
 from shotgun_api3.lib import httplib2
+from shotgun_api3.lib import six
+
+if six.PY3:
+    from configparser import ConfigParser
+else:
+    from ConfigParser import ConfigParser
 
 CONFIG_PATH = 'tests/config'
 

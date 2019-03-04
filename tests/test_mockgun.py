@@ -35,12 +35,13 @@ Unit tests for Mockgun. Does not require an Internet connection
 and can be run on their own by typing "python test_mockgun.py".
 """
 
-import six
 import re
 import os
 import unittest
-from shotgun_api3.lib.mockgun import Shotgun as Mockgun
+
 from shotgun_api3.errors import ShotgunError
+from shotgun_api3.lib.mockgun import Shotgun as Mockgun
+from shotgun_api3.lib import six
 
 
 mockgun_schema_folder = os.path.join(

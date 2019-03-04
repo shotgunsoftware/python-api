@@ -1,4 +1,5 @@
-import six
+
+from .. import six
 
 # import the proper implementation into the module namespace depending on the
 # current python version

@@ -45,22 +45,9 @@ import time
 
 # ---- py2/py3 compatibility
 
-import six
+from .lib import six
 
 # ---- imports that differ between 2 & 3
-
-from six.moves import http_cookiejar as cookielib
-from six.moves.urllib import request as url_request
-from six.moves.urllib.error import HTTPError, URLError
-from six.moves.urllib.parse import (
-    quote,
-    splituser,
-    unquote,
-    urljoin,
-    urlsplit,
-    urlunparse,
-)
-from six.moves import xmlrpc_client
 
 # import errors used by this api
 from .errors import (
@@ -84,6 +71,19 @@ from .server_caps import ServerCapabilities
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib import mimetypes
 from .lib.sgtimezone import SgTimezone
+
+# python 2 to 3 compatibility
+cookielib = six.moves.http_cookiejar
+url_request = six.moves.urllib.request
+HTTPError = six.moves.urllib.error.HTTPError
+URLError = six.moves.urllib.error.URLError
+quote = six.moves.urllib.parse.quote
+splituser = six.moves.urllib.parse.splituser
+unquote = six.moves.urllib.parse.unquote
+urljoin = six.moves.urllib.parse.urljoin
+urlsplit = six.moves.urllib.parse.urlsplit
+urlunparse = six.moves.urllib.parse.urlunparse
+xmlrpc_client = six.moves.xmlrpc_client
 
 # ---- logging
 
