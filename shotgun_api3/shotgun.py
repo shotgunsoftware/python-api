@@ -4040,7 +4040,9 @@ class FormPostHandler(urllib2.BaseHandler):
             buffer.write('Content-Type: %s\r\n' % content_type)
             buffer.write('Content-Length: %s\r\n' % file_size)
             fd.seek(0)
-            buffer.write('\r\n%s\r\n' % fd.read())
+            buffer.write('\r\n')
+            shutil.copyfileobj(fd, buffer)
+            buffer.write('\r\n')
         buffer.write('--%s--\r\n\r\n' % boundary)
         buffer = buffer.getvalue()
         return boundary, buffer
