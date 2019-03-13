@@ -4,6 +4,10 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.0.40 (2019 March 13)
+=====================
+- Updates encoding method to use shutil when uploading, to avoid memory and overflow errors when reading large files. (contributed by @eestrada)
+
 v3.0.39 (2019 February 20)
 =====================
 - Ensures the certificates packaged with the API and those specified via the `SHOTGUN_API_CACERTS` environment variable
