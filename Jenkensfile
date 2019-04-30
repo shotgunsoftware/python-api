@@ -1,0 +1,23 @@
+
+ @Library('PSL@master') _    //this loads the predefined ORS PSL from the release branch
+ 
+ node('cloud&&centos'){
+     checkout scm  
+     // This is to force a re-scan
+  
+     parallel (
+         "OAST" : { //WHITESOURCE
+             scan = new ors.security.CommonAppsec(steps,env)
+             scan.run_oast_scan(
+                 "repo": "python-api" ,
+                 "branch": env.BRANCH_NAME,
+                 "mainline": "master",
+                 "team": "Shotgun",
+                 "scan_dir": ["${env.WORKSPACE}"],
+                 "fail_on_oast": "False"
+             )
+         }
+    )
+ }
+ 
+ 
