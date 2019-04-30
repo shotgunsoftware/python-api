@@ -177,9 +177,15 @@ riend the dot and we have ``version.Version.code``.
 Shotgun UI fields not available via the API
 *******************************************
 
-Summary type fields like Query Fields and Pipeline Step summary fields are currently only available 
-via the UI. Some other fields may not work as expected through the API because they are "display 
-only" fields made available for convenience and are only available in the browser UI.
+The Pipeline Step summary fields (like `step_0`, or `step_13`) on entities that have Tasks aren't
+directly queryable via the API, and are calculated on the client side in the UI. However, they
+_can_ be used as a starting point for "field hopping" (as described later in this document). Much
+as you'd query for the project name that an entity is associated with by using a filter like
+`['project.Project.name', 'is', project_name]`, you could find entities (Shots, Assets, etc.) that
+have Tasks associated with `step_16` whose status is `rdy` by using this filter:
+`['step_16.Task.sg_status_list', 'is', 'rdy']`. Filters like this will return the same information
+that is displayed in a Pipeline Step in the UI. Note that the Pipeline Step entity itself is
+available via the API as the entity type `Step`.
 
 HumanUser
 =========
