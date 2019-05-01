@@ -345,6 +345,10 @@ class _Config(object):
         """
         self._sg = sg
         self.max_rpc_attempts = 3
+        # The interval between _call_rpc retries.  Since the Config can't be
+        # modified until the Shotgun instance is created, use an environment
+        # variable to override the default value.
+        self.rpc_attempt_interval = os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3)
         # From http://docs.python.org/2.6/library/httplib.html:
         # If the optional timeout parameter is given, blocking operations
         # (like connection attempts) will timeout after that many seconds
@@ -3308,6 +3312,7 @@ class Shotgun(object):
         body = body or None
 
         max_rpc_attempts = self.config.max_rpc_attempts
+        rpc_attempt_interval = self.config.rpc_attempt_interval
 
         while (attempt < max_rpc_attempts):
             attempt += 1
@@ -3346,10 +3351,15 @@ class Shotgun(object):
                 if attempt == max_rpc_attempts:
                     raise
             except Exception:
-                #TODO: LOG ?
                 self._close_connection()
                 if attempt == max_rpc_attempts:
+                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
+                LOG.debug(
+                    "Request failed, attempt %d of %d.  Retrying in %.2f seconds..." %
+                    (attempt, max_rpc_attempts, rpc_attempt_interval)
+                )
+                time.sleep(rpc_attempt_interval)
 
     def _http_request(self, verb, path, body, headers):
         """

@@ -225,15 +225,22 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.close()
         self.assertEqual(None, self.sg._connection)
 
-
     def test_network_retry(self):
-        """Network failure is retried"""
+        """Network failure is retried, with a sleep call between retries."""
         self.sg._http_request.side_effect = httplib2.HttpLib2Error
 
-        self.assertRaises(httplib2.HttpLib2Error, self.sg.info)
-        self.assertTrue(
-            self.sg.config.max_rpc_attempts ==self.sg._http_request.call_count,
-            "Call is repeated")
+        with mock.patch("time.sleep") as mock_sleep:
+            self.assertRaises(httplib2.HttpLib2Error, self.sg.info)
+            self.assertTrue(
+                self.sg.config.max_rpc_attempts == self.sg._http_request.call_count,
+                "Call is repeated")
+            # Ensure that sleep was called with the retry interval between each attempt
+            calls = [mock.callargs(((self.sg.config.rpc_attempt_interval,), {}))]
+            calls *= (self.sg.config.max_rpc_attempts - 1)
+            self.assertTrue(
+                mock_sleep.call_args_list == calls,
+                "Call is repeated at correct interval."
+            )
 
     def test_http_error(self):
         """HTTP error raised and not retried."""
