@@ -29,7 +29,9 @@
 
 -----------------------------------------------------------------------------
 """
-
+# TODO: Python3 support
+# TODO: Logging not printing
+# TODO: Dump database ability
 import cPickle as pickle
 import os
 
