@@ -93,6 +93,7 @@ class TestMockgunModuleInterface(unittest.TestCase):
         # error.
         mockgun.MockgunError
         mockgun.generate_schema
+        mockgun.generate_data
         mockgun.Shotgun
 
 
