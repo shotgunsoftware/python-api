@@ -114,6 +114,7 @@ Below is a non-exhaustive list of things that we still need to implement:
 
 """
 
+import copy
 import datetime
 
 from ... import ShotgunError
@@ -227,13 +228,48 @@ class Shotgun(object):
         return self._schema
 
     def schema_field_create(self, entity_type, data_type, display_name, properties=None):
-        raise NotImplementedError
+        _properties = {
+            "data_type": {"editable": True, "value": None},
+            "description": {"editable": True, "value": ""},
+            "editable": {"editable": True, "value": True},
+            "entity_type": {"editable": True, "value": None},
+            "mandatory": {"editable": True, "value": False},
+            "name": {"editable": True, "value": None},
+            "properties": {
+                "default_value": {"editable": True, "value": None},
+                "regex_validation": {"editable": True, "value": ""},
+                "regex_validation_enabled": {"editable": True, "value": None},
+                "summary_default": {"editable": True, "value": "none"}
+            },
+            "ui_value_displayable": {"editable": True, "value": True},
+            "unique": {"editable": True, "value": True},
+            "visible": {"editable": True, "value": True}
+        }
+        _properties["entity_type"]["value"] = entity_type
+        _properties["entity_type"]["editable"] = False
+
+        _properties["data_type"]["value"] = data_type
+        _properties["data_type"]["editable"] = False
+
+        _properties["name"]["value"] = display_name
+        _properties["name"]["editable"] = False
+
+        if isinstance(properties, dict) and properties:
+            for prop in properties:
+                self._set_property(_properties, prop, properties[prop])
+
+        self._schema[entity_type][display_name] = _properties
 
     def schema_field_update(self, entity_type, field_name, properties):
-        raise NotImplementedError
+        _properties = copy.deepcopy(self._schema[entity_type][field_name])
+        for key in properties:
+            self._set_property(_properties, key, properties[key])
+        self._schema[entity_type][field_name] = _properties
 
     def schema_field_delete(self, entity_type, field_name):
-        raise NotImplementedError
+        if field_name not in self._schema[entity_type]:
+            return
+        del self._schema[entity_type][field_name]
 
     def schema_entity_read(self):
         return self._schema_entity
@@ -422,8 +458,29 @@ class Shotgun(object):
     def upload_thumbnail(self, entity_type, entity_id, path, **kwargs):
         pass
 
+    def dump_schemas(self):
+        schema_path, schema_entity_path = self.get_schema_paths()
+        SchemaFactory.set_schemas(self.schema_read(), schema_path, self.schema_entity_read(), schema_entity_path)
+
     ###################################################################################################
     # internal methods and members
+    @classmethod
+    def _set_property(cls, property_data, property_key, property_value):
+        result = False
+        for key in property_data:
+            if key == property_key:
+                property_data[key]["value"] = property_value
+                result = True
+                break
+            elif isinstance(property_data[key], dict):
+                _result = cls._set_property(property_data[key], property_key, property_value)
+                if _result is True:
+                    result = _result
+                    break
+        if result is False and "properties" in property_data:
+            property_data["properties"][property_key] = {"editable": True, "value": property_value}
+            result = True
+        return result
 
     def _validate_entity_type(self, entity_type):
         if entity_type not in self._schema:
