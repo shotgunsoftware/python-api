@@ -147,6 +147,19 @@ class Shotgun(object):
 
     __schema_path = None
     __schema_entity_path = None
+    __database_path = None
+
+    @classmethod
+    def set_database_path(cls, database_path):
+        """
+        Set the path where the database can be found. This is done at the class
+        level so all Shotgun instances will share the same database.
+        The responsibility to generate and load these files is left to the user
+        changing the default value.
+
+        :param database_path: Directory path where the database is.
+        """
+        cls.__database_path = database_path
 
     @classmethod
     def set_schema_paths(cls, schema_path, schema_entity_path):
@@ -160,6 +173,16 @@ class Shotgun(object):
         """
         cls.__schema_path = schema_path
         cls.__schema_entity_path = schema_entity_path
+
+    @classmethod
+    def get_database_path(cls):
+        """
+        Returns the file which are part of the database.
+        These path can then be used in generate_database if needed.
+
+        :returns: A string with database_path
+        """
+        return cls.__database_path
 
     @classmethod
     def get_schema_paths(cls):
