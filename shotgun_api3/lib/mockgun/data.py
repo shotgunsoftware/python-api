@@ -43,10 +43,17 @@ from .schema import SchemaFactory
 _HIGHEST_24_PICKLE_PROTOCOL = 2
 
 
+# Global private values to cache the schema in.
 __schema, __schema_entity = None, None
 
 
-def _get_schema():
+def _get_schema(force=False):
+    """
+    _get_schema will get the schema from the SchemaFactory and cache it.
+
+    :param bool force: If set, force will always query the latest schema from disk.
+    :return: schema dictionary from disk
+    """
     global __schema, __schema_entity
     from .mockgun import Shotgun
     if not __schema or force is True:
@@ -57,7 +64,13 @@ def _get_schema():
     return __schema
 
 
-def _get_schema_entity():
+def _get_schema_entity(force=False):
+    """
+    _get_schema_entity will get the schema_entity from the SchemaFactory and cache it.
+
+    :param bool force: If set, force will always query the latest schema_entity from disk.
+    :return: schema_entity dictionary from disk
+    """
     global __schema, __schema_entity
     from .mockgun import Shotgun
     if not __schema_entity or force is True:
@@ -69,11 +82,26 @@ def _get_schema_entity():
 
 
 def _get_entity_fields(entity):
+    """
+    _get_entity_fields will return a list of the fields on an entity as strings
+    :param str entity: Shotgun entity that we want the schema for
+    :return: List of the field names for the provided entity
+    :rtype: list[str]
+    """
     schema = _get_schema()
     return schema[entity].keys()
 
 
 def _read_data_(shotgun, entity):
+    """
+    _read_data_ will return all of the entries for the provided entity.
+    It will get all fields for the entity from the Mockgun schema.
+
+    :param shotgun: Shotgun instance used to query a live site
+    :param str entity: Shotgun entity that we want the schema for
+    :return: List of found entities
+    :rtype: list[dict]
+    """
     try:
         return shotgun.find(
             entity,
