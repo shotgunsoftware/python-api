@@ -447,6 +447,9 @@ class Shotgun(object):
     def upload_thumbnail(self, entity_type, entity_id, path, **kwargs):
         pass
 
+    def dump_database(self):
+        DatabaseFactory.set_database(self._db, self.get_database_path())
+
     ###################################################################################################
     # internal methods and members
 

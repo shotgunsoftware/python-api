@@ -31,7 +31,6 @@
 """
 # TODO: Python3 support
 # TODO: Logging not printing
-# TODO: Dump database ability
 import cPickle as pickle
 import os
 
@@ -154,6 +153,28 @@ class DatabaseFactory(object):
         finally:
             fh.close()
 
+    @classmethod
+    def _write_file(cls, data, path):
+        fh = open(path, "rb")
+        try:
+            return pickle.dump(data, fh, protocol=_HIGHEST_24_PICKLE_PROTOCOL)
+        finally:
+            fh.close()
+
+    @classmethod
+    def set_database(cls, database, database_path):
+        """
+        Writes the schemas to disk.
+
+        :param dict database: The database in memory.
+        :param str database_path: Path to the database.
+        """
+        if database_path != cls._database_cache_path:
+            cls._database_cache_path = database_path
+        cls._database_cache = database
+
+        cls._write_file(database, database_path)
+
 
 # ----------------------------------------------------------------------------
 # Utility methods
@@ -178,9 +199,4 @@ def generate_data(shotgun, data_file_path, entity_subset=None):
         print("Requesting data for: %s" % entity)
         database[entity] = _read_data_(shotgun, entity)
 
-    fh = open(data_file_path, "wb")
-    try:
-        pickle.dump(database, fh, protocol=_HIGHEST_24_PICKLE_PROTOCOL)
-    finally:
-        fh.close()
-
+    DatabaseFactory.set_database(database, data_file_path)
