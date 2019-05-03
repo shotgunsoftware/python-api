@@ -49,16 +49,22 @@ __schema, __schema_entity = None, None
 def _get_schema():
     global __schema, __schema_entity
     from .mockgun import Shotgun
-    if not __schema:
-        __schema, __schema_entity = SchemaFactory.get_schemas(*Shotgun.get_schema_paths())
+    if not __schema or force is True:
+        schema_path, schema_entity_path = Shotgun.get_schema_paths()
+        if not schema_path or not schema_entity_path:
+            raise MockgunError("You must set the schema paths on the Mockgun instance first.")
+        __schema, __schema_entity = SchemaFactory.get_schemas(schema_path, schema_entity_path)
     return __schema
 
 
 def _get_schema_entity():
     global __schema, __schema_entity
     from .mockgun import Shotgun
-    if not __schema_entity:
-        __schema, __schema_entity = SchemaFactory.get_schemas(*Shotgun.get_schema_paths())
+    if not __schema_entity or force is True:
+        schema_path, schema_entity_path = Shotgun.get_schema_paths()
+        if not schema_path or not schema_entity_path:
+            raise MockgunError("You must set the schema paths on the Mockgun instance first.")
+        __schema, __schema_entity = SchemaFactory.get_schemas(schema_path, schema_entity_path)
     return __schema_entity
 
 
