@@ -120,6 +120,7 @@ from ... import ShotgunError
 from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
+from .data import DatabaseFactory
 
 # ----------------------------------------------------------------------------
 # Version
@@ -227,6 +228,7 @@ class Shotgun(object):
 
         # initialize the "database"
         self._db = dict((entity, {}) for entity in self._schema)
+        self._update_db()
 
         # set some basic public members that exist in the Shotgun API
         self.base_url = base_url
@@ -447,6 +449,14 @@ class Shotgun(object):
 
     ###################################################################################################
     # internal methods and members
+
+    def _update_db(self):
+        database = DatabaseFactory.get_database(self.get_database_path())
+        for entity_type in database:
+            for entity in database[entity_type]:
+                row = self._get_new_row(entity_type)
+                self._update_row(entity_type, row, entity)
+                self._db[entity_type][row["id"]] = row
 
     def _validate_entity_type(self, entity_type):
         if entity_type not in self._schema:
