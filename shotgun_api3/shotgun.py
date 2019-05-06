@@ -324,6 +324,11 @@ class ClientCapabilities(object):
         # extract the OpenSSL version if we can. The version is only available in Python 2.7 and
         # only if we successfully imported ssl
         self.ssl_version = "unknown"
+
+        # -- This is the way to allow unverified SSL
+        if NO_SSL_VALIDATION: 
+            ssl._create_default_https_context = ssl._create_unverified_context
+
         try:
             self.ssl_version = ssl.OPENSSL_VERSION
         except (AttributeError, NameError):
