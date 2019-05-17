@@ -3319,7 +3319,7 @@ class Shotgun(object):
         body = body or None
 
         max_rpc_attempts = self.config.max_rpc_attempts
-        rpc_attempt_interval = float(self.config.rpc_attempt_interval) / 1000
+        rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
 
         while (attempt < max_rpc_attempts):
             attempt += 1
