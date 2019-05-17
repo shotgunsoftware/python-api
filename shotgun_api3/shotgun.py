@@ -345,10 +345,8 @@ class _Config(object):
         """
         self._sg = sg
         self.max_rpc_attempts = 3
-        # The interval between _call_rpc retries.  Since the Config can't be
-        # modified until the Shotgun instance is created, use an environment
-        # variable to override the default value.
-        self.rpc_attempt_interval = os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3)
+        # The interval between _call_rpc retries in ms.  Default to 3 seconds.
+        self.rpc_attempt_interval = 3000
         # From http://docs.python.org/2.6/library/httplib.html:
         # If the optional timeout parameter is given, blocking operations
         # (like connection attempts) will timeout after that many seconds
@@ -428,7 +426,8 @@ class Shotgun(object):
                  password=None,
                  sudo_as_login=None,
                  session_token=None,
-                 auth_token=None):
+                 auth_token=None,
+                 rpc_attempt_interval=None):
         """
         Initializes a new instance of the Shotgun client.
 
@@ -496,6 +495,10 @@ class Shotgun(object):
                 :class:`~shotgun_api3.MissingTwoFactorAuthenticationFault` will be raised if the
                 ``auth_token`` is invalid.
             .. todo: Add this info to the Authentication section of the docs
+        :param int rpc_attempt_interval: (optional) milliseconds to wait between request retries.
+            By default, this will be 3000 milliseconds.  You can override this by passing a value
+            to this parameter, or by setting the ``SHOTGUN_API_RETRY_INTERVAL`` environment variable.
+            In the case both are set, this parameter will take precedence.
 
         .. note:: A note about proxy connections: If you are using Python <= v2.6.2, HTTPS
             connections through a proxy server will not work due to a bug in the :mod:`urllib2`
@@ -562,6 +565,10 @@ class Shotgun(object):
             self.__ca_certs = ca_certs
         else:
             self.__ca_certs = os.environ.get('SHOTGUN_API_CACERTS')
+        if rpc_attempt_interval is not None:
+            self.config.rpc_attempt_interval = rpc_attempt_interval
+        else:
+            self.config.rpc_attempt_interval = int(os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000))
 
         self.base_url = (base_url or "").lower()
         self.config.scheme, self.config.server, api_base, _, _ = \
@@ -3312,7 +3319,7 @@ class Shotgun(object):
         body = body or None
 
         max_rpc_attempts = self.config.max_rpc_attempts
-        rpc_attempt_interval = self.config.rpc_attempt_interval
+        rpc_attempt_interval = float(self.config.rpc_attempt_interval) / 1000
 
         while (attempt < max_rpc_attempts):
             attempt += 1

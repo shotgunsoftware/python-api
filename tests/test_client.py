@@ -5,6 +5,7 @@ need a live server to run against."""
 import base64
 import datetime
 import urllib
+import os
 import re
 try:
     import simplejson as json
@@ -235,12 +236,46 @@ class TestShotgunClient(base.MockTestBase):
                 self.sg.config.max_rpc_attempts == self.sg._http_request.call_count,
                 "Call is repeated")
             # Ensure that sleep was called with the retry interval between each attempt
-            calls = [mock.callargs(((self.sg.config.rpc_attempt_interval,), {}))]
+            attempt_interval = float(self.sg.config.rpc_attempt_interval) / 1000
+            calls = [mock.callargs(((attempt_interval,), {}))]
             calls *= (self.sg.config.max_rpc_attempts - 1)
             self.assertTrue(
                 mock_sleep.call_args_list == calls,
                 "Call is repeated at correct interval."
             )
+
+    def test_set_retry_interval(self):
+        """Setting the retry interval through parameter and environment variable works."""
+        original_env_val = os.environ.pop("SHOTGUN_API_RETRY_INTERVAL", None)
+
+        def do_test(expected_interval, interval_parameter=None):
+            self.sg = api.Shotgun(self.config.server_url,
+                                  self.config.script_name,
+                                  self.config.api_key,
+                                  http_proxy=self.config.http_proxy,
+                                  connect=self.connect,
+                                  rpc_attempt_interval=interval_parameter)
+            self._setup_mock()
+            self.sg._http_request.side_effect = httplib2.HttpLib2Error
+            self.assertEqual(self.sg.config.rpc_attempt_interval, expected_interval)
+            self.test_network_retry()
+
+        # Try passing parameter and ensure the correct interval is used.
+        do_test(2500, interval_parameter=2500)
+
+        # Try setting ENV VAR and ensure the correct interval is used.
+        os.environ["SHOTGUN_API_RETRY_INTERVAL"] = "2000"
+        do_test(2000)
+
+        # Try both parameter and Environment variable, to ensure parameter wins.
+        do_test(4000, interval_parameter=4000)
+
+        # restore environment variable
+        if original_env_val is not None:
+            os.environ["SHOTGUN_API_RETRY_INTERVAL"] = original_env_val
+        else:
+            os.environ.pop("SHOTGUN_API_RETRY_INTERVAL")
+
 
     def test_http_error(self):
         """HTTP error raised and not retried."""
