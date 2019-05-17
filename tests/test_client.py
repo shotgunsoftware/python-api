@@ -248,7 +248,7 @@ class TestShotgunClient(base.MockTestBase):
         """Setting the retry interval through parameter and environment variable works."""
         original_env_val = os.environ.pop("SHOTGUN_API_RETRY_INTERVAL", None)
 
-        def do_test(expected_interval, interval_parameter=None):
+        def run_interval_test(expected_interval, interval_parameter=None):
             self.sg = api.Shotgun(self.config.server_url,
                                   self.config.script_name,
                                   self.config.api_key,
@@ -261,14 +261,14 @@ class TestShotgunClient(base.MockTestBase):
             self.test_network_retry()
 
         # Try passing parameter and ensure the correct interval is used.
-        do_test(2500, interval_parameter=2500)
+        run_interval_test(expected_interval=2500, interval_parameter=2500)
 
         # Try setting ENV VAR and ensure the correct interval is used.
         os.environ["SHOTGUN_API_RETRY_INTERVAL"] = "2000"
-        do_test(2000)
+        run_interval_test(expected_interval=2000)
 
-        # Try both parameter and Environment variable, to ensure parameter wins.
-        do_test(4000, interval_parameter=4000)
+        # Try both parameter and environment variable, to ensure parameter wins.
+        run_interval_test(expected_interval=4000, interval_parameter=4000)
 
         # restore environment variable
         if original_env_val is not None:

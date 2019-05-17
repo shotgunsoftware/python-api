@@ -345,7 +345,7 @@ class _Config(object):
         """
         self._sg = sg
         self.max_rpc_attempts = 3
-        # The interval between _call_rpc retries in ms.  Default to 3 seconds.
+        # The interval between _call_rpc retries in ms. Default to 3 seconds.
         self.rpc_attempt_interval = 3000
         # From http://docs.python.org/2.6/library/httplib.html:
         # If the optional timeout parameter is given, blocking operations
@@ -496,7 +496,7 @@ class Shotgun(object):
                 ``auth_token`` is invalid.
             .. todo: Add this info to the Authentication section of the docs
         :param int rpc_attempt_interval: (optional) milliseconds to wait between request retries.
-            By default, this will be 3000 milliseconds.  You can override this by passing a value
+            By default, this will be 3000 milliseconds. You can override this by passing a value
             to this parameter, or by setting the ``SHOTGUN_API_RETRY_INTERVAL`` environment variable.
             In the case both are set, this parameter will take precedence.
 
