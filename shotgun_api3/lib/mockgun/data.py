@@ -155,7 +155,7 @@ class DatabaseFactory(object):
 
     @classmethod
     def _write_file(cls, data, path):
-        fh = open(path, "rb")
+        fh = open(path, "wb")
         try:
             return pickle.dump(data, fh, protocol=_HIGHEST_24_PICKLE_PROTOCOL)
         finally:
