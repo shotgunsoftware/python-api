@@ -249,27 +249,30 @@ class TestShotgunClient(base.MockTestBase):
         original_env_val = os.environ.pop("SHOTGUN_API_RETRY_INTERVAL", None)
 
         try:
-            def run_interval_test(expected_interval, interval_parameter=None):
+            def run_interval_test(expected_interval, interval_property=None):
                 self.sg = api.Shotgun(self.config.server_url,
                                       self.config.script_name,
                                       self.config.api_key,
                                       http_proxy=self.config.http_proxy,
-                                      connect=self.connect,
-                                      rpc_attempt_interval=interval_parameter)
+                                      connect=self.connect)
                 self._setup_mock()
+                if interval_property:
+                    # if a value was provided for interval_property, set the
+                    # config's property to that value.
+                    self.sg.config.rpc_attempt_interval = interval_property
                 self.sg._http_request.side_effect = httplib2.HttpLib2Error
                 self.assertEqual(self.sg.config.rpc_attempt_interval, expected_interval)
                 self.test_network_retry()
 
             # Try passing parameter and ensure the correct interval is used.
-            run_interval_test(expected_interval=2500, interval_parameter=2500)
+            run_interval_test(expected_interval=2500, interval_property=2500)
 
             # Try setting ENV VAR and ensure the correct interval is used.
             os.environ["SHOTGUN_API_RETRY_INTERVAL"] = "2000"
             run_interval_test(expected_interval=2000)
 
             # Try both parameter and environment variable, to ensure parameter wins.
-            run_interval_test(expected_interval=4000, interval_parameter=4000)
+            run_interval_test(expected_interval=4000, interval_property=4000)
 
         finally:
             # Restore environment variable.

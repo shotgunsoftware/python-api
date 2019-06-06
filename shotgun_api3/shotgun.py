@@ -345,7 +345,16 @@ class _Config(object):
         """
         self._sg = sg
         self.max_rpc_attempts = 3
-        # The interval between _call_rpc retries in ms. Default to 3 seconds.
+        # rpc_attempt_interval stores the number of milliseconds to wait between
+        # request retries.  By default, this will be 3000 milliseconds. You can
+        # override this by setting this property on the config like so:
+        #
+        #      sg = Shotgun(site_name, script_name, script_key)
+        #      sg.config.rpc_attempt_interval = 1000 # adjusting default interval
+        #
+        # Or by setting the ``SHOTGUN_API_RETRY_INTERVAL`` environment variable.
+        # In the case that the environment variable is already set, setting the
+        # property on the config will override it.
         self.rpc_attempt_interval = 3000
         # From http://docs.python.org/2.6/library/httplib.html:
         # If the optional timeout parameter is given, blocking operations
@@ -426,8 +435,7 @@ class Shotgun(object):
                  password=None,
                  sudo_as_login=None,
                  session_token=None,
-                 auth_token=None,
-                 rpc_attempt_interval=None):
+                 auth_token=None):
         """
         Initializes a new instance of the Shotgun client.
 
@@ -495,10 +503,6 @@ class Shotgun(object):
                 :class:`~shotgun_api3.MissingTwoFactorAuthenticationFault` will be raised if the
                 ``auth_token`` is invalid.
             .. todo: Add this info to the Authentication section of the docs
-        :param int rpc_attempt_interval: (optional) milliseconds to wait between request retries.
-            By default, this will be 3000 milliseconds. You can override this by passing a value
-            to this parameter, or by setting the ``SHOTGUN_API_RETRY_INTERVAL`` environment variable.
-            In the case both are set, this parameter will take precedence.
 
         .. note:: A note about proxy connections: If you are using Python <= v2.6.2, HTTPS
             connections through a proxy server will not work due to a bug in the :mod:`urllib2`
@@ -560,15 +564,12 @@ class Shotgun(object):
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
         self.config.raw_http_proxy = http_proxy
+        self.config.rpc_attempt_interval = int(os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000))
         self._connection = None
         if ca_certs is not None:
             self.__ca_certs = ca_certs
         else:
             self.__ca_certs = os.environ.get('SHOTGUN_API_CACERTS')
-        if rpc_attempt_interval is not None:
-            self.config.rpc_attempt_interval = rpc_attempt_interval
-        else:
-            self.config.rpc_attempt_interval = int(os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000))
 
         self.base_url = (base_url or "").lower()
         self.config.scheme, self.config.server, api_base, _, _ = \
