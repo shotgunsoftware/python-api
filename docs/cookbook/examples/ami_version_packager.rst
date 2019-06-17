@@ -253,5 +253,5 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
             raise ShotgunException("Unknown action... :%s" % sa.action)
             
         
-        print "\nVersion Packager done!"
+        print("\nVersion Packager done!")
 

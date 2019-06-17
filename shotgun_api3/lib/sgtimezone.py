@@ -5,6 +5,7 @@
 #  current users of api2 to install new modules and modify PYTHONPATH info.
 # ----------------------------------------------------------------------------
 
+from __future__ import absolute_import
 from datetime import tzinfo, timedelta, datetime
 import time as _time
 

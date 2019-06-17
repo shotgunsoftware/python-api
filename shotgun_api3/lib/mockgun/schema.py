@@ -30,7 +30,8 @@
 -----------------------------------------------------------------------------
 """
 
-import cPickle as pickle
+from __future__ import absolute_import
+import six.moves.cPickle as pickle
 import os
 import copy
 

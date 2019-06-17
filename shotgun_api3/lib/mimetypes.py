@@ -23,12 +23,15 @@ init([files]) -- parse a list of files, default knownfiles (on Windows, the
 read_mime_types(file) -- parse one file, return a dictionary or None
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import sys
 import posixpath
-import urllib
+import six.moves.urllib.parse
+from six.moves import range
 try:
-    import _winreg
+    from . import six.moves.winreg
 except ImportError:
     _winreg = None
 
@@ -111,7 +114,7 @@ class MimeTypes:
         Optional `strict' argument when False adds a bunch of commonly found,
         but non-standard types.
         """
-        scheme, url = urllib.splittype(url)
+        scheme, url = six.moves.urllib.parse.splittype(url)
         if scheme == 'data':
             # syntax of data URLs:
             # dataurl   := "data:" [ mediatype ] [ ";base64" ] "," data
@@ -242,7 +245,7 @@ class MimeTypes:
             i = 0
             while True:
                 try:
-                    ctype = _winreg.EnumKey(mimedb, i)
+                    ctype = six.moves.winreg.EnumKey(mimedb, i)
                 except EnvironmentError:
                     break
                 else:
@@ -251,17 +254,17 @@ class MimeTypes:
                 i += 1
 
         default_encoding = sys.getdefaultencoding()
-        with _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '') as hkcr:
+        with six.moves.winreg.OpenKey(six.moves.winreg.HKEY_CLASSES_ROOT, '') as hkcr:
             for subkeyname in enum_types(hkcr):
                 try:
-                    with _winreg.OpenKey(hkcr, subkeyname) as subkey:
+                    with six.moves.winreg.OpenKey(hkcr, subkeyname) as subkey:
                         # Only check file extensions
                         if not subkeyname.startswith("."):
                             continue
                         # raises EnvironmentError if no 'Content Type' value
-                        mimetype, datatype = _winreg.QueryValueEx(
+                        mimetype, datatype = six.moves.winreg.QueryValueEx(
                             subkey, 'Content Type')
-                        if datatype != _winreg.REG_SZ:
+                        if datatype != six.moves.winreg.REG_SZ:
                             continue
                         try:
                             mimetype = mimetype.encode(default_encoding)
@@ -564,14 +567,14 @@ More than one type argument may be given.
 """
 
     def usage(code, msg=''):
-        print USAGE
-        if msg: print msg
+        print(USAGE)
+        if msg: print(msg)
         sys.exit(code)
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'hle',
                                    ['help', 'lenient', 'extension'])
-    except getopt.error, msg:
+    except getopt.error as msg:
         usage(1, msg)
 
     strict = 1
@@ -586,9 +589,9 @@ More than one type argument may be given.
     for gtype in args:
         if extension:
             guess = guess_extension(gtype, strict)
-            if not guess: print "I don't know anything about type", gtype
-            else: print guess
+            if not guess: print("I don't know anything about type {}".format(gtype))
+            else: print(guess)
         else:
             guess, encoding = guess_type(gtype, strict)
-            if not guess: print "I don't know anything about type", gtype
-            else: print 'type:', guess, 'encoding:', encoding
+            if not guess: print("I don't know anything about type {}".format(gtype))
+            else: print("type: {} encoding: {}".format(guess, encoding))

@@ -388,8 +388,8 @@ class TestShotgunClient(base.MockTestBase):
         #AMORTON: tests disabled for now, always have utc over the wire
         # self.sg.config.convert_datetimes_to_utc = False
         # wire = self.sg._transform_outbound(local)
-        # print "local ", local
-        # print "wire ", wire
+        # print("local {}".format(local))
+        # print("wire {}".format(wire))
         # assert_wire(wire, local)
         # wire = self.sg._transform_inbound(wire)
         # #times will become datetime over the wire

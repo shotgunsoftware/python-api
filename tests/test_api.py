@@ -140,7 +140,7 @@ class TestShotgunApi(base.LiveTestBase):
         # upload / download only works against a live server because it does
         # not use the standard http interface
         if 'localhost' in self.server_url:
-            print "upload / down tests skipped for localhost"
+            print("upload / down tests skipped for localhost")
             return
 
         this_dir, _ = os.path.split(__file__)

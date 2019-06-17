@@ -87,11 +87,11 @@ exactly like the real Shotgun one:
     sg = mockgun.Shotgun("https://mysite.shotgunstudio.com", script_name="xyz", api_key="abc")
 
     # now you can start putting stuff in
-    print sg.create("HumanUser", {"firstname": "John", "login": "john"})
+    print(sg.create("HumanUser", {"firstname": "John", "login": "john"}))
     # prints {'login': 'john', 'type': 'HumanUser', 'id': 1, 'firstname': 'John'}
 
     # and find what you have created
-    print sg.find("HumanUser", [["login", "is", "john"]])
+    print(sg.find("HumanUser", [["login", "is", "john"]]))
     prints [{'type': 'HumanUser', 'id': 1}]
 
 That's it! Mockgun is used to run the Shotgun Pipeline Toolkit unit test rig.
@@ -114,12 +114,14 @@ Below is a non-exhaustive list of things that we still need to implement:
 
 """
 
+from __future__ import absolute_import
 import datetime
 
 from ... import ShotgunError
 from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
+import six
 
 # ----------------------------------------------------------------------------
 # Version
@@ -491,12 +493,12 @@ class Shotgun(object):
                                    "float": float,
                                    "checkbox": bool,
                                    "percent": int,
-                                   "text": basestring,
+                                   "text": six.string_types,
                                    "serializable": dict,
                                    "date": datetime.date,
                                    "date_time": datetime.datetime,
-                                   "list": basestring,
-                                   "status_list": basestring,
+                                   "list": six.string_types,
+                                   "status_list": six.string_types,
                                    "url": dict}[sg_type]
                 except KeyError:
                     raise ShotgunError(
