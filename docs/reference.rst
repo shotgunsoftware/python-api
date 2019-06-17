@@ -66,6 +66,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.update_project_last_accessed
     Shotgun.work_schedule_read
     Shotgun.work_schedule_update
+    Shotgun.preferences_read    
 
 .. rubric:: Working With Files
 
@@ -89,7 +90,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.unfollow
     Shotgun.followers
 
-.. rubric:: Working with the Shotgun Schema
+.. rubric:: Working with the Shotgun Schema and Preferences
 
 .. autosummary:: 
     :nosignatures:
