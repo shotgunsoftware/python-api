@@ -13,6 +13,8 @@
 # Comments, suggestions and bug reports welcome.
 
 
+from __future__ import absolute_import
+import six
 __all__ = (
     'Mock',
     'MagicMock',
@@ -57,13 +59,13 @@ except ImportError:
         return inner
 
 try:
-    unicode
+    six.text_type
 except NameError:
     # Python 3
-    basestring = unicode = str
+    six.string_types = six.text_type = str
 
 try:
-    long
+    int
 except NameError:
     # Python 3
     long = int
@@ -116,7 +118,7 @@ def _copy_func_details(func, funcopy):
     funcopy.__dict__.update(func.__dict__)
     funcopy.__module__ = func.__module__
     if not inPy3k:
-        funcopy.func_defaults = func.func_defaults
+        funcopy.__defaults__ = func.__defaults__
     else:
         funcopy.__defaults__ = func.__defaults__
         funcopy.__kwdefaults__ = func.__kwdefaults__
@@ -572,7 +574,7 @@ class _patch(object):
         if hasattr(func, 'func_code'):
             # not in Python 3
             patched.compat_co_firstlineno = getattr(func, "compat_co_firstlineno",
-                                                    func.func_code.co_firstlineno)
+                                                    func.__code__.co_firstlineno)
         return patched
 
 
@@ -741,7 +743,7 @@ class _patch_dict(object):
     """
 
     def __init__(self, in_dict, values=(), clear=False):
-        if isinstance(in_dict, basestring):
+        if isinstance(in_dict, six.string_types):
             in_dict = _importer(in_dict)
         self.in_dict = in_dict
         # support any argument supported by dict(...) constructor
@@ -900,7 +902,7 @@ _calculate_return_value = {
     '__hash__': lambda self: object.__hash__(self),
     '__str__': lambda self: object.__str__(self),
     '__sizeof__': lambda self: object.__sizeof__(self),
-    '__unicode__': lambda self: unicode(object.__str__(self)),
+    '__unicode__': lambda self: six.text_type(object.__str__(self)),
 }
 
 _return_values = {
@@ -915,7 +917,7 @@ _return_values = {
     '__nonzero__': True,
     '__oct__': '1',
     '__hex__': '0x1',
-    '__long__': long(1),
+    '__long__': int(1),
     '__index__': 1,
 }
 

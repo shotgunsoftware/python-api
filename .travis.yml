@@ -2,6 +2,7 @@ language: python
 python:
   - "2.6"
   - "2.7"
+  - "3.7"
 
 # use trusty dist, since xenial (default) does not support python 2.6
 dist: trusty

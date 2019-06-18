@@ -30,12 +30,17 @@
 """
 
 from __future__ import absolute_import
+
+# Python 2/3 compatibility
+from .lib import six
+from .lib.six import StringIO    # used for attachment upload
+from .lib.six.moves import map
+
 import base64
-import six.moves.http_cookiejar    # used for attachment upload
-import cStringIO    # used for attachment upload
+from .lib.six.moves import http_cookiejar # used for attachment upload
 import datetime
 import logging
-import mimetools    # used for attachment upload
+import uuid    # used for attachment upload
 import os
 import re
 import copy
@@ -43,25 +48,12 @@ import stat         # used for attachment upload
 import sys
 import time
 import types
-import six.moves.urllib.request
-import six.moves.urllib.error
-import six.moves.urllib.parse
+from .lib.six.moves import urllib
 import shutil       # used for attachment download
-import six.moves.http_client      # Used for secure file upload.
-import six
-from six.moves import map
-
-# use relative import for versions >=2.5 and package import for python versions <2.5
-if (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 6):
-    from .sg_26 import *
-elif (sys.version_info[0] > 2) or (sys.version_info[0] == 2 and sys.version_info[1] >= 5):
-    from .sg_25 import *
-else:
-    from .sg_24 import *
-
-# mimetypes imported in version specific imports
-mimetypes.add_type('video/webm','.webm') # webm and mp4 seem to be missing
-mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
+from .lib.six.moves import http_client      # Used for secure file upload.
+from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
+from .lib.sgtimezone import SgTimezone
+from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError
 
 LOG = logging.getLogger("shotgun_api3")
 """
@@ -73,6 +65,53 @@ handler associated with it.
 .. seealso:: :ref:`logging`
 """
 LOG.setLevel(logging.WARN)
+
+try:
+    import simplejson as json
+except ImportError:
+    LOG.debug("simplejson not found, dropping back to json")
+    try:
+        import json as json
+    except ImportError:
+        LOG.debug("json not found, dropping back to embedded simplejson")
+        # We need to munge the path so that the absolute imports in simplejson will work.
+        dir_path = os.path.dirname(__file__)
+        lib_path = os.path.join(dir_path, 'lib')
+        sys.path.append(lib_path)
+        from .lib import simplejson as json
+        sys.path.pop()
+
+
+def _is_mimetypes_broken():
+    """
+    Checks if this version of Python ships with a broken version of mimetypes
+
+    :returns: True if the version of mimetypes is broken, False otherwise.
+    """
+    # mimetypes is broken on Windows only and for Python 2.7.0 to 2.7.9 inclusively.
+    # We're bundling the version from 2.7.10.
+    # See bugs :
+    # http://bugs.python.org/issue9291  <- Fixed in 2.7.7
+    # http://bugs.python.org/issue21652 <- Fixed in 2.7.8
+    # http://bugs.python.org/issue22028 <- Fixed in 2.7.10
+    return (sys.platform == "win32" and
+            sys.version_info[0] == 2 and sys.version_info[1] == 7 and
+            sys.version_info[2] >= 0 and sys.version_info[2] <= 9)
+
+if _is_mimetypes_broken():
+    from .lib import mimetypes as mimetypes
+else:
+    import mimetypes
+
+
+
+
+
+
+
+# mimetypes imported in version specific imports
+mimetypes.add_type('video/webm','.webm') # webm and mp4 seem to be missing
+mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
 
 SG_TIMEZONE = SgTimezone()
 
@@ -86,6 +125,7 @@ not require the added security provided by enforcing this.
 """
 try:
     import ssl
+    print("successfully imported ssl")
 except ImportError as e:
     if "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
         raise ImportError("%s. SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable prevents "
@@ -586,20 +626,20 @@ class Shotgun(object):
 
         self.base_url = (base_url or "").lower()
         self.config.scheme, self.config.server, api_base, _, _ = \
-            six.moves.urllib.parse.urlsplit(self.base_url)
+            urllib.parse.urlsplit(self.base_url)
         if self.config.scheme not in ("http", "https"):
             raise ValueError("base_url must use http or https got '%s'" %
                 self.base_url)
-        self.config.api_path = six.moves.urllib.parse.urljoin(six.moves.urllib.parse.urljoin(
+        self.config.api_path = urllib.parse.urljoin(urllib.parse.urljoin(
             api_base or "/", self.config.api_ver + "/"), "json")
 
 
         # if the service contains user information strip it out
         # copied from the xmlrpclib which turned the user:password into
         # and auth header
-        auth, self.config.server = six.moves.urllib.parse.splituser(six.moves.urllib.parse.urlsplit(base_url).netloc)
+        auth, self.config.server = urllib.parse.splituser(urllib.parse.urlsplit(base_url).netloc)
         if auth:
-            auth = base64.encodestring(six.moves.urllib.parse.unquote(auth))
+            auth = base64.encodestring(six.ensure_binary(urllib.parse.unquote(auth))).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
@@ -630,7 +670,7 @@ class Shotgun(object):
             else:
                 auth_string = ""
             proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
-            self.config.proxy_handler = six.moves.urllib.request.ProxyHandler({self.config.scheme : proxy_addr})
+            self.config.proxy_handler = urllib.request.ProxyHandler({self.config.scheme : proxy_addr})
 
         if ensure_ascii:
             self._json_loads = self._json_loads_ascii
@@ -2176,7 +2216,7 @@ class Shotgun(object):
             "filmstrip_thumbnail" : filmstrip_thumbnail,
         }
 
-        url = six.moves.urllib.parse.urlunparse((self.config.scheme, self.config.server,
+        url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
             "/upload/share_thumbnail", None, None, None))
 
         result = self._send_form(url, params)
@@ -2361,7 +2401,7 @@ class Shotgun(object):
 
         # Step 3: create the attachment
 
-        url = six.moves.urllib.parse.urlunparse((self.config.scheme, self.config.server,
+        url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                                    "/upload/api_link_file", None, None, None))
 
         params = {
@@ -2387,14 +2427,14 @@ class Shotgun(object):
                 params["tag_list"] = tag_list
 
         result = self._send_form(url, params)
-        if not str(result).startswith("1"):
+        if not six.ensure_text(result).startswith("1"):
             raise ShotgunError("Could not upload file successfully, but " \
                                "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
                                    path, url, str(result)))
 
         LOG.debug("Attachment linked to content on Cloud storage")
 
-        attachment_id = int(str(result).split(":")[1].split("\n")[0])
+        attachment_id = int(six.ensure_text(result).split(":")[1].split("\n")[0])
         return attachment_id
 
     def _upload_to_sg(self, entity_type, entity_id, path, field_name, display_name,
@@ -2440,14 +2480,14 @@ class Shotgun(object):
                 path_to_open = path
 
         if is_thumbnail:
-            url = six.moves.urllib.parse.urlunparse((self.config.scheme, self.config.server,
+            url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                 "/upload/publish_thumbnail", None, None, None))
             params["thumb_image"] = open(path_to_open, "rb")
             if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
                 params["filmstrip"] = True
 
         else:
-            url = six.moves.urllib.parse.urlunparse((self.config.scheme, self.config.server,
+            url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                 "/upload/upload_file", None, None, None))
             if display_name is None:
                 display_name = os.path.basename(path)
@@ -2497,10 +2537,10 @@ class Shotgun(object):
         params["multipart_upload"] = is_multipart_upload
 
         upload_url = "/upload/api_get_upload_link_info"
-        url = six.moves.urllib.parse.urlunparse((self.config.scheme, self.config.server,
+        url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                                    upload_url, None, None, None))
 
-        upload_info = self._send_form(url, params)
+        upload_info = six.ensure_text(self._send_form(url, params))
         if not str(upload_info).startswith("1"):
             raise ShotgunError("Could not get upload_url but " \
                                "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
@@ -2578,16 +2618,16 @@ class Shotgun(object):
             self.set_up_auth_cookie()
 
         try:
-            request = six.moves.urllib.request.Request(url)
+            request = urllib.request.Request(url)
             request.add_header('user-agent', "; ".join(self._user_agents))
-            req = six.moves.urllib.request.urlopen(request)
+            req = urllib.request.urlopen(request)
             if file_path:
                 shutil.copyfileobj(req, fp)
             else:
                 attachment = req.read()
         # 400 [sg] Attachment id doesn't exist or is a local file
         # 403 [s3] link is invalid
-        except six.moves.urllib.error.URLError as e:
+        except urllib.error.URLError as e:
             if file_path:
                 fp.close()
             err = "Failed to open %s\n%s" % (url, e)
@@ -2598,7 +2638,7 @@ class Shotgun(object):
                     # Only parse the body if it is an Amazon S3 url.
                     if url.find('s3.amazonaws.com') != -1 \
                         and e.headers['content-type'] == 'application/xml':
-                        body = e.readlines()
+                        body = [six.ensure_text(line) for line in e.readlines()]
                         if body:
                             xml = ''.join(body)
                             # Once python 2.4 support is not needed we can think about using
@@ -2630,14 +2670,14 @@ class Shotgun(object):
         used internally for downloading attachments from the Shotgun server.
         """
         sid = self.get_session_token()
-        cj = six.moves.http_cookiejar.LWPCookieJar()
-        c = six.moves.http_cookiejar.Cookie('0', '_session_id', sid, None, False,
+        cj = http_cookiejar.LWPCookieJar()
+        c = http_cookiejar.Cookie('0', '_session_id', sid, None, False,
             self.config.server, False, False, "/", True, False, None, True,
             None, None, {})
         cj.set_cookie(c)
-        cookie_handler = six.moves.urllib.request.HTTPCookieProcessor(cj)
+        cookie_handler = urllib.request.HTTPCookieProcessor(cj)
         opener = self._build_opener(cookie_handler)
-        six.moves.urllib.request.install_opener(opener)
+        urllib.request.install_opener(opener)
 
     def get_attachment_download_url(self, attachment):
         """
@@ -2681,8 +2721,8 @@ class Shotgun(object):
                 "dict, int, or NoneType. Instead got %s" % type(attachment))
 
         if attachment_id:
-            url = six.moves.urllib.parse.urlunparse((self.config.scheme, self.config.server,
-                "/file_serve/attachment/%s" % six.moves.urllib.parse.quote(str(attachment_id)),
+            url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
+                "/file_serve/attachment/%s" % urllib.parse.quote(str(attachment_id)),
                 None, None, None))
         return url
 
@@ -3146,7 +3186,7 @@ class Shotgun(object):
 
         if handler is not None:
             handlers.append(handler)
-        return six.moves.urllib.request.build_opener(*handlers)
+        return urllib.request.build_opener(*handlers)
 
     def _turn_off_ssl_validation(self):
         """
@@ -3312,9 +3352,7 @@ class Shotgun(object):
         """
 
         wire = json.dumps(payload, ensure_ascii=False)
-        if isinstance(wire, six.text_type):
-            return wire.encode("utf-8")
-        return wire
+        return six.ensure_binary(wire)
 
     def _make_call(self, verb, path, body, headers):
         """
@@ -3339,7 +3377,7 @@ class Shotgun(object):
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
-            except SSLHandshakeError as e:
+            except ssl_error_classes as e:
                 # Test whether the exception is due to the fact that this is an older version of
                 # Python that cannot validate certificates encrypted with SHA-2. If it is, then
                 # fall back on disabling the certificate validation and try again - unless the
@@ -3355,12 +3393,12 @@ class Shotgun(object):
                 #   unknown message digest algorithm
                 #
                 # Any other exceptions simply get raised.
-                if not str(e).endswith("unknown message digest algorithm") or \
+                if "unknown message digest algorithm" not in str(e) or \
                    "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
                     raise
 
                 if self.config.no_ssl_validation is False:
-                    LOG.warning("SSLHandshakeError: this Python installation is incompatible with "
+                    LOG.warning("SSL Error: this Python installation is incompatible with "
                                 "certificates signed with SHA-2. Disabling certificate validation. "
                                 "For more information, see http://blog.shotgunsoftware.com/2016/01/"
                                 "important-ssl-certificate-renewal-and.html")
@@ -3386,7 +3424,7 @@ class Shotgun(object):
         """
         Make the actual HTTP request.
         """
-        url = six.moves.urllib.parse.urlunparse((self.config.scheme, self.config.server,
+        url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
             path, None, None, None))
         LOG.debug("Request is %s:%s" % (verb, url))
         LOG.debug("Request headers are %s" % headers)
@@ -3463,7 +3501,7 @@ class Shotgun(object):
             newlist = []
             for i in lst:
                 if isinstance(i, six.text_type):
-                    i = i.encode('utf-8')
+                    i = six.ensure_str(i)
                 elif isinstance(i, list):
                     i = _decode_list(i)
                 newlist.append(i)
@@ -3473,9 +3511,9 @@ class Shotgun(object):
             newdict = {}
             for k, v in six.iteritems(dct):
                 if isinstance(k, six.text_type):
-                    k = k.encode('utf-8')
+                    k = six.ensure_str(k)
                 if isinstance(v, six.text_type):
-                    v = v.encode('utf-8')
+                    v = six.ensure_str(v)
                 elif isinstance(v, list):
                     v = _decode_list(v)
                 newdict[k] = v
@@ -3574,9 +3612,9 @@ class Shotgun(object):
                     value = _change_tz(value)
                 return value.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-            if isinstance(value, str):
-                # Convert strings to unicode
-                return value.decode("utf-8")
+            # ensure return is six.text_type
+            if isinstance(value, six.string_types):
+                return six.ensure_text(value)
 
             return value
 
@@ -3716,8 +3754,8 @@ class Shotgun(object):
         # curl "https://foo.com/upload/get_thumbnail_url?entity_type=Version&entity_id=1"
         # 1
         # /files/0000/0000/0012/232/shot_thumb.jpg.jpg
-        entity_info = {'e_type':six.moves.urllib.parse.quote(entity_type),
-                       'e_id':six.moves.urllib.parse.quote(str(entity_id))}
+        entity_info = {'e_type':urllib.parse.quote(entity_type),
+                       'e_id':urllib.parse.quote(str(entity_id))}
         url = ("/upload/get_thumbnail_url?" +
                 "entity_type=%(e_type)s&entity_id=%(e_id)s" % entity_info)
 
@@ -3731,7 +3769,7 @@ class Shotgun(object):
             raise ShotgunError(thumb_url)
 
         if code == 1:
-            return six.moves.urllib.parse.urlunparse((self.config.scheme,
+            return urllib.parse.urlunparse((self.config.scheme,
                 self.config.server, thumb_url.strip(), None, None, None))
 
         # Comments in prev version said we can get this sometimes.
@@ -3834,9 +3872,10 @@ class Shotgun(object):
             "part_number": part_number
         }
 
-        url = six.moves.urllib.parse.urlunparse((self.config.scheme, self.config.server,
+        url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                                    "/upload/api_get_upload_link_for_part", None, None, None))
         result = self._send_form(url, params)
+        result = six.ensure_text(result)
 
         # Response is of the form: 1\n<url> (for success) or 0\n (for failure).
         # In case of success, we know we the second line of the response contains the
@@ -3859,15 +3898,15 @@ class Shotgun(object):
         :rtype: str
         """
         try:
-            opener = self._build_opener(six.moves.urllib.request.HTTPHandler)
+            opener = self._build_opener(urllib.request.HTTPHandler)
 
-            request = six.moves.urllib.request.Request(storage_url, data=data)
+            request = urllib.request.Request(storage_url, data=data)
             request.add_header("Content-Type", content_type)
             request.add_header("Content-Length", size)
             request.get_method = lambda: "PUT"
             result = opener.open(request)
-            etag = result.info().getheader("ETag")
-        except six.moves.urllib.error.HTTPError as e:
+            etag = result.info()["Etag"]
+        except urllib.error.HTTPError as e:
             if e.code == 500:
                 raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (storage_url, e))
             else:
@@ -3893,9 +3932,10 @@ class Shotgun(object):
             "etags": ",".join(etags)
         }
 
-        url = six.moves.urllib.parse.urlunparse((self.config.scheme, self.config.server,
+        url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                                    "/upload/api_complete_multipart_upload", None, None, None))
         result = self._send_form(url, params)
+        six.ensure_text(result)
 
         # Response is of the form: 1\n or 0\n to indicate success or failure of the call.
         if not str(result).startswith("1"):
@@ -3961,7 +4001,7 @@ class Shotgun(object):
             resp = opener.open(url, params)
             result = resp.read()
             # response headers are in str(resp.info()).splitlines()
-        except six.moves.urllib.error.HTTPError as e:
+        except urllib.error.HTTPError as e:
             if e.code == 500:
                 raise ShotgunError("Server encountered an internal error. "
                                    "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
@@ -3971,13 +4011,13 @@ class Shotgun(object):
         return result
 
 
-class CACertsHTTPSConnection(six.moves.http_client.HTTPConnection):
+class CACertsHTTPSConnection(http_client.HTTPConnection):
     """"
     This class allows to create an HTTPS connection that uses the custom certificates
     passed in.
     """
 
-    default_port = six.moves.http_client.HTTPS_PORT
+    default_port = http_client.HTTPS_PORT
 
     def __init__(self, *args, **kwargs):
         """
@@ -3987,11 +4027,11 @@ class CACertsHTTPSConnection(six.moves.http_client.HTTPConnection):
         """
         # Pop that argument,
         self.__ca_certs = kwargs.pop("ca_certs")
-        six.moves.http_client.HTTPConnection.__init__(self, *args, **kwargs)
+        http_client.HTTPConnection.__init__(self, *args, **kwargs)
 
     def connect(self):
         "Connect to a host on a given (SSL) port."
-        six.moves.http_client.HTTPConnection.connect(self)
+        http_client.HTTPConnection.connect(self)
         # Now that the regular HTTP socket has been created, wrap it with our SSL certs.
         self.sock = ssl.wrap_socket(
             self.sock,
@@ -4000,12 +4040,12 @@ class CACertsHTTPSConnection(six.moves.http_client.HTTPConnection):
         )
 
 
-class CACertsHTTPSHandler(six.moves.urllib.request.HTTPSHandler):
+class CACertsHTTPSHandler(urllib.request.HTTPSHandler):
     """
     Handler that ensures https connections are created with the custom CA certs.
     """
     def __init__(self, cacerts):
-        six.moves.urllib.request.HTTPSHandler.__init__(self)
+        urllib.request.HTTPSHandler.__init__(self)
         self.__ca_certs = cacerts
 
     def https_open(self, req):
@@ -4017,40 +4057,54 @@ class CACertsHTTPSHandler(six.moves.urllib.request.HTTPSHandler):
 
 # Helpers from the previous API, left as is.
 # Based on http://code.activestate.com/recipes/146306/
-class FormPostHandler(six.moves.urllib.request.BaseHandler):
+class FormPostHandler(urllib.request.BaseHandler):
     """
     Handler for multipart form data
     """
-    handler_order = six.moves.urllib.request.HTTPHandler.handler_order - 10 # needs to run first
+    handler_order = urllib.request.HTTPHandler.handler_order - 10 # needs to run first
 
     def http_request(self, request):
-        data = request.get_data()
+        # get_data was removed in 3.4. since we're testing against 3.6 and
+        # 3.7, this should be sufficient.
+        if six.PY3:
+            data = request.data
+        else:
+            data = request.get_data()
         if data is not None and not isinstance(data, six.string_types):
             files = []
             params = []
             for key, value in data.items():
-                if isinstance(value, file):
+                if isinstance(value, six.file_types):
                     files.append((key, value))
                 else:
                     params.append((key, value))
             if not files:
-                data = six.moves.urllib.parse.urlencode(params, True) # sequencing on
+                data = six.ensure_binary(urllib.parse.urlencode(params, True)) # sequencing on
             else:
                 boundary, data = self.encode(params, files)
                 content_type = 'multipart/form-data; boundary=%s' % boundary
                 request.add_unredirected_header('Content-Type', content_type)
-            request.add_data(data)
+            # add_data was removed in 3.4. since we're testing against 3.6 and
+            # 3.7, this should be sufficient.
+            if six.PY3:
+                request.data = data
+            else:
+                request.add_data(data)
         return request
 
     def encode(self, params, files, boundary=None, buffer=None):
         if boundary is None:
-            boundary = mimetools.choose_boundary()
+            # Per https://stackoverflow.com/a/27174474
+            # use a random string as the boundary if none was provided --
+            # use uuid since mimetools no longer exists in Python 3.
+            # We'll do this across both python 2/3 rather than add more branching.
+            boundary = uuid.uuid4()
         if buffer is None:
-            buffer = cStringIO.StringIO()
+            buffer = StringIO()
         for (key, value) in params:
-            buffer.write('--%s\r\n' % boundary)
-            buffer.write('Content-Disposition: form-data; name="%s"' % key)
-            buffer.write('\r\n\r\n%s\r\n' % value)
+            buffer.write(u'--%s\r\n' % boundary)
+            buffer.write(u'Content-Disposition: form-data; name="%s"' % six.ensure_text(key))
+            buffer.write(u'\r\n\r\n%s\r\n' % six.ensure_text(value))
         for (key, fd) in files:
             # On Windows, it's possible that we were forced to open a file
             # with non-ascii characters as unicode. In that case, we need to
@@ -4058,23 +4112,22 @@ class FormPostHandler(six.moves.urllib.request.BaseHandler):
             # If we don't, the mix of unicode and strings going into the
             # buffer can cause UnicodeEncodeErrors to be raised.
             filename = fd.name
-            if isinstance(filename, six.text_type):
-                filename = filename.encode("utf-8")
+            filename = six.ensure_text(filename)
             filename = filename.split('/')[-1]
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or 'application/octet-stream'
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
             buffer.write('--%s\r\n' % boundary)
-            c_dis = 'Content-Disposition: form-data; name="%s"; filename="%s"%s'
+            c_dis = u'Content-Disposition: form-data; name="%s"; filename="%s"%s'
             content_disposition = c_dis % (key, filename, '\r\n')
             buffer.write(content_disposition)
-            buffer.write('Content-Type: %s\r\n' % content_type)
-            buffer.write('Content-Length: %s\r\n' % file_size)
+            buffer.write(u'Content-Type: %s\r\n' % content_type)
+            buffer.write(u'Content-Length: %s\r\n' % file_size)
             fd.seek(0)
-            buffer.write('\r\n')
+            buffer.write(u'\r\n')
             shutil.copyfileobj(fd, buffer)
-            buffer.write('\r\n')
-        buffer.write('--%s--\r\n\r\n' % boundary)
+            buffer.write(u'\r\n')
+        buffer.write(u'--%s--\r\n\r\n' % boundary)
         buffer = buffer.getvalue()
         return boundary, buffer
 

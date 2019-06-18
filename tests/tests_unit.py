@@ -1,8 +1,10 @@
 #! /opt/local/bin/python
+from __future__ import absolute_import
 import unittest
-from mock import patch, Mock
+from .mock import patch, Mock
 import shotgun_api3 as api
-from shotgun_api3.sg_26 import _is_mimetypes_broken
+from shotgun_api3.shotgun import _is_mimetypes_broken
+from six.moves import range
 
 class TestShotgunInit(unittest.TestCase):
     '''Test case for Shotgun.__init__'''
@@ -175,7 +177,7 @@ class TestShotgunSummarize(unittest.TestCase):
 
     def test_grouping(self):
         result = self.get_call_rpc_params(None, {})
-        self.assertFalse(result.has_key('grouping'))
+        self.assertFalse('grouping' in result)
         grouping = ['something']
         kws = {'grouping':grouping} 
         result = self.get_call_rpc_params(None, kws)
@@ -400,7 +402,7 @@ class TestMimetypesFix(unittest.TestCase):
     Makes sure that the mimetypes fix will be imported.
     """
 
-    @patch('shotgun_api3.sg_26.sys')
+    @patch('shotgun_api3.shotgun.sys')
     def _test_mimetypes_import(self, platform, major, minor, patch, result, mock):
         """
         Mocks sys.platform and sys.version_info to test the mimetypes import code.

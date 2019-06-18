@@ -2,11 +2,13 @@
 CRUD functions. These tests always use a mock http connection so not not
 need a live server to run against."""
 
+from __future__ import absolute_import
 import base64
 import datetime
-import urllib
+from shotgun_api3.lib.six.moves import urllib
 import os
 import re
+import six
 try:
     import simplejson as json
 except ImportError:
@@ -19,12 +21,15 @@ import platform
 import sys
 import time
 import unittest
-import mock
+from . import mock
 
 import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
-import base
+from . import base
+
+def b64encode(val):
+    return base64.encodestring(six.ensure_binary(val)).decode("utf-8")
 
 class TestShotgunClient(base.MockTestBase):
     '''Test case for shotgun api with server interactions mocked.'''
@@ -149,7 +154,7 @@ class TestShotgunClient(base.MockTestBase):
         # login:password@domain
         auth_url = "%s%s@%s" % (self.uri_prefix, login_password, self.domain)
         sg = api.Shotgun(auth_url, None, None, connect=False)
-        expected = "Basic " + base64.encodestring(urllib.unquote(login_password)).strip()
+        expected = "Basic " + b64encode(urllib.parse.unquote(login_password)).strip()
         self.assertEqual(expected, sg.config.authorization)
 
     def test_authorization(self):
@@ -169,7 +174,7 @@ class TestShotgunClient(base.MockTestBase):
         args, _ = self.sg._http_request.call_args
         verb, path, body, headers = args
 
-        expected = "Basic " + base64.encodestring(urllib.unquote(login_password)).strip()
+        expected = "Basic " + b64encode(urllib.parse.unquote(login_password)).strip()
         self.assertEqual(expected, headers.get("Authorization"))
 
     def test_user_agent(self):
@@ -303,7 +308,7 @@ class TestShotgunClient(base.MockTestBase):
 
         try:
             self.sg.info()
-        except api.Fault, e:
+        except api.Fault as e:
             self.assertEqual("Go BANG", str(e))
 
     def test_call_rpc(self):
@@ -373,14 +378,14 @@ class TestShotgunClient(base.MockTestBase):
             return datetime.datetime(*time.strptime(s, f)[:6])
 
         def assert_wire(wire, match):
-            self.assertTrue(isinstance(wire["date"], basestring))
+            self.assertTrue(isinstance(wire["date"], six.string_types))
             d = _datetime(wire["date"], "%Y-%m-%d").date()
             d = wire['date']
             self.assertEqual(match["date"], d)
-            self.assertTrue(isinstance(wire["datetime"], basestring))
+            self.assertTrue(isinstance(wire["datetime"], six.string_types))
             d = _datetime(wire["datetime"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["datetime"], d)
-            self.assertTrue(isinstance(wire["time"], basestring))
+            self.assertTrue(isinstance(wire["time"], six.string_types))
             d = _datetime(wire["time"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["time"], d.time())
 
@@ -411,16 +416,16 @@ class TestShotgunClient(base.MockTestBase):
             "this is " : u"my data \u00E0"
         }
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, str))
+        self.assertTrue(isinstance(j, six.binary_type))
 
         d = {
             "this is " : u"my data"
         }
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, str))
+        self.assertTrue(isinstance(j, six.binary_type))
 
     def test_decode_response_ascii(self):
-        self._assert_decode_resonse(True, u"my data \u00E0".encode('utf8'))
+        self._assert_decode_resonse(True, six.ensure_str(u"my data \u00E0", encoding='utf8'))
 
     def test_decode_response_unicode(self):
         self._assert_decode_resonse(False, u"my data \u00E0")
@@ -441,7 +446,10 @@ class TestShotgunClient(base.MockTestBase):
                          ensure_ascii = ensure_ascii,
                          connect=False)
 
-        j = json.dumps(d, ensure_ascii=ensure_ascii, encoding="utf-8")
+        if six.PY3:
+            j = json.dumps(d, ensure_ascii=ensure_ascii)
+        else:
+            j = json.dumps(d, ensure_ascii=ensure_ascii, encoding="utf-8")
         self.assertEqual(d, sg._decode_response(headers, j))
 
         headers["content-type"] = "text/javascript"

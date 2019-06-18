@@ -31,9 +31,9 @@ import posixpath
 import six.moves.urllib.parse
 from six.moves import range
 try:
-    from . import six.moves.winreg
+    from .lib.six.moves import winreg
 except ImportError:
-    _winreg = None
+    winreg = None
 
 __all__ = [
     "guess_type","guess_extension","guess_all_extensions",
@@ -238,14 +238,14 @@ class MimeTypes:
         """
 
         # Windows only
-        if not _winreg:
+        if not winreg:
             return
 
         def enum_types(mimedb):
             i = 0
             while True:
                 try:
-                    ctype = six.moves.winreg.EnumKey(mimedb, i)
+                    ctype = winreg.EnumKey(mimedb, i)
                 except EnvironmentError:
                     break
                 else:
@@ -254,17 +254,17 @@ class MimeTypes:
                 i += 1
 
         default_encoding = sys.getdefaultencoding()
-        with six.moves.winreg.OpenKey(six.moves.winreg.HKEY_CLASSES_ROOT, '') as hkcr:
+        with winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, '') as hkcr:
             for subkeyname in enum_types(hkcr):
                 try:
-                    with six.moves.winreg.OpenKey(hkcr, subkeyname) as subkey:
+                    with winreg.OpenKey(hkcr, subkeyname) as subkey:
                         # Only check file extensions
                         if not subkeyname.startswith("."):
                             continue
                         # raises EnvironmentError if no 'Content Type' value
-                        mimetype, datatype = six.moves.winreg.QueryValueEx(
+                        mimetype, datatype = winreg.QueryValueEx(
                             subkey, 'Content Type')
-                        if datatype != six.moves.winreg.REG_SZ:
+                        if datatype != winreg.REG_SZ:
                             continue
                         try:
                             mimetype = mimetype.encode(default_encoding)
@@ -353,7 +353,7 @@ def init(files=None):
     inited = True    # so that MimeTypes.__init__() doesn't call us again
     db = MimeTypes()
     if files is None:
-        if _winreg:
+        if winreg:
             db.read_windows_registry()
         files = knownfiles
     for file in files:

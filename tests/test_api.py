@@ -4,23 +4,35 @@ Includes short run tests, like simple crud and single finds. See
 test_api_long for other tests.
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import datetime
 import sys
 import os
 import re
-from mock import patch, Mock, MagicMock
+from .mock import patch, Mock, MagicMock
 import time
 import uuid
 import unittest
-import urlparse
-import urllib2
+from shotgun_api3.lib.six.moves import urllib
 import warnings
 import glob
 
 import shotgun_api3
-from shotgun_api3.lib.httplib2 import Http, SSLHandshakeError
+from shotgun_api3.lib.httplib2 import Http
+from shotgun_api3.lib import six
 
-import base
+if six.PY3:
+    import ssl
+    print("imported ssl: {}".format(ssl))
+    SSL_ERROR = ssl.SSLError
+else:
+    from shotgun_api3.lib.httplib2 import SSLHandshakeError
+    SSL_ERROR = SSLHandshakeError
+
+from . import base
+
+from shotgun_api3.lib.six.moves import range
 
 class TestShotgunApi(base.LiveTestBase):
     def setUp(self):
@@ -222,7 +234,7 @@ class TestShotgunApi(base.LiveTestBase):
         # test upload of non-ascii, unicode path
         u_path = os.path.abspath(
             os.path.expanduser(
-                glob.glob(os.path.join(unicode(this_dir), u'No*l.jpg'))[0]
+                glob.glob(os.path.join(six.text_type(this_dir), u'No*l.jpg'))[0]
             )
         )
 
@@ -249,53 +261,53 @@ class TestShotgunApi(base.LiveTestBase):
             'attachments',
             tag_list="monkeys, everywhere, send, help"
         )
+        if six.PY2:
+            # In Python2, make sure that non-utf-8 encoded paths raise when they
+            # can't be converted to utf-8.  For Python3, we'll skip these tests
+            # since string encoding is handled differently.
+            #TODO: do we need to add an equivalent test here??
+            #
+            #
+            # We need to touch the file we're going to test with first. We can't
+            # bundle a file with this filename in the repo due to some pip install
+            # problems on Windows. Note that the path below is utf-8 encoding of
+            # what we'll eventually encode as shift-jis.
+            file_path_s = os.path.join(this_dir, "./\xe3\x81\x94.shift-jis")
+            file_path_u = file_path_s.decode("utf-8")
+            if sys.platform.startswith("win"):
+                fh = open(file_path_u, "w")
+            else:
+                fh = open(file_path_s, "w")
 
-        # Make sure that non-utf-8 encoded paths raise when they can't be
-        # converted to utf-8.
-        #
-        # We need to touch the file we're going to test with first. We can't
-        # bundle a file with this filename in the repo due to some pip install
-        # problems on Windows. Note that the path below is utf-8 encoding of
-        # what we'll eventually encode as shift-jis.
-        file_path_s = os.path.join(this_dir, "./\xe3\x81\x94.shift-jis")
-        file_path_u = file_path_s.decode("utf-8")
-        if sys.platform.startswith("win"):
-            fh = open(file_path_u, "w")
-        else:
-            fh = open(file_path_s, "w")
+            try:
+                fh.write("This is just a test file with some random data in it.")
+            finally:
+                fh.close()
 
-        try:
-            fh.write("This is just a test file with some random data in it.")
-        finally:
-            fh.close()
-
-        u_path = os.path.abspath(
-            os.path.expanduser(
-                glob.glob(os.path.join(unicode(this_dir), u'*.shift-jis'))[0]
+            self.assertRaises(
+                shotgun_api3.ShotgunError,
+                self.sg.upload,
+                "Ticket",
+                self.ticket['id'],
+                file_path_u.encode("shift-jis"),
+                'attachments',
+                tag_list="monkeys, everywhere, send, help"
             )
-        )
-        self.assertRaises(
-            shotgun_api3.ShotgunError,
-            self.sg.upload,
-            "Ticket",
-            self.ticket['id'],
-            u_path.encode("shift-jis"),
-            'attachments',
-            tag_list="monkeys, everywhere, send, help"
-        )
 
-        # But it should work in all cases if a unicode string is used.
-        self.sg.upload(
-            "Ticket",
-            self.ticket['id'],
-            u_path,
-            'attachments',
-            tag_list="monkeys, everywhere, send, help"
-        )
+            # But it should work in all cases if a unicode string is used.
+            self.sg.upload(
+                "Ticket",
+                self.ticket['id'],
+                file_path_u,
+                'attachments',
+                tag_list="monkeys, everywhere, send, help"
+            )
+
+            # cleanup
+            os.remove(file_path_u)
 
         # cleanup
         os.remove(file_path)
-        os.remove(u_path)
 
     def test_upload_thumbnail_in_create(self):
         """Upload a thumbnail via the create method"""
@@ -534,8 +546,8 @@ class TestShotgunApi(base.LiveTestBase):
             fields=['id', 'code', 'image']
         )
 
-        shot_url = urlparse.urlparse(response_shot_thumbnail.get('image'))
-        version_url = urlparse.urlparse(response_version_thumbnail.get('image'))
+        shot_url = urllib.parse.urlparse(response_shot_thumbnail.get('image'))
+        version_url = urllib.parse.urlparse(response_version_thumbnail.get('image'))
         shot_path = _get_path(shot_url)
         version_path = _get_path(version_url)
         self.assertEqual(shot_path, version_path)
@@ -562,9 +574,9 @@ class TestShotgunApi(base.LiveTestBase):
             fields=['id', 'code', 'image']
         )
 
-        shot_url = urlparse.urlparse(response_shot_thumbnail.get('image'))
-        version_url = urlparse.urlparse(response_version_thumbnail.get('image'))
-        asset_url = urlparse.urlparse(response_asset_thumbnail.get('image'))
+        shot_url = urllib.parse.urlparse(response_shot_thumbnail.get('image'))
+        version_url = urllib.parse.urlparse(response_version_thumbnail.get('image'))
+        asset_url = urllib.parse.urlparse(response_asset_thumbnail.get('image'))
 
         shot_path = _get_path(shot_url)
         version_path = _get_path(version_url)
@@ -1120,11 +1132,11 @@ class TestFind(base.LiveTestBase):
     def setUp(self):
         super(TestFind, self).setUp()
         # We will need the created_at field for the shot
-        fields = self.shot.keys()[:]
+        fields = list(self.shot.keys())[:]
         fields.append('created_at')
         self.shot = self.sg.find_one('Shot', [['id', 'is', self.shot['id']]], fields)
         # We will need the uuid field for our LocalStorage
-        fields = self.local_storage.keys()[:]
+        fields = list(self.local_storage.keys())[:]
         fields.append('uuid')
         self.local_storage = self.sg.find_one('LocalStorage', [['id', 'is', self.local_storage['id']]], fields)
 
@@ -1286,7 +1298,7 @@ class TestFind(base.LiveTestBase):
         Test that 'in' relation using commas (old format) works with duration fields.
         """
         # we need to get the duration value
-        new_task_keys = self.task.keys()[:]
+        new_task_keys = list(self.task.keys())[:]
         new_task_keys.append('duration')
         self.task = self.sg.find_one('Task',[['id', 'is', self.task['id']]], new_task_keys)
         filters = [['duration', 'in', self.task['duration']],
@@ -1300,7 +1312,7 @@ class TestFind(base.LiveTestBase):
         Test that 'in' relation using list (new format) works with duration fields.
         """
         # we need to get the duration value
-        new_task_keys = self.task.keys()[:]
+        new_task_keys = list(self.task.keys())[:]
         new_task_keys.append('duration')
         self.task = self.sg.find_one('Task',[['id', 'is', self.task['id']]], new_task_keys)
         filters = [['duration', 'in', [self.task['duration'],]],
@@ -1314,7 +1326,7 @@ class TestFind(base.LiveTestBase):
         Test that 'not_in' relation using commas (old format) works with duration fields.
         """
         # we need to get the duration value
-        new_task_keys = self.task.keys()[:]
+        new_task_keys = list(self.task.keys())[:]
         new_task_keys.append('duration')
         self.task = self.sg.find_one('Task',[['id', 'is', self.task['id']]], new_task_keys)
 
@@ -1619,7 +1631,7 @@ class TestFind(base.LiveTestBase):
         '''
         # Create a number field if it doesn't already exist
         num_field = 'sg_api_tests_number_field'
-        if num_field not in self.sg.schema_field_read('Asset').keys():
+        if num_field not in list(self.sg.schema_field_read('Asset').keys()):
             self.sg.schema_field_create('Asset', 'number', num_field.replace('sg_','').replace('_',' '))
 
         # Set to None
@@ -1796,8 +1808,8 @@ class TestErrors(base.TestBase):
 
     @patch('shotgun_api3.shotgun.Http.request')
     def test_sha2_error(self, mock_request):
-        # Simulate the SSLHandshakeError raised with SHA-2 errors
-        mock_request.side_effect = SSLHandshakeError("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
+        # Simulate the exception raised with SHA-2 errors
+        mock_request.side_effect = SSL_ERROR("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
                                     "encoding routines:ASN1_item_verify: unknown message digest "
                                     "algorithm")
 
@@ -1822,7 +1834,7 @@ class TestErrors(base.TestBase):
 
         try:
             result = self.sg.info()
-        except SSLHandshakeError:
+        except SSL_ERROR:
             # ensure the api has reset the values in the correct fallback behavior
             self.assertTrue(self.sg.config.no_ssl_validation)
             self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
@@ -1834,8 +1846,8 @@ class TestErrors(base.TestBase):
 
     @patch('shotgun_api3.shotgun.Http.request')
     def test_sha2_error_with_strict(self, mock_request):
-        # Simulate the SSLHandshakeError raised with SHA-2 errors
-        mock_request.side_effect = SSLHandshakeError("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
+        # Simulate the exception raised with SHA-2 errors
+        mock_request.side_effect = SSL_ERROR("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
                                     "encoding routines:ASN1_item_verify: unknown message digest "
                                     "algorithm")
 
@@ -1850,7 +1862,7 @@ class TestErrors(base.TestBase):
 
         try:
             result = self.sg.info()
-        except SSLHandshakeError:
+        except SSL_ERROR:
             # ensure the api has NOT reset the values in the fallback behavior because we have
             # set the env variable to force validation
             self.assertFalse(self.sg.config.no_ssl_validation)
@@ -1861,10 +1873,10 @@ class TestErrors(base.TestBase):
         if original_env_val is not None:
             os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
 
-    @patch.object(urllib2.OpenerDirector, 'open')
+    @patch.object(urllib.request.OpenerDirector, 'open')
     def test_sanitized_auth_params(self, mock_open):
         # Simulate the server blowing up and giving us a 500 error
-        mock_open.side_effect = urllib2.HTTPError('url', 500, 'message', {}, None)
+        mock_open.side_effect = urllib.error.HTTPError('url', 500, 'message', {}, None)
 
         this_dir, _ = os.path.split(__file__)
         thumbnail_path = os.path.abspath(os.path.join(this_dir, "sg_logo.jpg"))
@@ -1872,7 +1884,7 @@ class TestErrors(base.TestBase):
         try:
             # Try to upload a bogus file
             self.sg.upload('Note', 1234, thumbnail_path)
-        except shotgun_api3.ShotgunError, e:
+        except shotgun_api3.ShotgunError as e:
             self.assertFalse(self.api_key in str(e))
             return
 
@@ -1961,7 +1973,7 @@ class TestHumanUserSudoAuth(base.TestBase):
         expected = "The user does not have permission to 'sudo':"
         try :
             x.find_one('Shot',[])
-        except shotgun_api3.Fault, e:
+        except shotgun_api3.Fault as e:
             # py24 exceptions don't have message attr
             if hasattr(e, 'message'):
                 self.assert_(e.message.startswith(expected))
@@ -2378,8 +2390,8 @@ class TestNoteThreadRead(base.LiveTestBase):
         # the uploaded thumbnail. strip off any s3 querystring
         # for the comparison
         reply_thumb = result[1]["user"]["image"]
-        url_obj_a = urlparse.urlparse(current_thumbnail)
-        url_obj_b = urlparse.urlparse(reply_thumb)
+        url_obj_a = urllib.parse.urlparse(current_thumbnail)
+        url_obj_b = urllib.parse.urlparse(reply_thumb)
         self.assertEqual("%s/%s" % (url_obj_a.netloc, url_obj_a.path),
                          "%s/%s" % (url_obj_b.netloc, url_obj_b.path),)
 
@@ -2703,9 +2715,9 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
 def _has_unicode(data):
     for k, v in data.items():
-        if isinstance(k, unicode):
+        if isinstance(k, six.text_type):
             return True
-        if isinstance(v, unicode):
+        if isinstance(v, six.text_type):
             return True
     return False
 
