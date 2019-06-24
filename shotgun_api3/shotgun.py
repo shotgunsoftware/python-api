@@ -110,7 +110,7 @@ else:
 
 
 # mimetypes imported in version specific imports
-mimetypes.add_type('video/webm','.webm') # webm and mp4 seem to be missing
+mimetypes.add_type('video/webm', '.webm') # webm and mp4 seem to be missing
 mimetypes.add_type('video/mp4', '.mp4')  # from some OS/distros
 
 SG_TIMEZONE = SgTimezone()
@@ -670,7 +670,7 @@ class Shotgun(object):
             else:
                 auth_string = ""
             proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
-            self.config.proxy_handler = urllib.request.ProxyHandler({self.config.scheme : proxy_addr})
+            self.config.proxy_handler = urllib.request.ProxyHandler({self.config.scheme: proxy_addr})
 
         if ensure_ascii:
             self._json_loads = self._json_loads_ascii
@@ -2722,8 +2722,8 @@ class Shotgun(object):
 
         if attachment_id:
             url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
-                "/file_serve/attachment/%s" % urllib.parse.quote(str(attachment_id)),
-                None, None, None))
+                    "/file_serve/attachment/%s" % urllib.parse.quote(str(attachment_id)),
+                    None, None, None))
         return url
 
     def authenticate_human_user(self, user_login, user_password, auth_token=None):
@@ -3754,8 +3754,8 @@ class Shotgun(object):
         # curl "https://foo.com/upload/get_thumbnail_url?entity_type=Version&entity_id=1"
         # 1
         # /files/0000/0000/0012/232/shot_thumb.jpg.jpg
-        entity_info = {'e_type':urllib.parse.quote(entity_type),
-                       'e_id':urllib.parse.quote(str(entity_id))}
+        entity_info = {'e_type': urllib.parse.quote(entity_type),
+                       'e_id': urllib.parse.quote(str(entity_id))}
         url = ("/upload/get_thumbnail_url?" +
                 "entity_type=%(e_type)s&entity_id=%(e_id)s" % entity_info)
 

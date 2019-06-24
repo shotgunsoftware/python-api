@@ -28,6 +28,7 @@ import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 from . import base
 
+
 def b64encode(val):
     return base64.encodestring(six.ensure_binary(val)).decode("utf-8")
 

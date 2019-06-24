@@ -1,7 +1,7 @@
 #! /opt/local/bin/python
 from __future__ import absolute_import
 import unittest
-from .mock import patch, Mock
+from .mock import patch
 import shotgun_api3 as api
 from shotgun_api3.shotgun import _is_mimetypes_broken
 from six.moves import range
