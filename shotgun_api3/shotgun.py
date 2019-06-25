@@ -33,7 +33,7 @@ from __future__ import absolute_import
 
 # Python 2/3 compatibility
 from .lib import six
-from .lib.six import StringIO    # used for attachment upload
+from .lib.six import BytesIO    # used for attachment upload
 from .lib.six.moves import map
 
 import base64
@@ -2221,12 +2221,12 @@ class Shotgun(object):
 
         result = self._send_form(url, params)
 
-        if not str(result).startswith("1"):
+        if not six.ensure_text(result).startswith("1"):
             raise ShotgunError("Unable to share thumbnail: %s" % result)
         else:
             # clearing thumbnail returns no attachment_id
             try:
-                attachment_id = int(str(result).split(":")[1].split("\n")[0])
+                attachment_id = int(six.ensure_text(result).split(":")[1].split("\n")[0])
             except ValueError:
                 attachment_id = None
 
@@ -2591,8 +2591,9 @@ class Shotgun(object):
                 This parameter exists only for backwards compatibility for scripts specifying
                 the parameter with keywords.
         :returns: If ``file_path`` is provided, returns the path to the file on disk.  If
-            ``file_path`` is ``None``, returns the actual data of the file as a string.
-        :rtype: str
+            ``file_path`` is ``None``, returns the actual data of the file, as str in Python 2 or
+            bytes in Python 3.
+        :rtype: str | bytes
         """
         # backwards compatibility when passed via keyword argument
         if attachment is False:
@@ -4101,15 +4102,17 @@ class FormPostHandler(urllib.request.BaseHandler):
             # We'll do this across both python 2/3 rather than add more branching.
             boundary = uuid.uuid4()
         if buffer is None:
-            buffer = StringIO()
+            buffer = BytesIO()
         for (key, value) in params:
             if not isinstance(value, six.string_types):
                 # If value is not a string (e.g. int) cast to text
                 value = six.text_type(value)
+            value = six.ensure_text(value)
+            key = six.ensure_text(key)
 
-            buffer.write(u'--%s\r\n' % boundary)
-            buffer.write(u'Content-Disposition: form-data; name="%s"' % six.ensure_text(key))
-            buffer.write(u'\r\n\r\n%s\r\n' % six.ensure_text(value))
+            buffer.write(six.ensure_binary('--%s\r\n' % boundary))
+            buffer.write(six.ensure_binary('Content-Disposition: form-data; name="%s"' % key))
+            buffer.write(six.ensure_binary('\r\n\r\n%s\r\n' % value))
         for (key, fd) in files:
             # On Windows, it's possible that we were forced to open a file
             # with non-ascii characters as unicode. In that case, we need to
@@ -4119,20 +4122,25 @@ class FormPostHandler(urllib.request.BaseHandler):
             filename = fd.name
             filename = six.ensure_text(filename)
             filename = filename.split('/')[-1]
+            key = six.ensure_text(key)
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or 'application/octet-stream'
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-            buffer.write('--%s\r\n' % boundary)
-            c_dis = u'Content-Disposition: form-data; name="%s"; filename="%s"%s'
+            buffer.write(six.ensure_binary('--%s\r\n' % boundary))
+            c_dis = 'Content-Disposition: form-data; name="%s"; filename="%s"%s'
             content_disposition = c_dis % (key, filename, '\r\n')
-            buffer.write(content_disposition)
-            buffer.write(u'Content-Type: %s\r\n' % content_type)
-            buffer.write(u'Content-Length: %s\r\n' % file_size)
+            buffer.write(six.ensure_binary(content_disposition))
+            buffer.write(six.ensure_binary('Content-Type: %s\r\n' % content_type))
+            buffer.write(six.ensure_binary('Content-Length: %s\r\n' % file_size))
+
+            # TODO: Don't read the file into memory all at once.
             fd.seek(0)
-            buffer.write(u'\r\n')
-            shutil.copyfileobj(fd, buffer)
-            buffer.write(u'\r\n')
-        buffer.write(u'--%s--\r\n\r\n' % boundary)
+            file_contents = fd.read()
+
+            buffer.write(six.ensure_binary('\r\n'))
+            buffer.write(file_contents)
+            buffer.write(six.ensure_binary('\r\n'))
+        buffer.write(six.ensure_binary('--%s--\r\n\r\n' % boundary))
         buffer = buffer.getvalue()
         return boundary, buffer
 

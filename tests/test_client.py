@@ -347,7 +347,7 @@ class TestShotgunClient(base.MockTestBase):
 
         # Test unicode mixed with utf-8 as reported in Ticket #17959
         d = { "results" : ["foo", "bar"] }
-        a = { "utf_str": "\xe2\x88\x9a", "unicode_str": "\xe2\x88\x9a".decode("utf-8") }
+        a = { "utf_str": "\xe2\x88\x9a", "unicode_str": six.ensure_text("\xe2\x88\x9a") }
         self._mock_http(d)
         rv = self.sg._call_rpc("list", a)
         expected = "rpc response with list result"

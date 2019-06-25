@@ -169,7 +169,7 @@ class MockTestBase(TestBase):
         """Asserts _http_request is called with the method and params."""
         args, _ = self.sg._http_request.call_args
         arg_body = args[2]
-        assert isinstance(arg_body, six.string_types)
+        assert isinstance(arg_body, six.binary_type)
         arg_body = json.loads(arg_body)
 
         arg_params = arg_body.get("params")
