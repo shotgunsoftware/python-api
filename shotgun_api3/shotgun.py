@@ -4102,6 +4102,10 @@ class FormPostHandler(urllib.request.BaseHandler):
         if buffer is None:
             buffer = StringIO()
         for (key, value) in params:
+            if not isinstance(value, six.string_types):
+                # If value is not a string (e.g. int) cast to text
+                value = six.text_type(value)
+
             buffer.write(u'--%s\r\n' % boundary)
             buffer.write(u'Content-Disposition: form-data; name="%s"' % six.ensure_text(key))
             buffer.write(u'\r\n\r\n%s\r\n' % six.ensure_text(value))
