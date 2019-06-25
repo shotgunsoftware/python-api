@@ -2502,13 +2502,14 @@ class Shotgun(object):
             params["file"] = open(path_to_open, "rb")
 
         result = self._send_form(url, params)
+        result = six.ensure_str(result)
 
-        if not str(result).startswith("1"):
+        if not result.startswith("1"):
             raise ShotgunError("Could not upload file successfully, but "\
                 "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (
-                path, url, str(result)))
+                path, url, result))
 
-        attachment_id = int(str(result).split(":")[1].split("\n")[0])
+        attachment_id = int(result.split(":")[1].split("\n")[0])
         return attachment_id
 
     def _get_attachment_upload_info(self, is_thumbnail, filename, is_multipart_upload):
