@@ -2191,7 +2191,10 @@ class Shotgun(object):
 
         .. note::
             When sharing a filmstrip thumbnail, it is required to have a static thumbnail in
-            place before the filmstrip will be displayed in the Shotgun web UI.
+            place before the filmstrip will be displayed in the Shotgun web UI. If the :ref:`thumbnail 
+            is still processing and is using a placeholder <example_upload_version_thumbnail_pending>`, this method will error.
+
+        Simple use case:
 
         >>> thumb = '/data/show/ne2/100_110/anim/01.mlk-02b.jpg'
         >>> e = [{'type': 'Version', 'id': 123}, {'type': 'Version', 'id': 456}]
@@ -2201,6 +2204,42 @@ class Shotgun(object):
         >>> e = [{'type': 'Version', 'id': 123}, {'type': 'Version', 'id': 456}]
         >>> sg.share_thumbnail(entities=e, source_entity={'type':'Version', 'id': 789})
         4271
+
+        Pending thumbnail retry example:
+        
+        The script below illustrates how the use of :meth:`~shotgun_api3.Shotgun.share_thumbnail` can be adapted to deal with pending thumbnails.
+
+        ::
+
+            def share(jpeg_file):
+               # Set your project
+               P = {"type":"Project","id":project_id}
+
+               # Create a version
+               props = {"code":"Test Version","project":P}
+               v_id = sg.create("Version", props).get("id")
+
+               # Create an asset
+               props = {"code":"Test Asset","project":P}
+               asset_id = sg.create("Asset", props).get("id")
+
+               # Now upload attach the thumbnail to the version
+               source_thumbnail_id = sg.upload_thumbnail("Version", v_id, jpeg_file)
+               pprint(source_thumbnail_id)
+
+               # Share the thumbnail once it's available
+               shared = False
+               while not shared:
+                   try:
+                       thumbnail_id = sg.share_thumbnail([{'type': 'Asset', 'id': asset_id}], source_entity={'type': "Version", 'id': v_id})
+                       shared = True
+                   except:
+                       pprint("failed to share... sleeping for 5 secs")
+                       time.sleep(5)
+
+               # Validate the thumbnail was indeed shared
+               e = sg.find_one('Asset',[['id', 'is',  asset_id]], ['id', 'image'])
+               print e
 
         :param list entities: The entities to update to point to the shared  thumbnail provided in
             standard entity dict format::
@@ -2215,6 +2254,8 @@ class Shotgun(object):
             share the static thumbnail. Defaults to ``False``.
         :returns: ``id`` of the Attachment entity representing the source thumbnail that is shared.
         :rtype: int
+        :raises: :class:`ShotgunError` if not supported by server version, improperly called, or 
+            thumbnail is still pending.
         """
         if not self.server_caps.version or self.server_caps.version < (4, 0, 0):
             raise ShotgunError("Thumbnail sharing support requires server "
