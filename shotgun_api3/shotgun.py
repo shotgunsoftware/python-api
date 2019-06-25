@@ -48,6 +48,7 @@ import stat         # used for attachment upload
 import sys
 import time
 import types
+import json
 from .lib.six.moves import urllib
 import shutil       # used for attachment download
 from .lib.six.moves import http_client      # Used for secure file upload.
@@ -65,22 +66,6 @@ handler associated with it.
 .. seealso:: :ref:`logging`
 """
 LOG.setLevel(logging.WARN)
-
-try:
-    import simplejson as json
-except ImportError:
-    LOG.debug("simplejson not found, dropping back to json")
-    try:
-        import json as json
-    except ImportError:
-        LOG.debug("json not found, dropping back to embedded simplejson")
-        # We need to munge the path so that the absolute imports in simplejson will work.
-        dir_path = os.path.dirname(__file__)
-        lib_path = os.path.join(dir_path, 'lib')
-        sys.path.append(lib_path)
-        from .lib import simplejson as json
-        sys.path.pop()
-
 
 def _is_mimetypes_broken():
     """
