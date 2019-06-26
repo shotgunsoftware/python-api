@@ -23,7 +23,6 @@
 from __future__ import absolute_import
 
 import functools
-import io
 import itertools
 import operator
 import sys
@@ -44,7 +43,6 @@ if PY3:
     class_types = type,
     text_type = str
     binary_type = bytes
-    file_types = (io.IOBase, )
 
     MAXSIZE = sys.maxsize
 else:
@@ -53,7 +51,6 @@ else:
     class_types = (type, types.ClassType)
     text_type = unicode
     binary_type = str
-    file_types = (file, io.IOBase)
 
     if sys.platform.startswith("java"):
         # Jython always uses 32 bits.

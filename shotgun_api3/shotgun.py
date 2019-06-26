@@ -33,6 +33,7 @@ from __future__ import absolute_import
 
 # Python 2/3 compatibility
 from .lib import six
+from .lib import sgsix
 from .lib.six import BytesIO    # used for attachment upload
 from .lib.six.moves import map
 
@@ -4061,7 +4062,7 @@ class FormPostHandler(urllib.request.BaseHandler):
             files = []
             params = []
             for key, value in data.items():
-                if isinstance(value, six.file_types):
+                if isinstance(value, sgsix.file_types):
                     files.append((key, value))
                 else:
                     params.append((key, value))
