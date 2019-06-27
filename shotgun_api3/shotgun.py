@@ -564,7 +564,14 @@ class Shotgun(object):
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
         self.config.raw_http_proxy = http_proxy
-        self.config.rpc_attempt_interval = int(os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000))
+
+        try:
+            self.config.rpc_attempt_interval = int(os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000))
+        except ValueError:
+            retry_interval = os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000)
+            raise ValueError("Invalid value '%s' found in environment variable "
+                             "SHOTGUN_API_RETRY_INTERVAL, must be int." % retry_interval)
+
         self._connection = None
         if ca_certs is not None:
             self.__ca_certs = ca_certs
