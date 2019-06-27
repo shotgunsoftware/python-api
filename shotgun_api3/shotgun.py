@@ -571,6 +571,9 @@ class Shotgun(object):
             retry_interval = os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000)
             raise ValueError("Invalid value '%s' found in environment variable "
                              "SHOTGUN_API_RETRY_INTERVAL, must be int." % retry_interval)
+        if self.config.rpc_attempt_interval < 0:
+            raise ValueError("Value of SHOTGUN_API_RETRY_INTERVAL must be positive, "
+                             "got '%s'." % self.config.rpc_attempt_interval)
 
         self._connection = None
         if ca_certs is not None:
