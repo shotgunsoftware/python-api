@@ -4,6 +4,10 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.0.41 (2019 June 28)
+=====================
+- Adds an optional sleep between retries specified via the `SHOTGUN_API_RETRY_INTERVAL` environment variable, or by setting `sg.config.rpc_attempt_interval`.
+
 v3.0.40 (2019 March 13)
 =====================
 - Updates encoding method to use shutil when uploading, to avoid memory and overflow errors when reading large files. (contributed by @eestrada)
