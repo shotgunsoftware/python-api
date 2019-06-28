@@ -5,6 +5,7 @@ need a live server to run against."""
 import base64
 import datetime
 import urllib
+import os
 import re
 try:
     import simplejson as json
@@ -225,15 +226,61 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.close()
         self.assertEqual(None, self.sg._connection)
 
-
     def test_network_retry(self):
-        """Network failure is retried"""
+        """Network failure is retried, with a sleep call between retries."""
         self.sg._http_request.side_effect = httplib2.HttpLib2Error
 
-        self.assertRaises(httplib2.HttpLib2Error, self.sg.info)
-        self.assertTrue(
-            self.sg.config.max_rpc_attempts ==self.sg._http_request.call_count,
-            "Call is repeated")
+        with mock.patch("time.sleep") as mock_sleep:
+            self.assertRaises(httplib2.HttpLib2Error, self.sg.info)
+            self.assertTrue(
+                self.sg.config.max_rpc_attempts == self.sg._http_request.call_count,
+                "Call is repeated")
+            # Ensure that sleep was called with the retry interval between each attempt
+            attempt_interval = self.sg.config.rpc_attempt_interval / 1000.0
+            calls = [mock.callargs(((attempt_interval,), {}))]
+            calls *= (self.sg.config.max_rpc_attempts - 1)
+            self.assertTrue(
+                mock_sleep.call_args_list == calls,
+                "Call is repeated at correct interval."
+            )
+
+    def test_set_retry_interval(self):
+        """Setting the retry interval through parameter and environment variable works."""
+        original_env_val = os.environ.pop("SHOTGUN_API_RETRY_INTERVAL", None)
+
+        try:
+            def run_interval_test(expected_interval, interval_property=None):
+                self.sg = api.Shotgun(self.config.server_url,
+                                      self.config.script_name,
+                                      self.config.api_key,
+                                      http_proxy=self.config.http_proxy,
+                                      connect=self.connect)
+                self._setup_mock()
+                if interval_property:
+                    # if a value was provided for interval_property, set the
+                    # config's property to that value.
+                    self.sg.config.rpc_attempt_interval = interval_property
+                self.sg._http_request.side_effect = httplib2.HttpLib2Error
+                self.assertEqual(self.sg.config.rpc_attempt_interval, expected_interval)
+                self.test_network_retry()
+
+            # Try passing parameter and ensure the correct interval is used.
+            run_interval_test(expected_interval=2500, interval_property=2500)
+
+            # Try setting ENV VAR and ensure the correct interval is used.
+            os.environ["SHOTGUN_API_RETRY_INTERVAL"] = "2000"
+            run_interval_test(expected_interval=2000)
+
+            # Try both parameter and environment variable, to ensure parameter wins.
+            run_interval_test(expected_interval=4000, interval_property=4000)
+
+        finally:
+            # Restore environment variable.
+            if original_env_val is not None:
+                os.environ["SHOTGUN_API_RETRY_INTERVAL"] = original_env_val
+            elif "SHOTGUN_API_RETRY_INTERVAL" in os.environ:
+                os.environ.pop("SHOTGUN_API_RETRY_INTERVAL")
+
 
     def test_http_error(self):
         """HTTP error raised and not retried."""

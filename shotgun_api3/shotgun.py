@@ -92,7 +92,7 @@ except ImportError, e:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.0.40"
+__version__ = "3.0.41"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -345,6 +345,17 @@ class _Config(object):
         """
         self._sg = sg
         self.max_rpc_attempts = 3
+        # rpc_attempt_interval stores the number of milliseconds to wait between
+        # request retries.  By default, this will be 3000 milliseconds. You can
+        # override this by setting this property on the config like so:
+        #
+        #      sg = Shotgun(site_name, script_name, script_key)
+        #      sg.config.rpc_attempt_interval = 1000 # adjusting default interval
+        #
+        # Or by setting the ``SHOTGUN_API_RETRY_INTERVAL`` environment variable.
+        # In the case that the environment variable is already set, setting the
+        # property on the config will override it.
+        self.rpc_attempt_interval = 3000
         # From http://docs.python.org/2.6/library/httplib.html:
         # If the optional timeout parameter is given, blocking operations
         # (like connection attempts) will timeout after that many seconds
@@ -553,6 +564,17 @@ class Shotgun(object):
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
         self.config.raw_http_proxy = http_proxy
+
+        try:
+            self.config.rpc_attempt_interval = int(os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000))
+        except ValueError:
+            retry_interval = os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000)
+            raise ValueError("Invalid value '%s' found in environment variable "
+                             "SHOTGUN_API_RETRY_INTERVAL, must be int." % retry_interval)
+        if self.config.rpc_attempt_interval < 0:
+            raise ValueError("Value of SHOTGUN_API_RETRY_INTERVAL must be positive, "
+                             "got '%s'." % self.config.rpc_attempt_interval)
+
         self._connection = None
         if ca_certs is not None:
             self.__ca_certs = ca_certs
@@ -3308,6 +3330,7 @@ class Shotgun(object):
         body = body or None
 
         max_rpc_attempts = self.config.max_rpc_attempts
+        rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
 
         while (attempt < max_rpc_attempts):
             attempt += 1
@@ -3346,10 +3369,15 @@ class Shotgun(object):
                 if attempt == max_rpc_attempts:
                     raise
             except Exception:
-                #TODO: LOG ?
                 self._close_connection()
                 if attempt == max_rpc_attempts:
+                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
+                LOG.debug(
+                    "Request failed, attempt %d of %d.  Retrying in %.2f seconds..." %
+                    (attempt, max_rpc_attempts, rpc_attempt_interval)
+                )
+                time.sleep(rpc_attempt_interval)
 
     def _http_request(self, verb, path, body, headers):
         """
