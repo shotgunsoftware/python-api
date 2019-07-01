@@ -11,7 +11,7 @@ from . import mock
 import shotgun_api3 as api
 from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
-import six
+from shotgun_api3.lib import six
 
 CONFIG_PATH = 'tests/config'
 

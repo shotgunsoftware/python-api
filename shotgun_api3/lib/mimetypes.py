@@ -28,8 +28,7 @@ from __future__ import print_function
 import os
 import sys
 import posixpath
-import six.moves.urllib.parse
-from six.moves import range
+from .lib.six.moves import urllib, range
 try:
     from .lib.six.moves import winreg
 except ImportError:
@@ -114,7 +113,7 @@ class MimeTypes:
         Optional `strict' argument when False adds a bunch of commonly found,
         but non-standard types.
         """
-        scheme, url = six.moves.urllib.parse.splittype(url)
+        scheme, url = urllib.parse.splittype(url)
         if scheme == 'data':
             # syntax of data URLs:
             # dataurl   := "data:" [ mediatype ] [ ";base64" ] "," data

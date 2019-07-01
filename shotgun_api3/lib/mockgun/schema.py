@@ -31,7 +31,7 @@
 """
 
 from __future__ import absolute_import
-import six.moves.cPickle as pickle
+from ..six.moves import cPickle as pickle
 import os
 import copy
 

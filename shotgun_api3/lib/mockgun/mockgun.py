@@ -121,7 +121,7 @@ from ... import ShotgunError
 from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
-import six
+from .. import six
 
 # ----------------------------------------------------------------------------
 # Version

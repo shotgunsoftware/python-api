@@ -8,7 +8,7 @@ import datetime
 from shotgun_api3.lib.six.moves import urllib
 import os
 import re
-import six
+from shotgun_api3.lib import six
 try:
     import simplejson as json
 except ImportError:

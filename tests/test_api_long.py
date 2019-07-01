@@ -10,7 +10,7 @@ import random
 import shotgun_api3
 import os
 import time
-import six
+from shotgun_api3.lib import six
 
 class TestShotgunApiLong(base.LiveTestBase):
 
@@ -44,7 +44,7 @@ class TestShotgunApiLong(base.LiveTestBase):
             for field_name, field in six.iteritems(fields):
                 if field['data_type']["value"] in allow_sorting_types:
                     order_field = field_name
-                    break       
+                    break
             # TODO for our test project, we haven't populated these entities....
             order = None
             if order_field:
