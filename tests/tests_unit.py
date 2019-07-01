@@ -4,7 +4,7 @@ import unittest
 from .mock import patch
 import shotgun_api3 as api
 from shotgun_api3.shotgun import _is_mimetypes_broken
-from six.moves import range
+from shotgun_api3.lib.six.moves import range
 
 class TestShotgunInit(unittest.TestCase):
     '''Test case for Shotgun.__init__'''

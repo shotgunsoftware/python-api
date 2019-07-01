@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import os
 import re
 import unittest
-from six.moves.configparser import ConfigParser
+from shotgun_api3.lib.six.moves.configparser import ConfigParser
 
 
 from . import mock
