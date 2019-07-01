@@ -16,6 +16,11 @@ class TestShotgunApiLong(base.LiveTestBase):
 
     def test_automated_find(self):
         """Called find for each entity type and read all fields"""
+
+        # Whitelist certain data types for order_field, since no_sorting is not
+        # currently exposed.  These should be good bets to be sortable.
+        allow_sorting_types = ("number", "date")
+
         all_entities = list(self.sg.schema_entity_read().keys())
         direction = "asc"
         filter_operator = "all"
@@ -37,11 +42,13 @@ class TestShotgunApiLong(base.LiveTestBase):
             # not using one.
             order_field = None
             for field_name, field in six.iteritems(fields):
-                if field['data_type']["value"] != 'pivot_column':
+                if field['data_type']["value"] in allow_sorting_types:
                     order_field = field_name
                     break       
             # TODO for our test project, we haven't populated these entities....
-            order = [{'field_name': order_field, 'direction': direction}]
+            order = None
+            if order_field:
+                order = [{'field_name': order_field, 'direction': direction}]
             if "project" in fields:
                 filters = [['project', 'is', self.project]]
             else:
