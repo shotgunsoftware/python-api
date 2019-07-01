@@ -2,6 +2,10 @@ language: python
 python:
   - "2.6"
   - "2.7"
+
+# use trusty dist, since xenial (default) does not support python 2.6
+dist: trusty
+
 # command to install dependencies
 install:
   - pip install -r tests/ci_requirements.txt
