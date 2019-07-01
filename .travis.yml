@@ -25,6 +25,3 @@ after_success: coveralls
 notifications:
   email:
     - api@shotgunsoftware.com
-  slack:
-    rooms:
-      secure: NgcVxptQji2OL7EKx5owh21tOl4rRg51ydYhLPHpBIpBVzlqPxi1jbMHpcbl8mG+GuhU6y1D6kVQgQfuAfIWx5YOc4FodhOFZgeS+eol5RTmEepl1OT6XmAVgEclSZUYQmK25OkcxnFnOV/31RuDPXWcgCvSBZqTy6lAbOZ5VwQ=
