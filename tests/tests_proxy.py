@@ -20,18 +20,8 @@ class ServerConnectionTest(base.TestBase):
         self.sg.connect()
         if self.config.http_proxy:
             sys.stderr.write("[WITH PROXY] ")
-            self.assertTrue(isinstance(self.sg._connection.proxy_info, 
-                                        api.lib.httplib2.ProxyInfo))
+            self.assertTrue(isinstance(self.sg._connection.proxy_info,
+                                       api.lib.httplib2.ProxyInfo))
         else:
             sys.stderr.write("[NO PROXY] ")
             self.assertEqual(self.sg._connection.proxy_info, None)
-
-
-
-
-
-
-
-        
-        
-
