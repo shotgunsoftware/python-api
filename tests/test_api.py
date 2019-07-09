@@ -687,10 +687,10 @@ class TestShotgunApi(base.LiveTestBase):
         batch_data = []
         for s in shots:
             batch_data.append({
-                                "request_type": "delete",
+                "request_type": "delete",
                                 "entity_type": "Shot",
                                 "entity_id": s["id"]
-                              })
+            })
         self.sg.batch(batch_data)
 
         self.assertEqual(result['summaries'], count)
@@ -768,10 +768,10 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(expected, resp)
         resp = self.sg.work_schedule_read(start_date, end_date, project, user)
         work_schedule['2012-01-03'] = {
-                                        "reason": "PROJECT_EXCEPTION",
-                                        "working": False,
-                                        "description": "Project Holiday"
-                                      }
+            "reason": "PROJECT_EXCEPTION",
+            "working": False,
+            "description": "Project Holiday"
+        }
         self.assertEqual(work_schedule, resp)
 
         jan4 = datetime.datetime(2012, 1, 4)
@@ -818,7 +818,7 @@ class TestShotgunApi(base.LiveTestBase):
             'hours_per_day': 8.0,
             'last_day_work_week': None,
             'support_local_storage': False,
-            'view_master_settings': '{"status_groups":[{"name":"Upcoming","code":"upc_stgr","status_list":["wtg","rdy"]},{"name":"Active","code":"act_stgr","status_list":["ip","kickbk","rev","act","rsk","blk","late","opn","pndng","tkt","push","rrq","vwd","out"]},{"name":"Done","code":"done_stgr","status_list":["fin","cmpt","apr","cbb","clsd","cfrm","dlvr","recd","res"]}],"entity_fields":{"Task":["content","sg_description","sg_status_list","due_date","task_assignees","task_reviewers","time_logs_sum"],"Shot":["code","description","sg_status_list","created_at","sg_cut_in","sg_cut_out","sg_cut_duration","sg_cut_order"],"Asset":["code","description","sg_status_list","created_at"],"Scene":["code","sg_status_list","created_at"],"Element":["code","sg_status_list","created_at"],"Release":["code","sg_status_list","created_at"],"ShootDay":["code","sg_status_list","created_at"],"MocapTake":["code","sg_status_list","created_at"],"MocapSetup":["code","sg_status_list","created_at"],"Camera":["code","sg_status_list","created_at"],"MocapTakeRange":["code","sg_status_list","created_at"],"Sequence":["code","sg_status_list","created_at"],"Level":["code","sg_status_list","created_at"],"Episode":["code","sg_status_list","created_at"],"Version":["code","description","sg_status_list"]},"entity_fields_fixed":{"Asset":["code","description","sg_status_list"],"Shot":["code","description","sg_status_list"],"Task":["content","sg_status_list","due_date","task_assignees","task_reviewers","time_logs_sum"],"Scene":["code","description","sg_status_list"],"Element":["code","description","sg_status_list"],"Release":["code","description","sg_status_list"],"ShootDay":["code","description","sg_status_list"],"MocapTake":["code","description","sg_status_list"],"MocapSetup":["code","description","sg_status_list"],"Camera":["code","description","sg_status_list"],"MocapTakeRange":["code","description","sg_status_list"],"Sequence":["code","description","sg_status_list"],"Level":["code","description","sg_status_list"],"Episode":["code","description","sg_status_list"],"Version":["code","description","sg_status_list"]},"board_sorting":{"Upcoming":{"Task":[{"direction":"desc","field_name":"due_date"},{"direction":"asc","field_name":"content"}]},"Done":{"Task":[{"direction":"desc","field_name":"due_date"},{"direction":"asc","field_name":"content"}]},"Active":{"Task":[{"direction":"desc","field_name":"due_date"},{"direction":"asc","field_name":"content"}]}},"status_default":{"Version":{"pending_review_status":["rev"],"viewed_review_status":["vwd"]},"Task":{"final_review_status":["fin"]}},"entity_forms":{"TimeLog":["date","description","duration"]},"entity_forms_fixed":{"TimeLog":["date","description","duration"]},"enable_timelog_at_version_creation":false}' # noqa
+            'view_master_settings': '{"status_groups":[{"name":"Upcoming","code":"upc_stgr","status_list":["wtg","rdy"]},{"name":"Active","code":"act_stgr","status_list":["ip","kickbk","rev","act","rsk","blk","late","opn","pndng","tkt","push","rrq","vwd","out"]},{"name":"Done","code":"done_stgr","status_list":["fin","cmpt","apr","cbb","clsd","cfrm","dlvr","recd","res"]}],"entity_fields":{"Task":["content","sg_description","sg_status_list","due_date","task_assignees","task_reviewers","time_logs_sum"],"Shot":["code","description","sg_status_list","created_at","sg_cut_in","sg_cut_out","sg_cut_duration","sg_cut_order"],"Asset":["code","description","sg_status_list","created_at"],"Scene":["code","sg_status_list","created_at"],"Element":["code","sg_status_list","created_at"],"Release":["code","sg_status_list","created_at"],"ShootDay":["code","sg_status_list","created_at"],"MocapTake":["code","sg_status_list","created_at"],"MocapSetup":["code","sg_status_list","created_at"],"Camera":["code","sg_status_list","created_at"],"MocapTakeRange":["code","sg_status_list","created_at"],"Sequence":["code","sg_status_list","created_at"],"Level":["code","sg_status_list","created_at"],"Episode":["code","sg_status_list","created_at"],"Version":["code","description","sg_status_list"]},"entity_fields_fixed":{"Asset":["code","description","sg_status_list"],"Shot":["code","description","sg_status_list"],"Task":["content","sg_status_list","due_date","task_assignees","task_reviewers","time_logs_sum"],"Scene":["code","description","sg_status_list"],"Element":["code","description","sg_status_list"],"Release":["code","description","sg_status_list"],"ShootDay":["code","description","sg_status_list"],"MocapTake":["code","description","sg_status_list"],"MocapSetup":["code","description","sg_status_list"],"Camera":["code","description","sg_status_list"],"MocapTakeRange":["code","description","sg_status_list"],"Sequence":["code","description","sg_status_list"],"Level":["code","description","sg_status_list"],"Episode":["code","description","sg_status_list"],"Version":["code","description","sg_status_list"]},"board_sorting":{"Upcoming":{"Task":[{"direction":"desc","field_name":"due_date"},{"direction":"asc","field_name":"content"}]},"Done":{"Task":[{"direction":"desc","field_name":"due_date"},{"direction":"asc","field_name":"content"}]},"Active":{"Task":[{"direction":"desc","field_name":"due_date"},{"direction":"asc","field_name":"content"}]}},"status_default":{"Version":{"pending_review_status":["rev"],"viewed_review_status":["vwd"]},"Task":{"final_review_status":["fin"]}},"entity_forms":{"TimeLog":["date","description","duration"]},"entity_forms_fixed":{"TimeLog":["date","description","duration"]},"enable_timelog_at_version_creation":false}'  # noqa
         }
         self.assertEqual(expected, resp)
 
@@ -847,6 +847,7 @@ class TestDataTypes(base.LiveTestBase):
      Untested data types:  password, percent, pivot_column, serializable, image, currency
                            system_task_type, timecode, url, uuid, url_template
     '''
+
     def setUp(self):
         super(TestDataTypes, self).setUp()
 
@@ -2355,13 +2356,13 @@ class TestNoteThreadRead(base.LiveTestBase):
             return
 
         additional_fields = {
-              "Note":       ["created_by.HumanUser.image",
-                             "addressings_to",
-                             "playlist",
-                             "user"],
-              "Reply":      ["content"],
-              "Attachment": ["this_file"]
-            }
+            "Note":       ["created_by.HumanUser.image",
+                           "addressings_to",
+                           "playlist",
+                           "user"],
+            "Reply":      ["content"],
+            "Attachment": ["this_file"]
+        }
 
         # create note
         note = self.sg.create("Note", {"content": "Test!",
@@ -2492,9 +2493,9 @@ class TestTextSearch(base.LiveTestBase):
 
         result = self.sg.text_search("%s Text Search" % self._prefix,
                                      {
-                                        "Shot": [["code", "ends_with", "3"]],
-                                        "Asset": [{"filter_operator": "any",
-                                                   "filters": [["code", "ends_with", "4"]]}]
+                                         "Shot": [["code", "ends_with", "3"]],
+                                         "Asset": [{"filter_operator": "any",
+                                                    "filters": [["code", "ends_with", "4"]]}]
                                      })
 
         matches = result["matches"]

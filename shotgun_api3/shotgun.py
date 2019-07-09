@@ -57,7 +57,7 @@ from .lib.sgtimezone import SgTimezone
 
 # Import Error and ResponseError (even though they're unused in this file) since they need
 # to be exposed as part of the API.
-from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError # noqa
+from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError  # noqa
 
 LOG = logging.getLogger("shotgun_api3")
 """
@@ -316,7 +316,7 @@ class ServerCapabilities(object):
 
     def __str__(self):
         return "ServerCapabilities: host %s, version %s, is_dev %s"\
-                 % (self.host, self.version, self.is_dev)
+            % (self.host, self.version, self.is_dev)
 
 
 class ClientCapabilities(object):
@@ -1535,8 +1535,8 @@ class Shotgun(object):
                 request_params['id'] = req['entity_id']
                 request_params['fields'] = self._dict_to_list(req["data"],
                                                               extra_data=self._dict_to_extra_data(
-                                                                        req.get("multi_entity_update_modes"),
-                                                                        "multi_entity_update_mode"))
+                    req.get("multi_entity_update_modes"),
+                    "multi_entity_update_mode"))
                 if "multi_entity_update_mode" in req:
                     request_params['multi_entity_update_mode'] = req["multi_entity_update_mode"]
             elif req["request_type"] == "delete":
@@ -3065,12 +3065,12 @@ class Shotgun(object):
             arguments, and argument types may change at any point.
         """
         return self._call_rpc(
-                "nav_search",
-                {
-                    "root_path": root_path,
-                    "seed_entity_field": seed_entity_field,
-                    "search_criteria": {"search_string": search_string}
-                }
+            "nav_search",
+            {
+                "root_path": root_path,
+                "seed_entity_field": seed_entity_field,
+                "search_criteria": {"search_string": search_string}
+            }
         )
 
     def nav_search_entity(self, root_path, entity, seed_entity_field=None):
@@ -3085,12 +3085,12 @@ class Shotgun(object):
 
         """
         return self._call_rpc(
-                "nav_search",
-                {
-                    "root_path": root_path,
-                    "seed_entity_field": seed_entity_field,
-                    "search_criteria": {"entity": entity}
-                }
+            "nav_search",
+            {
+                "root_path": root_path,
+                "seed_entity_field": seed_entity_field,
+                "search_criteria": {"entity": entity}
+            }
         )
 
     def get_session_token(self):
@@ -4013,6 +4013,7 @@ class CACertsHTTPSHandler(urllib.request.HTTPSHandler):
     """
     Handler that ensures https connections are created with the custom CA certs.
     """
+
     def __init__(self, cacerts):
         urllib.request.HTTPSHandler.__init__(self)
         self.__ca_certs = cacerts
