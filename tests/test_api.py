@@ -2356,11 +2356,11 @@ class TestNoteThreadRead(base.LiveTestBase):
             return
 
         additional_fields = {
-            "Note":       ["created_by.HumanUser.image",
-                           "addressings_to",
-                           "playlist",
-                           "user"],
-            "Reply":      ["content"],
+            "Note": ["created_by.HumanUser.image",
+                     "addressings_to",
+                     "playlist",
+                     "user"],
+            "Reply": ["content"],
             "Attachment": ["this_file"]
         }
 
