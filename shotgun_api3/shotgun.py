@@ -4101,12 +4101,9 @@ class FormPostHandler(urllib.request.BaseHandler):
             buffer.write(six.ensure_binary('Content-Type: %s\r\n' % content_type))
             buffer.write(six.ensure_binary('Content-Length: %s\r\n' % file_size))
 
-            # TODO: Don't read the file into memory all at once.
-            fd.seek(0)
-            file_contents = fd.read()
-
             buffer.write(six.ensure_binary('\r\n'))
-            buffer.write(file_contents)
+            fd.seek(0)
+            shutil.copyfileobj(fd, buffer)
             buffer.write(six.ensure_binary('\r\n'))
         buffer.write(six.ensure_binary('--%s--\r\n\r\n' % boundary))
         buffer = buffer.getvalue()
