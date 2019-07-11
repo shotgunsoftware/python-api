@@ -33,7 +33,6 @@
 from __future__ import absolute_import
 from ..six.moves import cPickle as pickle
 import os
-import copy
 
 from .errors import MockgunError
 

@@ -34,4 +34,4 @@ import io
 if six.PY3:
     file_types = (io.IOBase, )
 else:
-    file_types = (file, io.IOBase)
+    file_types = (file, io.IOBase)  # noqa warning for undefined `file` in python 3
