@@ -20,7 +20,10 @@ import glob
 import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http, SSLHandshakeError
 
-import base
+THUMBNAIL_MAX_ATTEMPTS = 5
+THUMBNAIL_RETRY_INTERAL = 2
+TRANSIENT_IMAGE_PATH = "images/status/transient"
+
 
 class TestShotgunApi(base.LiveTestBase):
     def setUp(self):
@@ -308,6 +311,14 @@ class TestShotgunApi(base.LiveTestBase):
         data = {'image': path, 'code': 'Test Version',
                 'project': self.project}
         new_version = self.sg.create("Version", data, return_fields=['image'])
+        self.assertIn(TRANSIENT_IMAGE_PATH, new_version.get("image"))
+        new_version = find_one_await_thumbnail(
+            self.sg,
+            "Version",
+            [["id", "is", new_version["id"]]],
+            fields=["image", "project", "type", "id"]
+        )
+
         self.assertTrue(new_version is not None)
         self.assertTrue(isinstance(new_version, dict))
         self.assertTrue(isinstance(new_version.get('id'), int))
@@ -353,9 +364,9 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertTrue(isinstance(thumb_id, int))
 
         # check result on version
-        version_with_thumbnail = self.sg.find_one('Version',
-            [['id', 'is', self.version['id']]],
-            fields=['image'])
+        version_with_thumbnail = self.sg.find_one('Version', [['id', 'is', self.version['id']]])
+        self.assertIn(TRANSIENT_IMAGE_PATH, version_with_thumbnail.get("image"))
+        version_with_thumbnail = find_one_await_thumbnail(self.sg, 'Version', [['id', 'is', self.version['id']]])
 
         self.assertEqual(version_with_thumbnail.get('type'), 'Version')
         self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
@@ -385,9 +396,9 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertTrue(isinstance(thumb_id, int))
 
         # check result on version
-        task_with_thumbnail = self.sg.find_one('Task',
-            [['id', 'is', self.task['id']]],
-            fields=['image'])
+        task_with_thumbnail = self.sg.find_one('Task', [['id', 'is', self.task['id']]])
+        self.assertIn(TRANSIENT_IMAGE_PATH, task_with_thumbnail.get("image"))
+        task_with_thumbnail = find_one_await_thumbnail(self.sg, 'Task', [['id', 'is', self.task['id']]])
 
         self.assertEqual(task_with_thumbnail.get('type'), 'Task')
         self.assertEqual(task_with_thumbnail.get('id'), self.task['id'])
@@ -485,11 +496,21 @@ class TestShotgunApi(base.LiveTestBase):
         thumb_id = self.sg.upload_thumbnail("Project",
             self.version['project']['id'], path)
 
+        attempts = 0
         response_version_with_project = self.sg.find(
             'Version',
             [['id', 'is', self.version['id']]],
             fields=['id', 'code', 'project.Project.image']
         )
+        while (attempts < THUMBNAIL_MAX_ATTEMPTS and
+               TRANSIENT_IMAGE_PATH in response_version_with_project[0].get("project.Project.image")):
+            time.sleep(THUMBNAIL_RETRY_INTERAL)
+            response_version_with_project = self.sg.find(
+                'Version',
+                [['id', 'is', self.version['id']]],
+                fields=['id', 'code', 'project.Project.image']
+            )
+            attempts += 1
 
         if self.sg.server_caps.version and self.sg.server_caps.version >= (3, 3, 0):
 
@@ -515,20 +536,35 @@ class TestShotgunApi(base.LiveTestBase):
 
     def test_share_thumbnail(self):
         """share thumbnail between two entities"""
+
+        def share_thumbnail_retry(*args, **kwargs):
+            # Since share_thumbnail raises a ShotgunError if the thumbnail is still
+            # pending, sleep and retry if this exception is raised, to allow time for
+            # the thumbnail to finish processing.
+            thumbnail_id = None
+            attempts = 0
+            while attempts < THUMBNAIL_MAX_ATTEMPTS and thumbnail_id is None:
+                try:
+                    thumbnail_id = self.sg.share_thumbnail(*args, **kwargs)
+                    attempts += 1
+                except shotgun_api3.ShotgunError:
+                    time.sleep(THUMBNAIL_RETRY_INTERAL)
+            return thumbnail_id
+
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
             os.path.join(this_dir,"sg_logo.jpg")))
 
         # upload thumbnail to first entity and share it with the rest
-        thumbnail_id = self.sg.share_thumbnail(
-            [self.version, self.shot],
-            thumbnail_path=path)
-        response_version_thumbnail = self.sg.find_one(
+        share_thumbnail_retry([self.version, self.shot], thumbnail_path=path)
+        response_version_thumbnail = find_one_await_thumbnail(
+            self.sg,
             'Version',
             [['id', 'is', self.version['id']]],
             fields=['id', 'code', 'image']
         )
-        response_shot_thumbnail = self.sg.find_one(
+        response_shot_thumbnail = find_one_await_thumbnail(
+            self.sg,
             'Shot',
             [['id', 'is', self.shot['id']]],
             fields=['id', 'code', 'image']
@@ -541,22 +577,22 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(shot_path, version_path)
 
         # share thumbnail from source entity with entities
-        source_thumbnail_id = self.sg.upload_thumbnail("Version",
-            self.version['id'], path)
-        thumbnail_id = self.sg.share_thumbnail(
-            [self.asset, self.shot],
-            source_entity=self.version)
-        response_version_thumbnail = self.sg.find_one(
+        self.sg.upload_thumbnail("Version", self.version['id'], path)
+        share_thumbnail_retry([self.asset, self.shot], source_entity=self.version)
+        response_version_thumbnail = find_one_await_thumbnail(
+            self.sg,
             'Version',
             [['id', 'is', self.version['id']]],
             fields=['id', 'code', 'image']
         )
-        response_shot_thumbnail = self.sg.find_one(
+        response_shot_thumbnail = find_one_await_thumbnail(
+            self.sg,
             'Shot',
             [['id', 'is', self.shot['id']]],
             fields=['id', 'code', 'image']
         )
-        response_asset_thumbnail = self.sg.find_one(
+        response_asset_thumbnail = find_one_await_thumbnail(
+            self.sg,
             'Asset',
             [['id', 'is', self.asset['id']]],
             fields=['id', 'code', 'image']
@@ -2007,9 +2043,7 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
         self.assertTrue(isinstance(thumb_id, int))
 
         # check result on version
-        version_with_thumbnail = self.sg.find_one('Version',
-            [['id', 'is', self.version['id']]],
-            fields=['image'])
+        version_with_thumbnail = find_one_await_thumbnail(self.sg, 'Version', [['id', 'is', self.version['id']]])
 
         self.assertEqual(version_with_thumbnail.get('type'), 'Version')
         self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
@@ -2070,9 +2104,7 @@ class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
             self.assertTrue(isinstance(thumb_id, int))
 
             # check result on version
-            version_with_thumbnail = self.sg.find_one('Version',
-                [['id', 'is', self.version['id']]],
-                fields=['image'])
+            version_with_thumbnail = find_one_await_thumbnail(self.sg, 'Version', [['id', 'is', self.version['id']]])
 
             self.assertEqual(version_with_thumbnail.get('type'), 'Version')
             self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
@@ -2724,6 +2756,17 @@ def _get_path(url):
         return url[2]
     else:
         return url.path
+
+
+def find_one_await_thumbnail(sg, entity_type, filters, fields=['image'], **kwargs):
+    attempts = 0
+    result = sg.find_one(entity_type, filters, fields=fields, **kwargs)
+    while attempts < THUMBNAIL_MAX_ATTEMPTS and TRANSIENT_IMAGE_PATH in result.get("image"):
+        time.sleep(THUMBNAIL_RETRY_INTERAL)
+        result = sg.find_one(entity_type, filters, fields=fields, **kwargs)
+        attempts += 1
+    return result
+
 
 if __name__ == '__main__':
     unittest.main()
