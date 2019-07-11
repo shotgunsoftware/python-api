@@ -322,7 +322,6 @@ class TestShotgunApi(base.LiveTestBase):
         data = {'image': path, 'code': 'Test Version',
                 'project': self.project}
         new_version = self.sg.create("Version", data, return_fields=['image'])
-        self.assertIn(TRANSIENT_IMAGE_PATH, new_version.get("image"))
         new_version = find_one_await_thumbnail(
             self.sg,
             "Version",
