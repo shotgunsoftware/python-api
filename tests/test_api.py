@@ -375,7 +375,6 @@ class TestShotgunApi(base.LiveTestBase):
 
         # check result on version
         version_with_thumbnail = self.sg.find_one('Version', [['id', 'is', self.version['id']]])
-        self.assertIn(TRANSIENT_IMAGE_PATH, version_with_thumbnail.get("image"))
         version_with_thumbnail = find_one_await_thumbnail(self.sg, 'Version', [['id', 'is', self.version['id']]])
 
         self.assertEqual(version_with_thumbnail.get('type'), 'Version')
@@ -404,7 +403,6 @@ class TestShotgunApi(base.LiveTestBase):
 
         # check result on version
         task_with_thumbnail = self.sg.find_one('Task', [['id', 'is', self.task['id']]])
-        self.assertIn(TRANSIENT_IMAGE_PATH, task_with_thumbnail.get("image"))
         task_with_thumbnail = find_one_await_thumbnail(self.sg, 'Task', [['id', 'is', self.task['id']]])
 
         self.assertEqual(task_with_thumbnail.get('type'), 'Task')
