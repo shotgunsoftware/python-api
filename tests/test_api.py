@@ -32,7 +32,7 @@ else:
     SSL_ERROR = SSLHandshakeError
 
 THUMBNAIL_MAX_ATTEMPTS = 5
-THUMBNAIL_RETRY_INTERAL = 10
+THUMBNAIL_RETRY_INTERAL = 2
 TRANSIENT_IMAGE_PATH = "images/status/transient"
 
 
@@ -311,7 +311,6 @@ class TestShotgunApi(base.LiveTestBase):
         # cleanup
         os.remove(file_path)
 
-    # @unittest.skip("Disabled for innovation day.")
     def test_upload_thumbnail_in_create(self):
         """Upload a thumbnail via the create method"""
         this_dir, _ = os.path.split(__file__)
@@ -537,7 +536,6 @@ class TestShotgunApi(base.LiveTestBase):
             ]
             self.assertEqual(expected_version_with_project, response_version_with_project)
 
-    # @unittest.skip("Disabled for innovation day.")
     def test_share_thumbnail(self):
         """share thumbnail between two entities"""
 
@@ -766,7 +764,6 @@ class TestShotgunApi(base.LiveTestBase):
         result = sg_unicode.find_one('Note', [['id', 'is', self.note['id']]], fields=['content'])
         self.assertTrue(_has_unicode(result))
 
-    # @unittest.skip("Disabled for innovation day.")
     def test_work_schedule(self):
         '''test_work_schedule tests WorkDayRules api'''
         self.maxDiff = None
@@ -835,7 +832,6 @@ class TestShotgunApi(base.LiveTestBase):
         work_schedule['2012-01-04'] = {"reason": "USER_EXCEPTION", "working": False, "description": "Artist Holiday"}
         self.assertEqual(work_schedule, resp)
 
-    # @unittest.skip("Disabled for innovation day.")
     def test_preferences_read(self):
         # Only run the tests on a server with the feature.
         if not self.sg.server_caps.version or self.sg.server_caps.version < (7, 10, 0):
@@ -1131,7 +1127,6 @@ class TestUtc(base.LiveTestBase):
         self._assert_expected(sg_utc, self.datetime_none, self.datetime_local)
         self._assert_expected(sg_utc, self.datetime_local, self.datetime_local)
 
-    # @unittest.skip("Disabled for innovation day.")
     def test_no_convert_to_utc(self):
         sg_no_utc = shotgun_api3.Shotgun(self.config.server_url,
                                          self.config.script_name,
@@ -2392,7 +2387,6 @@ class TestNoteThreadRead(base.LiveTestBase):
         self._check_reply(result[1], reply["id"], additional_fields=[])
         self._check_attachment(result[2], attachment_id, additional_fields=[])
 
-    # @unittest.skip("Disabled for innovation day.")
     def test_complex(self):
         """
         Test note reply thread API call with additional params
