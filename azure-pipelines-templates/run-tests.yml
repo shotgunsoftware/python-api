@@ -1,43 +1,49 @@
-# This is the list of parameters for this template and the default values.
+# This is the list of parameters for this template and their default values.
 parameters:
   name: ''
   vm_image: ''
 
 jobs:
-  # The test will be named after the OS and Azure will suffix the strategy to make it unique
-  # so we'll have a job name "Windows Python27" for example.
+  # The job will be named after the OS and Azure will suffix the strategy to make it unique
+  # so we'll have a job name "Windows Python27" for example. What's the strategy? It's right
+  # below!
 - job: ${{ parameters.name }}
-  pool: 
+  pool:
     vmImage: ${{ parameters.vm_image }}
+  # The strategy is another way of removing repetition. It will create one job per entry in the
+  # matrix.
   strategy:
-    # We support these two versions of Python.
     matrix:
+      # We support these two versions of Python.
       Python27:
         python.version: '2.7'
       Python37:
         python.version: '3.7'
 
-  # The above strategy is another way of removing repetition. It will create one job per entry in the
-  # matrix and insert those steps inside it. Jobs are run in parallel, steps are run sequentially
-  # withing jobs. There are also stages, which allow you to run a groups of jobs sequentially,
-  # but we're not using it here.
+  # These are the steps that will be executed inside each job.
   steps:
-  # Specify which version of Python we want to use. We'll pull it from the strategy matrix.
+  # Specifies which version of Python we want to use. That's where the strategy comes in.
+  # Each job will share this set of steps, but each of them will receive a different
+  # $(python.version)
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '$(python.version)'
       addToPath: True
 
-  # Install all dependencies needed for running the tests.
+  # Install all dependencies needed for running the tests. This command is good for
+  # Python 2 and 3, but also for all OSes
   - script: |
       python -m pip install --upgrade pip setuptools wheel
       python -m pip install -r tests/ci_requirements.txt
     displayName: Install tools
 
-  # On Windows, we need to update the certificates, the cert store is missing the newer one
-  # from Amazon like some clients experienced a while back. Who would have thought Microsoft
-  # would have been out of date! ;)
+  # The {{}} syntax is meant for the the pre-processor of Azure pipeline. Every statement inside
+  # a {{}} block will be evaluated and substituted before the file is parsed to create the jobs.
+  # So here we're inserting an extra step if the template is being invoked for Windows.
   - ${{ if eq(parameters.name, 'Windows') }}:
+    # On Windows, we need to update the certificates, the cert store is missing the newer one
+    # from Amazon like some clients experienced a while back. Who would have thought Microsoft
+    # would have been out of date! ;)
     - powershell: |
         $cert_url = "https://www.amazontrust.com/repository/SFSRootCAG2.cer"
         $cert_file = New-TemporaryFile
@@ -45,7 +51,7 @@ jobs:
         Import-Certificate -FilePath $cert_file.FullName -CertStoreLocation Cert:\LocalMachine\Root
       displayName: Updating OS Certificates
 
-  # Run the tests and generate test coverage. The tests results are uploaded to Azure Pipelines in the
+  # Runs the tests and generates test coverage. The tests results are uploaded to Azure Pipelines in the
   # Tests tab of the build and each test run will be named after the --test-run-title argument to pytest,
   # for example 'Windows - 2.7'
   - bash: |
@@ -54,10 +60,8 @@ jobs:
     displayName: Running tests
     env:
       # Pass the values needed to authenticate with the Shotgun site and create some entities.
-      # Those values are all encrypted in the build system and are not shared with
-      # pull requests from clients.
-      # When those environment variables are not set, any tests that require a Shotgun connection,
-      # which is like 95% of them, will be skipped.
+      # Remember, on a pull request from a client or on forked repos, those variables
+      # will be empty!
       SG_SERVER_URL: $(ci_site)
       SG_SCRIPT_NAME: $(ci_site_script_name)
       SG_API_KEY: $(ci_site_script_key)
