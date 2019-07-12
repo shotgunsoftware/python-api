@@ -1,9 +1,19 @@
+# We've stored some variables in Azure. They contain credentials
+# and are encrypted. They are also not available to clients.
+# This statement says which variable groups this repo requires.
+# We have two: one that can be shared by all repos that use CI
+# and another that is used just by the Python API, which creates
+# HumanUser's and as such need a password, which we can't
+# hardcode in the .yml files.
 variables:
   group: ci-credentials
   group: python-api
 
+# This here is the list of jobs we want to run for our build.
+# Jobs run in parallel.
 jobs:
-# Lints our code.
+
+# This is our first job and it lints our code.
 - job: Linting
   pool:
     vmImage: 'ubuntu-16.04'
@@ -26,8 +36,7 @@ jobs:
 
 # These are jobs templates, they allow to reduce the redundancy between
 # variations of the same build. We pass in the image name
-# and a friendly name the the template takes care of
-# running everything for us.
+# and a friendly name that then template can then use to create jobs.
 - template: azure-pipelines-templates/run-tests.yml
   parameters:
     name: Linux
