@@ -1,0 +1,31 @@
+variables:
+  group: ci-credentials
+
+jobs:
+# Lints our code.
+- job: Linting
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: 3.x
+      addToPath: true
+  - script: python -m pip install --upgrade pip setuptools wheel
+    displayName: 'Install tools'
+  - script: python -m flake8
+
+# - template: azure-pipeline-templates/run-tests.yml
+#   parameters:
+#     name: Linux
+#     vmImage: 'ubuntu-16.04'
+
+# - template: azure-pipeline-templates/run-tests.yml
+#   parameters:
+#     name: macOS
+#     vmImage: 'macOS-10.13'
+
+# - template: azure-pipeline-templates/run-tests.yml
+#   parameters:
+#     name: Windows
+#     vmImage: 'vs2017-win2016'
