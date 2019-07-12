@@ -23,12 +23,14 @@ jobs:
     inputs:
       versionSpec: '$(python.version)'
       addToPath: True
-  - script: python -m pip install --upgrade pip setuptools wheel
+  - script: |
+      python -m pip install --upgrade pip setuptools wheel
+      python -m pip install -r tests/ci_requirements.txt
     displayName: Install tools
-  - script: python -m pip install -r tests/ci_requirements.txt
-    displayName: Install CI requirements
-  - script: pytest
-    displayName: Running tests with Python
+  - bash: |
+      cp ./tests/example_config ./tests/config
+      pytest
+    displayName: Running tests
     env:
       SG_SERVER_URL: $(ci_site)
       SG_SCRIPT_NAME: $(ci_site_script_name)
