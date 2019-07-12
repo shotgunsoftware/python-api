@@ -1,20 +1,22 @@
 parameters:
   name: ''
-  vmImage: ''
-  ciServer: ''
-  ciScriptName: ''
-  ciScriptKey: ''
+  vm_image: ''
+  # ciServer: ''
+  # ciScriptName: ''
+  # ciScriptKey: ''
+  project_name: ''
+
 
 jobs:
 - job: ${{ parameters.name }}
   pool: 
-    vmImage: ${{ parameters.vmImage }}
+    vmImage: ${{ parameters.vm_image }}
   strategy:
     matrix:
       Python27:
         python.version: '2.7'
-      Python37:
-        python.version: '3.7'
+      # Python37:
+      #   python.version: '3.7'
 
   steps:
   - task: UsePythonVersion@0
@@ -27,3 +29,9 @@ jobs:
     displayName: Install CI requirements
   - script: pytest
     displayName: Running tests with Python
+    env:
+      SG_SERVER_URL: $(ci_site)
+      SG_SCRIPT_NAME: $(ci_site_script_name)
+      SG_API_KEY: $(ci_site_script_key)
+      SG_PROJECT_NAME:
+      SG_PROJECT_NAME: ${{ format('{0} for {1}', parameters.project_name, parameters.name) }}

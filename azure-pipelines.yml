@@ -19,7 +19,8 @@ jobs:
 - template: azure-pipelines-templates/run-tests.yml
   parameters:
     name: Linux
-    vmImage: 'ubuntu-16.04'
+    vm_image: 'ubuntu-16.04'
+    project_name: $(python_api_project_name)
 
 # - template: azure-pipeline-templates/run-tests.yml
 #   parameters:
