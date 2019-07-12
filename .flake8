@@ -10,4 +10,4 @@
 
 [flake8]
 max-line-length = 120
-exclude = shotgun_api3/lib/httplib2/*,shotgun_api3/lib/six.py,shotgun_api3/lib/xmlrpclib.py,tests/httplib2test.py,tests/mock.py
+exclude = shotgun_api3/lib/httplib2/*,shotgun_api3/lib/six.py,shotgun_api3/lib/xmlrpclib.py,tests/dummy_data.py,tests/httplib2test.py,tests/mock.py,tests/base.py
