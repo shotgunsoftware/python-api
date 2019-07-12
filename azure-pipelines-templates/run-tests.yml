@@ -33,4 +33,7 @@ jobs:
       SG_SERVER_URL: $(ci_site)
       SG_SCRIPT_NAME: $(ci_site_script_name)
       SG_API_KEY: $(ci_site_script_key)
+      SG_HUMAN_NAME: $(python_api_human_name)
+      SG_HUMAN_LOGIN: $(python_api_human_login)
+      SG_HUMAN_PASSWORD: $(python_api_human_password)
       SG_PROJECT_NAME: ${{ format('{0} for {1}', parameters.project_name, parameters.name) }}
