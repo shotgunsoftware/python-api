@@ -7,14 +7,12 @@ jobs:
   pool:
     vmImage: 'ubuntu-16.04'
   steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: 3.x
-      addToPath: true
-  - script: python -m pip install --upgrade pip setuptools wheel
+  - script: |
+      python -m pip install --upgrade pip setuptools wheel
+      python -m pip install flake8
     displayName: 'Install tools'
-  - script: python -m pip install -r tests/ci_requirements.txt
   - script: python -m flake8
+    displayName: 'Linting'
 
 - template: azure-pipelines-templates/run-tests.yml
   parameters:
