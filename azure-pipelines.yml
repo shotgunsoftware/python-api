@@ -16,7 +16,7 @@ jobs:
   - script: python -m pip install -r tests/ci_requirements.txt
   - script: python -m flake8
 
-- template: azure-pipeline-templates/run-tests.yml
+- template: azure-pipelines-templates/run-tests.yml
   parameters:
     name: Linux
     vmImage: 'ubuntu-16.04'
