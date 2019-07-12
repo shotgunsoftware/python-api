@@ -38,4 +38,4 @@ jobs:
       SG_HUMAN_NAME: $(python_api_human_name)
       SG_HUMAN_LOGIN: $(python_api_human_login)
       SG_HUMAN_PASSWORD: $(python_api_human_password)
-      SG_PROJECT_NAME: ${{ format('{0} - {1}', parameters.project_name, parameters.name) }}
+      SG_PROJECT_NAME: ${{ format('{0} - {1}', parameters.project_name, parameters.name) }} - ($python.verison)
