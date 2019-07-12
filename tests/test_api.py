@@ -536,6 +536,7 @@ class TestShotgunApi(base.LiveTestBase):
             ]
             self.assertEqual(expected_version_with_project, response_version_with_project)
 
+    @unittest.skip()
     def test_share_thumbnail(self):
         """share thumbnail between two entities"""
 
@@ -764,6 +765,7 @@ class TestShotgunApi(base.LiveTestBase):
         result = sg_unicode.find_one('Note', [['id', 'is', self.note['id']]], fields=['content'])
         self.assertTrue(_has_unicode(result))
 
+    @unittest.skip()
     def test_work_schedule(self):
         '''test_work_schedule tests WorkDayRules api'''
         self.maxDiff = None
@@ -832,6 +834,7 @@ class TestShotgunApi(base.LiveTestBase):
         work_schedule['2012-01-04'] = {"reason": "USER_EXCEPTION", "working": False, "description": "Artist Holiday"}
         self.assertEqual(work_schedule, resp)
 
+    @unittest.skip()
     def test_preferences_read(self):
         # Only run the tests on a server with the feature.
         if not self.sg.server_caps.version or self.sg.server_caps.version < (7, 10, 0):
@@ -1127,6 +1130,7 @@ class TestUtc(base.LiveTestBase):
         self._assert_expected(sg_utc, self.datetime_none, self.datetime_local)
         self._assert_expected(sg_utc, self.datetime_local, self.datetime_local)
 
+    @unittest.skip()
     def test_no_convert_to_utc(self):
         sg_no_utc = shotgun_api3.Shotgun(self.config.server_url,
                                          self.config.script_name,
@@ -2387,6 +2391,7 @@ class TestNoteThreadRead(base.LiveTestBase):
         self._check_reply(result[1], reply["id"], additional_fields=[])
         self._check_attachment(result[2], attachment_id, additional_fields=[])
 
+    @unittest.skip()
     def test_complex(self):
         """
         Test note reply thread API call with additional params
