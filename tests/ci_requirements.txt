@@ -2,3 +2,5 @@ coveralls==1.1
 nose
 nose-exclude
 flake8
+pytest
+pytest-azurepipelines
