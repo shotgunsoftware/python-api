@@ -27,6 +27,12 @@ jobs:
       python -m pip install --upgrade pip setuptools wheel
       python -m pip install -r tests/ci_requirements.txt
     displayName: Install tools
+- #{{ if eq(parameters.name, 'Windows') }}
+  - powershell: |
+      $cert_url = "https://www.amazontrust.com/repository/SFSRootCAG2.cer"
+      $cert_file = New-TemporaryFile
+      Invoke-WebRequest -Uri $cert_url -UseBasicParsing -OutFile $cert_file.FullName
+      Import-Certificate -FilePath $cert_file.FullName -CertStoreLocation Cert:\LocalMachine\Root
   - bash: |
       cp ./tests/example_config ./tests/config
       pytest -v --cov shotgun_api3 --cov-report xml --test-run-title="${{parameters.name}}-$(python.version)"
