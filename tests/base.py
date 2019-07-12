@@ -49,6 +49,11 @@ class TestBase(unittest.TestCase):
         cls.config.read_config(CONFIG_PATH)
 
     def setUp(self, auth_mode='ApiUser'):
+        # When running the tests from a pull request from a client, the Shotgun
+        # site URL won't be set, so do not attempt to run the test.
+        if not self.config.server_url:
+            self.skipTest("Shotgun site URL is not set. Skipping this test.")
+
         self.human_login = self.config.human_login
         self.human_password = self.config.human_password
         self.server_url = self.config.server_url
@@ -230,13 +235,17 @@ class LiveTestBase(TestBase):
         # As such, we are using setUpClass to load them once during the
         # entire duration of the tests.
         super(LiveTestBase, cls).setUpClass()
-        sg = api.Shotgun(
-            cls.config.server_url,
-            cls.config.script_name,
-            cls.config.api_key
-        )
-        cls.sg_version = tuple(sg.info()['version'][:3])
-        cls._setup_db(cls.config, sg)
+
+        # When running the tests from a pull request from a client, the Shotgun
+        # site URL won't be set, so do not attempt to connect to Shotgun.
+        if cls.config.server_url:
+            sg = api.Shotgun(
+                cls.config.server_url,
+                cls.config.script_name,
+                cls.config.api_key
+            )
+            cls.sg_version = tuple(sg.info()['version'][:3])
+            cls._setup_db(cls.config, sg)
 
     @classmethod
     def _setup_db(cls, config, sg):
