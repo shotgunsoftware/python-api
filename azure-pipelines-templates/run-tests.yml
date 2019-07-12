@@ -1,6 +1,9 @@
 parameters:
   name: ''
   vmImage: ''
+  ciServer: ''
+  ciScriptName: ''
+  ciScriptKey: ''
 
 jobs:
 - job: ${{ parameters.name }}
@@ -19,6 +22,8 @@ jobs:
       versionSpec: '$(python.version)'
       addToPath: True
   - script: python -m pip install --upgrade pip setuptools wheel
-    displayName: 'Install tools'
+    displayName: Install tools
   - script: python -m pip install -r tests/ci_requirements.txt
-  - script: 
+    displayName: Install CI requirements
+  - script: pytest
+    displayName: Running tests with Python
