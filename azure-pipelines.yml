@@ -20,14 +20,13 @@ jobs:
   parameters:
     name: Linux
     vm_image: 'ubuntu-16.04'
-    project_name: Python API CI
 
-# - template: azure-pipeline-templates/run-tests.yml
-#   parameters:
-#     name: macOS
-#     vmImage: 'macOS-10.13'
+- template: azure-pipelines-templates/run-tests.yml
+  parameters:
+    name: macOS
+    vm_image: 'macOS-10.13'
 
-# - template: azure-pipeline-templates/run-tests.yml
-#   parameters:
-#     name: Windows
-#     vmImage: 'vs2017-win2016'
+- template: azure-pipelines-templates/run-tests.yml
+  parameters:
+    name: Windows
+    vm_image: 'vs2017-win2016'

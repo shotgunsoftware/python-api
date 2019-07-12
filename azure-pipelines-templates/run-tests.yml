@@ -15,8 +15,8 @@ jobs:
     matrix:
       Python27:
         python.version: '2.7'
-      # Python37:
-      #   python.version: '3.7'
+      Python37:
+        python.version: '3.7'
 
   steps:
   - task: UsePythonVersion@0
@@ -38,4 +38,5 @@ jobs:
       SG_HUMAN_NAME: $(python_api_human_name)
       SG_HUMAN_LOGIN: $(python_api_human_login)
       SG_HUMAN_PASSWORD: $(python_api_human_password)
-      SG_PROJECT_NAME: ${{ format('{0} - {1}', parameters.project_name, parameters.name) }} - $(python.version)
+      # This will give a name like 'Python API CI - macOS - 2.7'
+      SG_PROJECT_NAME: ${{ format('Python API CI - {0}', parameters.name) }} - $(python.version)
