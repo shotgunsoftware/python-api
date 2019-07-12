@@ -26,7 +26,7 @@ jobs:
     name: macOS
     vm_image: 'macOS-10.13'
 
-# - template: azure-pipelines-templates/run-tests.yml
-#   parameters:
-#     name: Windows
-#     vm_image: 'vs2017-win2016'
+- template: azure-pipelines-templates/run-tests.yml
+  parameters:
+    name: Windows
+    vm_image: 'vs2017-win2016'
