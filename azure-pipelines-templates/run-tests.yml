@@ -38,9 +38,9 @@ jobs:
       # The unit tests manipulate the user and project during the tests, which can cause collisions,
       # so sandbox each build variant.
       # This will give a login like 'something-macOS-2.7'
-      SG_HUMAN_LOGIN: $(python_api_human_login)-${{parameter.name}}-${python.version}
+      SG_HUMAN_LOGIN: $(python_api_human_login)-${{parameters.name}}-$(python.version)
       # This will give a login like 'something macOS 2.7'
-      SG_HUMAN_NAME: $(python_api_human_name) ${{parameter.name}} ${python.version}
+      SG_HUMAN_NAME: $(python_api_human_name) ${{parameters.name}} $(python.version)
       SG_HUMAN_PASSWORD: $(python_api_human_password)
       # This will give a name like 'Python API CI - macOS - 2.7'
       SG_PROJECT_NAME: ${{ format('Python API CI - {0}', parameters.name) }} - $(python.version)
