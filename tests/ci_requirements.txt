@@ -4,3 +4,5 @@ nose-exclude
 flake8
 pytest
 pytest-azurepipelines
+coverage
+pytest-coverage
