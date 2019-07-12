@@ -13,6 +13,7 @@ jobs:
       addToPath: true
   - script: python -m pip install --upgrade pip setuptools wheel
     displayName: 'Install tools'
+  - script: python -m pip install -r tests/ci_requirements.txt
   - script: python -m flake8
 
 # - template: azure-pipeline-templates/run-tests.yml
