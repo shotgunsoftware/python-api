@@ -29,7 +29,7 @@ jobs:
     displayName: Install tools
   - bash: |
       cp ./tests/example_config ./tests/config
-      pytest
+      pytest -v
     displayName: Running tests
     env:
       SG_SERVER_URL: $(ci_site)
