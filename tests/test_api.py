@@ -1975,9 +1975,9 @@ class TestHumanUserSudoAuth(base.TestBase):
         except shotgun_api3.Fault as e:
             # py24 exceptions don't have message attr
             if hasattr(e, 'message'):
-                self.assert_(e.message.startswith(expected))
+                self.assertTrue(e.message.startswith(expected))
             else:
-                self.assert_(e.args[0].startswith(expected))
+                self.assertTrue(e.args[0].startswith(expected))
 
 
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
