@@ -6,8 +6,8 @@
 # HumanUser's and as such need a password, which we can't
 # hardcode in the .yml files.
 variables:
-  group: ci-credentials
-  group: python-api
+  - group: ci-credentials
+  - group: python-api
 
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
