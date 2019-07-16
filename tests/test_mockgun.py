@@ -51,6 +51,9 @@ Mockgun.set_schema_paths(
     os.path.join(mockgun_schema_folder, "schema.pickle"),
     os.path.join(mockgun_schema_folder, "schema_entity.pickle")
 )
+Mockgun.set_database_path(
+    os.path.join(mockgun_schema_folder, "database.pickle"),
+)
 
 
 # FIXME: This should probably be refactored into a base class for
@@ -90,6 +93,7 @@ class TestMockgunModuleInterface(unittest.TestCase):
         # error.
         mockgun.MockgunError
         mockgun.generate_schema
+        mockgun.generate_data
         mockgun.Shotgun
 
 

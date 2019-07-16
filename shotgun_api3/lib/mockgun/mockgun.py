@@ -120,6 +120,7 @@ from ... import ShotgunError
 from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
+from .data import DatabaseFactory
 
 # ----------------------------------------------------------------------------
 # Version
@@ -147,6 +148,19 @@ class Shotgun(object):
 
     __schema_path = None
     __schema_entity_path = None
+    __database_path = None
+
+    @classmethod
+    def set_database_path(cls, database_path):
+        """
+        Set the path where the database can be found. This is done at the class
+        level so all Shotgun instances will share the same database.
+        The responsibility to generate and load these files is left to the user
+        changing the default value.
+
+        :param database_path: Directory path where the database is.
+        """
+        cls.__database_path = database_path
 
     @classmethod
     def set_schema_paths(cls, schema_path, schema_entity_path):
@@ -160,6 +174,16 @@ class Shotgun(object):
         """
         cls.__schema_path = schema_path
         cls.__schema_entity_path = schema_entity_path
+
+    @classmethod
+    def get_database_path(cls):
+        """
+        Returns the file which are part of the database.
+        These path can then be used in generate_database if needed.
+
+        :returns: A string with database_path
+        """
+        return cls.__database_path
 
     @classmethod
     def get_schema_paths(cls):
@@ -204,6 +228,7 @@ class Shotgun(object):
 
         # initialize the "database"
         self._db = dict((entity, {}) for entity in self._schema)
+        self._update_db()
 
         # set some basic public members that exist in the Shotgun API
         self.base_url = base_url
@@ -422,8 +447,19 @@ class Shotgun(object):
     def upload_thumbnail(self, entity_type, entity_id, path, **kwargs):
         pass
 
+    def dump_database(self):
+        DatabaseFactory.set_database(self._db, self.get_database_path())
+
     ###################################################################################################
     # internal methods and members
+
+    def _update_db(self):
+        database = DatabaseFactory.get_database(self.get_database_path())
+        for entity_type in database:
+            for entity in database[entity_type]:
+                row = self._get_new_row(entity_type)
+                self._update_row(entity_type, row, entity)
+                self._db[entity_type][row["id"]] = row
 
     def _validate_entity_type(self, entity_type):
         if entity_type not in self._schema:
