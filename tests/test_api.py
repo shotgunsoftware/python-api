@@ -25,7 +25,6 @@ from . import base
 
 if six.PY3:
     import ssl
-    print("imported ssl: {}".format(ssl))
     SSL_ERROR = ssl.SSLError
 else:
     from shotgun_api3.lib.httplib2 import SSLHandshakeError
@@ -316,7 +315,6 @@ class TestShotgunApi(base.LiveTestBase):
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
             os.path.join(this_dir, "sg_logo.jpg")))
-        # size = os.stat(path).st_size
 
         # test thumbnail upload
         data = {'image': path, 'code': 'Test Version',
@@ -366,7 +364,6 @@ class TestShotgunApi(base.LiveTestBase):
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
             os.path.join(this_dir, "sg_logo.jpg")))
-        # size = os.stat(path).st_size
 
         # upload thumbnail
         thumb_id = self.sg.upload_thumbnail("Version", self.version['id'], path)
@@ -394,7 +391,6 @@ class TestShotgunApi(base.LiveTestBase):
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
             os.path.join(this_dir, "sg_logo.jpg")))
-        # size = os.stat(path).st_size
 
         # upload thumbnail
         thumb_id = self.sg.upload_thumbnail("Task", self.task['id'], path)
@@ -2009,7 +2005,6 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
         this_dir, _ = os.path.split(__file__)
         path = os.path.abspath(os.path.expanduser(
             os.path.join(this_dir, "sg_logo.jpg")))
-        # size = os.stat(path).st_size
 
         # upload thumbnail
         thumb_id = self.sg.upload_thumbnail("Version", self.version['id'], path)
@@ -2067,7 +2062,6 @@ class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
             this_dir, _ = os.path.split(__file__)
             path = os.path.abspath(os.path.expanduser(
                 os.path.join(this_dir, "sg_logo.jpg")))
-            # size = os.stat(path).st_size
 
             # upload thumbnail
             thumb_id = self.sg.upload_thumbnail("Version", self.version['id'], path)

@@ -110,7 +110,6 @@ not require the added security provided by enforcing this.
 """
 try:
     import ssl
-    print("successfully imported ssl")
 except ImportError as e:
     if "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
         raise ImportError("%s. SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable prevents "
@@ -1533,10 +1532,13 @@ class Shotgun(object):
                                ['entity_id', 'data'],
                                req)
                 request_params['id'] = req['entity_id']
-                request_params['fields'] = self._dict_to_list(req["data"],
-                                                              extra_data=self._dict_to_extra_data(
-                    req.get("multi_entity_update_modes"),
-                    "multi_entity_update_mode"))
+                request_params['fields'] = self._dict_to_list(
+                    req["data"],
+                    extra_data=self._dict_to_extra_data(
+                        req.get("multi_entity_update_modes"),
+                        "multi_entity_update_mode"
+                    )
+                )
                 if "multi_entity_update_mode" in req:
                     request_params['multi_entity_update_mode'] = req["multi_entity_update_mode"]
             elif req["request_type"] == "delete":
@@ -2199,7 +2201,7 @@ class Shotgun(object):
         else:
             # clearing thumbnail returns no attachment_id
             try:
-                attachment_id = int(six.ensure_text(result).split(":")[1].split("\n")[0])
+                attachment_id = int(six.ensure_text(result).split(":", 2)[1].split("\n", 1)[0])
             except ValueError:
                 attachment_id = None
 
@@ -2405,7 +2407,7 @@ class Shotgun(object):
 
         LOG.debug("Attachment linked to content on Cloud storage")
 
-        attachment_id = int(six.ensure_text(result).split(":")[1].split("\n")[0])
+        attachment_id = int(six.ensure_text(result).split(":", 2)[1].split("\n", 1)[0])
         return attachment_id
 
     def _upload_to_sg(self, entity_type, entity_id, path, field_name, display_name,
@@ -2480,7 +2482,7 @@ class Shotgun(object):
                                "not sure why.\nPath: %s\nUrl: %s\nError: %s"
                                % (path, url, result))
 
-        attachment_id = int(result.split(":")[1].split("\n")[0])
+        attachment_id = int(result.split(":", 2)[1].split("\n", 1)[0])
         return attachment_id
 
     def _get_attachment_upload_info(self, is_thumbnail, filename, is_multipart_upload):
@@ -3853,7 +3855,7 @@ class Shotgun(object):
             raise ShotgunError("Unable get upload part link: %s" % result)
 
         LOG.debug("Got next upload link from server for multipart upload.")
-        return str(result).split("\n")[1]
+        return str(result).split("\n", 2)[1]
 
     def _upload_data_to_storage(self, data, content_type, size, storage_url):
         """

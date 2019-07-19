@@ -18,7 +18,7 @@ class TestShotgunApiLong(base.LiveTestBase):
 
         # Whitelist certain data types for order_field, since no_sorting is not
         # currently exposed.  These should be good bets to be sortable.
-        allow_sorting_types = ("number", "date")
+        sortable_types = ("number", "date")
 
         all_entities = list(self.sg.schema_entity_read().keys())
         direction = "asc"
@@ -41,7 +41,11 @@ class TestShotgunApiLong(base.LiveTestBase):
             # not using one.
             order_field = None
             for field_name, field in six.iteritems(fields):
-                if field['data_type']["value"] in allow_sorting_types:
+                # Restrict sorting to only types we know will always be sortable
+                # Since no_sorting is not exposed to us, we'll have to rely on
+                # this as a safeguard against trying to sort by a field with
+                # allow_sorting=false.
+                if field['data_type']["value"] in sortable_types:
                     order_field = field_name
                     break
             # TODO for our test project, we haven't populated these entities....
@@ -140,7 +144,7 @@ class TestShotgunApiLong(base.LiveTestBase):
             self.assertTrue(schema, dict)
             self.assertTrue(len(schema) > 0)
             self.assertTrue('Version' in schema)
-            self.assertFalse('visible' in list(schema.keys()))
+            self.assertFalse('visible' in schema)
 
             schema = self.sg.schema_field_read('Version', project_entity=project_entity)
             self.assertTrue(schema, dict)

@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from .shotgun import (Shotgun, ShotgunError, ShotgunFileDownloadError, Fault,  # noqa unused imports
                       AuthenticationFault, MissingTwoFactorAuthenticationFault,
                       UserCredentialsNotAllowedForSSOAuthenticationFault,

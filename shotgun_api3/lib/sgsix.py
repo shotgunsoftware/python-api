@@ -31,6 +31,9 @@
 from . import six
 import io
 
+# For python 3, the `file` type no longer exists, and open() returns an
+# io.IOBase instance. We add file_types to allow comparison across python
+# versions.  See https://stackoverflow.com/questions/36321030#36321030
 if six.PY3:
     file_types = (io.IOBase, )
 else:
