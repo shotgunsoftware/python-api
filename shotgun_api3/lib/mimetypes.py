@@ -23,7 +23,6 @@ init([files]) -- parse a list of files, default knownfiles (on Windows, the
 read_mime_types(file) -- parse one file, return a dictionary or None
 """
 
-from __future__ import absolute_import
 from __future__ import print_function
 import os
 import sys

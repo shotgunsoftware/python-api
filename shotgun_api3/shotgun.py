@@ -29,8 +29,6 @@
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-from __future__ import absolute_import
-
 # Python 2/3 compatibility
 from .lib import six
 from .lib import sgsix
