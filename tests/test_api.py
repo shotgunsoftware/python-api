@@ -272,15 +272,9 @@ class TestShotgunApi(base.LiveTestBase):
             # what we'll eventually encode as shift-jis.
             file_path_s = os.path.join(this_dir, "./\xe3\x81\x94.shift-jis")
             file_path_u = file_path_s.decode("utf-8")
-            if sys.platform.startswith("win"):
-                fh = open(file_path_u, "w")
-            else:
-                fh = open(file_path_s, "w")
 
-            try:
+            with open(file_path_u if sys.platform.startswith("win") else file_path_s, "w") as fh:
                 fh.write("This is just a test file with some random data in it.")
-            finally:
-                fh.close()
 
             self.assertRaises(
                 shotgun_api3.ShotgunError,
