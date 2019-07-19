@@ -266,9 +266,7 @@ class TestShotgunApi(base.LiveTestBase):
             # In Python2, make sure that non-utf-8 encoded paths raise when they
             # can't be converted to utf-8.  For Python3, we'll skip these tests
             # since string encoding is handled differently.
-            # TODO: do we need to add an equivalent test here??
-            #
-            #
+
             # We need to touch the file we're going to test with first. We can't
             # bundle a file with this filename in the repo due to some pip install
             # problems on Windows. Note that the path below is utf-8 encoding of
