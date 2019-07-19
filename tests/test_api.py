@@ -496,42 +496,32 @@ class TestShotgunApi(base.LiveTestBase):
         thumb_id = self.sg.upload_thumbnail("Project",
             self.version['project']['id'], path)
 
-        attempts = 0
-        response_version_with_project = self.sg.find(
-            'Version',
-            [['id', 'is', self.version['id']]],
-            fields=['id', 'code', 'project.Project.image']
+        response_version_with_project = find_one_await_thumbnail(
+            self.sg,
+            "Version",
+            [["id", "is", self.version["id"]]],
+            fields=["id", "code", "project.Project.image"],
+            thumbnail_field_name="project.Project.image"
         )
-        while (attempts < THUMBNAIL_MAX_ATTEMPTS and
-               TRANSIENT_IMAGE_PATH in response_version_with_project[0].get("project.Project.image")):
-            time.sleep(THUMBNAIL_RETRY_INTERAL)
-            response_version_with_project = self.sg.find(
-                'Version',
-                [['id', 'is', self.version['id']]],
-                fields=['id', 'code', 'project.Project.image']
-            )
-            attempts += 1
 
         if self.sg.server_caps.version and self.sg.server_caps.version >= (3, 3, 0):
 
-            self.assertEqual(response_version_with_project[0].get('type'), 'Version')
-            self.assertEqual(response_version_with_project[0].get('id'), self.version['id'])
-            self.assertEqual(response_version_with_project[0].get('code'), 'Sg unittest version')
+            self.assertEqual(response_version_with_project.get('type'), 'Version')
+            self.assertEqual(response_version_with_project.get('id'), self.version['id'])
+            self.assertEqual(response_version_with_project.get('code'), 'Sg unittest version')
 
             h = Http(".cache")
-            thumb_resp, content = h.request(response_version_with_project[0].get('project.Project.image'), "GET")
+            thumb_resp, content = h.request(response_version_with_project.get('project.Project.image'), "GET")
             self.assertEqual(thumb_resp['status'], '200')
             self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
 
         else:
-            expected_version_with_project = [
-                {
-                    'code': 'Sg unittest version',
-                    'type': 'Version',
-                    'id': self.version['id'],
-                    'project.Project.image': thumb_id
-                }
-            ]
+            expected_version_with_project = {
+                'code': 'Sg unittest version',
+                'type': 'Version',
+                'id': self.version['id'],
+                'project.Project.image': thumb_id
+            }
             self.assertEqual(expected_version_with_project, response_version_with_project)
 
     def test_share_thumbnail(self):
@@ -2758,10 +2748,10 @@ def _get_path(url):
         return url.path
 
 
-def find_one_await_thumbnail(sg, entity_type, filters, fields=['image'], **kwargs):
+def find_one_await_thumbnail(sg, entity_type, filters, fields=["image"], thumbnail_field_name="image", **kwargs):
     attempts = 0
     result = sg.find_one(entity_type, filters, fields=fields, **kwargs)
-    while attempts < THUMBNAIL_MAX_ATTEMPTS and TRANSIENT_IMAGE_PATH in result.get("image"):
+    while attempts < THUMBNAIL_MAX_ATTEMPTS and TRANSIENT_IMAGE_PATH in result.get(thumbnail_field_name):
         time.sleep(THUMBNAIL_RETRY_INTERAL)
         result = sg.find_one(entity_type, filters, fields=fields, **kwargs)
         attempts += 1
