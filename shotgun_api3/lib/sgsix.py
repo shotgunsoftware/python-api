@@ -28,6 +28,9 @@
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+# This module contains addtional functions and variables to supplement the six
+# module for python 2/3 compatibility.
+
 from . import six
 import io
 

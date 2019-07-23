@@ -22,6 +22,8 @@ from shotgun_api3.lib import six
 
 from . import base
 
+# To mock the correct exception when testion on Python 2 and 3, store the
+# appropriate exception for the current Python version in SSL_ERROR.
 if six.PY3:
     import ssl
     SSL_ERROR = ssl.SSLError
