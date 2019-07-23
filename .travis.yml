@@ -5,9 +5,11 @@ language: python
 # the more modern xenial for 2.7 and 3.7.
 matrix:
   include:
-    # use trusty dist, since xenial (default) does not support python 2.6
+    # use trusty dist, since the built-in xenial distro (default) does not support
+    # Python 2.6 (https://docs.travis-ci.com/user/reference/xenial/#python-support)
     - dist: trusty
       python: "2.6"
+      # flake8 does not support python 2.6, so only run it on 2.7+
       env: RUN_FLAKE=false
     # test python 2.7 and 3.7 on xenial.
     - dist: xenial
@@ -24,7 +26,6 @@ before_script:
   - cp ./tests/example_config ./tests/config
 # Run flake and then run tests
 script:
-  # flake8 does not support python 2.6, so only run it on 2.7+
   - if [ -n "$RUN_FLAKE" = true ]; then flake8; fi
   - coverage run -m nose --config="nose.cfg"
 after_success: coveralls
