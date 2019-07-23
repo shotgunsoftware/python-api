@@ -2161,11 +2161,19 @@ class Shotgun(object):
         if thumbnail_path:
             source_entity = entities.pop(0)
             if filmstrip_thumbnail:
-                thumb_id = self.upload_filmstrip_thumbnail(source_entity['type'], source_entity['id'],
-                                                           thumbnail_path, **kwargs)
+                thumb_id = self.upload_filmstrip_thumbnail(
+                    source_entity['type'],
+                    source_entity['id'],
+                    thumbnail_path,
+                    **kwargs
+                )
             else:
-                thumb_id = self.upload_thumbnail(source_entity['type'], source_entity['id'],
-                                                 thumbnail_path, **kwargs)
+                thumb_id = self.upload_thumbnail(
+                    source_entity['type'],
+                    source_entity['id'],
+                    thumbnail_path,
+                    **kwargs
+                )
         else:
             if not isinstance(source_entity, dict) or 'id' not in source_entity or 'type' not in source_entity:
                 raise ShotgunError("'source_entity' parameter must be a dict "
