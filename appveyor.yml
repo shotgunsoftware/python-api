@@ -31,8 +31,9 @@ environment:
 build: off
 
 before_test:
-  # Install the Amazon CA certificate to the Windows Certificate Store.  This
-  # allows direct s3 uploads.  See https://developer.shotgunsoftware.com/c593f0aa/
+  # The certificate store of the build machine is out of date and is missing a
+  # new certificate authority used by Amazon for S3, so we need to update it.
+  # See https://developer.shotgunsoftware.com/c593f0aa/
   - ps: |
       $cert_url = "https://www.amazontrust.com/repository/SFSRootCAG2.cer"
       $cert_file = New-TemporaryFile

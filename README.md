@@ -36,8 +36,8 @@ You can see the [full history of the Python API on the documentation site](http:
 
 1. Download the latest version of HTTPLib2 at https://pypi.org/project/httplib2.
 2. Extract the python2/httplib2 into shotgun_api3/lib/http2lib/python2 without the test folder.
-2. Extract the python3/httplib2 into shotgun_api3/lib/http2lib/python3 without the test folder.
-3. Scan the files for any references to importing httplib2 and make sure they import "from ." instead of "from httplib2" because the library isn't in the Python path.
+3. Extract the python3/httplib2 into shotgun_api3/lib/http2lib/python3 without the test folder.
+4. Scan the files for any references to importing httplib2 and make sure they import "from ." instead of "from httplib2" because the library isn't in the Python path.
 
 ## Maintaining Python 2 and 3 compatibility
 
