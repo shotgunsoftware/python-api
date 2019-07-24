@@ -3,7 +3,6 @@
 Includes the schema functions and the automated searching for all entity types
 """
 
-from __future__ import absolute_import
 from __future__ import print_function
 from . import base
 import random

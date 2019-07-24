@@ -35,7 +35,6 @@ Unit tests for Mockgun. Does not require an Internet connection
 and can be run on their own by typing "python test_mockgun.py".
 """
 
-from __future__ import absolute_import
 import re
 import os
 import unittest

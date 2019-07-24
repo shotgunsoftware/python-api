@@ -1,5 +1,4 @@
 #! /opt/local/bin/python
-from __future__ import absolute_import
 import unittest
 from .mock import patch
 import shotgun_api3 as api

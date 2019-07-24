@@ -7,7 +7,6 @@ A set of unit tests for httplib2.py.
 Requires Python 2.4 or later
 """
 
-from __future__ import absolute_import
 from shotgun_api3.lib import six
 __author__ = "Joe Gregorio (joe@bitworking.org)"
 __copyright__ = "Copyright 2006, Joe Gregorio"

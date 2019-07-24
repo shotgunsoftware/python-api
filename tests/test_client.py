@@ -2,7 +2,6 @@
 CRUD functions. These tests always use a mock http connection so not not
 need a live server to run against."""
 
-from __future__ import absolute_import
 import base64
 import datetime
 from shotgun_api3.lib.six.moves import urllib
