@@ -45,3 +45,13 @@ if six.PY3:
     file_types = (io.IOBase, )
 else:
     file_types = (file, io.IOBase)  # noqa warning for undefined `file` in python 3
+
+# For python-api calls that result in an SSL error, the exception raised is
+# different on Python 2 and 3. Store the approriate exception class in a
+# variable to allow easier exception handling across Python 2/3.
+if six.PY3:
+    import ssl
+    ShotgunSSLError = ssl.SSLError
+else:
+    from shotgun_api3.lib.httplib2 import SSLHandshakeError
+    ShotgunSSLError = SSLHandshakeError

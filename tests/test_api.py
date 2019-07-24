@@ -30,16 +30,12 @@ import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http
 from shotgun_api3.lib import six
 
-from . import base
+# To mock the correct exception when testion on Python 2 and 3, use the
+# ShotgunSSLError variable from sgsix that contains the appropriate exception
+# class for the current Python version.
+from shotgun_api3.lib.sgsix import ShotgunSSLError
 
-# To mock the correct exception when testion on Python 2 and 3, store the
-# appropriate exception for the current Python version in SSL_ERROR.
-if six.PY3:
-    import ssl
-    SSL_ERROR = ssl.SSLError
-else:
-    from shotgun_api3.lib.httplib2 import SSLHandshakeError
-    SSL_ERROR = SSLHandshakeError
+from . import base
 
 THUMBNAIL_MAX_ATTEMPTS = 5
 THUMBNAIL_RETRY_INTERAL = 2
@@ -1796,7 +1792,7 @@ class TestErrors(base.TestBase):
     @patch('shotgun_api3.shotgun.Http.request')
     def test_sha2_error(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = SSL_ERROR("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
+        mock_request.side_effect = ShotgunSSLError("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
                                              "encoding routines:ASN1_item_verify: unknown message digest "
                                              "algorithm")
 
@@ -1821,7 +1817,7 @@ class TestErrors(base.TestBase):
 
         try:
             self.sg.info()
-        except SSL_ERROR:
+        except ShotgunSSLError:
             # ensure the api has reset the values in the correct fallback behavior
             self.assertTrue(self.sg.config.no_ssl_validation)
             self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
@@ -1834,7 +1830,7 @@ class TestErrors(base.TestBase):
     @patch('shotgun_api3.shotgun.Http.request')
     def test_sha2_error_with_strict(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = SSL_ERROR("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
+        mock_request.side_effect = ShotgunSSLError("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
                                              "encoding routines:ASN1_item_verify: unknown message digest "
                                              "algorithm")
 
@@ -1849,7 +1845,7 @@ class TestErrors(base.TestBase):
 
         try:
             self.sg.info()
-        except SSL_ERROR:
+        except ShotgunSSLError:
             # ensure the api has NOT reset the values in the fallback behavior because we have
             # set the env variable to force validation
             self.assertFalse(self.sg.config.no_ssl_validation)
