@@ -50,3 +50,9 @@ too slow, cumbersome or non-practical to connect to a real Shotgun. Using a
 Mockgun for unit tests means that a test can be rerun over and over again
 from exactly the same database state. This can be hard to do if you connect
 to a live Shotgun instance.
+
+## Lib `requirements.txt`
+
+The file `shotgun_api3/lib/requirements.txt` is not used to install any packages, however exists so that automated checks for CVEs in dependencies will know about bundled packages.
+
+For this reason, it's important to add any newly bundled packages to this file, and to keep the file up to date if the bundled version of a module changes.
