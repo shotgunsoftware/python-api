@@ -2202,12 +2202,12 @@ class Shotgun(object):
 
         result = self._send_form(url, params)
 
-        if not six.ensure_text(result).startswith("1"):
+        if not result.startswith("1"):
             raise ShotgunError("Unable to share thumbnail: %s" % result)
         else:
             # clearing thumbnail returns no attachment_id
             try:
-                attachment_id = int(six.ensure_text(result).split(":", 2)[1].split("\n", 1)[0])
+                attachment_id = int(result.split(":", 2)[1].split("\n", 1)[0])
             except ValueError:
                 attachment_id = None
 
@@ -2406,14 +2406,14 @@ class Shotgun(object):
                 params["tag_list"] = tag_list
 
         result = self._send_form(url, params)
-        if not six.ensure_text(result).startswith("1"):
+        if not result.startswith("1"):
             raise ShotgunError("Could not upload file successfully, but "
                                "not sure why.\nPath: %s\nUrl: %s\nError: %s"
-                               % (path, url, str(result)))
+                               % (path, url, result))
 
         LOG.debug("Attachment linked to content on Cloud storage")
 
-        attachment_id = int(six.ensure_text(result).split(":", 2)[1].split("\n", 1)[0])
+        attachment_id = int(result.split(":", 2)[1].split("\n", 1)[0])
         return attachment_id
 
     def _upload_to_sg(self, entity_type, entity_id, path, field_name, display_name,
@@ -2481,7 +2481,6 @@ class Shotgun(object):
             params["file"] = open(path_to_open, "rb")
 
         result = self._send_form(url, params)
-        result = six.ensure_str(result)
 
         if not result.startswith("1"):
             raise ShotgunError("Could not upload file successfully, but "
@@ -2519,15 +2518,15 @@ class Shotgun(object):
         upload_url = "/upload/api_get_upload_link_info"
         url = urllib.parse.urlunparse((self.config.scheme, self.config.server, upload_url, None, None, None))
 
-        upload_info = six.ensure_text(self._send_form(url, params))
-        if not str(upload_info).startswith("1"):
+        upload_info = self._send_form(url, params)
+        if not upload_info.startswith("1"):
             raise ShotgunError("Could not get upload_url but "
                                "not sure why.\nPath: %s\nUrl: %s\nError: %s"
-                               % (filename, url, str(upload_info)))
+                               % (filename, url, upload_info))
 
         LOG.debug("Completed rpc call to %s" % (upload_url))
 
-        upload_info_parts = str(upload_info).split("\n")
+        upload_info_parts = upload_info.split("\n")
 
         return {
             "upload_url": upload_info_parts[1],
@@ -3852,16 +3851,15 @@ class Shotgun(object):
         url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                                        "/upload/api_get_upload_link_for_part", None, None, None))
         result = self._send_form(url, params)
-        result = six.ensure_text(result)
 
         # Response is of the form: 1\n<url> (for success) or 0\n (for failure).
         # In case of success, we know we the second line of the response contains the
         # requested URL.
-        if not str(result).startswith("1"):
+        if not result.startswith("1"):
             raise ShotgunError("Unable get upload part link: %s" % result)
 
         LOG.debug("Got next upload link from server for multipart upload.")
-        return str(result).split("\n", 2)[1]
+        return result.split("\n", 2)[1]
 
     def _upload_data_to_storage(self, data, content_type, size, storage_url):
         """
@@ -3912,10 +3910,9 @@ class Shotgun(object):
         url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                                        "/upload/api_complete_multipart_upload", None, None, None))
         result = self._send_form(url, params)
-        six.ensure_text(result)
 
         # Response is of the form: 1\n or 0\n to indicate success or failure of the call.
-        if not str(result).startswith("1"):
+        if not result.startswith("1"):
             raise ShotgunError("Unable get upload part link: %s" % result)
 
     def _requires_direct_s3_upload(self, entity_type, field_name):
@@ -3985,7 +3982,7 @@ class Shotgun(object):
             else:
                 raise ShotgunError("Unanticipated error occurred %s" % (e))
 
-        return result
+        return six.ensure_text(result)
 
 
 class CACertsHTTPSConnection(http_client.HTTPConnection):
