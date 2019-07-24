@@ -21,7 +21,7 @@ See bugs:
  * [21652](http://bugs.python.org/issue21652) (Fixed in 2.7.8)
  * [22028](http://bugs.python.org/issue22028) (Fixed in 2.7.10)
 
-The version of `httplib2` bundled should be updated manually if necessary, however it is unlikely this will be needed, as it is only used for Python versions 2.7.0 - 2.7.9, and newer Python versions simply use the native `mimetypes` module.
+The version of `mimetypes` bundled should be updated manually if necessary, however it is unlikely this will be needed, as it is only used for Python versions 2.7.0 - 2.7.9, and newer Python versions simply use the native `mimetypes` module.
 
 ### six
 
