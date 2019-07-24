@@ -2213,33 +2213,33 @@ class Shotgun(object):
 
             def share(jpeg_file):
                # Set your project
-               P = {"type":"Project","id":project_id}
+               project = {"type": "Project", "id": project_id}
 
                # Create a version
-               props = {"code":"Test Version","project":P}
-               v_id = sg.create("Version", props).get("id")
+               props = {"code": "Test Version", "project": project}
+               version_id = sg.create("Version", props).get("id")
 
                # Create an asset
-               props = {"code":"Test Asset","project":P}
+               props = {"code": "Test Asset", "project": project}
                asset_id = sg.create("Asset", props).get("id")
 
-               # Now upload attach the thumbnail to the version
-               source_thumbnail_id = sg.upload_thumbnail("Version", v_id, jpeg_file)
+               # Now upload the thumbnail to the version
+               source_thumbnail_id = sg.upload_thumbnail("Version", version_id, jpeg_file)
                pprint(source_thumbnail_id)
 
                # Share the thumbnail once it's available
                shared = False
                while not shared:
                    try:
-                       thumbnail_id = sg.share_thumbnail([{'type': 'Asset', 'id': asset_id}], source_entity={'type': "Version", 'id': v_id})
+                       thumbnail_id = sg.share_thumbnail([{'type': 'Asset', 'id': asset_id}], source_entity={'type': "Version", 'id': version_id})
                        shared = True
                    except:
                        pprint("failed to share... sleeping for 5 secs")
                        time.sleep(5)
 
                # Validate the thumbnail was indeed shared
-               e = sg.find_one('Asset',[['id', 'is',  asset_id]], ['id', 'image'])
-               print e
+               asset = sg.find_one('Asset', [['id', 'is',  asset_id]], ['id', 'image'])
+               print asset
 
         :param list entities: The entities to update to point to the shared  thumbnail provided in
             standard entity dict format::
