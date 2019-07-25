@@ -14,10 +14,15 @@ language: python
 # and 3.7 is not supported in trusty.  For now just use trusty to test 2.6, and use
 # the more modern xenial for 2.7 and 3.7.
 
-# Additionally, we'll test on multiple sites.  To accomplish this, we store the
-# secrets for the second site in a set of additional environment variables,
-# and copy those into the standard environment variables when running on the
-# second site.
+env:
+  # We'll test on multiple sites.  To accomplish this, we store the secrets for
+  # the second site in a set of additional environment variables, and copy those
+  # into the standard environment variables when running on the second site.
+  # We'll set an unused "SERVER" variable so that we can create two env entries
+  # for the matrix.
+  - SERVER=1
+  - SERVER=2 SG_SERVER_URL=$SG_SERVER_URL_2 SG_API_KEY=$SG_API_KEY_2 SG_HUMAN_PASSWORD=$SG_HUMAN_PASSWORD_2
+
 matrix:
   include:
 
@@ -25,54 +30,23 @@ matrix:
     # does not support Python 2.6
     # See https://docs.travis-ci.com/user/reference/xenial/#python-support
 
-    # Python 2.6, Server #1
+    # Python 2.6
     - dist: trusty
       python: "2.6"
       # flake8 does not support python 2.6, so only run it on 2.7+
       env:
         - RUN_FLAKE=false
-
-    # Python 2.6, Server #2
-    - dist: trusty
-      python: "2.6"
-      # flake8 does not support python 2.6, so only run it on 2.7+
-      env:
-        - RUN_FLAKE=false
-        - SG_SERVER_URL=$SG_SERVER_URL_2
-        - SG_API_KEY=$SG_API_KEY_2
-        - SG_HUMAN_PASSWORD=$SG_HUMAN_PASSWORD_2
 
     # Test python 2.7 and 3.7 on Xenial.
-
-    # Python 2.7, Server #1
     - dist: xenial
       python: "2.7"
       env:
         - RUN_FLAKE=true
 
-    # Python 2.7, Server #2
-    - dist: xenial
-      python: "2.7"
-      env:
-        - RUN_FLAKE=true
-        - SG_SERVER_URL=$SG_SERVER_URL_2
-        - SG_API_KEY=$SG_API_KEY_2
-        - SG_HUMAN_PASSWORD=$SG_HUMAN_PASSWORD_2
-
-    # Python 3.7, Server #1
     - dist: xenial
       python: "3.7"
       env:
         - RUN_FLAKE=true
-
-    # Python 3.7, Server #1
-    - dist: xenial
-      python: "3.7"
-      env:
-        - RUN_FLAKE=true
-        - SG_SERVER_URL=$SG_SERVER_URL_2
-        - SG_API_KEY=$SG_API_KEY_2
-        - SG_HUMAN_PASSWORD=$SG_HUMAN_PASSWORD_2
 
 # command to install dependencies
 install:
