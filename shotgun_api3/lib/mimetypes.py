@@ -27,9 +27,9 @@ from __future__ import print_function
 import os
 import sys
 import posixpath
-from .lib.six.moves import urllib, range
+from .six.moves import urllib, range
 try:
-    from .lib.six.moves import winreg
+    from .six.moves import winreg
 except ImportError:
     winreg = None
 
