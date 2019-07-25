@@ -20,14 +20,20 @@ matrix:
     - dist: trusty
       python: "2.6"
       # flake8 does not support python 2.6, so only run it on 2.7+
-      env: RUN_FLAKE=false
+      env:
+        - RUN_FLAKE=false
+        - RUN_FLAKE=false SG_SERVER_URL=$SG_SERVER_URL_2 SG_API_KEY=$SG_API_KEY_2 SG_HUMAN_PASSWORD=$SG_HUMAN_PASSWORD_2
     # test python 2.7 and 3.7 on xenial.
     - dist: xenial
       python: "2.7"
-      env: RUN_FLAKE=true
+      env:
+        - RUN_FLAKE=true
+        - RUN_FLAKE=true SG_SERVER_URL=$SG_SERVER_URL_2 SG_API_KEY=$SG_API_KEY_2 SG_HUMAN_PASSWORD=$SG_HUMAN_PASSWORD_2
     - dist: xenial
       python: "3.7"
-      env: RUN_FLAKE=true
+      env:
+        - RUN_FLAKE=true
+        - RUN_FLAKE=true SG_SERVER_URL=$SG_SERVER_URL_2 SG_API_KEY=$SG_API_KEY_2 SG_HUMAN_PASSWORD=$SG_HUMAN_PASSWORD_2
 
 # command to install dependencies
 install:
