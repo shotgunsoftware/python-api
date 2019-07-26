@@ -4,6 +4,10 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.1.0 (2019 July 29)
+=====================
+- Adds support for Python 3.7
+
 v3.0.41 (2019 June 28)
 =====================
 - Adds an optional sleep between retries specified via the `SHOTGUN_API_RETRY_INTERVAL` environment variable, or by setting `sg.config.rpc_attempt_interval`.
