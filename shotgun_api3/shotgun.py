@@ -427,6 +427,7 @@ class _Config(object):
         self.session_token = None
         self.authorization = None
         self.no_ssl_validation = False
+        self.localized = True
 
     @property
     def records_per_page(self):
@@ -469,7 +470,8 @@ class Shotgun(object):
                  password=None,
                  sudo_as_login=None,
                  session_token=None,
-                 auth_token=None):
+                 auth_token=None,
+                 localized=True):
         """
         Initializes a new instance of the Shotgun client.
 
@@ -538,6 +540,9 @@ class Shotgun(object):
                 ``auth_token`` is invalid.
             .. todo: Add this info to the Authentication section of the docs
 
+        :param bool localized: A boolean to asks for some fields to be localized. When ``True``, a
+            header ``locale`` with value ``auto`` is added to HTTP requests. Default is ``True``.
+
         .. note:: A note about proxy connections: If you are using Python <= v2.6.2, HTTPS
             connections through a proxy server will not work due to a bug in the :mod:`urllib2`
             library (see http://bugs.python.org/issue1424152). This will affect upload and
@@ -598,6 +603,7 @@ class Shotgun(object):
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
         self.config.raw_http_proxy = http_proxy
+        self.config.localized = localized
 
         try:
             self.config.rpc_attempt_interval = int(os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000))
@@ -3205,6 +3211,10 @@ class Shotgun(object):
             "content-type": "application/json; charset=utf-8",
             "connection": "keep-alive"
         }
+
+        if self.config.localized is True:
+            req_headers["locale"] = "auto"
+
         http_status, resp_headers, body = self._make_call("POST", self.config.api_path,
                                                           encoded_payload, req_headers)
         LOG.debug("Completed rpc call to %s" % (method))
