@@ -89,7 +89,7 @@ The Complete Example
         }
         result = sg.create('Shot', data)    
         pprint(result)
-        print "The id of the %s is %d." % (result['type'], result['id'])
+        print("The id of the {} is {}.".format(result['type'], result['id']))
 
 And here is the output::
 

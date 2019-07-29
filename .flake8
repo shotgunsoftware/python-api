@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Shotgun Software Inc.
+# Copyright (c) 2019 Shotgun Software Inc.
 #
 # CONFIDENTIAL AND PROPRIETARY
 #
@@ -7,14 +7,7 @@
 # By accessing, using, copying or modifying this work you indicate your
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
-#
-# coverage configuration - used by https://coveralls.io/ integration
-#
-#
 
-[run]
-source=shotgun_api3
-omit=
-    shotgun_api3/lib/httplib2/*
-    shotgun_api3/lib/six.py
-    shotgun_api3/lib/xmlrpclib.py
+[flake8]
+max-line-length = 120
+exclude = shotgun_api3/lib/httplib2/*,shotgun_api3/lib/six.py,shotgun_api3/lib/xmlrpclib.py,tests/httplib2test.py,tests/mock.py

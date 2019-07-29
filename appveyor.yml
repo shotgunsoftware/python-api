@@ -12,7 +12,9 @@
 
 environment:
   matrix:
+    - PYTHON: "C:\\Python26"
     - PYTHON: "C:\\Python27"
+    - PYTHON: "C:\\Python37"
 
   # To update these values, visit AppVeyor's site, click the user icon and scroll down to Encrypt Data.
   SG_SERVER_URL:
@@ -27,6 +29,16 @@ environment:
   SG_PROJECT_NAME: SG unittest project for AppVeyor
 
 build: off
+
+before_test:
+  # The certificate store of the build machine is out of date and is missing a
+  # new certificate authority used by Amazon for S3, so we need to update it.
+  # See https://developer.shotgunsoftware.com/c593f0aa/
+  - ps: |
+      $cert_url = "https://www.amazontrust.com/repository/SFSRootCAG2.cer"
+      $cert_file = New-TemporaryFile
+      Invoke-WebRequest -Uri $cert_url -UseBasicParsing -OutFile $cert_file.FullName
+      Import-Certificate -FilePath $cert_file.FullName -CertStoreLocation Cert:\LocalMachine\Root
 
 test_script:
   # Put your test command here.

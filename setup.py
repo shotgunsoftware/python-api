@@ -1,4 +1,14 @@
 # -*- coding: utf-8 -*-
+# Copyright (c) 2019 Shotgun Software Inc.
+#
+# CONFIDENTIAL AND PROPRIETARY
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
+# Source Code License included in this distribution package. See LICENSE.
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
+# not expressly granted therein are reserved by Shotgun Software Inc.
+
 import sys
 from setuptools import setup, find_packages
 
@@ -17,7 +27,7 @@ if (sys.version_info[0] <= 2) or (sys.version_info[0] == 2 and sys.version_info[
 
 setup(
     name='shotgun_api3',
-    version='3.0.41',
+    version='3.1.0',
     description='Shotgun Python API ',
     long_description=readme,
     author='Shotgun Software',
