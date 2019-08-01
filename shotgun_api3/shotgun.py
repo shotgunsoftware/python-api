@@ -427,7 +427,7 @@ class _Config(object):
         self.session_token = None
         self.authorization = None
         self.no_ssl_validation = False
-        self.localized = True
+        self.localized = False
 
     @property
     def records_per_page(self):
@@ -471,7 +471,7 @@ class Shotgun(object):
                  sudo_as_login=None,
                  session_token=None,
                  auth_token=None,
-                 localized=True):
+                 localized=False):
         """
         Initializes a new instance of the Shotgun client.
 
