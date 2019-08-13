@@ -112,7 +112,12 @@ class MimeTypes:
         Optional `strict' argument when False adds a bunch of commonly found,
         but non-standard types.
         """
-        scheme, url = urllib.parse.splittype(url)
+        # urllib.splittype is no longer exposed in Python 3.  To replicate its functionality, we'll
+        # use urlparse.urlsplit to find the scheme, and then truncate the head of the url to omit
+        # the scheme plus the following colon.  This replicates the functionality of urllib.splittype.
+        scheme = urllib.parse.urlsplit(url)[0]
+        url = url[(len(scheme) + 1):]
+
         if scheme == 'data':
             # syntax of data URLs:
             # dataurl   := "data:" [ mediatype ] [ ";base64" ] "," data
