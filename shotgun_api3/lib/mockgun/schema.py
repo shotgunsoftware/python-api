@@ -80,11 +80,8 @@ class SchemaFactory(object):
 
     @classmethod
     def _read_file(cls, path):
-        fh = open(path, "rb")
-        try:
+        with open(path, "rb") as fh:
             return pickle.load(fh)
-        finally:
-            fh.close()
 
 
 # Highest protocol that Python 2.4 supports, which is the earliest version of Python we support.

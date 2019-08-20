@@ -1,0 +1,2 @@
+# Pickle files have to have LF endings in Python 3
+*.pickle text eol=lf
