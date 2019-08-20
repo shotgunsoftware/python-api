@@ -53,5 +53,5 @@ if six.PY3:
     import ssl
     ShotgunSSLError = ssl.SSLError
 else:
-    from shotgun_api3.lib.httplib2 import SSLHandshakeError
+    from .httplib2 import SSLHandshakeError
     ShotgunSSLError = SSLHandshakeError

@@ -117,7 +117,7 @@ except ImportError as e:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.0.41"
+__version__ = "3.1.0"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -3818,9 +3818,13 @@ class Shotgun(object):
             chunk_size = self._MULTIPART_UPLOAD_CHUNK_SIZE
             while bytes_read < file_size:
                 data = fd.read(chunk_size)
-                bytes_read += len(data)
+                data_size = len(data)
+                # keep data as a stream so that we don't need to worry how it was
+                # encoded.
+                data = BytesIO(data)
+                bytes_read += data_size
                 part_url = self._get_upload_part_link(upload_info, filename, part_number)
-                etags.append(self._upload_data_to_storage(data, content_type, len(data), part_url))
+                etags.append(self._upload_data_to_storage(data, content_type, data_size, part_url))
                 part_number += 1
 
             self._complete_multipart_upload(upload_info, filename, etags)

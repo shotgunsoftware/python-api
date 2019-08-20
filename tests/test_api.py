@@ -1964,7 +1964,6 @@ class TestHumanUserSudoAuth(base.TestBase):
             else:
                 self.assertTrue(e.args[0].startswith(expected))
 
-
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
     """
     Testing the username/password authentication method
