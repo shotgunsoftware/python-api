@@ -1792,9 +1792,11 @@ class TestErrors(base.TestBase):
     @patch('shotgun_api3.shotgun.Http.request')
     def test_sha2_error(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
-                                             "encoding routines:ASN1_item_verify: unknown message digest "
-                                             "algorithm")
+        mock_request.side_effect = ShotgunSSLError(
+            "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
+            "encoding routines:ASN1_item_verify: unknown message digest "
+            "algorithm"
+        )
 
         # save the original state
         original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
@@ -1830,9 +1832,11 @@ class TestErrors(base.TestBase):
     @patch('shotgun_api3.shotgun.Http.request')
     def test_sha2_error_with_strict(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError("[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
-                                             "encoding routines:ASN1_item_verify: unknown message digest "
-                                             "algorithm")
+        mock_request.side_effect = ShotgunSSLError(
+            "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
+            "encoding routines:ASN1_item_verify: unknown message digest "
+            "algorithm"
+        )
 
         # save the original state
         original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
@@ -1963,6 +1967,7 @@ class TestHumanUserSudoAuth(base.TestBase):
                 self.assertTrue(e.message.startswith(expected))
             else:
                 self.assertTrue(e.args[0].startswith(expected))
+
 
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
     """
