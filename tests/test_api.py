@@ -842,9 +842,14 @@ class TestShotgunApi(base.LiveTestBase):
             'format_time_hour_fields': '12 hour',
             'hours_per_day': 8.0,
             'last_day_work_week': None,
-            'support_local_storage': False,
-            'view_master_settings': '{"status_groups":[{"name":"Upcoming","code":"upc_stgr","status_list":["wtg","rdy"]},{"name":"Active","code":"act_stgr","status_list":["ip","kickbk","rev","act","rsk","blk","late","opn","pndng","tkt","push","rrq","vwd","out"]},{"name":"Done","code":"done_stgr","status_list":["fin","cmpt","apr","cbb","clsd","cfrm","dlvr","recd","res"]}],"entity_fields":{"Task":["content","sg_description","sg_status_list","due_date","task_assignees","task_reviewers","time_logs_sum"],"Shot":["code","description","sg_status_list","created_at","sg_cut_in","sg_cut_out","sg_cut_duration","sg_cut_order"],"Asset":["code","description","sg_status_list","created_at"],"Scene":["code","sg_status_list","created_at"],"Element":["code","sg_status_list","created_at"],"Release":["code","sg_status_list","created_at"],"ShootDay":["code","sg_status_list","created_at"],"MocapTake":["code","sg_status_list","created_at"],"MocapSetup":["code","sg_status_list","created_at"],"Camera":["code","sg_status_list","created_at"],"MocapTakeRange":["code","sg_status_list","created_at"],"Sequence":["code","sg_status_list","created_at"],"Level":["code","sg_status_list","created_at"],"Episode":["code","sg_status_list","created_at"],"Version":["code","description","sg_status_list"]},"entity_fields_fixed":{"Asset":["code","description","sg_status_list"],"Shot":["code","description","sg_status_list"],"Task":["content","sg_status_list","due_date","task_assignees","task_reviewers","time_logs_sum"],"Scene":["code","description","sg_status_list"],"Element":["code","description","sg_status_list"],"Release":["code","description","sg_status_list"],"ShootDay":["code","description","sg_status_list"],"MocapTake":["code","description","sg_status_list"],"MocapSetup":["code","description","sg_status_list"],"Camera":["code","description","sg_status_list"],"MocapTakeRange":["code","description","sg_status_list"],"Sequence":["code","description","sg_status_list"],"Level":["code","description","sg_status_list"],"Episode":["code","description","sg_status_list"],"Version":["code","description","sg_status_list"]},"board_sorting":{"Upcoming":{"Task":[{"direction":"desc","field_name":"due_date"},{"direction":"asc","field_name":"content"}]},"Done":{"Task":[{"direction":"desc","field_name":"due_date"},{"direction":"asc","field_name":"content"}]},"Active":{"Task":[{"direction":"desc","field_name":"due_date"},{"direction":"asc","field_name":"content"}]}},"status_default":{"Version":{"pending_review_status":["rev"],"viewed_review_status":["vwd"]},"Task":{"final_review_status":["fin"]}},"entity_forms":{"TimeLog":["date","description","duration"]},"entity_forms_fixed":{"TimeLog":["date","description","duration"]},"enable_timelog_at_version_creation":false}'  # noqa
+            'support_local_storage': True
         }
+        # Simply make sure viewmaster settings are there. These change frequently and we
+        # don't want to have the test break because Viewmaster changed or because we didn't
+        # update the test.
+        self.assertIn("view_master_settings", resp)
+        resp.pop("view_master_settings")
+
         self.assertEqual(expected, resp)
 
         # all filtered
@@ -852,7 +857,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         expected = {
             'date_component_order': 'month_day',
-            'support_local_storage': False
+            'support_local_storage': True
         }
         self.assertEqual(expected, resp)
 
@@ -861,7 +866,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         expected = {
             'date_component_order': 'month_day',
-            'support_local_storage': False
+            'support_local_storage': True
         }
         self.assertEqual(expected, resp)
 
