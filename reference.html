@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; python-api v3.0.38 documentation</title>
+  <title>API Reference &mdash; python-api v3.1.0 documentation</title>
   
 
   
@@ -19,13 +19,20 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -33,21 +40,16 @@
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API Cookbook" href="cookbook.html" />
     <link rel="prev" title="Authentication" href="authentication.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
     <a href='http://developer.shotgunsoftware.com'>
     
@@ -162,6 +164,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#performance">Performance</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment Variables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#shotgun-api-cacerts">SHOTGUN_API_CACERTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shotgun-api-retry-interval">SHOTGUN_API_RETRY_INTERVAL</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cookbook.html">API Cookbook</a></li>
@@ -189,7 +196,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.38.<br>
+    <b>python-api</b> v3.1.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -485,6 +492,9 @@ The documentation for all of the methods you’ll need in your scripts lives in 
 <tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.work_schedule_update" title="shotgun_api3.shotgun.Shotgun.work_schedule_update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.work_schedule_update</span></code></a></td>
 <td>Update the work schedule for a given date.</td>
 </tr>
+<tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.preferences_read" title="shotgun_api3.shotgun.Shotgun.preferences_read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.preferences_read</span></code></a></td>
+<td>Get a subset of the site preferences.</td>
+</tr>
 </tbody>
 </table>
 <p class="rubric">Working With Files</p>
@@ -533,9 +543,12 @@ The documentation for all of the methods you’ll need in your scripts lives in 
 <tr class="row-even"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.followers" title="shotgun_api3.shotgun.Shotgun.followers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.followers</span></code></a></td>
 <td>Return all followers for an entity.</td>
 </tr>
+<tr class="row-odd"><td><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.following" title="shotgun_api3.shotgun.Shotgun.following"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.following</span></code></a></td>
+<td>Return all entity instances a user is following.</td>
+</tr>
 </tbody>
 </table>
-<p class="rubric">Working with the Shotgun Schema</p>
+<p class="rubric">Working with the Shotgun Schema and Preferences</p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
@@ -714,13 +727,26 @@ this <code class="docutils literal notranslate"><span class="pre">session_uuid</
 <code class="descclassname">Shotgun.</code><code class="descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get API-related metadata from the Shotgun server.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
-<span class="go">{&#39;full_version&#39;: [6, 3, 15, 0], &#39;version&#39;: [6, 3, 15], ...}</span>
+<span class="go">{&#39;full_version&#39;: [8, 2, 1, 0], &#39;version&#39;: [8, 2, 1], &#39;user_authentication_method&#39;: &#39;default&#39;, ...}</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Token</span>                       <span class="n">Value</span>
+<span class="o">--------</span>                    <span class="o">---------</span>
+<span class="n">full_version</span>                <span class="n">An</span> <span class="n">ordered</span> <span class="n">array</span> <span class="n">of</span> <span class="n">the</span> <span class="n">full</span> <span class="n">Shotgun</span> <span class="n">version</span><span class="o">.</span>
+                            <span class="p">[</span><span class="n">major</span><span class="p">,</span> <span class="n">minor</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">hotfix</span><span class="p">]</span>
+<span class="n">version</span>                     <span class="n">An</span> <span class="n">ordered</span> <span class="n">array</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Shotgun</span> <span class="n">version</span><span class="o">.</span>
+                            <span class="p">[</span><span class="n">major</span><span class="p">,</span> <span class="n">minor</span><span class="p">,</span> <span class="n">patch</span><span class="p">]</span>
+<span class="n">user_authentication_method</span>  <span class="n">Indicates</span> <span class="n">the</span> <span class="n">authentication</span> <span class="n">method</span> <span class="n">used</span> <span class="n">by</span> <span class="n">Shotgun</span><span class="o">.</span>
+                            <span class="n">Will</span> <span class="n">be</span> <span class="n">one</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="n">values</span><span class="p">:</span>
+                                <span class="n">default</span><span class="p">:</span> <span class="n">regular</span> <span class="n">username</span><span class="o">/</span><span class="n">password</span><span class="o">.</span>
+                                <span class="n">ldap</span><span class="p">:</span>    <span class="n">username</span><span class="o">/</span><span class="n">password</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">company</span><span class="s1">&#39;s LDAP.</span>
+                                <span class="n">saml2</span><span class="p">:</span>   <span class="n">SSO</span> <span class="n">used</span><span class="p">,</span> <span class="n">over</span> <span class="n">SAML2</span><span class="o">.</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Beyond <code class="docutils literal notranslate"><span class="pre">full_version</span></code> and <code class="docutils literal notranslate"><span class="pre">version</span></code> which differ by the inclusion of the bugfix number, you should expect
-these values to be unsupported and for internal use only.</p>
+<p class="last">Beyond the documented tokens, you should expect
+the other values to be unsupported and for internal use only.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1113,7 +1139,8 @@ entity is not currently retired).</p>
 </pre></div>
 </div>
 <p>Example output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;New Shot 1&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3723</span><span class="p">,</span> <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Demo Project&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">}},</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;New Shot 1&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3723</span><span class="p">,</span>
+  <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Demo Project&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">}},</span>
  <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;Changed 1&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3624</span><span class="p">},</span>
  <span class="kc">True</span><span class="p">]</span>
 </pre></div>
@@ -1126,7 +1153,11 @@ entity is not currently retired).</p>
 specifies:</p>
 <ul class="simple">
 <li>create: <code class="docutils literal notranslate"><span class="pre">entity_type</span></code>, data dict of fields to set</li>
-<li>update: <code class="docutils literal notranslate"><span class="pre">entity_type</span></code>, <code class="docutils literal notranslate"><span class="pre">entity_id</span></code>, data dict of fields to set, and optionally <code class="docutils literal notranslate"><span class="pre">multi_entity_update_modes</span></code></li>
+<li><dl class="first docutils">
+<dt>update: <code class="docutils literal notranslate"><span class="pre">entity_type</span></code>, <code class="docutils literal notranslate"><span class="pre">entity_id</span></code>, data dict of fields to set,</dt>
+<dd>and optionally <code class="docutils literal notranslate"><span class="pre">multi_entity_update_modes</span></code></dd>
+</dl>
+</li>
 <li>delete: <code class="docutils literal notranslate"><span class="pre">entity_type</span></code> and entity_id</li>
 </ul>
 </td>
@@ -1834,10 +1865,11 @@ download.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">If <code class="docutils literal notranslate"><span class="pre">file_path</span></code> is provided, returns the path to the file on disk.  If
-<code class="docutils literal notranslate"><span class="pre">file_path</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, returns the actual data of the file as a string.</p>
+<code class="docutils literal notranslate"><span class="pre">file_path</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, returns the actual data of the file, as str in Python 2 or
+bytes in Python 3.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)">str</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">str | bytes</p>
 </td>
 </tr>
 </tbody>
@@ -2114,6 +2146,41 @@ passed in.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="shotgun_api3.shotgun.Shotgun.following">
+<code class="descclassname">Shotgun.</code><code class="descname">following</code><span class="sig-paren">(</span><em>user</em>, <em>project=None</em>, <em>entity_type=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.following"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.following" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all entity instances a user is following.</p>
+<p>Optionally, a project and/or entity_type can be supplied to restrict returned results.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">user</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;HumanUser&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1234</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Project&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1234</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">entity_type</span> <span class="o">=</span> <span class="s2">&quot;Task&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">following</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">entity_type</span><span class="o">=</span><span class="n">entity_type</span><span class="p">)</span>
+<span class="go">[{&quot;type&quot;:&quot;Task&quot;, &quot;id&quot;:1},</span>
+<span class="go"> {&quot;type&quot;:&quot;Task&quot;, &quot;id&quot;:2},</span>
+<span class="go"> {&quot;type&quot;:&quot;Task&quot;, &quot;id&quot;:3}]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>user</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Find what this person is following.</li>
+<li><strong>project</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Optional filter to only return results from a specific project.</li>
+<li><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Optional filter to only return results from one entity type.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of dictionaries, each containing entity type &amp; id’s being followed.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="working-with-the-shotgun-schema">
 <h3>Working with the Shotgun Schema<a class="headerlink" href="#working-with-the-shotgun-schema" title="Permalink to this headline">¶</a></h3>
@@ -2361,7 +2428,8 @@ updated and the value is the new value.</li>
 <span class="go">                                   &#39;name&#39;: {&#39;editable&#39;: True,&#39;value&#39;: &#39;Created by&#39;},</span>
 <span class="go">                                   &#39;properties&#39;: {&#39;default_value&#39;: {&#39;editable&#39;: False,&#39;value&#39;: None},</span>
 <span class="go">                                                  &#39;summary_default&#39;: {&#39;editable&#39;: True,&#39;value&#39;: &#39;none&#39;},</span>
-<span class="go">                                                  &#39;valid_types&#39;: {&#39;editable&#39;: True,&#39;value&#39;: [&#39;HumanUser&#39;,&#39;ApiUser&#39;]}},</span>
+<span class="go">                                                  &#39;valid_types&#39;: {&#39;editable&#39;: True,&#39;value&#39;:</span>
+<span class="go">                                                                  [&#39;HumanUser&#39;,&#39;ApiUser&#39;]}},</span>
 <span class="go">                                   &#39;unique&#39;: {&#39;editable&#39;: False,&#39;value&#39;: False},</span>
 <span class="go">                                   &#39;visible&#39;: {&#39;editable&#39;: False,&#39;value&#39;: True}},</span>
 <span class="go">                    ...</span>
@@ -3237,6 +3305,22 @@ log that are run. We are always looking for ways to improve this in the future. 
 immediate concerns, please <a class="reference external" href="https://support.shotgunsoftware.com">reach out to our support team</a></p>
 </div>
 </div>
+<div class="section" id="environment-variables">
+<h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="shotgun-api-cacerts">
+<h3>SHOTGUN_API_CACERTS<a class="headerlink" href="#shotgun-api-cacerts" title="Permalink to this headline">¶</a></h3>
+<p>Used to specify a path to an external SSL certificates file.  This environment variable can be used in place of the <code class="docutils literal notranslate"><span class="pre">ca_certs</span></code> keyword argument to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Shotgun</span></code> constructor.  In the case that both this environment variable is set and the keyword argument is provided, the value from the keyword argument will be used.</p>
+</div>
+<div class="section" id="shotgun-api-retry-interval">
+<h3>SHOTGUN_API_RETRY_INTERVAL<a class="headerlink" href="#shotgun-api-retry-interval" title="Permalink to this headline">¶</a></h3>
+<p>Stores the number of milliseconds to wait between request retries.  By default, a value of 3000 milliseconds is used. You can override the default either by setting this environment variable, or by setting the <code class="docutils literal notranslate"><span class="pre">rpc_attempt_interval</span></code> property on the config like so:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">Shotgun</span><span class="p">(</span><span class="n">site_name</span><span class="p">,</span> <span class="n">script_name</span><span class="p">,</span> <span class="n">script_key</span><span class="p">)</span>
+<span class="n">sg</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">rpc_attempt_interval</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1"># adjusting default interval</span>
+</pre></div>
+</div>
+<p>In the case that both this environment variable and the config’s <code class="docutils literal notranslate"><span class="pre">rpc_attempt_interval</span></code> property are set, the value in <code class="docutils literal notranslate"><span class="pre">rpc_attempt_interal</span></code> will be used.</p>
+</div>
+</div>
 </div>
 
 
@@ -3250,7 +3334,7 @@ immediate concerns, please <a class="reference external" href="https://support.s
         <a href="cookbook.html" class="btn btn-neutral float-right" title="API Cookbook" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="authentication.html" class="btn btn-neutral" title="Authentication" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="authentication.html" class="btn btn-neutral float-left" title="Authentication" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -3275,26 +3359,16 @@ immediate concerns, please <a class="reference external" href="https://support.s
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
+  
  
 
 <script>

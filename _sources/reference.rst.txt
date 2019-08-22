@@ -66,6 +66,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.update_project_last_accessed
     Shotgun.work_schedule_read
     Shotgun.work_schedule_update
+    Shotgun.preferences_read    
 
 .. rubric:: Working With Files
 
@@ -88,8 +89,9 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.follow
     Shotgun.unfollow
     Shotgun.followers
+    Shotgun.following
 
-.. rubric:: Working with the Shotgun Schema
+.. rubric:: Working with the Shotgun Schema and Preferences
 
 .. autosummary:: 
     :nosignatures:
@@ -165,6 +167,7 @@ Methods that relate to the activity stream and following of entities in Shotgun.
 .. automethod:: Shotgun.follow
 .. automethod:: Shotgun.unfollow
 .. automethod:: Shotgun.followers
+.. automethod:: Shotgun.following
 
 Working with the Shotgun Schema
 ===============================
@@ -868,4 +871,23 @@ are specifically displaying EventLogEntries in the web application, or API queri
 log that are run. We are always looking for ways to improve this in the future. If you have any
 immediate concerns, please `reach out to our support team <https://support.shotgunsoftware.com>`_
 
+*********************
+Environment Variables
+*********************
+
+SHOTGUN_API_CACERTS
+===================
+
+Used to specify a path to an external SSL certificates file.  This environment variable can be used in place of the ``ca_certs`` keyword argument to the :class:`~shotgun.Shotgun` constructor.  In the case that both this environment variable is set and the keyword argument is provided, the value from the keyword argument will be used.
+
+
+SHOTGUN_API_RETRY_INTERVAL
+==========================
+
+Stores the number of milliseconds to wait between request retries.  By default, a value of 3000 milliseconds is used. You can override the default either by setting this environment variable, or by setting the ``rpc_attempt_interval`` property on the config like so: ::
+
+    sg = Shotgun(site_name, script_name, script_key)
+    sg.config.rpc_attempt_interval = 1000 # adjusting default interval
+
+In the case that both this environment variable and the config's ``rpc_attempt_interval`` property are set, the value in ``rpc_attempt_interal`` will be used.
 

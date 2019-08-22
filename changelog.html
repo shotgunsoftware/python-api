@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Shotgun Python API Changelog &mdash; python-api v3.0.38 documentation</title>
+  <title>Shotgun Python API Changelog &mdash; python-api v3.1.0 documentation</title>
   
 
   
@@ -19,34 +19,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="IronPython" href="advanced/iron_python.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
     <a href='http://developer.shotgunsoftware.com'>
     
@@ -99,7 +101,11 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced/packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/iron_python.html">IronPython</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Shotgun Python API Changelog</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#v3-0-38-2019-february-7">v3.0.38 (2019 February 7)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-1-0-2019-july-29">v3.1.0 (2019 July 29)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-0-41-2019-june-28">v3.0.41 (2019 June 28)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-0-40-2019-march-13">v3.0.40 (2019 March 13)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-0-39-2019-february-20">v3.0.39 (2019 February 20)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-0-39-2019-february-7">v3.0.39 (2019 February 7)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-37-2018-july-19">v3.0.37 (2018 July 19)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-36-2018-april-3">v3.0.36 (2018 April 3)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-35-2017-december-8">v3.0.35 (2017 December 8)</a></li>
@@ -173,7 +179,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.0.38.<br>
+    <b>python-api</b> v3.1.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -247,8 +253,33 @@
   <div class="section" id="shotgun-python-api-changelog">
 <h1>Shotgun Python API Changelog<a class="headerlink" href="#shotgun-python-api-changelog" title="Permalink to this headline">¶</a></h1>
 <p>Here you can see the full list of changes between each Python API release.</p>
-<div class="section" id="v3-0-38-2019-february-7">
-<h2>v3.0.38 (2019 February 7)<a class="headerlink" href="#v3-0-38-2019-february-7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="v3-1-0-2019-july-29">
+<h2>v3.1.0 (2019 July 29)<a class="headerlink" href="#v3-1-0-2019-july-29" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Adds support for Python 3.7</li>
+</ul>
+</div>
+<div class="section" id="v3-0-41-2019-june-28">
+<h2>v3.0.41 (2019 June 28)<a class="headerlink" href="#v3-0-41-2019-june-28" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Adds an optional sleep between retries specified via the <cite>SHOTGUN_API_RETRY_INTERVAL</cite> environment variable, or by setting <cite>sg.config.rpc_attempt_interval</cite>.</li>
+</ul>
+</div>
+<div class="section" id="v3-0-40-2019-march-13">
+<h2>v3.0.40 (2019 March 13)<a class="headerlink" href="#v3-0-40-2019-march-13" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Updates encoding method to use shutil when uploading, to avoid memory and overflow errors when reading large files. (contributed by &#64;eestrada)</li>
+</ul>
+</div>
+<div class="section" id="v3-0-39-2019-february-20">
+<h2>v3.0.39 (2019 February 20)<a class="headerlink" href="#v3-0-39-2019-february-20" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Ensures the certificates packaged with the API and those specified via the <cite>SHOTGUN_API_CACERTS</cite> environment variable
+are used when uploading a file.</li>
+</ul>
+</div>
+<div class="section" id="v3-0-39-2019-february-7">
+<h2>v3.0.39 (2019 February 7)<a class="headerlink" href="#v3-0-39-2019-february-7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Upgrades the version of <code class="docutils literal notranslate"><span class="pre">httplib2</span></code> to <code class="docutils literal notranslate"><span class="pre">0.12.0</span></code>, which fixes SNI issues. Note this
 version contains a more recent list of certificate authorities. If you are running Shotgun locally and have
@@ -293,7 +324,7 @@ pair on an SSO-enabled Shotgun site.</li>
 or <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_filmstrip_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_filmstrip_thumbnail"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_filmstrip_thumbnail()</span></code></a> before calling out to the server.</li>
 <li>Multiple enhancements and bugfixes to Mockgun</li>
 <li>Added <code class="docutils literal notranslate"><span class="pre">nav_search_string()</span></code> and <code class="docutils literal notranslate"><span class="pre">nav_search_entity()</span></code> methods as experimental, internal methods for querying SG hierarchy.</li>
-<li>Introduces a <code class="xref py py-meth docutils literal notranslate"><span class="pre">following()</span></code> query method, that accepts a user entity and optionally an entity type and/or project.</li>
+<li>Introduces a <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.following" title="shotgun_api3.shotgun.Shotgun.following"><code class="xref py py-meth docutils literal notranslate"><span class="pre">following()</span></code></a> query method, that accepts a user entity and optionally an entity type and/or project.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-32-2016-sep-22">
@@ -659,7 +690,7 @@ after initializing it).</li>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="advanced/iron_python.html" class="btn btn-neutral" title="IronPython" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="advanced/iron_python.html" class="btn btn-neutral float-left" title="IronPython" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -684,26 +715,16 @@ after initializing it).</li>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
+  
  
 
 <script>
