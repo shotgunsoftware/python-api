@@ -89,6 +89,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.follow
     Shotgun.unfollow
     Shotgun.followers
+    Shotgun.following
 
 .. rubric:: Working with the Shotgun Schema and Preferences
 
@@ -166,6 +167,7 @@ Methods that relate to the activity stream and following of entities in Shotgun.
 .. automethod:: Shotgun.follow
 .. automethod:: Shotgun.unfollow
 .. automethod:: Shotgun.followers
+.. automethod:: Shotgun.following
 
 Working with the Shotgun Schema
 ===============================
