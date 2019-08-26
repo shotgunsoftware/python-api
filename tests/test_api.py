@@ -37,8 +37,8 @@ from shotgun_api3.lib.sgsix import ShotgunSSLError
 
 from . import base
 
-THUMBNAIL_MAX_ATTEMPTS = 5
-THUMBNAIL_RETRY_INTERAL = 2
+THUMBNAIL_MAX_ATTEMPTS = 12
+THUMBNAIL_RETRY_INTERAL = 5
 TRANSIENT_IMAGE_PATH = "images/status/transient"
 
 
