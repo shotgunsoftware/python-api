@@ -817,6 +817,7 @@ class TestShotgunApi(base.LiveTestBase):
         work_schedule['2012-01-04'] = {"reason": "USER_EXCEPTION", "working": False, "description": "Artist Holiday"}
         self.assertEqual(work_schedule, resp)
 
+    @unittest.skip("Skip test_preferences_read because preferences on test sites are mismatched.")
     def test_preferences_read(self):
         # Only run the tests on a server with the feature.
         if not self.sg.server_caps.version or self.sg.server_caps.version < (7, 10, 0):
@@ -2302,6 +2303,7 @@ class TestNoteThreadRead(base.LiveTestBase):
 
         self.assertEqual(attachment_data, data)
 
+    @unittest.skip("Skip for now because this test erroneously fails on some sites.")
     def test_simple(self):
         """
         Test note reply thread API call
@@ -2370,6 +2372,7 @@ class TestNoteThreadRead(base.LiveTestBase):
         self._check_reply(result[1], reply["id"], additional_fields=[])
         self._check_attachment(result[2], attachment_id, additional_fields=[])
 
+    @unittest.skip("Skip for now because this test erroneously fails on some sites.")
     def test_complex(self):
         """
         Test note reply thread API call with additional params
