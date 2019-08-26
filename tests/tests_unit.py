@@ -430,6 +430,17 @@ class TestMimetypesFix(unittest.TestCase):
         self._test_mimetypes_import("win32", 3, 0, 0, False)
         self._test_mimetypes_import("darwin", 2, 7, 0, False)
 
+    def test_patched_mimetypes(self):
+        """
+        Test patched mimetypes `guess_type` method to ensure it works as expected.
+        """
+        from shotgun_api3.lib import mimetypes as mimetypes_patched
+        self.assertEqual(mimetypes_patched.guess_type("foo.html"), ("text/html", None))
+        self.assertEqual(mimetypes_patched.guess_type("foo.tgz"), ("application/x-tar", "gzip"))
+        self.assertEqual(mimetypes_patched.guess_type("foo.tar.gz"), ("application/x-tar", "gzip"))
+        self.assertEqual(mimetypes_patched.guess_type("foo.tar.Z"), ("application/x-tar", "compress"))
+        self.assertEqual(mimetypes_patched.guess_type("foo.tar.bz2"), ("application/x-tar", "bzip2"))
+        self.assertEqual(mimetypes_patched.guess_type("foo.tar.xz"), ("application/x-tar", "xz"))
 
 if __name__ == '__main__':
     unittest.main()
