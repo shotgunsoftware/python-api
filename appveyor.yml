@@ -12,7 +12,6 @@
 
 environment:
   matrix:
-    - PYTHON: "C:\\Python26"
     - PYTHON: "C:\\Python27"
     - PYTHON: "C:\\Python37"
 
