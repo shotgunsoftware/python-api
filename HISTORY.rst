@@ -4,6 +4,10 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.1.1 (2019 August 29)
+=====================
+- Fixes a regression on Python 2.7.0-2.7.9 on Windows with the mimetypes module.
+
 v3.1.0 (2019 July 29)
 =====================
 - Adds support for Python 3.7
