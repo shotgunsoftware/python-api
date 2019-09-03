@@ -184,30 +184,26 @@ class TestShotgunClient(base.MockTestBase):
         expected = "Basic " + b64encode(urllib.parse.unquote(login_password)).strip()
         self.assertEqual(expected, headers.get("Authorization"))
 
-    def test_localization_header(self):
+    def test_localization_header_default(self):
         """Localization header passed to server"""
-        self.sg = api.Shotgun(
-            self.config.server_url,
-            self.config.script_name,
-            self.config.api_key,
-            http_proxy=self.config.http_proxy,
-            ensure_ascii=True,
-            connect=False,
-            ca_certs=None,
-            login=None,
-            password=None,
-            sudo_as_login=None,
-            session_token=None,
-            auth_token=None,
-            localized=True
-        )
-        self._setup_mock()
+        self.sg.info()
+
+        args, _ = self.sg._http_request.call_args
+        (_, _, _, headers) = args
+        expected_header_value = "auto"
+
+        self.assertEqual(None, headers.get("locale"))
+
+    def test_localization_header_when_localized(self):
+        """Localization header passed to server"""
+        self.sg.config.localized = True
 
         self.sg.info()
 
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
         expected_header_value = "auto"
+
         self.assertEqual("auto", headers.get("locale"))
 
     def test_user_agent(self):
