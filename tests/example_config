@@ -15,6 +15,7 @@
 
 # Full url to the Shotgun server server
 # e.g. http://my-company.shotgunstudio.com
+# be careful to not end server_url with a "/", or some tests may fail
 server_url     : http://0.0.0.0:3000
 # script name as key as listed in admin panel for your server
 script_name    : test script name
