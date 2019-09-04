@@ -470,8 +470,7 @@ class Shotgun(object):
                  password=None,
                  sudo_as_login=None,
                  session_token=None,
-                 auth_token=None,
-                 localized=False):
+                 auth_token=None):
         """
         Initializes a new instance of the Shotgun client.
 
@@ -539,9 +538,6 @@ class Shotgun(object):
                 :class:`~shotgun_api3.MissingTwoFactorAuthenticationFault` will be raised if the
                 ``auth_token`` is invalid.
             .. todo: Add this info to the Authentication section of the docs
-
-        :param bool localized: A boolean to asks for some fields to be localized. When ``True``, a
-            header ``locale`` with value ``auto`` is added to HTTP requests. Default is ``True``.
 
         .. note:: A note about proxy connections: If you are using Python <= v2.6.2, HTTPS
             connections through a proxy server will not work due to a bug in the :mod:`urllib2`
