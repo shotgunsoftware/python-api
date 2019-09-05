@@ -599,7 +599,7 @@ class Shotgun(object):
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
         self.config.no_ssl_validation = NO_SSL_VALIDATION
         self.config.raw_http_proxy = http_proxy
-        self.config.localized = localized
+        self.config.localized = False
 
         try:
             self.config.rpc_attempt_interval = int(os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000))
