@@ -1820,6 +1820,9 @@ class Shotgun(object):
             ``{'type': 'Project', 'id': 3}``
         :returns: dict of Entity Type to dict containing the display name.
         :rtype: dict
+
+        .. note::
+            The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more informations.
         """
 
         params = {}
@@ -1918,6 +1921,9 @@ class Shotgun(object):
 
         .. note::
             If you don't specify a ``project_entity``, everything is reported as visible.
+
+        .. note::
+            The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more informations.
 
         >>> sg.schema_field_read('Asset', 'shots')
         {'shots': {'data_type': {'editable': False, 'value': 'multi_entity'},
