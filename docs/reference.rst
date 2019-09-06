@@ -901,7 +901,6 @@ Requests made from script/API users are localized in the site settings.
 This functionality is currently supported by the methods ``Shotgun.schema_entity_read`` and ``Shotgun.schema_field_read``.
 
 Localization is disabled by default. To enable localization, set the ``localized`` property to ``True``.
-The property cannot be set at Shotgun class instantiation. When the class is instantiated, the ``localized`` config property is set to ``False``.
 
 Example for a user whose language preference is set to Japanese:
 
