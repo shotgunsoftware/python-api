@@ -895,7 +895,9 @@ In the case that both this environment variable and the config's ``rpc_attempt_i
 Localization
 ************
 
-Shotgun API offers the ability to return display namnes in user's language.
+The Shotgun API offers the ability to return localized display names in the current user's language.
+Requests made from script/API users are localized in the site settings.
+
 The server currently returns localized display names for those methods:
 
   * Shotgun.schema_entity_read
