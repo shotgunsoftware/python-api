@@ -33,6 +33,7 @@
 
 from . import six
 import io
+import sys
 
 # For python 3, the `file` type no longer exists, and open() returns an
 # io.IOBase instance. We add file_types to allow comparison across python
@@ -55,3 +56,10 @@ if six.PY3:
 else:
     from .httplib2 import SSLHandshakeError
     ShotgunSSLError = SSLHandshakeError
+
+# On Python 2 on linux hosts, sys.platform was 'linux' appended with the
+# current kernel version that Python was built on.  In Python3, this was changed
+# and sys.platform now returns 'linux' regardless of the kernel version.
+# See https://bugs.python.org/issue12326
+# sgsix.platform will mimick the python3 behavior to simplify code.
+platform = "linux" if sys.platform.startswith("linux") else sys.platform
