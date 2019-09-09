@@ -905,7 +905,7 @@ Localization is disabled by default. To enable localization, set the ``localized
 Example for a user whose language preference is set to Japanese:
 
 .. code-block:: python
-   :emphasize-lines: 8,19
+   :emphasize-lines: 9,20
 
     >>> sg = Shotgun(site_name, script_name, script_key)
     >>> sg.config.localized # checking that localization is disabled
