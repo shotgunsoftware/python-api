@@ -2714,7 +2714,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
             self.sg.schema_field_read("Asset", field_name, project_2)[field_name]["visible"]
         )
 
-        # Built-in fields should remain now editable.
+        # Built-in fields should remain not editable.
         self.assertFalse(self.sg.schema_field_read("Asset", "code")["code"]["visible"]["editable"])
 
         # Custom fields should be editable
@@ -2725,7 +2725,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
         # Hide the field on project 1
         self.sg.schema_field_update("Asset", field_name, {"visible": False}, project_1)
-        # If should not be visible anymore.
+        # It should not be visible anymore.
         self.assertEqual(
             {"value": False, "editable": True},
             self.sg.schema_field_read("Asset", field_name, project_1)[field_name]["visible"]
