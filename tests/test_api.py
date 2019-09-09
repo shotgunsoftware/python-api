@@ -2678,6 +2678,73 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
                           self.sg.find,
                           "Version", filters, fields=fields, additional_filter_presets=additional_filters)
 
+    def test_modify_visibility(self):
+        """
+        Ensure the visibility of a field can be edited via the API.
+        """
+        # If the version of Shotgun is too old, do not run this test.
+        # TODO: Update this with the real version number once the feature is released.
+        if self.sg_version < (8, 5, 0):
+            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            return
+
+        field_display_name = "Project Visibility Test"
+        field_name = "sg_{0}".format(field_display_name.lower().replace(" ", "_"))
+
+        schema = self.sg.schema_field_read("Asset")
+        # Ensure the custom field exists.
+        if field_name not in schema:
+            self.sg.schema_field_create("Asset", "text", "Project Visibility Test")
+
+        # Grab any two projects that we can use for toggling the visible property with.
+        projects = self.sg.find("Project", [], order=[{"field_name": "id", "direction": "asc"}])
+        project_1 = projects[0]
+        project_2 = projects[1]
+
+        # First, reset the field visibility in a known state, i.e. visible for both projects,
+        # in case the last test run failed midway through.
+        self.sg.schema_field_update("Asset", field_name, {"visible": True}, project_1)
+        self.assertEqual(
+            {"value": True, "editable": True},
+            self.sg.schema_field_read("Asset", field_name, project_1)[field_name]["visible"]
+        )
+        self.sg.schema_field_update("Asset", field_name, {"visible": True}, project_2)
+        self.assertEqual(
+            {"value": True, "editable": True},
+            self.sg.schema_field_read("Asset", field_name, project_2)[field_name]["visible"]
+        )
+
+        # Built-in fields should remain now editable.
+        self.assertFalse(self.sg.schema_field_read("Asset", "code")["code"]["visible"]["editable"])
+
+        # Custom fields should be editable
+        self.assertEqual(
+            {"value": True, "editable": True},
+            self.sg.schema_field_read("Asset", field_name)[field_name]["visible"]
+        )
+
+        # Hide the field on project 1
+        self.sg.schema_field_update("Asset", field_name, {"visible": False}, project_1)
+        # If should not be visible anymore.
+        self.assertEqual(
+            {"value": False, "editable": True},
+            self.sg.schema_field_read("Asset", field_name, project_1)[field_name]["visible"]
+        )
+
+        # The field should be visible on the second project.
+        self.assertEqual(
+            {"value": True, "editable": True},
+            self.sg.schema_field_read("Asset", field_name, project_2)[field_name]["visible"]
+        )
+
+        # Restore the visibility on the field.
+        self.sg.schema_field_update("Asset", field_name, {"visible": True}, project_1)
+        self.assertEqual(
+            {"value": True, "editable": True},
+            self.sg.schema_field_read("Asset", field_name, project_1)[field_name]["visible"]
+        )
+
+
 
 def _has_unicode(data):
     for k, v in data.items():
