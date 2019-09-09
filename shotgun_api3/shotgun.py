@@ -2018,9 +2018,12 @@ class Shotgun(object):
             ``visible`` property for. If the ``visible`` is present in ``properties`` and
             ``project_entity`` is not set, an exception will be raised. Example:
             ``{'type': 'Project', 'id': 3}``
-        :param project_entity: Link to the project we wish to change the field visibility for.
-            This is necessary only when updating the ``visible`` property of a field.
         :returns: ``True`` if the field was updated.
+
+        .. note::
+            The ``project_entity`` parameter can only affect the state of the ``visible`` property
+            and has no impact on other properties.
+
         :rtype: bool
         """
 

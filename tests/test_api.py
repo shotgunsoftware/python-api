@@ -2745,7 +2745,6 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
         )
 
 
-
 def _has_unicode(data):
     for k, v in data.items():
         if isinstance(k, six.text_type):
