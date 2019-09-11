@@ -898,7 +898,7 @@ Localization
 The Shotgun API offers the ability to return localized display names in the current user's language.
 Requests made from script/API users are localized in the site settings.
 
-This functionality is currently supported by the methods ``Shotgun.schema_entity_read`` and ``Shotgun.schema_field_read``.
+This functionality is currently supported by the methods ``Shotgun.schema_entity_read``, ``Shotgun.schema_field_read``, and ``Shotgun.schema_read``.
 
 Localization is disabled by default. To enable localization, set the ``localized`` property to ``True``.
 

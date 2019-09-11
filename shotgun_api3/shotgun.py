@@ -1891,6 +1891,9 @@ class Shotgun(object):
             types. Properties that are ``'editable': True``, can be updated using the
             :meth:`~shotgun_api3.Shotgun.schema_field_update` method.
         :rtype: dict
+
+        .. note::
+            The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
         """
 
         params = {}
