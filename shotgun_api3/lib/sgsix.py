@@ -58,7 +58,7 @@ else:
     ShotgunSSLError = SSLHandshakeError
 
 
-def normalize_platform(platform):
+def normalize_platform(platform, python2=True):
     """
     Normalize the return of sys.platform between Python 2 and 3.
 
@@ -66,16 +66,22 @@ def normalize_platform(platform):
     current kernel version that Python was built on.  In Python3, this was
     changed and sys.platform now returns 'linux' regardless of the kernel version.
     See https://bugs.python.org/issue12326
-    This function will normalize Python2 platform strings to the expected
-    Python 3 platform string.
+    This function will normalize platform strings to always conform to Python2 or
+    Python3 behavior.
 
     :param str platform: The platform string to normalize
+    :param bool python2: The python version behavior to target.  If True, a
+        Python2-style platform string will be returned (i.e. 'linux2'), otherwise
+        the modern 'linux' platform string will be returned.
 
     :returns: The normalized platform string.
     :rtype: str
     """
-    return "linux" if sys.platform.startswith("linux") else sys.platform
+    if python2:
+        return "linux2" if platform.startswith("linux") else platform
+    return "linux" if platform.startswith("linux") else platform
 
 
-# sgsix.platform will mimick the python3 sys.platform behavior to simplify code.
+# sgsix.platform will mimick the python2 sys.platform behavior to ensure
+# compatibility with existing comparisons and dict keys.
 platform = normalize_platform(sys.platform)
