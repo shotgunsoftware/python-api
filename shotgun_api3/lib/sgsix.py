@@ -57,9 +57,25 @@ else:
     from .httplib2 import SSLHandshakeError
     ShotgunSSLError = SSLHandshakeError
 
-# On Python 2 on linux hosts, sys.platform was 'linux' appended with the
-# current kernel version that Python was built on.  In Python3, this was changed
-# and sys.platform now returns 'linux' regardless of the kernel version.
-# See https://bugs.python.org/issue12326
-# sgsix.platform will mimick the python3 behavior to simplify code.
-platform = "linux" if sys.platform.startswith("linux") else sys.platform
+
+def normalize_platform(platform):
+    """
+    Normalize the return of sys.platform between Python 2 and 3.
+
+    On Python 2 on linux hosts, sys.platform was 'linux' appended with the
+    current kernel version that Python was built on.  In Python3, this was
+    changed and sys.platform now returns 'linux' regardless of the kernel version.
+    See https://bugs.python.org/issue12326
+    This function will normalize Python2 platform strings to the expected
+    Python 3 platform string.
+
+    :param str platform: The platform string to normalize
+
+    :returns: The normalized platform string.
+    :rtype: str
+    """
+    return "linux" if sys.platform.startswith("linux") else sys.platform
+
+
+# sgsix.platform will mimick the python3 sys.platform behavior to simplify code.
+platform = normalize_platform(sys.platform)
