@@ -4,6 +4,11 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.1.2 (2019 Sept 17)
+=====================
+- Adds an optional `localized` property on the Shotgun object which allows to retrieve localized display names on
+  methods ``schema_entity_read()``, ``schema_field_read()``, and ``schema_read()``.
+
 v3.1.1 (2019 August 29)
 =====================
 - Fixes a regression on Python 2.7.0-2.7.9 on Windows with the mimetypes module.

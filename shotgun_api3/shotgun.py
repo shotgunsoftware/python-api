@@ -117,7 +117,7 @@ except ImportError as e:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.1.1"
+__version__ = "3.1.2"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -427,6 +427,7 @@ class _Config(object):
         self.session_token = None
         self.authorization = None
         self.no_ssl_validation = False
+        self.localized = False
 
     @property
     def records_per_page(self):
@@ -1818,6 +1819,9 @@ class Shotgun(object):
             ``{'type': 'Project', 'id': 3}``
         :returns: dict of Entity Type to dict containing the display name.
         :rtype: dict
+
+        .. note::
+            The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
         """
 
         params = {}
@@ -1887,6 +1891,9 @@ class Shotgun(object):
             types. Properties that are ``'editable': True``, can be updated using the
             :meth:`~shotgun_api3.Shotgun.schema_field_update` method.
         :rtype: dict
+
+        .. note::
+            The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
         """
 
         params = {}
@@ -1916,6 +1923,9 @@ class Shotgun(object):
 
         .. note::
             If you don't specify a ``project_entity``, everything is reported as visible.
+
+        .. note::
+            The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
 
         >>> sg.schema_field_read('Asset', 'shots')
         {'shots': {'data_type': {'editable': False, 'value': 'multi_entity'},
@@ -3205,6 +3215,10 @@ class Shotgun(object):
             "content-type": "application/json; charset=utf-8",
             "connection": "keep-alive"
         }
+
+        if self.config.localized is True:
+            req_headers["locale"] = "auto"
+
         http_status, resp_headers, body = self._make_call("POST", self.config.api_path,
                                                           encoded_payload, req_headers)
         LOG.debug("Completed rpc call to %s" % (method))
