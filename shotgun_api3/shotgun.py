@@ -2006,7 +2006,7 @@ class Shotgun(object):
 
         return self._call_rpc("schema_field_create", params)
 
-    def schema_field_update(self, entity_type, field_name, properties):
+    def schema_field_update(self, entity_type, field_name, properties, project_entity=None):
         """
         Update the properties for the specified field on an entity.
 
@@ -2024,7 +2024,16 @@ class Shotgun(object):
         :param field_name: Internal Shotgun name of the field to update.
         :param properties: Dictionary with key/value pairs where the key is the property to be
             updated and the value is the new value.
+        :param dict project_entity: Optional Project entity specifying which project to modify the
+            ``visible`` property for. If the ``visible`` is present in ``properties`` and
+            ``project_entity`` is not set, an exception will be raised. Example:
+            ``{'type': 'Project', 'id': 3}``
         :returns: ``True`` if the field was updated.
+
+        .. note::
+            The ``project_entity`` parameter can only affect the state of the ``visible`` property
+            and has no impact on other properties.
+
         :rtype: bool
         """
 
@@ -2036,7 +2045,7 @@ class Shotgun(object):
                 for k, v in six.iteritems((properties or {}))
             ]
         }
-
+        params = self._add_project_param(params, project_entity)
         return self._call_rpc("schema_field_update", params)
 
     def schema_field_delete(self, entity_type, field_name):
