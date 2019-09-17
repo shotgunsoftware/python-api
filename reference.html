@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; python-api v3.1.0 documentation</title>
+  <title>API Reference &mdash; python-api v3.1.2 documentation</title>
   
 
   
@@ -169,6 +169,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#shotgun-api-retry-interval">SHOTGUN_API_RETRY_INTERVAL</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#localization">Localization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cookbook.html">API Cookbook</a></li>
@@ -196,7 +197,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.1.0.<br>
+    <b>python-api</b> v3.1.2.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -2224,6 +2225,10 @@ not taken into consideration and the global list is returned. Example:
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The returned display names for this method will be localized when the <code class="docutils literal notranslate"><span class="pre">localize</span></code> Shotgun config property is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. See <a class="reference internal" href="#localization"><span class="std std-ref">Localization</span></a> for more information.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -2246,6 +2251,10 @@ data in your script.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">If you don’t specify a <code class="docutils literal notranslate"><span class="pre">project_entity</span></code>, everything is reported as visible.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The returned display names for this method will be localized when the <code class="docutils literal notranslate"><span class="pre">localize</span></code> Shotgun config property is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. See <a class="reference internal" href="#localization"><span class="std std-ref">Localization</span></a> for more information.</p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">schema_field_read</span><span class="p">(</span><span class="s1">&#39;Asset&#39;</span><span class="p">,</span> <span class="s1">&#39;shots&#39;</span><span class="p">)</span>
 <span class="go">{&#39;shots&#39;: {&#39;data_type&#39;: {&#39;editable&#39;: False, &#39;value&#39;: &#39;multi_entity&#39;},</span>
@@ -2470,6 +2479,10 @@ types. Properties that are <code class="docutils literal notranslate"><span clas
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The returned display names for this method will be localized when the <code class="docutils literal notranslate"><span class="pre">localize</span></code> Shotgun config property is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. See <a class="reference internal" href="#localization"><span class="std std-ref">Localization</span></a> for more information.</p>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -3319,6 +3332,44 @@ immediate concerns, please <a class="reference external" href="https://support.s
 </pre></div>
 </div>
 <p>In the case that both this environment variable and the config’s <code class="docutils literal notranslate"><span class="pre">rpc_attempt_interval</span></code> property are set, the value in <code class="docutils literal notranslate"><span class="pre">rpc_attempt_interal</span></code> will be used.</p>
+</div>
+</div>
+<div class="section" id="localization">
+<h2>Localization<a class="headerlink" href="#localization" title="Permalink to this headline">¶</a></h2>
+<p>The Shotgun API offers the ability to return localized display names in the current user’s language.
+Requests made from script/API users are localized in the site settings.</p>
+<p>This functionality is currently supported by the methods <code class="docutils literal notranslate"><span class="pre">Shotgun.schema_entity_read</span></code>, <code class="docutils literal notranslate"><span class="pre">Shotgun.schema_field_read</span></code>, and <code class="docutils literal notranslate"><span class="pre">Shotgun.schema_read</span></code>.</p>
+<p>Localization is disabled by default. To enable localization, set the <code class="docutils literal notranslate"><span class="pre">localized</span></code> property to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>Example for a user whose language preference is set to Japanese:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="o">&gt;&gt;&gt;</span> <span class="n">sg</span> <span class="o">=</span> <span class="n">Shotgun</span><span class="p">(</span><span class="n">site_name</span><span class="p">,</span> <span class="n">script_name</span><span class="p">,</span> <span class="n">script_key</span><span class="p">)</span>
+ <span class="o">&gt;&gt;&gt;</span> <span class="n">sg</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">localized</span> <span class="c1"># checking that localization is disabled</span>
+ <span class="bp">False</span>
+ <span class="o">&gt;&gt;&gt;</span> <span class="n">sg</span><span class="o">.</span><span class="n">schema_field_read</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">)</span>
+ <span class="p">{</span>
+ <span class="s1">&#39;sg_vendor_groups&#39;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="s1">&#39;mandatory&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;editable&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">},</span>
+     <span class="c1"># the value field (display name) is not localized</span>
+<span class="hll">     <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;editable&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="s1">&#39;Vendor Groups&#39;</span><span class="p">},</span>
+</span>     <span class="o">...</span>
+ <span class="p">},</span>
+ <span class="o">...</span>
+ <span class="p">}</span>
+ <span class="o">&gt;&gt;&gt;</span> <span class="n">sg</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">localized</span> <span class="o">=</span> <span class="bp">True</span> <span class="c1"># enabling the localization</span>
+ <span class="o">&gt;&gt;&gt;</span> <span class="n">sg</span><span class="o">.</span><span class="n">schema_field_read</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">)</span>
+ <span class="p">{</span>
+ <span class="s1">&#39;sg_vendor_groups&#39;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="s1">&#39;mandatory&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;editable&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">},</span>
+     <span class="c1"># the value field (display name) is localized</span>
+<span class="hll">     <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;editable&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="se">\xe3\x83\x99\xe3\x83\xb3\xe3\x83\x80\xe3\x83\xbc</span><span class="s1"> </span><span class="se">\xe3\x82\xb0\xe3\x83\xab\xe3\x83\xbc\xe3\x83\x97</span><span class="s1">&#39;</span><span class="p">},</span>
+</span>     <span class="o">...</span>
+ <span class="p">},</span>
+ <span class="o">...</span>
+ <span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If needed, the encoding of the returned localized string can be ensured regardless the Python version using shotgun_api3.lib.six.ensure_text().</p>
 </div>
 </div>
 </div>

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Shotgun Python API Changelog &mdash; python-api v3.1.0 documentation</title>
+  <title>Shotgun Python API Changelog &mdash; python-api v3.1.2 documentation</title>
   
 
   
@@ -101,11 +101,13 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced/packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/iron_python.html">IronPython</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Shotgun Python API Changelog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v3-1-2-2019-sept-17">v3.1.2 (2019 Sept 17)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-1-1-2019-august-29">v3.1.1 (2019 August 29)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-1-0-2019-july-29">v3.1.0 (2019 July 29)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-41-2019-june-28">v3.0.41 (2019 June 28)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-40-2019-march-13">v3.0.40 (2019 March 13)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-39-2019-february-20">v3.0.39 (2019 February 20)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#v3-0-39-2019-february-7">v3.0.39 (2019 February 7)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-0-38-2019-february-7">v3.0.38 (2019 February 7)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-37-2018-july-19">v3.0.37 (2018 July 19)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-36-2018-april-3">v3.0.36 (2018 April 3)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-0-35-2017-december-8">v3.0.35 (2017 December 8)</a></li>
@@ -179,7 +181,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.1.0.<br>
+    <b>python-api</b> v3.1.2.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -253,6 +255,19 @@
   <div class="section" id="shotgun-python-api-changelog">
 <h1>Shotgun Python API Changelog<a class="headerlink" href="#shotgun-python-api-changelog" title="Permalink to this headline">¶</a></h1>
 <p>Here you can see the full list of changes between each Python API release.</p>
+<div class="section" id="v3-1-2-2019-sept-17">
+<h2>v3.1.2 (2019 Sept 17)<a class="headerlink" href="#v3-1-2-2019-sept-17" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Adds an optional <cite>localized</cite> property on the Shotgun object which allows to retrieve localized display names on
+methods <code class="docutils literal notranslate"><span class="pre">schema_entity_read()</span></code>, <code class="docutils literal notranslate"><span class="pre">schema_field_read()</span></code>, and <code class="docutils literal notranslate"><span class="pre">schema_read()</span></code>.</li>
+</ul>
+</div>
+<div class="section" id="v3-1-1-2019-august-29">
+<h2>v3.1.1 (2019 August 29)<a class="headerlink" href="#v3-1-1-2019-august-29" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Fixes a regression on Python 2.7.0-2.7.9 on Windows with the mimetypes module.</li>
+</ul>
+</div>
 <div class="section" id="v3-1-0-2019-july-29">
 <h2>v3.1.0 (2019 July 29)<a class="headerlink" href="#v3-1-0-2019-july-29" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -278,8 +293,8 @@
 are used when uploading a file.</li>
 </ul>
 </div>
-<div class="section" id="v3-0-39-2019-february-7">
-<h2>v3.0.39 (2019 February 7)<a class="headerlink" href="#v3-0-39-2019-february-7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="v3-0-38-2019-february-7">
+<h2>v3.0.38 (2019 February 7)<a class="headerlink" href="#v3-0-38-2019-february-7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Upgrades the version of <code class="docutils literal notranslate"><span class="pre">httplib2</span></code> to <code class="docutils literal notranslate"><span class="pre">0.12.0</span></code>, which fixes SNI issues. Note this
 version contains a more recent list of certificate authorities. If you are running Shotgun locally and have

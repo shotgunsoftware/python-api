@@ -891,3 +891,46 @@ Stores the number of milliseconds to wait between request retries.  By default, 
 
 In the case that both this environment variable and the config's ``rpc_attempt_interval`` property are set, the value in ``rpc_attempt_interal`` will be used.
 
+************
+Localization
+************
+
+The Shotgun API offers the ability to return localized display names in the current user's language.
+Requests made from script/API users are localized in the site settings.
+
+This functionality is currently supported by the methods ``Shotgun.schema_entity_read``, ``Shotgun.schema_field_read``, and ``Shotgun.schema_read``.
+
+Localization is disabled by default. To enable localization, set the ``localized`` property to ``True``.
+
+Example for a user whose language preference is set to Japanese:
+
+.. code-block:: python
+   :emphasize-lines: 9,20
+
+    >>> sg = Shotgun(site_name, script_name, script_key)
+    >>> sg.config.localized # checking that localization is disabled
+    False
+    >>> sg.schema_field_read('Shot')
+    {
+    'sg_vendor_groups': {
+        'mandatory': {'editable': False, 'value': False},
+        # the value field (display name) is not localized
+        'name': {'editable': True, 'value': 'Vendor Groups'},
+        ...
+    },
+    ...
+    }
+    >>> sg.config.localized = True # enabling the localization
+    >>> sg.schema_field_read('Shot')
+    {
+    'sg_vendor_groups': {
+        'mandatory': {'editable': False, 'value': False},
+        # the value field (display name) is localized
+        'name': {'editable': True, 'value': '\xe3\x83\x99\xe3\x83\xb3\xe3\x83\x80\xe3\x83\xbc \xe3\x82\xb0\xe3\x83\xab\xe3\x83\xbc\xe3\x83\x97'},
+        ...
+    },
+    ...
+    }
+
+.. note::
+    If needed, the encoding of the returned localized string can be ensured regardless the Python version using shotgun_api3.lib.six.ensure_text().

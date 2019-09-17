@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>shotgun_api3.shotgun &mdash; python-api v3.1.0 documentation</title>
+  <title>shotgun_api3.shotgun &mdash; python-api v3.1.2 documentation</title>
   
 
   
@@ -120,7 +120,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.1.0.<br>
+    <b>python-api</b> v3.1.2.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -309,7 +309,7 @@
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.1.0&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.1.2&quot;</span>
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Errors</span>
@@ -619,6 +619,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">session_token</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">authorization</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">no_ssl_validation</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">localized</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">records_per_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2010,6 +2011,9 @@
 <span class="sd">            ``{&#39;type&#39;: &#39;Project&#39;, &#39;id&#39;: 3}``</span>
 <span class="sd">        :returns: dict of Entity Type to dict containing the display name.</span>
 <span class="sd">        :rtype: dict</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2079,6 +2083,9 @@
 <span class="sd">            types. Properties that are ``&#39;editable&#39;: True``, can be updated using the</span>
 <span class="sd">            :meth:`~shotgun_api3.Shotgun.schema_field_update` method.</span>
 <span class="sd">        :rtype: dict</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2108,6 +2115,9 @@
 
 <span class="sd">        .. note::</span>
 <span class="sd">            If you don&#39;t specify a ``project_entity``, everything is reported as visible.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.</span>
 
 <span class="sd">        &gt;&gt;&gt; sg.schema_field_read(&#39;Asset&#39;, &#39;shots&#39;)</span>
 <span class="sd">        {&#39;shots&#39;: {&#39;data_type&#39;: {&#39;editable&#39;: False, &#39;value&#39;: &#39;multi_entity&#39;},</span>
@@ -3397,6 +3407,10 @@
             <span class="s2">&quot;content-type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json; charset=utf-8&quot;</span><span class="p">,</span>
             <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="s2">&quot;keep-alive&quot;</span>
         <span class="p">}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">localized</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">req_headers</span><span class="p">[</span><span class="s2">&quot;locale&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+
         <span class="n">http_status</span><span class="p">,</span> <span class="n">resp_headers</span><span class="p">,</span> <span class="n">body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_call</span><span class="p">(</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">api_path</span><span class="p">,</span>
                                                           <span class="n">encoded_payload</span><span class="p">,</span> <span class="n">req_headers</span><span class="p">)</span>
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed rpc call to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">method</span><span class="p">))</span>
