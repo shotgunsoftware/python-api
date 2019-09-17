@@ -25,7 +25,7 @@ v3.0.39 (2019 February 20)
 - Ensures the certificates packaged with the API and those specified via the `SHOTGUN_API_CACERTS` environment variable
   are used when uploading a file.
 
-v3.0.39 (2019 February 7)
+v3.0.38 (2019 February 7)
 =====================
 - Upgrades the version of ``httplib2`` to ``0.12.0``, which fixes SNI issues. Note this
   version contains a more recent list of certificate authorities. If you are running Shotgun locally and have
