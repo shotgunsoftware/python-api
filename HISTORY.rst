@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Python API release.
 
 v3.2.0 (2019 Sept 23)
 =====================
-- It is now possible to modify field visibility via ``schema_field_update``.
+- Adds a new ``project`` parameter to  ``schema_field_update`` that allows to modify field visibility for a given project.
 
 v3.1.2 (2019 Sept 17)
 =====================
