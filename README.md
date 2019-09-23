@@ -129,7 +129,7 @@ Integration and unit tests are provided.
     - Add more detailed information regarding the changes in this release. This is a great place to add examples, and reasons for the change!
 
 ### Letting the world know
-Post a message in the the [Pipeline Community channel](https://community.shotgunsoftware.com/c/pipeline) and send an email to [shotgun-dev](https://groups.google.com/a/shotgunsoftware.com/forum/#!forum/shotgun-dev) with a link to the community post.
+Post a message in the [Pipeline Community channel](https://community.shotgunsoftware.com/c/pipeline) and send an email to [shotgun-dev](https://groups.google.com/a/shotgunsoftware.com/forum/#!forum/shotgun-dev) with a link to the community post.
 
 ### Prepare for the Next Dev Cycle
 1) Update the `__version__` value in `shotgun_api3/shotgun.py` to the next version number with `.dev` appended to it. For example, `v3.0.24.dev`
