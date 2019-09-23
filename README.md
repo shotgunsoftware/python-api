@@ -116,7 +116,6 @@ Integration and unit tests are provided.
     - Make sure the date of the release matches today. We try and keep this TBD until we're ready to do a release so it's easy to catch that it needs to be updated.
     - Make sure the version number is filled out and correct. We follow semantic versioning. Or more correctly, we should be following it.
 2) Ensure any changes or additions to public methods are documented
-    - Update the Github wiki, and usually you'll need to update the Method Reference page with concise and exact documentation of the changes that are in this release.
     - Ensure that doc strings are updated in the code itself to work with Sphinx and are correctly formatted.
     - Examples are always good especially if this a new feature or method.
     - Think about a new user to the API trying to figure out how to use the features you're documenting.
