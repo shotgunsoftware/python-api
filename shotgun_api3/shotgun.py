@@ -611,6 +611,35 @@ class Shotgun(object):
                              "got '%s'." % self.config.rpc_attempt_interval)
 
         self._connection = None
+
+        # The following lines of code allow to tell the API where to look for
+        # certificate authorities certificates (we will be referring to these
+        # as CAC from now on). Here's how the Python API interacts with those.
+        #
+        # Auth and CRUD operations
+        # ========================
+        # These operations are executed with httplib2. httplib2 ships with a
+        # list of CACs instead of asking Python's ssl module for them.
+        #
+        # Upload/Downloads
+        # ================
+        # These operations are executed using urllib2. urllib2 asks a Python
+        # module called `ssl` for CACs. On Windows, ssl searches for CACs in
+        # the Windows Certificate Store. On Linux/macOS, it asks the OpenSSL
+        # library linked with Python for CACs. Depending on how Python was
+        # compiled for a given DCC, Python may be linked against the OpenSSL
+        # from the OS or a copy of OpenSSL distributed with the DCC. This
+        # impacts which versions of the certificates are available to Python,
+        # as an OS level OpenSSL will be aware of system wide certificates that
+        # have been added, while an OpenSSL that comes with a DCC is likely
+        # bundling a list of certificates that get update with each release and
+        # no not contain system wide certificates.
+        #
+        # Using custom CACs
+        # =================
+        # When a user requires a non-standard CAC, the SHOTGUN_API_CACERTS
+        # environment variable allows to provide an alternate location for
+        # the CACs.
         if ca_certs is not None:
             self.__ca_certs = ca_certs
         else:
