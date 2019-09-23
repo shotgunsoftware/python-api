@@ -2054,7 +2054,7 @@ class Shotgun(object):
         :param properties: Dictionary with key/value pairs where the key is the property to be
             updated and the value is the new value.
         :param dict project_entity: Optional Project entity specifying which project to modify the
-            ``visible`` property for. If the ``visible`` is present in ``properties`` and
+            ``visible`` property for. If ``visible`` is present in ``properties`` and
             ``project_entity`` is not set, an exception will be raised. Example:
             ``{'type': 'Project', 'id': 3}``
         :returns: ``True`` if the field was updated.
