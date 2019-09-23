@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Task Dependencies &mdash; python-api v3.1.2 documentation</title>
+  <title>Task Dependencies &mdash; python-api v3.2.0 documentation</title>
   
 
   
@@ -19,37 +19,43 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Split Tasks" href="split_tasks.html" />
-    <link rel="prev" title="Updating Task Dates: How Shotgun Thinks" href="updating_tasks.html" /> 
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="python-api v3.2.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Working With Tasks" href="../tasks.html"/>
+        <link rel="next" title="Split Tasks" href="split_tasks.html"/>
+        <link rel="prev" title="Updating Task Dates: How Shotgun Thinks" href="updating_tasks.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
     <a href='http://developer.shotgunsoftware.com'>
     
@@ -110,8 +116,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#updating-the-end-date-on-a-task-with-downstream-task-dependencies">Updating the End Date on a Task with Downstream Task Dependencies</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#creating-a-dependency-violation-by-pushing-up-a-start-date">Creating a Dependency Violation by pushing up a Start Date</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#resolving-a-dependency-violation-by-updating-the-start-date">Resolving a Dependency Violation by updating the Start Date</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#updating-the-pinned-field-on-a-task-with-a-dependency-violation">Updating the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field on a Task with a Dependency Violation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dependency-violation-field-is-read-only"><code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> field is read-only</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#updating-the-pinned-field-on-a-task-with-a-dependency-violation">Updating the <code class="docutils literal"><span class="pre">pinned</span></code> field on a Task with a Dependency Violation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dependency-violation-field-is-read-only"><code class="docutils literal"><span class="pre">dependency_violation</span></code> field is read-only</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="split_tasks.html">Split Tasks</a></li>
@@ -144,7 +150,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.1.2.<br>
+    <b>python-api</b> v3.2.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -162,7 +168,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -170,10 +176,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -224,9 +229,9 @@ any of the fields. For information about Task Dependencies in Shotgun, check out
 documentation page on our support site</a></p>
 <div class="section" id="create-tasks">
 <h2>Create Tasks<a class="headerlink" href="#create-tasks" title="Permalink to this headline">¶</a></h2>
-<p>Let’s create a couple of Tasks and create dependencies between them. First we’ll create a “Layout”
+<p>Let&#8217;s create a couple of Tasks and create dependencies between them. First we&#8217;ll create a &#8220;Layout&#8221;
 Task for our Shot:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">},</span>
     <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
     <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-04-28&#39;</span><span class="p">,</span>
@@ -237,7 +242,7 @@ Task for our Shot:</p>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
  <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-05&#39;</span><span class="p">,</span>
  <span class="s1">&#39;entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">860</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_010_0010&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
  <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">556</span><span class="p">,</span>
@@ -246,8 +251,8 @@ Task for our Shot:</p>
  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
-<p>Now let’s create an “Anm” Task for our Shot:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+<p>Now let&#8217;s create an &#8220;Anm&#8221; Task for our Shot:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">65</span><span class="p">},</span>
     <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Anm&#39;</span><span class="p">,</span>
     <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-06&#39;</span><span class="p">,</span>
@@ -258,7 +263,7 @@ Task for our Shot:</p>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Anm&#39;</span><span class="p">,</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Anm&#39;</span><span class="p">,</span>
  <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-12&#39;</span><span class="p">,</span>
  <span class="s1">&#39;entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">860</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_010_0010&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
  <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">,</span>
@@ -270,25 +275,25 @@ Task for our Shot:</p>
 </div>
 <div class="section" id="create-a-dependency">
 <h2>Create A Dependency<a class="headerlink" href="#create-a-dependency" title="Permalink to this headline">¶</a></h2>
-<p>Tasks each have an <code class="docutils literal notranslate"><span class="pre">upstream_tasks</span></code> field and a <code class="docutils literal notranslate"><span class="pre">downstream_tasks</span></code> field. Each field is a
-list <code class="docutils literal notranslate"><span class="pre">[]</span></code> type and can contain zero, one, or multiple Task entity dictionaries representing the
-dependent Tasks. Here is how to create a dependency between our “Layout” and “Anim” Tasks:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># make &#39;Layout&#39; and upstream Task to &#39;Anm&#39;. (aka, make &#39;Anm&#39; dependent on &#39;Layout&#39;)</span>
+<p>Tasks each have an <code class="docutils literal"><span class="pre">upstream_tasks</span></code> field and a <code class="docutils literal"><span class="pre">downstream_tasks</span></code> field. Each field is a
+list <code class="docutils literal"><span class="pre">[]</span></code> type and can contain zero, one, or multiple Task entity dictionaries representing the
+dependent Tasks. Here is how to create a dependency between our &#8220;Layout&#8221; and &#8220;Anim&#8221; Tasks:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># make &#39;Layout&#39; and upstream Task to &#39;Anm&#39;. (aka, make &#39;Anm&#39; dependent on &#39;Layout&#39;)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;upstream_tasks&#39;</span><span class="p">:[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">556</span><span class="p">}]})</span>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">,</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">,</span>
   <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span>
   <span class="s1">&#39;upstream_tasks&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">556</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">}]}]</span>
 </pre></div>
 </div>
-<p>This will also automatically update the <cite>downstream_tasks</cite> field on ‘Layout’ to include the ‘Anm’ Task.</p>
+<p>This will also automatically update the <cite>downstream_tasks</cite> field on &#8216;Layout&#8217; to include the &#8216;Anm&#8217; Task.</p>
 </div>
 <div class="section" id="query-tasks-with-dependency-fields">
 <h2>Query Tasks with Dependency Fields<a class="headerlink" href="#query-tasks-with-dependency-fields" title="Permalink to this headline">¶</a></h2>
-<p>So now lets look at the Tasks we’ve created and their dependency-related fields:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span>
+<p>So now lets look at the Tasks we&#8217;ve created and their dependency-related fields:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">860</span><span class="p">}]</span>
 <span class="p">]</span>
 <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
@@ -304,7 +309,7 @@ dependent Tasks. Here is how to create a dependency between our “Layout” and
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
   <span class="s1">&#39;dependency_violation&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
   <span class="s1">&#39;downstream_tasks&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Anm&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}],</span>
   <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-05&#39;</span><span class="p">,</span>
@@ -325,22 +330,22 @@ dependent Tasks. Here is how to create a dependency between our “Layout” and
 <span class="o">...</span>
 </pre></div>
 </div>
-<p><em>Note that we have also created additional Tasks for this Shot but we’re going to focus on these
+<p><em>Note that we have also created additional Tasks for this Shot but we&#8217;re going to focus on these
 first two for simplicity.</em></p>
 </div>
 <div class="section" id="updating-the-end-date-on-a-task-with-downstream-task-dependencies">
 <h2>Updating the End Date on a Task with Downstream Task Dependencies<a class="headerlink" href="#updating-the-end-date-on-a-task-with-downstream-task-dependencies" title="Permalink to this headline">¶</a></h2>
-<p>If we update the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> field on our “Layout” Task, we’ll see that the “Anm” Task dates
+<p>If we update the <code class="docutils literal"><span class="pre">due_date</span></code> field on our &#8220;Layout&#8221; Task, we&#8217;ll see that the &#8220;Anm&#8221; Task dates
 will automatically get pushed back to keep the dependency satisfied:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">556</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-07&#39;</span><span class="p">})</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">556</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-07&#39;</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-07&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">556</span><span class="p">}]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-07&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">556</span><span class="p">}]</span>
 </pre></div>
 </div>
-<p>Our Tasks now look like this (notice the new dates on the “Anm” Task):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
+<p>Our Tasks now look like this (notice the new dates on the &#8220;Anm&#8221; Task):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
   <span class="s1">&#39;dependency_violation&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
   <span class="s1">&#39;downstream_tasks&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Anm&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}],</span>
   <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-07&#39;</span><span class="p">,</span>
@@ -366,16 +371,16 @@ will automatically get pushed back to keep the dependency satisfied:</p>
 <h2>Creating a Dependency Violation by pushing up a Start Date<a class="headerlink" href="#creating-a-dependency-violation-by-pushing-up-a-start-date" title="Permalink to this headline">¶</a></h2>
 <p>Task Dependencies can work nicely if you are pushing out an end date for a Task as it will just
 recalculate the dates for all of the dependent Tasks. But what if we push up the Start Date of our
-“Anm” Task to start before our “Layout” Task is scheduled to end?</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-06&#39;</span><span class="p">})</span>
+&#8220;Anm&#8221; Task to start before our &#8220;Layout&#8221; Task is scheduled to end?</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-06&#39;</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-06&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-06&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}]</span>
 </pre></div>
 </div>
 <p>Our Tasks now look like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
   <span class="s1">&#39;dependency_violation&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
   <span class="s1">&#39;downstream_tasks&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Anm&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}],</span>
   <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-07&#39;</span><span class="p">,</span>
@@ -396,26 +401,26 @@ recalculate the dates for all of the dependent Tasks. But what if we push up the
  <span class="o">...</span>
 </pre></div>
 </div>
-<p>Because the “Anm” Task <code class="docutils literal notranslate"><span class="pre">start_date</span></code> depends on the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> of the “Layout” Task, this
+<p>Because the &#8220;Anm&#8221; Task <code class="docutils literal"><span class="pre">start_date</span></code> depends on the <code class="docutils literal"><span class="pre">due_date</span></code> of the &#8220;Layout&#8221; Task, this
 change creates a dependency violation. The update succeeds, but Shotgun has also set the
-<code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> field to <code class="docutils literal notranslate"><span class="pre">True</span></code> and has also updated the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field simply means that if the upstream Task(s) are moved, the “Anm” Task will no
-longer get moved with it. The dependency is still there (in <code class="docutils literal notranslate"><span class="pre">upstream_tasks</span></code>) but the Task is
-now “pinned” to those dates until the Dependency Violation is resolved.</p>
+<code class="docutils literal"><span class="pre">dependency_violation</span></code> field to <code class="docutils literal"><span class="pre">True</span></code> and has also updated the <code class="docutils literal"><span class="pre">pinned</span></code> field to <code class="docutils literal"><span class="pre">True</span></code>.</p>
+<p>The <code class="docutils literal"><span class="pre">pinned</span></code> field simply means that if the upstream Task(s) are moved, the &#8220;Anm&#8221; Task will no
+longer get moved with it. The dependency is still there (in <code class="docutils literal"><span class="pre">upstream_tasks</span></code>) but the Task is
+now &#8220;pinned&#8221; to those dates until the Dependency Violation is resolved.</p>
 </div>
 <div class="section" id="resolving-a-dependency-violation-by-updating-the-start-date">
 <h2>Resolving a Dependency Violation by updating the Start Date<a class="headerlink" href="#resolving-a-dependency-violation-by-updating-the-start-date" title="Permalink to this headline">¶</a></h2>
-<p>We don’t want that violation there. Let’s revert that change so the Start Date for “Anm” is after
-the End Date of “Layout”:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-10&#39;</span><span class="p">})</span>
+<p>We don&#8217;t want that violation there. Let&#8217;s revert that change so the Start Date for &#8220;Anm&#8221; is after
+the End Date of &#8220;Layout&#8221;:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-10&#39;</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-10&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-10&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}]</span>
 </pre></div>
 </div>
 <p>Our Tasks now look like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
   <span class="s1">&#39;dependency_violation&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
   <span class="s1">&#39;downstream_tasks&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Anm&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}],</span>
   <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-07&#39;</span><span class="p">,</span>
@@ -436,18 +441,18 @@ the End Date of “Layout”:</p>
  <span class="o">...</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> field has now been set back to <code class="docutils literal notranslate"><span class="pre">False</span></code> since there is no longer
-a violation. But notice that the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field is still <code class="docutils literal notranslate"><span class="pre">True</span></code>. We will have to manually
+<p>The <code class="docutils literal"><span class="pre">dependency_violation</span></code> field has now been set back to <code class="docutils literal"><span class="pre">False</span></code> since there is no longer
+a violation. But notice that the <code class="docutils literal"><span class="pre">pinned</span></code> field is still <code class="docutils literal"><span class="pre">True</span></code>. We will have to manually
 update that if we want the Task to travel with its dependencies again:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;pinned&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;pinned&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;pinned&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;pinned&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}]</span>
 </pre></div>
 </div>
 <p>Our Tasks now look like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
   <span class="s1">&#39;dependency_violation&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
   <span class="s1">&#39;downstream_tasks&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Anm&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}],</span>
   <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-07&#39;</span><span class="p">,</span>
@@ -468,25 +473,25 @@ update that if we want the Task to travel with its dependencies again:</p>
  <span class="o">...</span>
 </pre></div>
 </div>
-<p>Looks great. But that’s an annoying manual process. What if we want to just reset a Task so that
+<p>Looks great. But that&#8217;s an annoying manual process. What if we want to just reset a Task so that
 it automatically gets updated so that the Start Date is after its dependent Tasks?</p>
 </div>
 <div class="section" id="updating-the-pinned-field-on-a-task-with-a-dependency-violation">
-<h2>Updating the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field on a Task with a Dependency Violation<a class="headerlink" href="#updating-the-pinned-field-on-a-task-with-a-dependency-violation" title="Permalink to this headline">¶</a></h2>
-<p>Let’s go back a couple of steps to where our “Anm” Task had a Dependency Violation because we had
-moved the Start Date up before the “Layout” Task End Date. Remember that the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field
-was also <code class="docutils literal notranslate"><span class="pre">True</span></code>. If we simply update the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field to be <code class="docutils literal notranslate"><span class="pre">False</span></code>, Shotgun will also
+<h2>Updating the <code class="docutils literal"><span class="pre">pinned</span></code> field on a Task with a Dependency Violation<a class="headerlink" href="#updating-the-pinned-field-on-a-task-with-a-dependency-violation" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s go back a couple of steps to where our &#8220;Anm&#8221; Task had a Dependency Violation because we had
+moved the Start Date up before the &#8220;Layout&#8221; Task End Date. Remember that the <code class="docutils literal"><span class="pre">pinned</span></code> field
+was also <code class="docutils literal"><span class="pre">True</span></code>. If we simply update the <code class="docutils literal"><span class="pre">pinned</span></code> field to be <code class="docutils literal"><span class="pre">False</span></code>, Shotgun will also
 automatically update the Task dates to satisfy the upstream dependencies and reset the
-<code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> value to <code class="docutils literal notranslate"><span class="pre">False</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;pinned&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+<code class="docutils literal"><span class="pre">dependency_violation</span></code> value to <code class="docutils literal"><span class="pre">False</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;pinned&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;pinned&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;pinned&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}]</span>
 </pre></div>
 </div>
 <p>Our Tasks now look like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Layout&#39;</span><span class="p">,</span>
   <span class="s1">&#39;dependency_violation&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
   <span class="s1">&#39;downstream_tasks&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Anm&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">557</span><span class="p">}],</span>
   <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2010-05-07&#39;</span><span class="p">,</span>
@@ -507,19 +512,19 @@ automatically update the Task dates to satisfy the upstream dependencies and res
 <span class="o">...</span>
 </pre></div>
 </div>
-<p>Notice by updating <code class="docutils literal notranslate"><span class="pre">pinned</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>, Shotgun also updated the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and
-<code class="docutils literal notranslate"><span class="pre">due_date</span></code> fields of our “Anm” Task so it will satisfy the upstream Task dependencies. And since
-that succeeded, the <code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> field has also been set to <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+<p>Notice by updating <code class="docutils literal"><span class="pre">pinned</span></code> to <code class="docutils literal"><span class="pre">False</span></code>, Shotgun also updated the <code class="docutils literal"><span class="pre">start_date</span></code> and
+<code class="docutils literal"><span class="pre">due_date</span></code> fields of our &#8220;Anm&#8221; Task so it will satisfy the upstream Task dependencies. And since
+that succeeded, the <code class="docutils literal"><span class="pre">dependency_violation</span></code> field has also been set to <code class="docutils literal"><span class="pre">False</span></code></p>
 </div>
 <div class="section" id="dependency-violation-field-is-read-only">
-<h2><code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> field is read-only<a class="headerlink" href="#dependency-violation-field-is-read-only" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> field is the only dependency-related field that is read-only. Trying
+<h2><code class="docutils literal"><span class="pre">dependency_violation</span></code> field is read-only<a class="headerlink" href="#dependency-violation-field-is-read-only" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">dependency_violation</span></code> field is the only dependency-related field that is read-only. Trying
 to modify it will generate a Fault:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;dependency_violation&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;dependency_violation&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># --------------------------------------------------------------------------------</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># --------------------------------------------------------------------------------</span>
 <span class="c1"># XMLRPC Fault 103:</span>
 <span class="c1"># API update() Task.dependency_violation is read only:</span>
 <span class="c1"># {&quot;value&quot;=&gt;false, &quot;field_name&quot;=&gt;&quot;dependency_violation&quot;}</span>
@@ -533,7 +538,9 @@ to modify it will generate a Fault:</p>
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -542,7 +549,7 @@ to modify it will generate a Fault:</p>
         <a href="split_tasks.html" class="btn btn-neutral float-right" title="Split Tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="updating_tasks.html" class="btn btn-neutral float-left" title="Updating Task Dates: How Shotgun Thinks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="updating_tasks.html" class="btn btn-neutral" title="Updating Task Dates: How Shotgun Thinks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -551,7 +558,7 @@ to modify it will generate a Fault:</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk
+        &copy; Copyright 2019, Autodesk.
 
     </p>
   </div> 
@@ -567,15 +574,36 @@ to modify it will generate a Fault:</p>
   
 
 
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'v3.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
 
   
   
-    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
   
  
 

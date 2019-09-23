@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Create a Shotgun API instance &mdash; python-api v3.1.2 documentation</title>
+  <title>Create a Shotgun API instance &mdash; python-api v3.2.0 documentation</title>
   
 
   
@@ -19,37 +19,43 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Create A Shot" href="basic_create_shot.html" />
-    <link rel="prev" title="Examples" href="../tutorials.html" /> 
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="python-api v3.2.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Examples" href="../tutorials.html"/>
+        <link rel="next" title="Create A Shot" href="basic_create_shot.html"/>
+        <link rel="prev" title="Examples" href="../tutorials.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
     <a href='http://developer.shotgunsoftware.com'>
     
@@ -143,7 +149,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.1.2.<br>
+    <b>python-api</b> v3.2.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -161,7 +167,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -169,10 +175,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -219,9 +224,9 @@
   <div class="section" id="create-a-shotgun-api-instance">
 <span id="example-sg-instance"></span><h1>Create a Shotgun API instance<a class="headerlink" href="#create-a-shotgun-api-instance" title="Permalink to this headline">¶</a></h1>
 <p>This example shows you how to establish your initial connection to Shotgun using script-based
-authentication. <code class="docutils literal notranslate"><span class="pre">sg</span></code> represents your Shotgun API instance. Be sure you’ve read
+authentication. <code class="docutils literal"><span class="pre">sg</span></code> represents your Shotgun API instance. Be sure you&#8217;ve read
 <a class="reference internal" href="../../authentication.html#setting-up-shotgun"><span class="std std-ref">Setting Up Shotgun for API Access</span></a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pprint</span> <span class="c1"># Useful for debugging</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pprint</span> <span class="c1"># Useful for debugging</span>
 
 <span class="kn">import</span> <span class="nn">shotgun_api3</span>
 
@@ -242,7 +247,9 @@ authentication. <code class="docutils literal notranslate"><span class="pre">sg<
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -251,7 +258,7 @@ authentication. <code class="docutils literal notranslate"><span class="pre">sg<
         <a href="basic_create_shot.html" class="btn btn-neutral float-right" title="Create A Shot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../tutorials.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../tutorials.html" class="btn btn-neutral" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -260,7 +267,7 @@ authentication. <code class="docutils literal notranslate"><span class="pre">sg<
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk
+        &copy; Copyright 2019, Autodesk.
 
     </p>
   </div> 
@@ -276,15 +283,36 @@ authentication. <code class="docutils literal notranslate"><span class="pre">sg<
   
 
 
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'v3.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
 
   
   
-    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
   
  
 

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Subversion (SVN) Integration &mdash; python-api v3.1.2 documentation</title>
+  <title>Subversion (SVN) Integration &mdash; python-api v3.2.0 documentation</title>
   
 
   
@@ -19,37 +19,43 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Details About Working With Files" href="../attachments.html" />
-    <link rel="prev" title="Using an ActionMenuItem to Package Versions for a Client" href="ami_version_packager.html" /> 
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="python-api v3.2.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Examples" href="../tutorials.html"/>
+        <link rel="next" title="Details About Working With Files" href="../attachments.html"/>
+        <link rel="prev" title="Using an ActionMenuItem to Package Versions for a Client" href="ami_version_packager.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
     <a href='http://developer.shotgunsoftware.com'>
     
@@ -138,7 +144,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.1.2.<br>
+    <b>python-api</b> v3.2.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -156,7 +162,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -164,10 +170,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -223,19 +228,19 @@ the post-commit hook.</li>
 <h2>Post-Commit Hook<a class="headerlink" href="#post-commit-hook" title="Permalink to this headline">¶</a></h2>
 <p>To setup the post-commit hook:</p>
 <ul class="simple">
-<li>Locate the <code class="docutils literal notranslate"><span class="pre">post-commit.tmpl</span></code> file, which is found inside the <code class="docutils literal notranslate"><span class="pre">hooks</span></code> folder in your
+<li>Locate the <code class="docutils literal"><span class="pre">post-commit.tmpl</span></code> file, which is found inside the <code class="docutils literal"><span class="pre">hooks</span></code> folder in your
 repository directory.  This is a template script that has lots of useful comments and can serve
 as a starting point for the real thing.</li>
-<li>Create your very own executable script, and save it in the same <code class="docutils literal notranslate"><span class="pre">hooks</span></code> folder, name it
-<code class="docutils literal notranslate"><span class="pre">post-commit</span></code>, and give it executable permission.</li>
-<li>In your <code class="docutils literal notranslate"><span class="pre">post-commit</span></code> script, invoke your Shotgun API script.</li>
+<li>Create your very own executable script, and save it in the same <code class="docutils literal"><span class="pre">hooks</span></code> folder, name it
+<code class="docutils literal"><span class="pre">post-commit</span></code>, and give it executable permission.</li>
+<li>In your <code class="docutils literal"><span class="pre">post-commit</span></code> script, invoke your Shotgun API script.</li>
 </ul>
-<p>If this is entirely new to you, we highly suggest reading up on the topic. O’Reilly has <a class="reference external" href="http://svnbook.red-bean.com/nightly/en/svn.reposadmin.create.html#svn.reposadmin.create.hooks">a free
+<p>If this is entirely new to you, we highly suggest reading up on the topic. O&#8217;Reilly has <a class="reference external" href="http://svnbook.red-bean.com/nightly/en/svn.reposadmin.create.html#svn.reposadmin.create.hooks">a free
 online guide for Subversion 1.5 and 1.6</a></p>
-<p>Here’s an example of a post-commit hook that we’ve made for Subversion 1.6 using an executable
-Unix shell script.  The last line invokes “shotgun_api_script.py” which is our Python script that
-will do all the heavy lifting.  Lines 4 thru 8 queue up some objects that we’ll use later on.</p>
-<div class="highlight-sh notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+<p>Here&#8217;s an example of a post-commit hook that we&#8217;ve made for Subversion 1.6 using an executable
+Unix shell script.  The last line invokes &#8220;shotgun_api_script.py&#8221; which is our Python script that
+will do all the heavy lifting.  Lines 4 thru 8 queue up some objects that we&#8217;ll use later on.</p>
+<div class="highlight-sh"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
  4
@@ -259,14 +264,14 @@ will do all the heavy lifting.  Lines 4 thru 8 queue up some objects that we’l
 <div class="section" id="explanation-of-selected-lines">
 <h3>Explanation of selected lines<a class="headerlink" href="#explanation-of-selected-lines" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>lines <code class="docutils literal notranslate"><span class="pre">4-5</span></code>: After the commit, Subversion leaves us two string objects in the environment:
-<code class="docutils literal notranslate"><span class="pre">REPOS</span></code> and <code class="docutils literal notranslate"><span class="pre">REV</span></code>  (the repository path and the revision number, respectively).</li>
-<li>lines <code class="docutils literal notranslate"><span class="pre">7-8</span></code>: Here we use the shell command <code class="docutils literal notranslate"><span class="pre">export</span></code> to create two more string objects in the
-environment:  <code class="docutils literal notranslate"><span class="pre">AUTHOR</span></code> and <code class="docutils literal notranslate"><span class="pre">COMMENT</span></code>. To get each value, we use the <code class="docutils literal notranslate"><span class="pre">svnlook</span></code> command with
-our <code class="docutils literal notranslate"><span class="pre">REPOS</span></code> and <code class="docutils literal notranslate"><span class="pre">REV</span></code> values, first with the <code class="docutils literal notranslate"><span class="pre">author</span></code>, and then with <code class="docutils literal notranslate"><span class="pre">log</span></code> subcommand.
+<li>lines <code class="docutils literal"><span class="pre">4-5</span></code>: After the commit, Subversion leaves us two string objects in the environment:
+<code class="docutils literal"><span class="pre">REPOS</span></code> and <code class="docutils literal"><span class="pre">REV</span></code>  (the repository path and the revision number, respectively).</li>
+<li>lines <code class="docutils literal"><span class="pre">7-8</span></code>: Here we use the shell command <code class="docutils literal"><span class="pre">export</span></code> to create two more string objects in the
+environment:  <code class="docutils literal"><span class="pre">AUTHOR</span></code> and <code class="docutils literal"><span class="pre">COMMENT</span></code>. To get each value, we use the <code class="docutils literal"><span class="pre">svnlook</span></code> command with
+our <code class="docutils literal"><span class="pre">REPOS</span></code> and <code class="docutils literal"><span class="pre">REV</span></code> values, first with the <code class="docutils literal"><span class="pre">author</span></code>, and then with <code class="docutils literal"><span class="pre">log</span></code> subcommand.
 These are actually the first two original lines of code - everything else to this point was
-pre-written already in the <code class="docutils literal notranslate"><span class="pre">post-commit.tmpl</span></code> file. nice :)</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">10</span></code>: This is the absolute path to our Shotgun API Script.</li>
+pre-written already in the <code class="docutils literal"><span class="pre">post-commit.tmpl</span></code> file. nice :)</li>
+<li>line <code class="docutils literal"><span class="pre">10</span></code>: This is the absolute path to our Shotgun API Script.</li>
 </ul>
 </div>
 </div>
@@ -276,7 +281,7 @@ pre-written already in the <code class="docutils literal notranslate"><span clas
 API. It will create our Revision in Shotgun along with the author, comment, and because we use
 Trac (a web-based interface for Subversion), it will also populate a URL field with a clickable
 link to the Revision.</p>
-<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
  4
@@ -384,30 +389,30 @@ link to the Revision.</p>
 <div class="section" id="id1">
 <h3>Explanation of selected lines:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>line <code class="docutils literal notranslate"><span class="pre">14</span></code>: This should be the URL to your instance of Shotgun.</li>
-<li>lines <code class="docutils literal notranslate"><span class="pre">15-16</span></code>: Make sure you get these values from the “Scripts” page in the Admin section of
-the Shotgun web application. If you’re not sure how to do this, check out <a class="reference external" href="http://developer.shotgunsoftware.com/python-api/authentication.html" title="(in python-api vv3.1.0)"><span>Authentication</span></a>.</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">17</span></code>: This is the address of Trac, our web-based interface that we use with Subversion.
+<li>line <code class="docutils literal"><span class="pre">14</span></code>: This should be the URL to your instance of Shotgun.</li>
+<li>lines <code class="docutils literal"><span class="pre">15-16</span></code>: Make sure you get these values from the &#8220;Scripts&#8221; page in the Admin section of
+the Shotgun web application. If you&#8217;re not sure how to do this, check out <a class="reference external" href="http://developer.shotgunsoftware.com/python-api/authentication.html" title="(in python-api vv3.1.2)"><span>Authentication</span></a>.</li>
+<li>line <code class="docutils literal"><span class="pre">17</span></code>: This is the address of Trac, our web-based interface that we use with Subversion.
 You may use a different interface, or none at all, so feel free to adjust this line or ignore it
 as your case may be.</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">18</span></code>: Every Revision in Shotgun must have a Project, which is passed to the API as a
-dictionary with two keys, the <code class="docutils literal notranslate"><span class="pre">type</span></code> and the <code class="docutils literal notranslate"><span class="pre">id</span></code>.  Of course the <code class="docutils literal notranslate"><span class="pre">type</span></code> value will always
-remain <code class="docutils literal notranslate"><span class="pre">Project</span></code> (case sensitive), but the <code class="docutils literal notranslate"><span class="pre">id</span></code> will change by Project.  To find out the
-<code class="docutils literal notranslate"><span class="pre">id</span></code> of your Project, go to the Projects page in the Shotgun web application, locate the
-Project where you want your Revisions created, and then locate its <code class="docutils literal notranslate"><span class="pre">id</span></code> field (which you may
-need to display - if you don’t see it, right click on any column header then select
-“Insert Column” &gt; “Id”).  Note that for this example we assume that all Revisions in this
+<li>line <code class="docutils literal"><span class="pre">18</span></code>: Every Revision in Shotgun must have a Project, which is passed to the API as a
+dictionary with two keys, the <code class="docutils literal"><span class="pre">type</span></code> and the <code class="docutils literal"><span class="pre">id</span></code>.  Of course the <code class="docutils literal"><span class="pre">type</span></code> value will always
+remain <code class="docutils literal"><span class="pre">Project</span></code> (case sensitive), but the <code class="docutils literal"><span class="pre">id</span></code> will change by Project.  To find out the
+<code class="docutils literal"><span class="pre">id</span></code> of your Project, go to the Projects page in the Shotgun web application, locate the
+Project where you want your Revisions created, and then locate its <code class="docutils literal"><span class="pre">id</span></code> field (which you may
+need to display - if you don&#8217;t see it, right click on any column header then select
+&#8220;Insert Column&#8221; &gt; &#8220;Id&#8221;).  Note that for this example we assume that all Revisions in this
 Subversion repository will belong to the same Project.</li>
-<li>lines <code class="docutils literal notranslate"><span class="pre">28-31</span></code>: Grab the values from the objects that were left for us in the environment.</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">34</span></code>: Add the Revision number to complete the path of our Trac url.</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">37</span></code>: Make sure that a valid User exists in Shotgun.  In our example, we assume that our
-Users’ Shotgun logins match their Subversion names.  If the user exists in Shotgun, that
-user’s <code class="docutils literal notranslate"><span class="pre">id</span></code> will be returned as <code class="docutils literal notranslate"><span class="pre">result['id']</span></code>, which we will need later on in line 46.</li>
-<li>lines <code class="docutils literal notranslate"><span class="pre">40-48</span></code>: Use all the meta data we’ve gathered to create a Revision in Shotgun. If none
-of these lines make any sense, check out more on the <code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code> method
-here.   Line 41 deserves special mention: notice that we define a dictionary called <code class="docutils literal notranslate"><span class="pre">url</span></code> that
-has three important keys: <code class="docutils literal notranslate"><span class="pre">content_type</span></code>, <code class="docutils literal notranslate"><span class="pre">url</span></code>, and <code class="docutils literal notranslate"><span class="pre">name</span></code>, and we then pass this in as
-the value for the <code class="docutils literal notranslate"><span class="pre">attachment</span></code> field when we create the Revision.  If you’re even in doubt,
+<li>lines <code class="docutils literal"><span class="pre">28-31</span></code>: Grab the values from the objects that were left for us in the environment.</li>
+<li>line <code class="docutils literal"><span class="pre">34</span></code>: Add the Revision number to complete the path of our Trac url.</li>
+<li>line <code class="docutils literal"><span class="pre">37</span></code>: Make sure that a valid User exists in Shotgun.  In our example, we assume that our
+Users&#8217; Shotgun logins match their Subversion names.  If the user exists in Shotgun, that
+user&#8217;s <code class="docutils literal"><span class="pre">id</span></code> will be returned as <code class="docutils literal"><span class="pre">result['id']</span></code>, which we will need later on in line 46.</li>
+<li>lines <code class="docutils literal"><span class="pre">40-48</span></code>: Use all the meta data we&#8217;ve gathered to create a Revision in Shotgun. If none
+of these lines make any sense, check out more on the <code class="xref py py-meth docutils literal"><span class="pre">create()</span></code> method
+here.   Line 41 deserves special mention: notice that we define a dictionary called <code class="docutils literal"><span class="pre">url</span></code> that
+has three important keys: <code class="docutils literal"><span class="pre">content_type</span></code>, <code class="docutils literal"><span class="pre">url</span></code>, and <code class="docutils literal"><span class="pre">name</span></code>, and we then pass this in as
+the value for the <code class="docutils literal"><span class="pre">attachment</span></code> field when we create the Revision.  If you&#8217;re even in doubt,
 double check the syntax and requirements for the different field types here.</li>
 </ul>
 </div>
@@ -428,7 +433,9 @@ invoke it have appropriate permissions for the script and that folders going bac
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -437,7 +444,7 @@ invoke it have appropriate permissions for the script and that folders going bac
         <a href="../attachments.html" class="btn btn-neutral float-right" title="Details About Working With Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="ami_version_packager.html" class="btn btn-neutral float-left" title="Using an ActionMenuItem to Package Versions for a Client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="ami_version_packager.html" class="btn btn-neutral" title="Using an ActionMenuItem to Package Versions for a Client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -446,7 +453,7 @@ invoke it have appropriate permissions for the script and that folders going bac
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk
+        &copy; Copyright 2019, Autodesk.
 
     </p>
   </div> 
@@ -462,15 +469,36 @@ invoke it have appropriate permissions for the script and that folders going bac
   
 
 
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'v3.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
 
   
   
-    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
   
  
 

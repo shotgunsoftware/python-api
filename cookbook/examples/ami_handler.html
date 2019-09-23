@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Handling Action Menu Item Calls &mdash; python-api v3.1.2 documentation</title>
+  <title>Handling Action Menu Item Calls &mdash; python-api v3.2.0 documentation</title>
   
 
   
@@ -19,37 +19,43 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Using an ActionMenuItem to Package Versions for a Client" href="ami_version_packager.html" />
-    <link rel="prev" title="Upload a Thumbnail for a Version" href="basic_upload_thumbnail_version.html" /> 
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="python-api v3.2.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Examples" href="../tutorials.html"/>
+        <link rel="next" title="Using an ActionMenuItem to Package Versions for a Client" href="ami_version_packager.html"/>
+        <link rel="prev" title="Upload a Thumbnail for a Version" href="basic_upload_thumbnail_version.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
     <a href='http://developer.shotgunsoftware.com'>
     
@@ -138,7 +144,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.1.2.<br>
+    <b>python-api</b> v3.2.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -156,7 +162,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -164,10 +170,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -213,9 +218,9 @@
             
   <div class="section" id="handling-action-menu-item-calls">
 <span id="ami-handler"></span><h1>Handling Action Menu Item Calls<a class="headerlink" href="#handling-action-menu-item-calls" title="Permalink to this headline">¶</a></h1>
-<p>This is an example ActionMenu Python class to handle the <code class="docutils literal notranslate"><span class="pre">GET</span></code> request sent from an
-ActionMenuItem. It doesn’t manage dispatching custom protocols but rather takes the arguments
-from any <code class="docutils literal notranslate"><span class="pre">GET</span></code> data and parses them into the easily accessible and correctly typed instance
+<p>This is an example ActionMenu Python class to handle the <code class="docutils literal"><span class="pre">GET</span></code> request sent from an
+ActionMenuItem. It doesn&#8217;t manage dispatching custom protocols but rather takes the arguments
+from any <code class="docutils literal"><span class="pre">GET</span></code> data and parses them into the easily accessible and correctly typed instance
 variables for your Python scripts.</p>
 <p>Available as a Gist at <a class="reference external" href="https://gist.github.com/3253287">https://gist.github.com/3253287</a></p>
 <div class="admonition seealso">
@@ -225,18 +230,18 @@ variables for your Python scripts.</p>
 <div class="section" id="get-vs-post">
 <h2>GET vs. POST<a class="headerlink" href="#get-vs-post" title="Permalink to this headline">¶</a></h2>
 <p>Action Menu Items that open a url via <cite>http</cite> or <cite>https</cite> to another web server send their data
-via <code class="docutils literal notranslate"><span class="pre">POST</span></code>. If you’re using a custom protocol the data is sent via <code class="docutils literal notranslate"><span class="pre">GET</span></code>.</p>
+via <code class="docutils literal"><span class="pre">POST</span></code>. If you&#8217;re using a custom protocol the data is sent via <code class="docutils literal"><span class="pre">GET</span></code>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Browsers limit the length of a <code class="docutils literal notranslate"><span class="pre">GET</span></code> request. If you exceed this limit by attempting to
+<p class="last">Browsers limit the length of a <code class="docutils literal"><span class="pre">GET</span></code> request. If you exceed this limit by attempting to
 select a lot of rows and launch your custom protocol, you may encounter
-“Failed to load resource” errors in your console.</p>
+&#8220;Failed to load resource&#8221; errors in your console.</p>
 </div>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last">This <a class="reference external" href="http://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers">Stack Overflow article “What is the maximum length of a URL in different browsers?”</a></p>
+<p class="last">This <a class="reference external" href="http://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers">Stack Overflow article &#8220;What is the maximum length of a URL in different browsers?&#8221;</a></p>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># encoding: utf-8</span>
 
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
@@ -454,7 +459,9 @@ select a lot of rows and launch your custom protocol, you may encounter
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -463,7 +470,7 @@ select a lot of rows and launch your custom protocol, you may encounter
         <a href="ami_version_packager.html" class="btn btn-neutral float-right" title="Using an ActionMenuItem to Package Versions for a Client" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="basic_upload_thumbnail_version.html" class="btn btn-neutral float-left" title="Upload a Thumbnail for a Version" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="basic_upload_thumbnail_version.html" class="btn btn-neutral" title="Upload a Thumbnail for a Version" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -472,7 +479,7 @@ select a lot of rows and launch your custom protocol, you may encounter
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk
+        &copy; Copyright 2019, Autodesk.
 
     </p>
   </div> 
@@ -488,15 +495,36 @@ select a lot of rows and launch your custom protocol, you may encounter
   
 
 
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'v3.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
 
   
   
-    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
   
  
 

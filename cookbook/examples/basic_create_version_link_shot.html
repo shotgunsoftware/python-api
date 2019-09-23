@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Create a Version Linked to a Shot &mdash; python-api v3.1.2 documentation</title>
+  <title>Create a Version Linked to a Shot &mdash; python-api v3.2.0 documentation</title>
   
 
   
@@ -19,37 +19,43 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Upload a Thumbnail for a Version" href="basic_upload_thumbnail_version.html" />
-    <link rel="prev" title="Create a Shot with a Task Template" href="basic_create_shot_task_template.html" /> 
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="python-api v3.2.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Examples" href="../tutorials.html"/>
+        <link rel="next" title="Upload a Thumbnail for a Version" href="basic_upload_thumbnail_version.html"/>
+        <link rel="prev" title="Create a Shot with a Task Template" href="basic_create_shot_task_template.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
     <a href='http://developer.shotgunsoftware.com'>
     
@@ -143,7 +149,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.1.2.<br>
+    <b>python-api</b> v3.2.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -161,7 +167,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -169,10 +175,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -218,13 +223,13 @@
             
   <div class="section" id="create-a-version-linked-to-a-shot">
 <h1>Create a Version Linked to a Shot<a class="headerlink" href="#create-a-version-linked-to-a-shot" title="Permalink to this headline">¶</a></h1>
-<p>You’ve just created a sweet new Version of your shot. Now you want to update Shotgun and create a
-new <code class="docutils literal notranslate"><span class="pre">Version</span></code> entity linked to the Shot.</p>
+<p>You&#8217;ve just created a sweet new Version of your shot. Now you want to update Shotgun and create a
+new <code class="docutils literal"><span class="pre">Version</span></code> entity linked to the Shot.</p>
 <div class="section" id="find-the-shot">
 <h2>Find the Shot<a class="headerlink" href="#find-the-shot" title="Permalink to this headline">¶</a></h2>
-<p>First we need to find the Shot since we’ll need to know know its <code class="docutils literal notranslate"><span class="pre">id</span></code> in order to link our Version
+<p>First we need to find the Shot since we&#8217;ll need to know know its <code class="docutils literal"><span class="pre">id</span></code> in order to link our Version
 to it.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}],</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}],</span>
             <span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;100_010&#39;</span><span class="p">]</span> <span class="p">]</span>
 <span class="n">shot</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
 </pre></div>
@@ -232,10 +237,10 @@ to it.</p>
 </div>
 <div class="section" id="find-the-task">
 <h2>Find the Task<a class="headerlink" href="#find-the-task" title="Permalink to this headline">¶</a></h2>
-<p>Now we find the Task that the Version relates to, again so we can use the <code class="docutils literal notranslate"><span class="pre">id</span></code> to link it to the
-Version we’re creating. For this search we’ll use the Shot <code class="docutils literal notranslate"><span class="pre">id</span></code> (which we have now in the <code class="docutils literal notranslate"><span class="pre">shot</span></code>
-variable from the previous search) and the Task Name, which maps to the <code class="docutils literal notranslate"><span class="pre">content</span></code> field.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}],</span>
+<p>Now we find the Task that the Version relates to, again so we can use the <code class="docutils literal"><span class="pre">id</span></code> to link it to the
+Version we&#8217;re creating. For this search we&#8217;ll use the Shot <code class="docutils literal"><span class="pre">id</span></code> (which we have now in the <code class="docutils literal"><span class="pre">shot</span></code>
+variable from the previous search) and the Task Name, which maps to the <code class="docutils literal"><span class="pre">content</span></code> field.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}],</span>
             <span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">shot</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]}],</span>
             <span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;Animation&#39;</span><span class="p">]</span> <span class="p">]</span>
 <span class="n">task</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
@@ -251,7 +256,7 @@ in Shotgun. We highly recommend doing this whenever possible.</p>
 <div class="section" id="create-the-version">
 <h2>Create the Version<a class="headerlink" href="#create-the-version" title="Permalink to this headline">¶</a></h2>
 <p>Now we can create the Version with the link to the Shot and the Task:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
          <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010_anim_v1&#39;</span><span class="p">,</span>
          <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;first pass at opening shot with bunnies&#39;</span><span class="p">,</span>
          <span class="s1">&#39;sg_path_to_frames&#39;</span><span class="p">:</span> <span class="s1">&#39;/v1/gun/s100/010/frames/anim/100_010_animv1_jack.#.jpg&#39;</span><span class="p">,</span>
@@ -262,48 +267,48 @@ in Shotgun. We highly recommend doing this whenever possible.</p>
 <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will create a new Version named ‘100_010_anim_v1’ linked to the ‘Animation’ Task for Shot
-‘100_010’ in the Project ‘Gunslinger’.</p>
+<p>This will create a new Version named &#8216;100_010_anim_v1&#8217; linked to the &#8216;Animation&#8217; Task for Shot
+&#8216;100_010&#8217; in the Project &#8216;Gunslinger&#8217;.</p>
 <ul>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value is
+<li><p class="first"><code class="docutils literal"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value is
 the value to set.</p>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">project</span></code> and <code class="docutils literal notranslate"><span class="pre">code</span></code> are required</p>
+<li><p class="first"><code class="docutils literal"><span class="pre">project</span></code> and <code class="docutils literal"><span class="pre">code</span></code> are required</p>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">description</span></code> and <code class="docutils literal notranslate"><span class="pre">sg_path_to_frames</span></code> are just text fields that you might want to update as
+<li><p class="first"><code class="docutils literal"><span class="pre">description</span></code> and <code class="docutils literal"><span class="pre">sg_path_to_frames</span></code> are just text fields that you might want to update as
 well</p>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">sg_status_list</span></code> is the status column for the Version. Here we are setting it to “rev” (Pending
-Review) so that it will get reviewed in the next dailies session and people will “ooh” and “aaah”.</p>
+<li><p class="first"><code class="docutils literal"><span class="pre">sg_status_list</span></code> is the status column for the Version. Here we are setting it to &#8220;rev&#8221; (Pending
+Review) so that it will get reviewed in the next dailies session and people will &#8220;ooh&#8221; and &#8220;aaah&#8221;.</p>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">entity</span></code> is where we link this version to the Shot. Entity columns are always handled with this
-format. You must provide the entity <code class="docutils literal notranslate"><span class="pre">type</span></code> and its <code class="docutils literal notranslate"><span class="pre">id</span></code>.</p>
+<li><p class="first"><code class="docutils literal"><span class="pre">entity</span></code> is where we link this version to the Shot. Entity columns are always handled with this
+format. You must provide the entity <code class="docutils literal"><span class="pre">type</span></code> and its <code class="docutils literal"><span class="pre">id</span></code>.</p>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">sg_task</span></code> is another entity link field specifically for the Version’s Task link.  This uses the
+<li><p class="first"><code class="docutils literal"><span class="pre">sg_task</span></code> is another entity link field specifically for the Version&#8217;s Task link.  This uses the
 same entity format as the Shot link, but pointing to the Task entity this time.</p>
 </li>
-<li><p class="first"><code class="docutils literal notranslate"><span class="pre">user</span></code> is another entity column where we set the artist responsible for this masterpiece. In
-this example, I know the ‘id’ that corresponds to this user, but if you don’t know the id you can
+<li><p class="first"><code class="docutils literal"><span class="pre">user</span></code> is another entity column where we set the artist responsible for this masterpiece. In
+this example, I know the &#8216;id&#8217; that corresponds to this user, but if you don&#8217;t know the id you can
 look it up by searching on any of the fields, similar to what we did for the Shot above, like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;jschmoe&#39;</span><span class="p">]]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;jschmoe&#39;</span><span class="p">]]</span>
 <span class="n">user</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;HumanUser&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 </ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">result</span></code> variable now contains the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the new Version that was created:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">214</span>
+<p>The <code class="docutils literal"><span class="pre">result</span></code> variable now contains the <code class="docutils literal"><span class="pre">id</span></code> of the new Version that was created:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">214</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="upload-a-movie-for-review-in-screening-room">
 <h2>Upload a movie for review in Screening Room<a class="headerlink" href="#upload-a-movie-for-review-in-screening-room" title="Permalink to this headline">¶</a></h2>
-<p>If Screening Room’s transcoding feature is enabled on your site (hosted sites have this by
-default), then you can use the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code> method to upload a QuickTime
-movie, PDF, still image, etc. to the <code class="docutils literal notranslate"><span class="pre">sg_uploaded_movie</span></code> field on a Version.  Once the movie is
+<p>If Screening Room&#8217;s transcoding feature is enabled on your site (hosted sites have this by
+default), then you can use the <code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code> method to upload a QuickTime
+movie, PDF, still image, etc. to the <code class="docutils literal"><span class="pre">sg_uploaded_movie</span></code> field on a Version.  Once the movie is
 uploaded, it will automatically be queued for transcoding.  When transcoding is complete, the
 Version will be playable in the Screening Room app, or in the Overlay player by clicking on the
-Play button that will appear on the Version’s thumbnail.</p>
+Play button that will appear on the Version&#8217;s thumbnail.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Transcoding also generates a thumbnail and filmstrip thumbnail automatically.</p>
@@ -313,7 +318,9 @@ Play button that will appear on the Version’s thumbnail.</p>
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -322,7 +329,7 @@ Play button that will appear on the Version’s thumbnail.</p>
         <a href="basic_upload_thumbnail_version.html" class="btn btn-neutral float-right" title="Upload a Thumbnail for a Version" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="basic_create_shot_task_template.html" class="btn btn-neutral float-left" title="Create a Shot with a Task Template" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="basic_create_shot_task_template.html" class="btn btn-neutral" title="Create a Shot with a Task Template" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -331,7 +338,7 @@ Play button that will appear on the Version’s thumbnail.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk
+        &copy; Copyright 2019, Autodesk.
 
     </p>
   </div> 
@@ -347,15 +354,36 @@ Play button that will appear on the Version’s thumbnail.</p>
   
 
 
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'v3.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
 
   
   
-    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
   
  
 

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>shotgun_api3.shotgun &mdash; python-api v3.1.2 documentation</title>
+  <title>shotgun_api3.shotgun &mdash; python-api v3.2.0 documentation</title>
   
 
   
@@ -19,35 +19,41 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="python-api v3.2.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
     <a href='http://developer.shotgunsoftware.com'>
     
@@ -120,7 +126,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.1.2.<br>
+    <b>python-api</b> v3.2.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -138,7 +144,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -146,10 +152,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -178,6 +183,8 @@
     
     
       <li class="wy-breadcrumbs-aside">
+        
+            
         
       </li>
     
@@ -309,7 +316,7 @@
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.1.2&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.2.0&quot;</span>
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Errors</span>
@@ -2198,7 +2205,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;schema_field_create&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Shotgun.schema_field_update"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.schema_field_update">[docs]</a>    <span class="k">def</span> <span class="nf">schema_field_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">properties</span><span class="p">):</span>
+<div class="viewcode-block" id="Shotgun.schema_field_update"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.schema_field_update">[docs]</a>    <span class="k">def</span> <span class="nf">schema_field_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">project_entity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the properties for the specified field on an entity.</span>
 
@@ -2216,7 +2223,16 @@
 <span class="sd">        :param field_name: Internal Shotgun name of the field to update.</span>
 <span class="sd">        :param properties: Dictionary with key/value pairs where the key is the property to be</span>
 <span class="sd">            updated and the value is the new value.</span>
+<span class="sd">        :param dict project_entity: Optional Project entity specifying which project to modify the</span>
+<span class="sd">            ``visible`` property for. If the ``visible`` is present in ``properties`` and</span>
+<span class="sd">            ``project_entity`` is not set, an exception will be raised. Example:</span>
+<span class="sd">            ``{&#39;type&#39;: &#39;Project&#39;, &#39;id&#39;: 3}``</span>
 <span class="sd">        :returns: ``True`` if the field was updated.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            The ``project_entity`` parameter can only affect the state of the ``visible`` property</span>
+<span class="sd">            and has no impact on other properties.</span>
+
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -2228,7 +2244,7 @@
                 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">((</span><span class="n">properties</span> <span class="ow">or</span> <span class="p">{}))</span>
             <span class="p">]</span>
         <span class="p">}</span>
-
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_project_param</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">project_entity</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;schema_field_update&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.schema_field_delete"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.schema_field_delete">[docs]</a>    <span class="k">def</span> <span class="nf">schema_field_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
@@ -4398,7 +4414,9 @@
 </pre></div>
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -4407,7 +4425,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk
+        &copy; Copyright 2019, Autodesk.
 
     </p>
   </div> 
@@ -4423,15 +4441,36 @@
   
 
 
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'v3.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
 
   
   
-    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
   
  
 

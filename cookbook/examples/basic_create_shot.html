@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Create A Shot &mdash; python-api v3.1.2 documentation</title>
+  <title>Create A Shot &mdash; python-api v3.2.0 documentation</title>
   
 
   
@@ -19,37 +19,43 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+  
+  
     
 
   
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Find a Shot" href="basic_find_shot.html" />
-    <link rel="prev" title="Create a Shotgun API instance" href="basic_sg_instance.html" /> 
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="python-api v3.2.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Examples" href="../tutorials.html"/>
+        <link rel="next" title="Find a Shot" href="basic_find_shot.html"/>
+        <link rel="prev" title="Create a Shotgun API instance" href="basic_sg_instance.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
    
   <div class="wy-grid-for-nav">
+
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+        <div class="wy-side-nav-search">
           
     <a href='http://developer.shotgunsoftware.com'>
     
@@ -143,7 +149,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.1.2.<br>
+    <b>python-api</b> v3.2.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -161,7 +167,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -169,10 +175,9 @@
       </nav>
 
 
+      
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
           
 
 
@@ -219,16 +224,16 @@
   <div class="section" id="create-a-shot">
 <span id="example-create-shot"></span><h1>Create A Shot<a class="headerlink" href="#create-a-shot" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="building-the-data-and-calling-create">
-<h2>Building the data and calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code><a class="headerlink" href="#building-the-data-and-calling-create" title="Permalink to this headline">¶</a></h2>
+<h2>Building the data and calling <code class="xref py py-meth docutils literal"><span class="pre">create()</span></code><a class="headerlink" href="#building-the-data-and-calling-create" title="Permalink to this headline">¶</a></h2>
 <p>To create a Shot, you need to provide the following values:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">project</span></code> is a link to the Project the Shot belongs to. It should be a dictionary like
-<code class="docutils literal notranslate"><span class="pre">{&quot;type&quot;:</span> <span class="pre">&quot;Project&quot;,</span> <span class="pre">&quot;id&quot;:</span> <span class="pre">123}</span></code> where <code class="docutils literal notranslate"><span class="pre">id</span></code> is the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the Project.</li>
-<li><code class="docutils literal notranslate"><span class="pre">code</span></code> (this is the field that stores the name Shot)</li>
+<li><code class="docutils literal"><span class="pre">project</span></code> is a link to the Project the Shot belongs to. It should be a dictionary like
+<code class="docutils literal"><span class="pre">{&quot;type&quot;:</span> <span class="pre">&quot;Project&quot;,</span> <span class="pre">&quot;id&quot;:</span> <span class="pre">123}</span></code> where <code class="docutils literal"><span class="pre">id</span></code> is the <code class="docutils literal"><span class="pre">id</span></code> of the Project.</li>
+<li><code class="docutils literal"><span class="pre">code</span></code> (this is the field that stores the name Shot)</li>
 <li>optionally any other info you want to provide</li>
 </ul>
 <p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Project&quot;</span><span class="p">,</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
     <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010&#39;</span><span class="p">,</span>
     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
@@ -237,17 +242,17 @@
 <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will create a new Shot named “100_010” in the Project “Gunslinger” (which has an <code class="docutils literal notranslate"><span class="pre">id</span></code> of 4).</p>
+<p>This will create a new Shot named &#8220;100_010&#8221; in the Project &#8220;Gunslinger&#8221; (which has an <code class="docutils literal"><span class="pre">id</span></code> of 4).</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value
+<li><code class="docutils literal"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value
 is the the value to set.</li>
-<li><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the Shotgun API instance you created in <a class="reference internal" href="basic_sg_instance.html#example-sg-instance"><span class="std std-ref">Create a Shotgun API instance</span></a>.</li>
-<li><code class="docutils literal notranslate"><span class="pre">create()</span></code> is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun.create()</span></code> API method we are calling. We pass in the
-entity type we’re searching for and the data we’re setting.</li>
+<li><code class="docutils literal"><span class="pre">sg</span></code> is the Shotgun API instance you created in <a class="reference internal" href="basic_sg_instance.html#example-sg-instance"><span class="std std-ref">Create a Shotgun API instance</span></a>.</li>
+<li><code class="docutils literal"><span class="pre">create()</span></code> is the <code class="xref py py-meth docutils literal"><span class="pre">shotgun_api3.Shotgun.create()</span></code> API method we are calling. We pass in the
+entity type we&#8217;re searching for and the data we&#8217;re setting.</li>
 </ul>
 <p class="rubric">Result</p>
-<p>The variable <code class="docutils literal notranslate"><span class="pre">result</span></code> now contains a dictionary hash with the Shot information you created.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<p>The variable <code class="docutils literal"><span class="pre">result</span></code> now contains a dictionary hash with the Shot information you created.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010&#39;</span><span class="p">,</span>
     <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
     <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">40435</span><span class="p">,</span>
@@ -257,15 +262,15 @@ entity type we’re searching for and the data we’re setting.</li>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>In addition, Shotgun has returned the <code class="docutils literal notranslate"><span class="pre">id</span></code> that it has assigned to the Shot, as well as a
-<code class="docutils literal notranslate"><span class="pre">type</span></code> value. <code class="docutils literal notranslate"><span class="pre">type</span></code> is provided for convenience simply to help you identify what entity type
+<p>In addition, Shotgun has returned the <code class="docutils literal"><span class="pre">id</span></code> that it has assigned to the Shot, as well as a
+<code class="docutils literal"><span class="pre">type</span></code> value. <code class="docutils literal"><span class="pre">type</span></code> is provided for convenience simply to help you identify what entity type
 this dictionary represents. It does not correspond to any field in Shotgun.</p>
-<p>Shotgun will <em>always</em> return the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys in the dictionary when there are results
+<p>Shotgun will <em>always</em> return the <code class="docutils literal"><span class="pre">id</span></code> and <code class="docutils literal"><span class="pre">type</span></code> keys in the dictionary when there are results
 representing an entity.</p>
 </div>
 <div class="section" id="the-complete-example">
 <h2>The Complete Example<a class="headerlink" href="#the-complete-example" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Imports</span>
@@ -303,7 +308,7 @@ representing an entity.</p>
 </pre></div>
 </div>
 <p>And here is the output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010&#39;</span><span class="p">,</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010&#39;</span><span class="p">,</span>
  <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
  <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">40435</span><span class="p">,</span>
  <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Demo Project&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">},</span>
@@ -317,7 +322,9 @@ representing an entity.</p>
 
 
            </div>
-           
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
@@ -326,7 +333,7 @@ representing an entity.</p>
         <a href="basic_find_shot.html" class="btn btn-neutral float-right" title="Find a Shot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="basic_sg_instance.html" class="btn btn-neutral float-left" title="Create a Shotgun API instance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="basic_sg_instance.html" class="btn btn-neutral" title="Create a Shotgun API instance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -335,7 +342,7 @@ representing an entity.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Autodesk
+        &copy; Copyright 2019, Autodesk.
 
     </p>
   </div> 
@@ -351,15 +358,36 @@ representing an entity.</p>
   
 
 
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'v3.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
 
   
   
-    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
   
  
 
