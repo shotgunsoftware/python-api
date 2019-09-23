@@ -116,7 +116,6 @@ Integration and unit tests are provided.
     - Make sure the date of the release matches today. We try and keep this TBD until we're ready to do a release so it's easy to catch that it needs to be updated.
     - Make sure the version number is filled out and correct. We follow semantic versioning. Or more correctly, we should be following it.
 2) Ensure any changes or additions to public methods are documented
-    - Update the Github wiki, and usually you'll need to update the Method Reference page with concise and exact documentation of the changes that are in this release.
     - Ensure that doc strings are updated in the code itself to work with Sphinx and are correctly formatted.
     - Examples are always good especially if this a new feature or method.
     - Think about a new user to the API trying to figure out how to use the features you're documenting.
@@ -130,7 +129,7 @@ Integration and unit tests are provided.
     - Add more detailed information regarding the changes in this release. This is a great place to add examples, and reasons for the change!
 
 ### Letting the world know
-We usually send an email to the `shotgun-dev` list with an announcement of the release and highlight the changes.
+Post a message in the [Pipeline Community channel](https://community.shotgunsoftware.com/c/pipeline) and send an email to [shotgun-dev](https://groups.google.com/a/shotgunsoftware.com/forum/#!forum/shotgun-dev) with a link to the community post.
 
 ### Prepare for the Next Dev Cycle
 1) Update the `__version__` value in `shotgun_api3/shotgun.py` to the next version number with `.dev` appended to it. For example, `v3.0.24.dev`
