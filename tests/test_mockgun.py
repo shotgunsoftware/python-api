@@ -63,13 +63,13 @@ class TestBaseWithExceptionTests(unittest.TestCase):
     def assertRaisesRegexp(self, exception_type, re_msg, func):
         try:
             func()
-        except exception_type, exception:
+        except exception_type as exception:
             matches = re.findall(re_msg, str(exception))
             if not matches:
                 self.fail("Expected exception to match '%s', got '%s' instead." % (
                     re_msg, str(exception)
                 ))
-        except Exception, ex:
+        except Exception as ex:
             self.fail("Expected exception of type %s, got %s" % (exception_type, type(ex)))
         else:
             self.fail("Expected %s was not raised." % exception_type)

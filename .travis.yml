@@ -1,22 +1,89 @@
-language: python
-python:
-  - "2.6"
-  - "2.7"
+# Copyright (c) 2019 Shotgun Software Inc.
+#
+# CONFIDENTIAL AND PROPRIETARY
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
+# Source Code License included in this distribution package. See LICENSE.
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
+# not expressly granted therein are reserved by Shotgun Software Inc.
 
-# use trusty dist, since xenial (default) does not support python 2.6
-dist: trusty
+language: python
+
+# We need to test on multiple distros, since python 2.6 is not supported in xenial
+# and 3.7 is not supported in trusty.  For now just use trusty to test 2.6, and use
+# the more modern xenial for 2.7 and 3.7.
+
+# Additionally, we'll test on multiple sites.  To accomplish this, we store the
+# secrets for the second site in a set of additional environment variables,
+# and copy those into the standard environment variables when running on the
+# second site.
+matrix:
+  include:
+
+    # Use trusty dist for python 2.6, since the built-in xenial distro (default)
+    # does not support Python 2.6
+    # See https://docs.travis-ci.com/user/reference/xenial/#python-support
+
+    # Python 2.6, Server #1
+    - dist: trusty
+      python: "2.6"
+      # flake8 does not support python 2.6, so only run it on 2.7+
+      env:
+        - RUN_FLAKE=false
+
+    # Python 2.6, Server #2
+    - dist: trusty
+      python: "2.6"
+      # flake8 does not support python 2.6, so only run it on 2.7+
+      env:
+        - RUN_FLAKE=false
+        - SG_SERVER_URL=$SG_SERVER_URL_2
+        - SG_API_KEY=$SG_API_KEY_2
+        - SG_HUMAN_PASSWORD=$SG_HUMAN_PASSWORD_2
+
+    # Test python 2.7 and 3.7 on Xenial.
+
+    # Python 2.7, Server #1
+    - dist: xenial
+      python: "2.7"
+      env:
+        - RUN_FLAKE=true
+
+    # Python 2.7, Server #2
+    - dist: xenial
+      python: "2.7"
+      env:
+        - RUN_FLAKE=true
+        - SG_SERVER_URL=$SG_SERVER_URL_2
+        - SG_API_KEY=$SG_API_KEY_2
+        - SG_HUMAN_PASSWORD=$SG_HUMAN_PASSWORD_2
+
+    # Python 3.7, Server #1
+    - dist: xenial
+      python: "3.7"
+      env:
+        - RUN_FLAKE=true
+
+    # Python 3.7, Server #1
+    - dist: xenial
+      python: "3.7"
+      env:
+        - RUN_FLAKE=true
+        - SG_SERVER_URL=$SG_SERVER_URL_2
+        - SG_API_KEY=$SG_API_KEY_2
+        - SG_HUMAN_PASSWORD=$SG_HUMAN_PASSWORD_2
 
 # command to install dependencies
 install:
   - pip install -r tests/ci_requirements.txt
 before_script:
   - cp ./tests/example_config ./tests/config
-# command to run tests
-script: coverage run -m nose
+# Run flake and then run tests
+script:
+  - if [ -n "$RUN_FLAKE" = true ]; then flake8; fi
+  - coverage run -m nose --config="nose.cfg"
 after_success: coveralls
 notifications:
   email:
     - api@shotgunsoftware.com
-  slack:
-    rooms:
-      secure: NgcVxptQji2OL7EKx5owh21tOl4rRg51ydYhLPHpBIpBVzlqPxi1jbMHpcbl8mG+GuhU6y1D6kVQgQfuAfIWx5YOc4FodhOFZgeS+eol5RTmEepl1OT6XmAVgEclSZUYQmK25OkcxnFnOV/31RuDPXWcgCvSBZqTy6lAbOZ5VwQ=

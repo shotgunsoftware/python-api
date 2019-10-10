@@ -1,3 +1,13 @@
+# Copyright (c) 2019 Shotgun Software Inc.
+#
+# CONFIDENTIAL AND PROPRIETARY
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
+# Source Code License included in this distribution package. See LICENSE.
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
+# not expressly granted therein are reserved by Shotgun Software Inc.
+
 # Example server and login information to use for tests which require a live server.
 # This file should be renamed to config and the appropriate values should be added.
 
@@ -5,6 +15,7 @@
 
 # Full url to the Shotgun server server
 # e.g. http://my-company.shotgunstudio.com
+# be careful to not end server_url with a "/", or some tests may fail
 server_url     : http://0.0.0.0:3000
 # script name as key as listed in admin panel for your server
 script_name    : test script name

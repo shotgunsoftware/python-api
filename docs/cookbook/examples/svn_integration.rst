@@ -117,11 +117,11 @@ link to the Revision.
                            'created_by':{"type":"HumanUser", "id":result['id']}
                            }
            revision = sg.create("Revision", parameters)
-           print "created Revision #"+str(revision_code)
+           print("created Revision #"+str(revision_code))
        
        # Send error message if valid HumanUser is not found
        else:
-           print "Unable to find valid Shotgun User with login: "+author+", Revision not created in Shotgun."
+           print("Unable to find valid Shotgun User with login: "+author+", Revision not created in Shotgun.")
 
 
 

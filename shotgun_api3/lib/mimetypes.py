@@ -21,6 +21,10 @@ Functions:
 init([files]) -- parse a list of files, default knownfiles (on Windows, the
   default values are taken from the registry)
 read_mime_types(file) -- parse one file, return a dictionary or None
+
+Note that this code has not been updated for python 3 compatibility, as it is
+a patched version of the native mimetypes module and is used only in Python
+versions 2.7.0 - 2.7.9, which included a broken version of the mimetypes module.
 """
 
 import os

@@ -1,10 +1,10 @@
-[![VFX Platform](https://img.shields.io/badge/vfxplatform-2018-yellow.svg)](http://www.vfxplatform.com/)
+[![VFX Platform](https://img.shields.io/badge/vfxplatform-2020-blue.svg)](http://www.vfxplatform.com/)
+[![Python 2.6 2.7 3.7](https://img.shields.io/badge/python-2.6%20%7C%202.7%20%7C%203.7-blue.svg)](https://www.python.org/)
 [![Reference Documentation](http://img.shields.io/badge/doc-reference-blue.svg)](http://developer.shotgunsoftware.com/python-api)
 [![Build Status Linux](https://secure.travis-ci.org/shotgunsoftware/python-api.svg?branch=master)](http://travis-ci.org/shotgunsoftware/python-api)
 [![Build status Windows](https://ci.appveyor.com/api/projects/status/slvw7u4jatvdly98/branch/master?svg=true
 )](https://ci.appveyor.com/project/jfboismenu/python-api/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/shotgunsoftware/python-api/badge.svg?branch=master)](https://coveralls.io/github/shotgunsoftware/python-api?branch=master)
-[![Linting](https://img.shields.io/badge/PEP8%20by-Hound%20CI-a873d1.svg)](https://houndci.com)
 
 # Shotgun Python API
 
@@ -15,14 +15,10 @@ The latest version can always be found at http://github.com/shotgunsoftware/pyth
 ## Minimum Requirements
 
 * Shotgun server v2.4.12+.
-* Python v2.6 - v2.7.
-
-## High Performance Requirements
-
-* Install [simplejson 2.1.6](http://pypi.python.org/pypi/simplejson/2.1.6)
+* Python v2.6 - v2.7 or v3.7
 
 ## Documentation
-Tutorials and detailed documentation about the Python API are available at http://developer.shotgunsoftware.com/python-api). 
+Tutorials and detailed documentation about the Python API are available at http://developer.shotgunsoftware.com/python-api).
 
 Some useful direct links:
 
@@ -39,12 +35,70 @@ You can see the [full history of the Python API on the documentation site](http:
 ## Updating HTTPLib2
 
 1. Download the latest version of HTTPLib2 at https://pypi.org/project/httplib2.
-2. Extract the python2/httplib2 into shotgun_api3/lib/http2lib without the test folder.
-3. Scan the files for any references to importing httplib2 and make sure they import "from ." instead of "from httplib2" because the library isn't in the Python path.
+2. Extract the python2/httplib2 into shotgun_api3/lib/http2lib/python2 without the test folder.
+3. Extract the python3/httplib2 into shotgun_api3/lib/http2lib/python3 without the test folder.
+4. Scan the files for any references to importing httplib2 and make sure they import "from ." instead of "from httplib2" because the library isn't in the Python path.
 
-## Tests 
+## Maintaining Python 2 and 3 compatibility
 
-Integration and unit tests are provided. 
+python-api should remain compatible with both Python 2, and 3.  To make this easier, we use [six](https://six.readthedocs.io/).  When adding code that works with types that have changed between Python 2 and 3, notably strings and files, it's advisable to use the `six` types for casting and comparisons. Be sure to follow Python 2 and 3 compatible conventions in code, especially when raising or capturing exceptions and printing. While we don't use `future`, [this page](https://python-future.org/compatible_idioms.html) contains a fairly comprehensive list of Python 2/3 compatibility sticking points to look out for.
+
+Additionally, the [python-modernize](https://python-modernize.readthedocs.io/en/latest/) tool can be helpful when updating Python 2 code for Python 3 compatibility.
+
+### Examples:
+
+#### Comparisons against changed types:
+
+Python 2:
+
+```
+if isinstance(my_variable, str):
+```
+
+Python 2/3:
+
+```
+if isinstance(my_variable, six.string_types):
+```
+
+#### Catching exceptions
+
+Python 2:
+
+```
+except SomeExceptionType, e:
+    print "I like to swallow exceptions!"
+```
+
+Python 2/3:
+
+```
+from __future__ import print_function
+except SomeExceptionType as e:
+    print("I like to swallow exceptions!")
+```
+
+#### Print statements
+
+Python 2:
+
+```
+print "My spoon is too big!"
+```
+
+Python 2/3:
+
+```
+from __future__ import print_function
+print("My spoon is too big!")
+```
+
+
+Additionally, when testing locally, tests should be run for both python 2 and python 3 to ensure changes won't break cross-compatibility.
+
+## Tests
+
+Integration and unit tests are provided.
 
 - All tests require the [nose unit testing tools](http://nose.readthedocs.org), and a `tests/config` file (you can copy an example from `tests/example_config`).
 - Tests can be run individually like this: `nosetest tests/test_client.py`
@@ -58,11 +112,10 @@ Integration and unit tests are provided.
 
 1) Update the Changelog in the `HISTORY.rst` file
     - Add bullet points for any changes that have happened since the previous release. This may include changes you did not make so look at the commit history and make sure we don't miss anything. If you notice something was done that wasn't added to the changelog, hunt down that engineer and make them feel guilty for not doing so. This is a required step in making changes to the API.
-    - Try and match the language of previous change log messages. We want to keep a consistent voice. 
+    - Try and match the language of previous change log messages. We want to keep a consistent voice.
     - Make sure the date of the release matches today. We try and keep this TBD until we're ready to do a release so it's easy to catch that it needs to be updated.
     - Make sure the version number is filled out and correct. We follow semantic versioning. Or more correctly, we should be following it.
 2) Ensure any changes or additions to public methods are documented
-    - Update the Github wiki, and usually you'll need to update the Method Reference page with concise and exact documentation of the changes that are in this release. 
     - Ensure that doc strings are updated in the code itself to work with Sphinx and are correctly formatted.
     - Examples are always good especially if this a new feature or method.
     - Think about a new user to the API trying to figure out how to use the features you're documenting.
@@ -76,7 +129,7 @@ Integration and unit tests are provided.
     - Add more detailed information regarding the changes in this release. This is a great place to add examples, and reasons for the change!
 
 ### Letting the world know
-We usually send an email to the `shotgun-dev` list with an announcement of the release and highlight the changes. 
+Post a message in the [Pipeline Community channel](https://community.shotgunsoftware.com/c/pipeline) and send an email to [shotgun-dev](https://groups.google.com/a/shotgunsoftware.com/forum/#!forum/shotgun-dev) with a link to the community post.
 
 ### Prepare for the Next Dev Cycle
 1) Update the `__version__` value in `shotgun_api3/shotgun.py` to the next version number with `.dev` appended to it. For example, `v3.0.24.dev`

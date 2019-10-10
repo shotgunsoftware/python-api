@@ -29,4 +29,4 @@
 # This file is unused. It is left there so Github can warn us is a CVE is
 # released for our dependencies.
 httplib2==0.12.0
-simplejson=2.1.6
+six==1.12.0
