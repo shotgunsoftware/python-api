@@ -117,7 +117,7 @@ except ImportError as e:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.2.0"
+__version__ = "3.2.1.dev"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -131,6 +131,12 @@ class ShotgunError(Exception):
 
 
 class ShotgunFileDownloadError(ShotgunError):
+    """
+    Exception for file download-related errors.
+    """
+    pass
+
+class ShotgunThumbnailNotReady(ShotgunError):
     """
     Exception for file download-related errors.
     """
@@ -2250,14 +2256,16 @@ class Shotgun(object):
 
         result = self._send_form(url, params)
 
-        if not result.startswith("1"):
-            raise ShotgunError("Unable to share thumbnail: %s" % result)
-        else:
+        if result.startswith("1:"):
             # clearing thumbnail returns no attachment_id
             try:
                 attachment_id = int(result.split(":", 2)[1].split("\n", 1)[0])
             except ValueError:
                 attachment_id = None
+        elif result.startswith("2"):
+            raise ShotgunThumbnailNotReady("Unable to share thumbnail: %s" % result)
+        else:
+            raise ShotgunError("Unable to share thumbnail: %s" % result)
 
         return attachment_id
 

@@ -100,8 +100,12 @@ Additionally, when testing locally, tests should be run for both python 2 and py
 
 Integration and unit tests are provided.
 
-- All tests require the [nose unit testing tools](http://nose.readthedocs.org), and a `tests/config` file (you can copy an example from `tests/example_config`).
-- Tests can be run individually like this: `nosetest tests/test_client.py`
+- All tests require:
+    - The [nose unit testing tools](http://nose.readthedocs.org),
+    - Running `pip install -r tests/ci_requirements.txt`
+    - A `tests/config` file (you can copy an example from `tests/example_config`).
+- Tests can be run individually like this: `nosetest --config="nose.cfg" tests/test_client.py`
+    - Make sure to not forget the `--config="nose.cfg"` option
 - `test_client` and `tests_unit` use mock server interaction and do not require a Shotgun instance to be available (no modifications to `tests/config` are necessary).
 - `test_api` and `test_api_long` *do* require a Shotgun instance, with a script key available for the tests. The server and script user values must be supplied in the `tests/config` file. The tests will add test data to your server based on information in your config. This data will be manipulated by the tests, and should not be used for other purposes.
 - To run all of the tests, use the shell script `run-tests`.
