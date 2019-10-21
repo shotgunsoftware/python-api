@@ -136,6 +136,7 @@ class ShotgunFileDownloadError(ShotgunError):
     """
     pass
 
+
 class ShotgunThumbnailNotReady(ShotgunError):
     """
     Exception for file download-related errors.
