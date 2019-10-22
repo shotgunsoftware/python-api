@@ -8,8 +8,8 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-from .shotgun import (Shotgun, ShotgunError, ShotgunFileDownloadError,
-                      ShotgunThumbnailNotReady, Fault,  # noqa unused imports
+from .shotgun import (Shotgun, ShotgunError, ShotgunFileDownloadError, # noqa unused imports
+                      ShotgunThumbnailNotReady, Fault,
                       AuthenticationFault, MissingTwoFactorAuthenticationFault,
                       UserCredentialsNotAllowedForSSOAuthenticationFault,
                       ProtocolError, ResponseError, Error, __version__)

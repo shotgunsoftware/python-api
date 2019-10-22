@@ -139,7 +139,7 @@ class ShotgunFileDownloadError(ShotgunError):
 
 class ShotgunThumbnailNotReady(ShotgunError):
     """
-    Exception for file download-related errors.
+    Exception for when trying to use a 'pending thumbnail' (aka transient thumbnail) in an operation
     """
     pass
 
