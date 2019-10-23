@@ -443,8 +443,8 @@ class TestConfig(unittest.TestCase):
         Make sure it works with a normal URL.
         """
         mockgun = Mockgun("https://server.shotgunstudio.com/")
-        self.assertEqual(mockgun.config.scheme,  "https")
-        self.assertEqual(mockgun.config.server,  "server.shotgunstudio.com")
+        self.assertEqual(mockgun.config.scheme, "https")
+        self.assertEqual(mockgun.config.server, "server.shotgunstudio.com")
         self.assertEqual(mockgun.config.api_path, "/api3/json")
         self.assertIsNone(mockgun.config.authorization)
 
@@ -453,8 +453,8 @@ class TestConfig(unittest.TestCase):
         Make sure it works with a URL with a path
         """
         mockgun = Mockgun("https://local/something/")
-        self.assertEqual(mockgun.config.scheme,  "https")
-        self.assertEqual(mockgun.config.server,  "local")
+        self.assertEqual(mockgun.config.scheme, "https")
+        self.assertEqual(mockgun.config.server, "local")
         self.assertEqual(mockgun.config.api_path, "/something/api3/json")
         self.assertIsNone(mockgun.config.authorization)
 
@@ -463,8 +463,8 @@ class TestConfig(unittest.TestCase):
         Make sure it works with a URL than has some auth parameter.
         """
         mockgun = Mockgun("https://user:pass@server.shotgunstudio.com/")
-        self.assertEqual(mockgun.config.scheme,  "https")
-        self.assertEqual(mockgun.config.server,  "server.shotgunstudio.com")
+        self.assertEqual(mockgun.config.scheme, "https")
+        self.assertEqual(mockgun.config.server, "server.shotgunstudio.com")
         self.assertEqual(mockgun.config.api_path, "/api3/json")
         self.assertIsNotNone(mockgun.config.authorization)
 
