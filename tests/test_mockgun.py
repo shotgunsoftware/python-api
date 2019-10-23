@@ -446,7 +446,6 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(mockgun.config.scheme, "https")
         self.assertEqual(mockgun.config.server, "server.shotgunstudio.com")
         self.assertEqual(mockgun.config.api_path, "/api3/json")
-        self.assertEqual(mockgun.config.authorization, None)
 
     def test_set_server_params_with_url_with_path(self):
         """
@@ -456,17 +455,6 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(mockgun.config.scheme, "https")
         self.assertEqual(mockgun.config.server, "local")
         self.assertEqual(mockgun.config.api_path, "/something/api3/json")
-        self.assertEqual(mockgun.config.authorization, None)
-
-    def test_set_server_with_basic_auth(self):
-        """
-        Make sure it works with a URL than has some auth parameter.
-        """
-        mockgun = Mockgun("https://user:pass@server.shotgunstudio.com/")
-        self.assertEqual(mockgun.config.scheme, "https")
-        self.assertEqual(mockgun.config.server, "server.shotgunstudio.com")
-        self.assertEqual(mockgun.config.api_path, "/api3/json")
-        self.assertNotEqual(mockgun.config.authorization, None)
 
 
 if __name__ == '__main__':

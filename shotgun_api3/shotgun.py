@@ -438,8 +438,6 @@ class _Config(object):
         - scheme: http or https
         - api_path: usually /api3/json
         - server: usually something.shotgunstudio.com
-        - authorization: Basic user@pass, when user credentials
-                         are passed in the url.
 
         :param str base_url: The server URL.
 
@@ -454,15 +452,6 @@ class _Config(object):
         self.api_path = urllib.parse.urljoin(urllib.parse.urljoin(
             api_base or "/", self.api_ver + "/"), "json"
         )
-
-        # if the service contains user information strip it out
-        # copied from the xmlrpclib which turned the user:password into
-        # and auth header
-        auth, self.server = urllib.parse.splituser(urllib.parse.urlsplit(base_url).netloc)
-        if auth:
-            auth = base64.encodestring(six.ensure_binary(urllib.parse.unquote(auth))).decode("utf-8")
-            self.authorization = "Basic " + auth.strip()
-
 
     @property
     def records_per_page(self):
@@ -682,6 +671,17 @@ class Shotgun(object):
 
         self.base_url = (base_url or "").lower()
         self.config.set_server_params(self.base_url)
+
+        # if the service contains user information strip it out
+        # copied from the xmlrpclib which turned the user:password into
+        # and auth header
+        # Do NOT urlsplit(self.base_url) here, as it contains the lower case version
+        # of the base_url argument. Doing so would base64-encode the lowercase
+        # version of the credentials.
+        auth, self.config.server = urllib.parse.splituser(urllib.parse.urlsplit(base_url).netloc)
+        if auth:
+            auth = base64.encodestring(six.ensure_binary(urllib.parse.unquote(auth))).decode("utf-8")
+            self.config.authorization = "Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
         if http_proxy:
