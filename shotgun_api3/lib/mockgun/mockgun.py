@@ -193,6 +193,8 @@ class Shotgun(object):
         # they way they would expect to in the real API.
         self.config = _Config(self)
 
+        self.config.set_server_params(base_url)
+
         # load in the shotgun schema to associate with this Shotgun
         (schema_path, schema_entity_path) = self.get_schema_paths()
 
