@@ -433,5 +433,29 @@ class TestFilterOperator(TestBaseWithExceptionTests):
         )
 
 
+class TestConfig(unittest.TestCase):
+    """
+    Tests the shotgun._Config class
+    """
+
+    def test_set_server_params_with_regular_url(self):
+        """
+        Make sure it works with a normal URL.
+        """
+        mockgun = Mockgun("https://server.shotgunstudio.com/")
+        self.assertEqual(mockgun.config.scheme, "https")
+        self.assertEqual(mockgun.config.server, "server.shotgunstudio.com")
+        self.assertEqual(mockgun.config.api_path, "/api3/json")
+
+    def test_set_server_params_with_url_with_path(self):
+        """
+        Make sure it works with a URL with a path
+        """
+        mockgun = Mockgun("https://local/something/")
+        self.assertEqual(mockgun.config.scheme, "https")
+        self.assertEqual(mockgun.config.server, "local")
+        self.assertEqual(mockgun.config.api_path, "/something/api3/json")
+
+
 if __name__ == '__main__':
     unittest.main()
