@@ -33,6 +33,7 @@
 
 from . import six
 import io
+import re
 import sys
 
 # For python 3, the `file` type no longer exists, and open() returns an
@@ -56,6 +57,15 @@ if six.PY3:
 else:
     from .httplib2 import SSLHandshakeError
     ShotgunSSLError = SSLHandshakeError
+
+# In Python 3, regular expression metacharacters match unicode characters where in
+# Python 2 they hadn't.  To reproduce the previous behavior, Python 3 introduces a
+# new re.ASCII flag, which does not exist in Python 2.  Add a constant that contains
+# the value of re.ASCII in Python 3 and 0 (no flags) in Python 2.
+if six.PY2:
+    RE_ASCII = 0
+else:
+    RE_ASCII = re.ASCII
 
 
 def normalize_platform(platform, python2=True):
