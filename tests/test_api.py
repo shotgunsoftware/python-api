@@ -610,8 +610,8 @@ class TestShotgunApi(base.LiveTestBase):
 
         mock_send_form.method.assert_called_once()
         mock_send_form.return_value = ("2"
-                                      "\nsource_entity image is a transient thumbnail that cannot be shared. "
-                                      "Try again later, when the final thumbnail is available\n")
+                                       "\nsource_entity image is a transient thumbnail that cannot be shared. "
+                                       "Try again later, when the final thumbnail is available\n")
 
         self.assertRaises(shotgun_api3.ShotgunThumbnailNotReady, self.sg.share_thumbnail,
                           [self.version, self.shot], source_entity=self.asset)
