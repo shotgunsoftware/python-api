@@ -604,6 +604,28 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.share_thumbnail,
                           [self.shot, self.asset])
 
+    @patch('shotgun_api3.Shotgun._send_form')
+    def test_share_thumbnail_not_ready(self, mock_send_form):
+        """throw an exception if trying to share a transient thumbnail"""
+
+        mock_send_form.method.assert_called_once()
+        mock_send_form.return_value = ("2"
+                                       "\nsource_entity image is a transient thumbnail that cannot be shared. "
+                                       "Try again later, when the final thumbnail is available\n")
+
+        self.assertRaises(shotgun_api3.ShotgunThumbnailNotReady, self.sg.share_thumbnail,
+                          [self.version, self.shot], source_entity=self.asset)
+
+    @patch('shotgun_api3.Shotgun._send_form')
+    def test_share_thumbnail_returns_error(self, mock_send_form):
+        """throw an exception if server returns an error code"""
+
+        mock_send_form.method.assert_called_once()
+        mock_send_form.return_value = "1\nerror message.\n"
+
+        self.assertRaises(shotgun_api3.ShotgunError, self.sg.share_thumbnail,
+                          [self.version, self.shot], source_entity=self.asset)
+
     def test_deprecated_functions(self):
         """Deprecated functions raise errors"""
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.schema, "foo")
