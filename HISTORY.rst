@@ -4,9 +4,9 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
-v3.2.1 (TBD)
+v3.2.1 (2019 Oct 29)
 =====================
-- Returns a specific error from 'share_thumbnail' when the source thumbnail is a 'transient' thumbnail.
+- Returns a specific error from ``share_thumbnail`` when the source thumbnail is a 'transient' thumbnail.
 
 v3.2.0 (2019 Sept 23)
 =====================
