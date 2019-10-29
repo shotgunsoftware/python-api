@@ -2192,6 +2192,10 @@ class Shotgun(object):
         .. note::
             When sharing a filmstrip thumbnail, it is required to have a static thumbnail in
             place before the filmstrip will be displayed in the Shotgun web UI.
+            If the :ref:`thumbnail is still processing and is using a placeholder 
+            <interpreting_image_field_strings>`, this method will error.
+
+        Simple use case:
 
         >>> thumb = '/data/show/ne2/100_110/anim/01.mlk-02b.jpg'
         >>> e = [{'type': 'Version', 'id': 123}, {'type': 'Version', 'id': 456}]
@@ -2215,6 +2219,8 @@ class Shotgun(object):
             share the static thumbnail. Defaults to ``False``.
         :returns: ``id`` of the Attachment entity representing the source thumbnail that is shared.
         :rtype: int
+        :raises: :class:`ShotgunError` if not supported by server version or improperly called, 
+            or :class:`ShotgunThumbnailNotReady` if thumbnail is still pending.
         """
         if not self.server_caps.version or self.server_caps.version < (4, 0, 0):
             raise ShotgunError("Thumbnail sharing support requires server "
@@ -2373,6 +2379,10 @@ class Shotgun(object):
         You can optionally store the file in a field on the entity, change the display name, and
         assign tags to the Attachment.
 
+        .. note::
+          Make sure to have retries for file uploads. Failures when uploading will occasionally happen. 
+          When it does, immediately retrying to upload usually works
+
         >>> mov_file = '/data/show/ne2/100_110/anim/01.mlk-02b.mov'
         >>> sg.upload("Shot", 423, mov_file, field_name="sg_latest_quicktime",
         ...           display_name="Latest QT")
@@ -2387,6 +2397,7 @@ class Shotgun(object):
         :param str tag_list: comma-separated string of tags to assign to the file.
         :returns: Id of the Attachment entity that was created for the image.
         :rtype: int
+        :raises: :class:`ShotgunError` on upload failure.
         """
         # Basic validations of the file to upload.
         path = os.path.abspath(os.path.expanduser(path or ""))

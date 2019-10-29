@@ -76,11 +76,16 @@ descriptions of each field.
 
 - **image** (:obj:`str`):
     The url location of the thumbnail image assigned to this Attachment. For uploads, Shotgun
-    automatically tries to create a thumbnail from the file. Alternatively, you can assign your
+    automatically tries to create a thumbnail from the file.
+    See :ref:`interpreting_image_field_strings`. Alternatively, you can assign your
     own thumbnail to an Attachment using the :meth:`~shotgun_api3.Shotgun.upload_thumbnail` method.
 
 - **sg_type** (:obj:`str`):
     An optional field for designating different types of Attachments
+
+- **processing_status** (:obj:`str`):
+    Reflects the status of the attachment (File entity).
+    When processing the thumbnail, this field is set to ‘Thumbnail Pending’.
 
 
 File type structures (``this_file``)
@@ -156,6 +161,10 @@ Uploads
 =======
 Uploads cannot be created directly on Attachments. Instead, you need to use the
 :meth:`~shotgun_api3.Shotgun.upload` method.
+
+Make sure to have retries for file uploads. Failures when uploading will occasionally happen. When
+it does, immediately retrying to upload usually works.
+
 
 Local Files
 ===========
