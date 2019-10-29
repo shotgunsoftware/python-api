@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>shotgun_api3.shotgun &mdash; python-api v3.2.0 documentation</title>
+  <title>shotgun_api3.shotgun &mdash; python-api v3.2.1 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="python-api v3.2.0 documentation" href="../../index.html"/>
+    <link rel="top" title="python-api v3.2.1 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -126,7 +126,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.0.<br>
+    <b>python-api</b> v3.2.1.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -316,7 +316,7 @@
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.2.0&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.2.1&quot;</span>
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Errors</span>
@@ -334,6 +334,13 @@
 <span class="sd">    Exception for file download-related errors.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
+
+
+<span class="k">class</span> <span class="nc">ShotgunThumbnailNotReady</span><span class="p">(</span><span class="n">ShotgunError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exception for when trying to use a &#39;pending thumbnail&#39; (aka transient thumbnail) in an operation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
 
 
 <div class="viewcode-block" id="Fault"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Fault">[docs]</a><span class="k">class</span> <span class="nc">Fault</span><span class="p">(</span><span class="n">ShotgunError</span><span class="p">):</span>
@@ -628,6 +635,30 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">no_ssl_validation</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">localized</span> <span class="o">=</span> <span class="kc">False</span>
 
+    <span class="k">def</span> <span class="nf">set_server_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the different server related fields based on the passed in URL.</span>
+
+<span class="sd">        This will impact the following attributes:</span>
+
+<span class="sd">        - scheme: http or https</span>
+<span class="sd">        - api_path: usually /api3/json</span>
+<span class="sd">        - server: usually something.shotgunstudio.com</span>
+
+<span class="sd">        :param str base_url: The server URL.</span>
+
+<span class="sd">        :raises ValueError: Raised if protocol is not http or https.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="n">api_base</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> \
+            <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">base_url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="s2">&quot;https&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;base_url must use http or https got &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">base_url</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_path</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span>
+            <span class="n">api_base</span> <span class="ow">or</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_ver</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="p">),</span> <span class="s2">&quot;json&quot;</span>
+        <span class="p">)</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">records_per_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -810,23 +841,49 @@
                              <span class="s2">&quot;got &#39;</span><span class="si">%s</span><span class="s2">&#39;.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">rpc_attempt_interval</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># The following lines of code allow to tell the API where to look for</span>
+        <span class="c1"># certificate authorities certificates (we will be referring to these</span>
+        <span class="c1"># as CAC from now on). Here&#39;s how the Python API interacts with those.</span>
+        <span class="c1">#</span>
+        <span class="c1"># Auth and CRUD operations</span>
+        <span class="c1"># ========================</span>
+        <span class="c1"># These operations are executed with httplib2. httplib2 ships with a</span>
+        <span class="c1"># list of CACs instead of asking Python&#39;s ssl module for them.</span>
+        <span class="c1">#</span>
+        <span class="c1"># Upload/Downloads</span>
+        <span class="c1"># ================</span>
+        <span class="c1"># These operations are executed using urllib2. urllib2 asks a Python</span>
+        <span class="c1"># module called `ssl` for CACs. On Windows, ssl searches for CACs in</span>
+        <span class="c1"># the Windows Certificate Store. On Linux/macOS, it asks the OpenSSL</span>
+        <span class="c1"># library linked with Python for CACs. Depending on how Python was</span>
+        <span class="c1"># compiled for a given DCC, Python may be linked against the OpenSSL</span>
+        <span class="c1"># from the OS or a copy of OpenSSL distributed with the DCC. This</span>
+        <span class="c1"># impacts which versions of the certificates are available to Python,</span>
+        <span class="c1"># as an OS level OpenSSL will be aware of system wide certificates that</span>
+        <span class="c1"># have been added, while an OpenSSL that comes with a DCC is likely</span>
+        <span class="c1"># bundling a list of certificates that get update with each release and</span>
+        <span class="c1"># no not contain system wide certificates.</span>
+        <span class="c1">#</span>
+        <span class="c1"># Using custom CACs</span>
+        <span class="c1"># =================</span>
+        <span class="c1"># When a user requires a non-standard CAC, the SHOTGUN_API_CACERTS</span>
+        <span class="c1"># environment variable allows to provide an alternate location for</span>
+        <span class="c1"># the CACs.</span>
         <span class="k">if</span> <span class="n">ca_certs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span> <span class="o">=</span> <span class="n">ca_certs</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SHOTGUN_API_CACERTS&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_url</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="n">api_base</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> \
-            <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scheme</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="s2">&quot;https&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;base_url must use http or https got &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span>
-                             <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">api_path</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span>
-            <span class="n">api_base</span> <span class="ow">or</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">api_ver</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="p">),</span> <span class="s2">&quot;json&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_server_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
 
         <span class="c1"># if the service contains user information strip it out</span>
         <span class="c1"># copied from the xmlrpclib which turned the user:password into</span>
         <span class="c1"># and auth header</span>
+        <span class="c1"># Do NOT urlsplit(self.base_url) here, as it contains the lower case version</span>
+        <span class="c1"># of the base_url argument. Doing so would base64-encode the lowercase</span>
+        <span class="c1"># version of the credentials.</span>
         <span class="n">auth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">splituser</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">base_url</span><span class="p">)</span><span class="o">.</span><span class="n">netloc</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">auth</span><span class="p">:</span>
             <span class="n">auth</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">encodestring</span><span class="p">(</span><span class="n">six</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">unquote</span><span class="p">(</span><span class="n">auth</span><span class="p">)))</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
@@ -2224,7 +2281,7 @@
 <span class="sd">        :param properties: Dictionary with key/value pairs where the key is the property to be</span>
 <span class="sd">            updated and the value is the new value.</span>
 <span class="sd">        :param dict project_entity: Optional Project entity specifying which project to modify the</span>
-<span class="sd">            ``visible`` property for. If the ``visible`` is present in ``properties`` and</span>
+<span class="sd">            ``visible`` property for. If ``visible`` is present in ``properties`` and</span>
 <span class="sd">            ``project_entity`` is not set, an exception will be raised. Example:</span>
 <span class="sd">            ``{&#39;type&#39;: &#39;Project&#39;, &#39;id&#39;: 3}``</span>
 <span class="sd">        :returns: ``True`` if the field was updated.</span>
@@ -2334,6 +2391,10 @@
 <span class="sd">        .. note::</span>
 <span class="sd">            When sharing a filmstrip thumbnail, it is required to have a static thumbnail in</span>
 <span class="sd">            place before the filmstrip will be displayed in the Shotgun web UI.</span>
+<span class="sd">            If the :ref:`thumbnail is still processing and is using a placeholder </span>
+<span class="sd">            &lt;interpreting_image_field_strings&gt;`, this method will error.</span>
+
+<span class="sd">        Simple use case:</span>
 
 <span class="sd">        &gt;&gt;&gt; thumb = &#39;/data/show/ne2/100_110/anim/01.mlk-02b.jpg&#39;</span>
 <span class="sd">        &gt;&gt;&gt; e = [{&#39;type&#39;: &#39;Version&#39;, &#39;id&#39;: 123}, {&#39;type&#39;: &#39;Version&#39;, &#39;id&#39;: 456}]</span>
@@ -2357,6 +2418,8 @@
 <span class="sd">            share the static thumbnail. Defaults to ``False``.</span>
 <span class="sd">        :returns: ``id`` of the Attachment entity representing the source thumbnail that is shared.</span>
 <span class="sd">        :rtype: int</span>
+<span class="sd">        :raises: :class:`ShotgunError` if not supported by server version or improperly called, </span>
+<span class="sd">            or :class:`ShotgunThumbnailNotReady` if thumbnail is still pending.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_caps</span><span class="o">.</span><span class="n">version</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_caps</span><span class="o">.</span><span class="n">version</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Thumbnail sharing support requires server &quot;</span>
@@ -2420,14 +2483,16 @@
 
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_form</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Unable to share thumbnail: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;1:&quot;</span><span class="p">):</span>
             <span class="c1"># clearing thumbnail returns no attachment_id</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">attachment_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="n">attachment_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">result</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ShotgunThumbnailNotReady</span><span class="p">(</span><span class="s2">&quot;Unable to share thumbnail: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Unable to share thumbnail: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">attachment_id</span></div>
 
@@ -2513,6 +2578,10 @@
 <span class="sd">        You can optionally store the file in a field on the entity, change the display name, and</span>
 <span class="sd">        assign tags to the Attachment.</span>
 
+<span class="sd">        .. note::</span>
+<span class="sd">          Make sure to have retries for file uploads. Failures when uploading will occasionally happen. </span>
+<span class="sd">          When it does, immediately retrying to upload usually works</span>
+
 <span class="sd">        &gt;&gt;&gt; mov_file = &#39;/data/show/ne2/100_110/anim/01.mlk-02b.mov&#39;</span>
 <span class="sd">        &gt;&gt;&gt; sg.upload(&quot;Shot&quot;, 423, mov_file, field_name=&quot;sg_latest_quicktime&quot;,</span>
 <span class="sd">        ...           display_name=&quot;Latest QT&quot;)</span>
@@ -2527,6 +2596,7 @@
 <span class="sd">        :param str tag_list: comma-separated string of tags to assign to the file.</span>
 <span class="sd">        :returns: Id of the Attachment entity that was created for the image.</span>
 <span class="sd">        :rtype: int</span>
+<span class="sd">        :raises: :class:`ShotgunError` on upload failure.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Basic validations of the file to upload.</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">path</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
@@ -4446,7 +4516,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'v3.2.0',
+            VERSION:'v3.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; python-api v3.2.0 documentation</title>
+  <title>API Reference &mdash; python-api v3.2.1 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="python-api v3.2.0 documentation" href="index.html"/>
+    <link rel="top" title="python-api v3.2.1 documentation" href="index.html"/>
         <link rel="next" title="API Cookbook" href="cookbook.html"/>
         <link rel="prev" title="Authentication" href="authentication.html"/> 
 
@@ -160,6 +160,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#interpreting-image-field-strings">Interpreting Image Field Strings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-types">Event Types</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#event-based-triggers">Event-based Triggers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#structure-of-event-types">Structure of Event Types</a></li>
@@ -202,7 +203,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.0.<br>
+    <b>python-api</b> v3.2.1.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -1714,6 +1715,11 @@ Preferences.</li>
 <p>Creates an Attachment entity for the file in Shotgun and links it to the specified entity.
 You can optionally store the file in a field on the entity, change the display name, and
 assign tags to the Attachment.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Make sure to have retries for file uploads. Failures when uploading will occasionally happen. 
+When it does, immediately retrying to upload usually works</p>
+</div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mov_file</span> <span class="o">=</span> <span class="s1">&#39;/data/show/ne2/100_110/anim/01.mlk-02b.mov&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="s2">&quot;Shot&quot;</span><span class="p">,</span> <span class="mi">423</span><span class="p">,</span> <span class="n">mov_file</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;sg_latest_quicktime&quot;</span><span class="p">,</span>
 <span class="gp">... </span>          <span class="n">display_name</span><span class="o">=</span><span class="s2">&quot;Latest QT&quot;</span><span class="p">)</span>
@@ -1738,7 +1744,10 @@ This field must be a File/Link field type.</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Id of the Attachment entity that was created for the image.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)">int</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)">int</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">ShotgunError</span></code> on upload failure.</p>
 </td>
 </tr>
 </tbody>
@@ -1933,8 +1942,10 @@ multiple times. You can use this in two ways:</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">When sharing a filmstrip thumbnail, it is required to have a static thumbnail in
-place before the filmstrip will be displayed in the Shotgun web UI.</p>
+place before the filmstrip will be displayed in the Shotgun web UI.
+If the <a class="reference internal" href="#interpreting-image-field-strings"><span class="std std-ref">thumbnail is still processing and is using a placeholder</span></a>, this method will error.</p>
 </div>
+<p>Simple use case:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">thumb</span> <span class="o">=</span> <span class="s1">&#39;/data/show/ne2/100_110/anim/01.mlk-02b.jpg&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">123</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">456</span><span class="p">}]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">share_thumbnail</span><span class="p">(</span><span class="n">entities</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">thumbnail_path</span><span class="o">=</span><span class="n">thumb</span><span class="p">)</span>
@@ -1970,7 +1981,11 @@ share the static thumbnail. Defaults to <code class="docutils literal"><span cla
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><code class="docutils literal"><span class="pre">id</span></code> of the Attachment entity representing the source thumbnail that is shared.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)">int</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)">int</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">ShotgunError</span></code> if not supported by server version or improperly called, 
+or <code class="xref py py-class docutils literal"><span class="pre">ShotgunThumbnailNotReady</span></code> if thumbnail is still pending.</p>
 </td>
 </tr>
 </tbody>
@@ -2374,7 +2389,7 @@ one level, like &#8216;description&#8217;.</p>
 <li><strong>properties</strong> &#8211; Dictionary with key/value pairs where the key is the property to be
 updated and the value is the new value.</li>
 <li><strong>project_entity</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Optional Project entity specifying which project to modify the
-<code class="docutils literal"><span class="pre">visible</span></code> property for. If the <code class="docutils literal"><span class="pre">visible</span></code> is present in <code class="docutils literal"><span class="pre">properties</span></code> and
+<code class="docutils literal"><span class="pre">visible</span></code> property for. If <code class="docutils literal"><span class="pre">visible</span></code> is present in <code class="docutils literal"><span class="pre">properties</span></code> and
 <code class="docutils literal"><span class="pre">project_entity</span></code> is not set, an exception will be raised. Example:
 <code class="docutils literal"><span class="pre">{'type':</span> <span class="pre">'Project',</span> <span class="pre">'id':</span> <span class="pre">3}</span></code></li>
 </ul>
@@ -3067,7 +3082,12 @@ Example above is default.F=Feet f=Frames.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">value:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/2/library/constants.html#None" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">None</span></code></a></td>
+<tr class="field-odd field"><th class="field-name">value:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/2/library/constants.html#None" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">None</span></code></a></p>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Refer to <a class="reference internal" href="#interpreting-image-field-strings"><span class="std std-ref">Interpreting Image Field Strings</span></a>.</p>
+</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -3264,8 +3284,51 @@ Example above is default.F=Feet f=Frames.</p>
 </div>
 </div>
 </div>
+<div class="section" id="interpreting-image-field-strings">
+<span id="id4"></span><h2>Interpreting Image Field Strings<a class="headerlink" href="#interpreting-image-field-strings" title="Permalink to this headline">¶</a></h2>
+<p>There are three possible states for values returned by an <code class="docutils literal"><span class="pre">image</span></code> field:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Type</th>
+<th class="head">Value - Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference external" href="https://docs.python.org/2/library/constants.html#None" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">None</span></code></a></td>
+<td>No thumbnail image uploaded, or thumbnail generation failed.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a></td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">&lt;protocol&gt;://&lt;domain&gt;/images/status/transient/thumbnail_pending.png</span></code> -</div>
+<div class="line">URLs of this form indicate a transient placeholder icon.</div>
+<div class="line">Returned if image requested between upload &amp; availability from media storage.</div>
+<div class="line">Constant string per site.</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a></td>
+<td><div class="first last line-block">
+<div class="line"><code class="docutils literal"><span class="pre">&lt;signed</span> <span class="pre">URL</span> <span class="pre">for</span> <span class="pre">S3</span> <span class="pre">object&gt;</span></code> -</div>
+<div class="line">Access to final thumbnail.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Other upcoming features are likely to require the use of other transient thumbnails.
+For this reason, it is highly recommended to use the prefix part of the placeholder path
+(e.g. <a class="reference external" href="https://yoursubdomain.shotgunstudio.com/images/status/transient/">https://yoursubdomain.shotgunstudio.com/images/status/transient/</a>)
+to detect any transient URLs rather than use the full path of the thumbnail.</p>
+</div>
+</div>
 <div class="section" id="event-types">
-<span id="id4"></span><h2>Event Types<a class="headerlink" href="#event-types" title="Permalink to this headline">¶</a></h2>
+<span id="id5"></span><h2>Event Types<a class="headerlink" href="#event-types" title="Permalink to this headline">¶</a></h2>
 <p>Whenever a user makes a change to any data in Shotgun, an event log entry record is created,
 capturing the value before and after. Shotgun also logs some additional useful events that help keep
 track of various activity on your Shotgun instance.</p>
@@ -3435,7 +3498,7 @@ Requests made from script/API users are localized in the site settings.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v3.2.0',
+            VERSION:'v3.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

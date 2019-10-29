@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Shotgun Python API Changelog &mdash; python-api v3.2.0 documentation</title>
+  <title>Shotgun Python API Changelog &mdash; python-api v3.2.1 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="python-api v3.2.0 documentation" href="index.html"/>
+    <link rel="top" title="python-api v3.2.1 documentation" href="index.html"/>
         <link rel="up" title="Advanced Topics" href="advanced.html"/>
         <link rel="prev" title="IronPython" href="advanced/iron_python.html"/> 
 
@@ -107,6 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced/packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/iron_python.html">IronPython</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Shotgun Python API Changelog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v3-2-1-2019-oct-29">v3.2.1 (2019 Oct 29)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-2-0-2019-sept-23">v3.2.0 (2019 Sept 23)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-1-2-2019-sept-17">v3.1.2 (2019 Sept 17)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-1-1-2019-august-29">v3.1.1 (2019 August 29)</a></li>
@@ -188,7 +189,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.0.<br>
+    <b>python-api</b> v3.2.1.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -261,10 +262,16 @@
   <div class="section" id="shotgun-python-api-changelog">
 <h1>Shotgun Python API Changelog<a class="headerlink" href="#shotgun-python-api-changelog" title="Permalink to this headline">¶</a></h1>
 <p>Here you can see the full list of changes between each Python API release.</p>
+<div class="section" id="v3-2-1-2019-oct-29">
+<h2>v3.2.1 (2019 Oct 29)<a class="headerlink" href="#v3-2-1-2019-oct-29" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Returns a specific error from <code class="docutils literal"><span class="pre">share_thumbnail</span></code> when the source thumbnail is a &#8216;transient&#8217; thumbnail.</li>
+</ul>
+</div>
 <div class="section" id="v3-2-0-2019-sept-23">
 <h2>v3.2.0 (2019 Sept 23)<a class="headerlink" href="#v3-2-0-2019-sept-23" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Adds a new <code class="docutils literal"><span class="pre">project</span></code> parameter to  <code class="docutils literal"><span class="pre">schema_field_update</span></code> that allows to modify field visibility for a given project.</li>
+<li>Adds a new <code class="docutils literal"><span class="pre">project_entity</span></code> parameter to  <code class="docutils literal"><span class="pre">schema_field_update</span></code> that allows to modify field visibility for a given project.</li>
 </ul>
 </div>
 <div class="section" id="v3-1-2-2019-sept-17">
@@ -749,7 +756,7 @@ after initializing it).</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'v3.2.0',
+            VERSION:'v3.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

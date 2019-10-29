@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Details About Working With Files &mdash; python-api v3.2.0 documentation</title>
+  <title>Details About Working With Files &mdash; python-api v3.2.1 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="python-api v3.2.0 documentation" href="../index.html"/>
+    <link rel="top" title="python-api v3.2.1 documentation" href="../index.html"/>
         <link rel="up" title="API Cookbook" href="../cookbook.html"/>
         <link rel="next" title="Working With Tasks" href="tasks.html"/>
         <link rel="prev" title="Subversion (SVN) Integration" href="examples/svn_integration.html"/> 
@@ -157,7 +157,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.0.<br>
+    <b>python-api</b> v3.2.1.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -324,13 +324,20 @@ reference.</dd>
 <li><dl class="first docutils">
 <dt><strong>image</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>):</dt>
 <dd>The url location of the thumbnail image assigned to this Attachment. For uploads, Shotgun
-automatically tries to create a thumbnail from the file. Alternatively, you can assign your
+automatically tries to create a thumbnail from the file.
+See <a class="reference internal" href="../reference.html#interpreting-image-field-strings"><span class="std std-ref">Interpreting Image Field Strings</span></a>. Alternatively, you can assign your
 own thumbnail to an Attachment using the <code class="xref py py-meth docutils literal"><span class="pre">upload_thumbnail()</span></code> method.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
 <dt><strong>sg_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>):</dt>
 <dd>An optional field for designating different types of Attachments</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>processing_status</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal"><span class="pre">str</span></code></a>):</dt>
+<dd>Reflects the status of the attachment (File entity).
+When processing the thumbnail, this field is set to ‘Thumbnail Pending’.</dd>
 </dl>
 </li>
 </ul>
@@ -414,6 +421,8 @@ are provided in order to give access to the relative path information on other p
 <h3>Uploads<a class="headerlink" href="#uploads" title="Permalink to this headline">¶</a></h3>
 <p>Uploads cannot be created directly on Attachments. Instead, you need to use the
 <code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code> method.</p>
+<p>Make sure to have retries for file uploads. Failures when uploading will occasionally happen. When
+it does, immediately retrying to upload usually works.</p>
 </div>
 <div class="section" id="local-files">
 <h3>Local Files<a class="headerlink" href="#local-files" title="Permalink to this headline">¶</a></h3>
@@ -643,7 +652,7 @@ the most appropriate specific LocalStorage match and assigned it to local_storag
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'v3.2.0',
+            VERSION:'v3.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

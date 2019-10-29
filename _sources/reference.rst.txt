@@ -671,6 +671,9 @@ image (read-only)
 
 :value: :obj:`str` | :obj:`None`
 
+    .. note::
+	   Refer to :ref:`interpreting_image_field_strings`.
+
 list
 ====
 
@@ -787,6 +790,36 @@ Additional keys exist for local file links
       'name': "string",
       'content_type': "string"
     }
+
+.. _interpreting_image_field_strings:
+
+********************************
+Interpreting Image Field Strings
+********************************
+
+There are three possible states for values returned by an ``image`` field:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Type
+     - Value - Description
+   * - :obj:`None`
+     - No thumbnail image uploaded, or thumbnail generation failed.
+   * - :obj:`str`
+     - | ``<protocol>://<domain>/images/status/transient/thumbnail_pending.png`` -
+       | URLs of this form indicate a transient placeholder icon.
+       | Returned if image requested between upload & availability from media storage.
+       | Constant string per site.
+   * - :obj:`str`
+     - | ``<signed URL for S3 object>`` -
+       | Access to final thumbnail.
+
+.. note::
+    Other upcoming features are likely to require the use of other transient thumbnails.
+    For this reason, it is highly recommended to use the prefix part of the placeholder path
+    (e.g. https://yoursubdomain.shotgunstudio.com/images/status/transient/)
+    to detect any transient URLs rather than use the full path of the thumbnail.
 
 .. _event_types:
 

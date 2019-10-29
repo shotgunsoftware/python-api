@@ -8,9 +8,8 @@ you've just created your Version in Shotgun, you know its ``id`` is **214**.
 
 .. note:: If you upload a movie file or image to the ``sg_uploaded_movie`` field and you have 
     transcoding enabled on your server (the default for hosted sites), a thumbnail will be
-    generated automatically as well as a filmstrip thumbnail (if possible). But this example is
-    provided just to show the basic process of uploading a thumbnail manually where is may be
-    necessary.
+    generated automatically as well as a filmstrip thumbnail (if possible).
+    This is a basic example of how to manually provide or replace a thumbnail image.
 
 Upload the Image using :meth:`~shotgun_api3.Shotgun.upload_thumbnail`
 ---------------------------------------------------------------------
