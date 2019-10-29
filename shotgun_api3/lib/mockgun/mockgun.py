@@ -596,6 +596,13 @@ class Shotgun(object):
             if operator == "is":
                 return lval == rval
         elif field_type == "text":
+            # Shotgun string comparison is case insensitive
+            lval = lval.lower()
+            if isinstance(rval, list):
+                rval = [val.lower() for val in rval]
+            elif isinstance(rval, six.string_types):
+                rval = rval.lower()
+
             if operator == "is":
                 return lval == rval
             elif operator == "is_not":

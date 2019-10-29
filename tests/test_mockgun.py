@@ -202,11 +202,116 @@ class TestTextFieldOperators(TestBaseWithExceptionTests):
         self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
         self._user = self._mockgun.create("HumanUser", {"login": "user"})
 
+    def test_operator_is(self):
+        """
+        Ensure is operator work.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "is", "user"]])
+        self.assertTrue(item)
+
+    def test_operator_is_case_sensitivity(self):
+        """
+        Ensure is operator is case insensitive.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "is", "USER"]])
+        self.assertTrue(item)
+
+    def test_operator_is_not(self):
+        """
+        Ensure the is_not operator works.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "is_not", "another_user"]])
+        self.assertTrue(item)
+
+    def test_operator_is_not_case_sensitivity(self):
+        """
+        Ensure the is_not operator is case insensitive.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "is_not", "USER"]])
+        self.assertFalse(item)
+
+    def test_operator_in(self):
+        """
+        Ensure the in operator works.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "in", ["user"]]])
+        self.assertTrue(item)
+
+    def test_operator_in_case_sensitivity(self):
+        """
+        Ensure the in operator is case insensitive.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "in", ["USER"]]])
+        self.assertTrue(item)
+
+    def test_operator_not_in(self):
+        """
+        Ensure the not_in operator works.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "not_in", ["foo"]]])
+        self.assertTrue(item)
+
+    def test_operator_not_in_case_sensitivity(self):
+        """
+        Ensure not_in operator is case insensitive.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "not_in", ["USER"]]])
+        self.assertFalse(item)
+
     def test_operator_contains(self):
         """
         Ensures contains operator works.
         """
         item = self._mockgun.find_one("HumanUser", [["login", "contains", "se"]])
+        self.assertTrue(item)
+
+    def test_operator_contains_case_sensitivity(self):
+        """
+        Ensure contains operator is case insensitive.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "contains", "SE"]])
+        self.assertTrue(item)
+
+    def test_operator_not_contains(self):
+        """
+        Ensure not_contains operator works.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "not_contains", "foo"]])
+        self.assertTrue(item)
+
+    def test_operator_not_contains_case_sensitivity(self):
+        """
+        Ensure not_contains operator is case insensitive.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "not_contains", "USER"]])
+        self.assertFalse(item)
+
+    def test_operator_starts_with(self):
+        """
+        Ensure starts_with operator works.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "starts_with", "us"]])
+        self.assertTrue(item)
+
+    def test_operator_starts_with_case_sensitivity(self):
+        """
+        Ensure starts_with operator is case insensitive.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "starts_with", "US"]])
+        self.assertTrue(item)
+
+    def test_operator_ends_with(self):
+        """
+        Ensure ends_with operator works.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "ends_with", "er"]])
+        self.assertTrue(item)
+
+    def test_operator_ends_with_case_sensitivity(self):
+        """
+        Ensure starts_with operator is case insensitive.
+        """
+        item = self._mockgun.find_one("HumanUser", [["login", "ends_with", "ER"]])
         self.assertTrue(item)
 
 
