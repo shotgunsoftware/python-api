@@ -33,7 +33,6 @@
 
 from . import six
 import io
-import re
 import sys
 
 # For python 3, the `file` type no longer exists, and open() returns an
