@@ -36,4 +36,4 @@ del __httplib2_compat
 del __name
 
 # Add ssl_error_classes to __all__
-__all__.append('ssl_error_classes')
+__all__.append("ssl_error_classes")
