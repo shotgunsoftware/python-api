@@ -2776,15 +2776,17 @@ class TestLibImports(base.LiveTestBase):
 
     def test_import_httplib(self):
         """
-        Ensure that httplib2 is importable and objects are available as
-        expected.  This is important, because httplib2 imports switch between
+        Ensure that httplib2 is importable and objects are available
+
+        This is important, because httplib2 imports switch between
         the Python 2 and 3 compatible versions, and the module imports are
         proxied to allow this.
         """
         from shotgun_api3.lib import httplib2
         # Ensure that Http object is available.  This is a good indication that
         # the httplib2 module contents are importable.
-        self.assertIsInstance(httplib2.Http, object)
+        self.assertTrue(hasattr(httplib2, "Http"))
+        self.assertTrue(isinstance(httplib2.Http, object))
 
         # Ensure that the version of httplib2 compatible with the current Python
         # version was imported.
@@ -2801,9 +2803,9 @@ class TestLibImports(base.LiveTestBase):
         # import -- this is a good indication that external httplib2 imports
         # from shotgun_api3 will work as expected.
         from shotgun_api3.lib.httplib2 import socks
-        self.assertIsInstance(socks, types.ModuleType)
+        self.assertTrue(isinstance(socks, types.ModuleType))
         # Make sure that objects in socks are available as expected
-        self.assertIsInstance(socks.HTTPError, object)
+        self.assertTrue(hasattr(socks, "HTTPError"))
 
 
 def _has_unicode(data):
