@@ -20,6 +20,7 @@ import sys
 import os
 from .mock import patch, MagicMock
 import time
+import types
 import uuid
 import unittest
 from shotgun_api3.lib.six.moves import range, urllib
@@ -2765,6 +2766,44 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
             {"value": True, "editable": True},
             self.sg.schema_field_read("Asset", field_name, project_1)[field_name]["visible"]
         )
+
+
+class TestLibImports(base.LiveTestBase):
+    """
+    Ensure that included modules are importable and that the correct version is
+    present.
+    """
+
+    def test_import_httplib(self):
+        """
+        Ensure that httplib2 is importable and objects are available as
+        expected.  This is important, because httplib2 imports switch between
+        the Python 2 and 3 compatible versions, and the module imports are
+        proxied to allow this.
+        """
+        from shotgun_api3.lib import httplib2
+        # Ensure that Http object is available.  This is a good indication that
+        # the httplib2 module contents are importable.
+        self.assertIsInstance(httplib2.Http, object)
+
+        # Ensure that the version of httplib2 compatible with the current Python
+        # version was imported.
+        # (The last module name for __module__ should be either python2 or
+        # python3, depending on what has been imported.  Make sure we got the
+        # right one.)
+        httplib2_compat_version = httplib2.Http.__module__.split(".")[-1]
+        if six.PY2:
+            self.assertEquals(httplib2_compat_version, "python2")
+        elif six.PY3:
+            self.assertTrue(httplib2_compat_version, "python3")
+
+        # Ensure that socks submodule is present and importable using a from
+        # import -- this is a good indication that external httplib2 imports
+        # from shotgun_api3 will work as expected.
+        from shotgun_api3.lib.httplib2 import socks
+        self.assertIsInstance(socks, types.ModuleType)
+        # Make sure that objects in socks are available as expected
+        self.assertIsInstance(socks.HTTPError, object)
 
 
 def _has_unicode(data):
