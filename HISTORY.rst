@@ -4,6 +4,13 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.2.2 (2019 Dec 11)
+=====================
+- Upgrades packaged six module to 1.13.0
+- Adds ``platform`` and ``normalize_platform`` to sgsix module to provide unified platform value across Python 2/3
+- Changes httplib import procedure to emulate direct import of the module
+- Adds test to ensure httplib2 is importable as expected
+
 v3.2.1 (2019 Oct 29)
 =====================
 - Returns a specific error from ``share_thumbnail`` when the source thumbnail is a 'transient' thumbnail.
