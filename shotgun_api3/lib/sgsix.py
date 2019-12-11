@@ -33,6 +33,7 @@
 
 from . import six
 import io
+import sys
 
 # For python 3, the `file` type no longer exists, and open() returns an
 # io.IOBase instance. We add file_types to allow comparison across python
@@ -55,3 +56,32 @@ if six.PY3:
 else:
     from .httplib2 import SSLHandshakeError
     ShotgunSSLError = SSLHandshakeError
+
+
+def normalize_platform(platform, python2=True):
+    """
+    Normalize the return of sys.platform between Python 2 and 3.
+
+    On Python 2 on linux hosts, sys.platform was 'linux' appended with the
+    current kernel version that Python was built on.  In Python3, this was
+    changed and sys.platform now returns 'linux' regardless of the kernel version.
+    See https://bugs.python.org/issue12326
+    This function will normalize platform strings to always conform to Python2 or
+    Python3 behavior.
+
+    :param str platform: The platform string to normalize
+    :param bool python2: The python version behavior to target.  If True, a
+        Python2-style platform string will be returned (i.e. 'linux2'), otherwise
+        the modern 'linux' platform string will be returned.
+
+    :returns: The normalized platform string.
+    :rtype: str
+    """
+    if python2:
+        return "linux2" if platform.startswith("linux") else platform
+    return "linux" if platform.startswith("linux") else platform
+
+
+# sgsix.platform will mimick the python2 sys.platform behavior to ensure
+# compatibility with existing comparisons and dict keys.
+platform = normalize_platform(sys.platform)
