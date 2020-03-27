@@ -12,27 +12,6 @@ variables:
 # Jobs run in parallel.
 jobs:
 
-# This is our first job and it lints our code.
-- job: Linting
-  pool:
-    vmImage: 'ubuntu-16.04'
-  steps:
-  # Use Python 3 for linting because it is faster ;)
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: 3.x
-      addToPath: True
-
-  # Make sure everything is up to date for linting.
-  - script: |
-      python -m pip install --upgrade pip setuptools wheel
-      python -m pip install flake8
-    displayName: 'Install tools'
-
-  # Lints the code!
-  - script: python -m flake8
-    displayName: 'Linting'
-
 # These are jobs templates, they allow to reduce the redundancy between
 # variations of the same build. We pass in the image name
 # and a friendly name that then template can then use to create jobs.
