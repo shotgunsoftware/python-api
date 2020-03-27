@@ -73,7 +73,7 @@ jobs:
       SG_HUMAN_NAME: $(python_api_human_name) ${{parameters.name}} $(python.version)
       SG_HUMAN_PASSWORD: $(python_api_human_password)
       # This will give a project name like 'Python API CI - macOS - 2.7'
-      SG_PROJECT_NAME: ${{ format('Python API CI - {0}', parameters.name) }} - $(python.version)
+      SG_PROJECT_NAME: Python API CI - $(Agent.Name)
 
   # Upload the code coverage result to codecov.io.
   - script: |
