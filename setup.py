@@ -27,7 +27,7 @@ if (sys.version_info[0] <= 2) or (sys.version_info[0] == 2 and sys.version_info[
 
 setup(
     name='shotgun_api3',
-    version='3.1.0',
+    version='3.2.2',
     description='Shotgun Python API ',
     long_description=readme,
     author='Shotgun Software',

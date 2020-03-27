@@ -117,7 +117,7 @@ except ImportError as e:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.1.0"
+__version__ = "3.2.2"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -133,6 +133,13 @@ class ShotgunError(Exception):
 class ShotgunFileDownloadError(ShotgunError):
     """
     Exception for file download-related errors.
+    """
+    pass
+
+
+class ShotgunThumbnailNotReady(ShotgunError):
+    """
+    Exception for when trying to use a 'pending thumbnail' (aka transient thumbnail) in an operation
     """
     pass
 
@@ -427,6 +434,31 @@ class _Config(object):
         self.session_token = None
         self.authorization = None
         self.no_ssl_validation = False
+        self.localized = False
+
+    def set_server_params(self, base_url):
+        """
+        Set the different server related fields based on the passed in URL.
+
+        This will impact the following attributes:
+
+        - scheme: http or https
+        - api_path: usually /api3/json
+        - server: usually something.shotgunstudio.com
+
+        :param str base_url: The server URL.
+
+        :raises ValueError: Raised if protocol is not http or https.
+        """
+        self.scheme, self.server, api_base, _, _ = \
+            urllib.parse.urlsplit(base_url)
+        if self.scheme not in ("http", "https"):
+            raise ValueError(
+                "base_url must use http or https got '%s'" % base_url
+            )
+        self.api_path = urllib.parse.urljoin(urllib.parse.urljoin(
+            api_base or "/", self.api_ver + "/"), "json"
+        )
 
     @property
     def records_per_page(self):
@@ -610,23 +642,49 @@ class Shotgun(object):
                              "got '%s'." % self.config.rpc_attempt_interval)
 
         self._connection = None
+
+        # The following lines of code allow to tell the API where to look for
+        # certificate authorities certificates (we will be referring to these
+        # as CAC from now on). Here's how the Python API interacts with those.
+        #
+        # Auth and CRUD operations
+        # ========================
+        # These operations are executed with httplib2. httplib2 ships with a
+        # list of CACs instead of asking Python's ssl module for them.
+        #
+        # Upload/Downloads
+        # ================
+        # These operations are executed using urllib2. urllib2 asks a Python
+        # module called `ssl` for CACs. On Windows, ssl searches for CACs in
+        # the Windows Certificate Store. On Linux/macOS, it asks the OpenSSL
+        # library linked with Python for CACs. Depending on how Python was
+        # compiled for a given DCC, Python may be linked against the OpenSSL
+        # from the OS or a copy of OpenSSL distributed with the DCC. This
+        # impacts which versions of the certificates are available to Python,
+        # as an OS level OpenSSL will be aware of system wide certificates that
+        # have been added, while an OpenSSL that comes with a DCC is likely
+        # bundling a list of certificates that get update with each release and
+        # no not contain system wide certificates.
+        #
+        # Using custom CACs
+        # =================
+        # When a user requires a non-standard CAC, the SHOTGUN_API_CACERTS
+        # environment variable allows to provide an alternate location for
+        # the CACs.
         if ca_certs is not None:
             self.__ca_certs = ca_certs
         else:
             self.__ca_certs = os.environ.get("SHOTGUN_API_CACERTS")
 
         self.base_url = (base_url or "").lower()
-        self.config.scheme, self.config.server, api_base, _, _ = \
-            urllib.parse.urlsplit(self.base_url)
-        if self.config.scheme not in ("http", "https"):
-            raise ValueError("base_url must use http or https got '%s'" %
-                             self.base_url)
-        self.config.api_path = urllib.parse.urljoin(urllib.parse.urljoin(
-            api_base or "/", self.config.api_ver + "/"), "json")
+        self.config.set_server_params(self.base_url)
 
         # if the service contains user information strip it out
         # copied from the xmlrpclib which turned the user:password into
         # and auth header
+        # Do NOT urlsplit(self.base_url) here, as it contains the lower case version
+        # of the base_url argument. Doing so would base64-encode the lowercase
+        # version of the credentials.
         auth, self.config.server = urllib.parse.splituser(urllib.parse.urlsplit(base_url).netloc)
         if auth:
             auth = base64.encodestring(six.ensure_binary(urllib.parse.unquote(auth))).decode("utf-8")
@@ -1818,6 +1876,9 @@ class Shotgun(object):
             ``{'type': 'Project', 'id': 3}``
         :returns: dict of Entity Type to dict containing the display name.
         :rtype: dict
+
+        .. note::
+            The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
         """
 
         params = {}
@@ -1887,6 +1948,9 @@ class Shotgun(object):
             types. Properties that are ``'editable': True``, can be updated using the
             :meth:`~shotgun_api3.Shotgun.schema_field_update` method.
         :rtype: dict
+
+        .. note::
+            The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
         """
 
         params = {}
@@ -1916,6 +1980,9 @@ class Shotgun(object):
 
         .. note::
             If you don't specify a ``project_entity``, everything is reported as visible.
+
+        .. note::
+            The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
 
         >>> sg.schema_field_read('Asset', 'shots')
         {'shots': {'data_type': {'editable': False, 'value': 'multi_entity'},
@@ -1996,7 +2063,7 @@ class Shotgun(object):
 
         return self._call_rpc("schema_field_create", params)
 
-    def schema_field_update(self, entity_type, field_name, properties):
+    def schema_field_update(self, entity_type, field_name, properties, project_entity=None):
         """
         Update the properties for the specified field on an entity.
 
@@ -2014,7 +2081,16 @@ class Shotgun(object):
         :param field_name: Internal Shotgun name of the field to update.
         :param properties: Dictionary with key/value pairs where the key is the property to be
             updated and the value is the new value.
+        :param dict project_entity: Optional Project entity specifying which project to modify the
+            ``visible`` property for. If ``visible`` is present in ``properties`` and
+            ``project_entity`` is not set, an exception will be raised. Example:
+            ``{'type': 'Project', 'id': 3}``
         :returns: ``True`` if the field was updated.
+
+        .. note::
+            The ``project_entity`` parameter can only affect the state of the ``visible`` property
+            and has no impact on other properties.
+
         :rtype: bool
         """
 
@@ -2026,7 +2102,7 @@ class Shotgun(object):
                 for k, v in six.iteritems((properties or {}))
             ]
         }
-
+        params = self._add_project_param(params, project_entity)
         return self._call_rpc("schema_field_update", params)
 
     def schema_field_delete(self, entity_type, field_name):
@@ -2116,6 +2192,10 @@ class Shotgun(object):
         .. note::
             When sharing a filmstrip thumbnail, it is required to have a static thumbnail in
             place before the filmstrip will be displayed in the Shotgun web UI.
+            If the :ref:`thumbnail is still processing and is using a placeholder 
+            <interpreting_image_field_strings>`, this method will error.
+
+        Simple use case:
 
         >>> thumb = '/data/show/ne2/100_110/anim/01.mlk-02b.jpg'
         >>> e = [{'type': 'Version', 'id': 123}, {'type': 'Version', 'id': 456}]
@@ -2139,6 +2219,8 @@ class Shotgun(object):
             share the static thumbnail. Defaults to ``False``.
         :returns: ``id`` of the Attachment entity representing the source thumbnail that is shared.
         :rtype: int
+        :raises: :class:`ShotgunError` if not supported by server version or improperly called, 
+            or :class:`ShotgunThumbnailNotReady` if thumbnail is still pending.
         """
         if not self.server_caps.version or self.server_caps.version < (4, 0, 0):
             raise ShotgunError("Thumbnail sharing support requires server "
@@ -2202,14 +2284,16 @@ class Shotgun(object):
 
         result = self._send_form(url, params)
 
-        if not result.startswith("1"):
-            raise ShotgunError("Unable to share thumbnail: %s" % result)
-        else:
+        if result.startswith("1:"):
             # clearing thumbnail returns no attachment_id
             try:
                 attachment_id = int(result.split(":", 2)[1].split("\n", 1)[0])
             except ValueError:
                 attachment_id = None
+        elif result.startswith("2"):
+            raise ShotgunThumbnailNotReady("Unable to share thumbnail: %s" % result)
+        else:
+            raise ShotgunError("Unable to share thumbnail: %s" % result)
 
         return attachment_id
 
@@ -2295,6 +2379,10 @@ class Shotgun(object):
         You can optionally store the file in a field on the entity, change the display name, and
         assign tags to the Attachment.
 
+        .. note::
+          Make sure to have retries for file uploads. Failures when uploading will occasionally happen. 
+          When it does, immediately retrying to upload usually works
+
         >>> mov_file = '/data/show/ne2/100_110/anim/01.mlk-02b.mov'
         >>> sg.upload("Shot", 423, mov_file, field_name="sg_latest_quicktime",
         ...           display_name="Latest QT")
@@ -2309,6 +2397,7 @@ class Shotgun(object):
         :param str tag_list: comma-separated string of tags to assign to the file.
         :returns: Id of the Attachment entity that was created for the image.
         :rtype: int
+        :raises: :class:`ShotgunError` on upload failure.
         """
         # Basic validations of the file to upload.
         path = os.path.abspath(os.path.expanduser(path or ""))
@@ -3205,6 +3294,10 @@ class Shotgun(object):
             "content-type": "application/json; charset=utf-8",
             "connection": "keep-alive"
         }
+
+        if self.config.localized is True:
+            req_headers["locale"] = "auto"
+
         http_status, resp_headers, body = self._make_call("POST", self.config.api_path,
                                                           encoded_payload, req_headers)
         LOG.debug("Completed rpc call to %s" % (method))

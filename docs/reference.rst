@@ -89,6 +89,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.follow
     Shotgun.unfollow
     Shotgun.followers
+    Shotgun.following
 
 .. rubric:: Working with the Shotgun Schema and Preferences
 
@@ -166,6 +167,7 @@ Methods that relate to the activity stream and following of entities in Shotgun.
 .. automethod:: Shotgun.follow
 .. automethod:: Shotgun.unfollow
 .. automethod:: Shotgun.followers
+.. automethod:: Shotgun.following
 
 Working with the Shotgun Schema
 ===============================
@@ -669,6 +671,9 @@ image (read-only)
 
 :value: :obj:`str` | :obj:`None`
 
+    .. note::
+	   Refer to :ref:`interpreting_image_field_strings`.
+
 list
 ====
 
@@ -786,6 +791,36 @@ Additional keys exist for local file links
       'content_type': "string"
     }
 
+.. _interpreting_image_field_strings:
+
+********************************
+Interpreting Image Field Strings
+********************************
+
+There are three possible states for values returned by an ``image`` field:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Type
+     - Value - Description
+   * - :obj:`None`
+     - No thumbnail image uploaded, or thumbnail generation failed.
+   * - :obj:`str`
+     - | ``<protocol>://<domain>/images/status/transient/thumbnail_pending.png`` -
+       | URLs of this form indicate a transient placeholder icon.
+       | Returned if image requested between upload & availability from media storage.
+       | Constant string per site.
+   * - :obj:`str`
+     - | ``<signed URL for S3 object>`` -
+       | Access to final thumbnail.
+
+.. note::
+    Other upcoming features are likely to require the use of other transient thumbnails.
+    For this reason, it is highly recommended to use the prefix part of the placeholder path
+    (e.g. https://yoursubdomain.shotgunstudio.com/images/status/transient/)
+    to detect any transient URLs rather than use the full path of the thumbnail.
+
 .. _event_types:
 
 ***********
@@ -889,3 +924,46 @@ Stores the number of milliseconds to wait between request retries.  By default, 
 
 In the case that both this environment variable and the config's ``rpc_attempt_interval`` property are set, the value in ``rpc_attempt_interal`` will be used.
 
+************
+Localization
+************
+
+The Shotgun API offers the ability to return localized display names in the current user's language.
+Requests made from script/API users are localized in the site settings.
+
+This functionality is currently supported by the methods ``Shotgun.schema_entity_read``, ``Shotgun.schema_field_read``, and ``Shotgun.schema_read``.
+
+Localization is disabled by default. To enable localization, set the ``localized`` property to ``True``.
+
+Example for a user whose language preference is set to Japanese:
+
+.. code-block:: python
+   :emphasize-lines: 9,20
+
+    >>> sg = Shotgun(site_name, script_name, script_key)
+    >>> sg.config.localized # checking that localization is disabled
+    False
+    >>> sg.schema_field_read('Shot')
+    {
+    'sg_vendor_groups': {
+        'mandatory': {'editable': False, 'value': False},
+        # the value field (display name) is not localized
+        'name': {'editable': True, 'value': 'Vendor Groups'},
+        ...
+    },
+    ...
+    }
+    >>> sg.config.localized = True # enabling the localization
+    >>> sg.schema_field_read('Shot')
+    {
+    'sg_vendor_groups': {
+        'mandatory': {'editable': False, 'value': False},
+        # the value field (display name) is localized
+        'name': {'editable': True, 'value': '\xe3\x83\x99\xe3\x83\xb3\xe3\x83\x80\xe3\x83\xbc \xe3\x82\xb0\xe3\x83\xab\xe3\x83\xbc\xe3\x83\x97'},
+        ...
+    },
+    ...
+    }
+
+.. note::
+    If needed, the encoding of the returned localized string can be ensured regardless the Python version using shotgun_api3.lib.six.ensure_text().

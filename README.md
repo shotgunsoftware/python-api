@@ -98,8 +98,13 @@ Additionally, when testing locally, tests should be run for both python 2 and py
 
 Integration and unit tests are provided.
 
-- All tests require the [nose unit testing tools](http://nose.readthedocs.org), and a `tests/config` file (you can copy an example from `tests/example_config`).
-- Tests can be run individually like this: `nosetest tests/test_client.py`
+- All tests require:
+    - The [nose unit testing tools](http://nose.readthedocs.org),
+    - The [nose-exclude nose plugin](https://pypi.org/project/nose-exclude/)
+    - (Note: Running `pip install -r tests/ci_requirements.txt` will install this package)
+- A `tests/config` file (you can copy an example from `tests/example_config`).
+- Tests can be run individually like this: `nosetests --config="nose.cfg" tests/test_client.py`
+    - Make sure to not forget the `--config="nose.cfg"` option. This option tells nose to use our config file.  This will exclude python 2- and 3-specific files in the `/lib` directory, preventing a failure from being reported by nose for compilation due to incompatible syntax in those files.
 - `test_client` and `tests_unit` use mock server interaction and do not require a Shotgun instance to be available (no modifications to `tests/config` are necessary).
 - `test_api` and `test_api_long` *do* require a Shotgun instance, with a script key available for the tests. The server and script user values must be supplied in the `tests/config` file. The tests will add test data to your server based on information in your config. This data will be manipulated by the tests, and should not be used for other purposes.
 - To run all of the tests, use the shell script `run-tests`.
@@ -114,7 +119,6 @@ Integration and unit tests are provided.
     - Make sure the date of the release matches today. We try and keep this TBD until we're ready to do a release so it's easy to catch that it needs to be updated.
     - Make sure the version number is filled out and correct. We follow semantic versioning. Or more correctly, we should be following it.
 2) Ensure any changes or additions to public methods are documented
-    - Update the Github wiki, and usually you'll need to update the Method Reference page with concise and exact documentation of the changes that are in this release.
     - Ensure that doc strings are updated in the code itself to work with Sphinx and are correctly formatted.
     - Examples are always good especially if this a new feature or method.
     - Think about a new user to the API trying to figure out how to use the features you're documenting.
@@ -128,7 +132,7 @@ Integration and unit tests are provided.
     - Add more detailed information regarding the changes in this release. This is a great place to add examples, and reasons for the change!
 
 ### Letting the world know
-We usually send an email to the `shotgun-dev` list with an announcement of the release and highlight the changes.
+Post a message in the [Pipeline Community channel](https://community.shotgunsoftware.com/c/pipeline) and send an email to [shotgun-dev](https://groups.google.com/a/shotgunsoftware.com/forum/#!forum/shotgun-dev) with a link to the community post.
 
 ### Prepare for the Next Dev Cycle
 1) Update the `__version__` value in `shotgun_api3/shotgun.py` to the next version number with `.dev` appended to it. For example, `v3.0.24.dev`

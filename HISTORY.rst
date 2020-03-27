@@ -4,6 +4,30 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.2.2 (2019 Dec 11)
+=====================
+- Upgrades packaged six module to 1.13.0
+- Adds ``platform`` and ``normalize_platform`` to sgsix module to provide unified platform value across Python 2/3
+- Changes httplib import procedure to emulate direct import of the module
+- Adds test to ensure httplib2 is importable as expected
+
+v3.2.1 (2019 Oct 29)
+=====================
+- Returns a specific error from ``share_thumbnail`` when the source thumbnail is a 'transient' thumbnail.
+
+v3.2.0 (2019 Sept 23)
+=====================
+- Adds a new ``project_entity`` parameter to  ``schema_field_update`` that allows to modify field visibility for a given project.
+
+v3.1.2 (2019 Sept 17)
+=====================
+- Adds an optional `localized` property on the Shotgun object which allows to retrieve localized display names on
+  methods ``schema_entity_read()``, ``schema_field_read()``, and ``schema_read()``.
+
+v3.1.1 (2019 August 29)
+=====================
+- Fixes a regression on Python 2.7.0-2.7.9 on Windows with the mimetypes module.
+
 v3.1.0 (2019 July 29)
 =====================
 - Adds support for Python 3.7
@@ -21,7 +45,7 @@ v3.0.39 (2019 February 20)
 - Ensures the certificates packaged with the API and those specified via the `SHOTGUN_API_CACERTS` environment variable
   are used when uploading a file.
 
-v3.0.39 (2019 February 7)
+v3.0.38 (2019 February 7)
 =====================
 - Upgrades the version of ``httplib2`` to ``0.12.0``, which fixes SNI issues. Note this
   version contains a more recent list of certificate authorities. If you are running Shotgun locally and have
