@@ -4107,8 +4107,7 @@ class CACertsHTTPSConnection(http_client.HTTPConnection):
         self.sock = ssl.wrap_socket(
             self.sock,
             ca_certs=self.__ca_certs,
-            cert_reqs=ssl.CERT_REQUIRED,
-            ssl_version=ssl.PROTOCOL_TLSv1_2
+            cert_reqs=ssl.CERT_REQUIRED
         )
 
 
