@@ -36,6 +36,7 @@ setup(
     license=license,
     packages=find_packages(exclude=('tests',)),
     script_args=script_args,
+    data_files=[("", ["README.md", "LICENSE"])],
     include_package_data=True,
     package_data={'': ['cacerts.txt']},
     zip_safe=False,
