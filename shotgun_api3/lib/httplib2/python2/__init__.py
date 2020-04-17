@@ -122,7 +122,7 @@ if ssl is None:
     _ssl_wrap_socket = _ssl_wrap_socket_unsupported
 
 if sys.version_info >= (2, 3):
-    from iri2uri import iri2uri
+    from .iri2uri import iri2uri
 else:
 
     def iri2uri(uri):
