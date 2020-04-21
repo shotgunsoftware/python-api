@@ -4,6 +4,10 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.2.3 (2020 Apr 21)
+=====================
+- Fixes an import bug in httplib2 by using the `forked repository <https://github.com/shotgunsoftware/httplib2>`_.
+
 v3.2.2 (2019 Dec 11)
 =====================
 - Upgrades packaged six module to 1.13.0
