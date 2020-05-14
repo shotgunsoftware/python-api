@@ -3981,6 +3981,10 @@ class Shotgun(object):
             else:
                 result = opener.open(request)
             etag = result.info()["Etag"]
+
+        except ssl.SSLError, e:
+            raise ShotgunError("Unanticipated error occurred uploading to %s: %s" % (storage_url, e))
+
         except urllib.error.HTTPError as e:
             if e.code == 500:
                 raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (storage_url, e))
@@ -4078,6 +4082,10 @@ class Shotgun(object):
                 resp = opener.open(url, params)
             result = resp.read()
             # response headers are in str(resp.info()).splitlines()
+
+        except ssl.SSLError, e:
+            raise ShotgunError("Unanticipated error occurred %s" % (e))
+
         except urllib.error.HTTPError as e:
             if e.code == 500:
                 raise ShotgunError("Server encountered an internal error. "
