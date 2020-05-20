@@ -55,7 +55,7 @@ from gettext import gettext as _
 import socket
 
 try:
-    from httplib2 import socks
+    from . import socks
 except ImportError:
     try:
         import socks
@@ -276,7 +276,7 @@ class NotRunningAppEngineEnvironment(HttpLib2Error):
 # requesting that URI again.
 DEFAULT_MAX_REDIRECTS = 5
 
-from httplib2 import certs
+from . import certs
 CA_CERTS = certs.where()
 
 # Which headers are hop-by-hop headers by default

@@ -168,7 +168,7 @@ SAFE_METHODS = ("GET", "HEAD", "OPTIONS", "TRACE")
 REDIRECT_CODES = frozenset((300, 301, 302, 303, 307, 308))
 
 
-from httplib2 import certs
+from . import certs
 CA_CERTS = certs.where()
 
 # PROTOCOL_TLS is python 3.5.3+. PROTOCOL_SSLv23 is deprecated.

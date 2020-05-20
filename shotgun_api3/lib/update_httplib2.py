@@ -33,7 +33,7 @@ def main(temp_path, version):
     print("Patching imports")
     for python_file in pathlib.Path("httplib2").rglob("*.py"):
         subprocess.check_output(
-            "sed",  "-i", "", "-e" "s/from httplib2/from ./g", python_file
+            ["sed",  "-i", "", "-e" "s/from httplib2/from ./g", python_file]
         )
 
     print("Adding to git")
