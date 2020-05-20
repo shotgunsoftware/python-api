@@ -13,7 +13,6 @@ import subprocess
 import sys
 
 def main(temp_path, repo_root, version):
-    
     # Output folders for the python2 and python3 copies of httplib2
     httplib2_dir = repo_root / "shotgun_api3" / "lib" / "httplib2"
     python2_dir = str(httplib2_dir / "python2")
@@ -49,7 +48,7 @@ def main(temp_path, repo_root, version):
     print("Patching imports")
     for python_file in httplib2_dir.rglob("*.py"):
         subprocess.check_output(
-            ["sed",  "-i", "", "-e" "s/from httplib2/from ./g", python_file]
+            ["sed", "-i", "", "-e" "s/from httplib2/from ./g", python_file]
         )
 
     # Adding files to the git repo.
