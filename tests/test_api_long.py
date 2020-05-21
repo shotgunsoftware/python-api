@@ -83,6 +83,7 @@ class TestShotgunApiLong(base.LiveTestBase):
             limit = (limit % 5) + 1
             page = (page % 3) + 1
 
+    @base.skip("Skipping schema tests since database on ci server can't add/remove columns on the Version schema.")
     def test_schema(self):
         """Called schema functions"""
 
