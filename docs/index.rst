@@ -3,8 +3,8 @@ Shotgun Python API3
 ###################
 Release |version|. (:ref:`Installation <installation>`)
 
-.. image:: https://img.shields.io/badge/shotgun-api-blue.svg?style=flat-square
-.. image:: https://img.shields.io/travis/shotgunsoftware/python-api.svg?style=flat-square
+.. image:: https://img.shields.io/badge/shotgun-api-blue.svg
+.. image:: https://secure.travis-ci.org/shotgunsoftware/python-api.svg?branch=master
 
 
 
