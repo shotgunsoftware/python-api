@@ -238,7 +238,15 @@ class socksocket(socket.socket):
         headers -     Additional or modified headers for the proxy connect
         request.
         """
-        self.__proxy = (proxytype, addr, port, rdns, username, password, headers)
+        self.__proxy = (
+            proxytype,
+            addr,
+            port,
+            rdns,
+            username.encode() if username else None,
+            password.encode() if password else None,
+            headers,
+        )
 
     def __negotiatesocks5(self, destaddr, destport):
         """__negotiatesocks5(self,destaddr,destport)

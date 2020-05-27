@@ -119,7 +119,7 @@ Integration and unit tests are provided.
     - Add bullet points for any changes that have happened since the previous release. This may include changes you did not make so look at the commit history and make sure we don't miss anything. If you notice something was done that wasn't added to the changelog, hunt down that engineer and make them feel guilty for not doing so. This is a required step in making changes to the API.
     - Try and match the language of previous change log messages. We want to keep a consistent voice.
     - Make sure the date of the release matches today. We try and keep this TBD until we're ready to do a release so it's easy to catch that it needs to be updated.
-    - Make sure the version number is filled out and correct. We follow semantic versioning. Or more correctly, we should be following it.
+    - Make sure the version number is filled out and correct. We follow semantic versioning.
 2) Ensure any changes or additions to public methods are documented
     - Ensure that doc strings are updated in the code itself to work with Sphinx and are correctly formatted.
     - Examples are always good especially if this a new feature or method.
