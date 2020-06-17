@@ -65,10 +65,16 @@ Create A Dependency
 
 Tasks each have an ``upstream_tasks`` field and a ``downstream_tasks`` field. Each field is a 
 list ``[]`` type and can contain zero, one, or multiple Task entity dictionaries representing the 
-dependent Tasks. Here is how to create a dependency between our "Layout" and "Anim" Tasks::
+dependent Tasks.
+There are four dependency types from which you can choose: ``finish-to-start-next-day``, ``start-to-finish-next-day``, ``start-to-start``, ``finish-to-finish``.
+If no dependency type provided the default ``finish-to-start-next-day`` would be used. 
+Here is how to create a dependency between our "Layout" and "Anm" Tasks::
 
-    # make 'Layout' and upstream Task to 'Anm'. (aka, make 'Anm' dependent on 'Layout')
-    result = sg.update('Task', 557, {'upstream_tasks':[{'type':'Task','id':556}]})
+    # make 'Layout' an upstream Task to 'Anm'. (aka, make 'Anm' dependent on 'Layout') with finish-to-start-next-day dependency type
+    data = {
+        'upstream_tasks':[{'type':'Task','id':556, 'dependency_type': 'finish-to-start-next-day'}]
+    }
+    result = sg.update('Task', 557, data)
 
 Returns::
 
@@ -77,6 +83,34 @@ Returns::
       'upstream_tasks': [{'id': 556, 'name': 'Layout', 'type': 'Task'}]}]
 
 This will also automatically update the `downstream_tasks` field on 'Layout' to include the 'Anm' Task.
+
+***********************
+Query Task Dependencies 
+***********************
+
+Task Dependencies each have a ``dependent_task_id`` and a ``task_id`` fields.
+They correspond to ``upstream_task`` and ``downstream_task`` ids of the dependency accordingly.
+Here is how to get a TaskDependency using a ``dependent_task_id`` and a ``task_id`` fields::
+
+    filters = [["dependent_task_id", "is", 72], ["task_id", "is", 75]]
+    result = sg.find_one('TaskDependency', filters)
+
+Returns::
+
+    {'type': 'TaskDependency', 'id': 128}
+
+****************************
+Updating the Dependency type
+****************************
+
+When updating dependency type for the existing dependencies,
+update a ``dependency_type`` field of the TaskDependency directly::
+
+    result = sg.update('TaskDependency', 128, {'dependency_type': 'start-to-start'})
+
+Returns::
+
+    {'dependency_type': 'start-to-start', 'type': 'TaskDependency', 'id': 128}
 
 **********************************
 Query Tasks with Dependency Fields
