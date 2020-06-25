@@ -67,7 +67,7 @@ Tasks each have an ``upstream_tasks`` field and a ``downstream_tasks`` field. Ea
 list ``[]`` type and can contain zero, one, or multiple Task entity dictionaries representing the 
 dependent Tasks.
 There are four dependency types from which you can choose: ``finish-to-start-next-day``, ``start-to-finish-next-day``, ``start-to-start``, ``finish-to-finish``.
-If no dependency type provided the default ``finish-to-start-next-day`` would be used. 
+If no dependency type is provided the default ``finish-to-start-next-day`` will be used. 
 Here is how to create a dependency between our "Layout" and "Anm" Tasks::
 
     # make 'Layout' an upstream Task to 'Anm'. (aka, make 'Anm' dependent on 'Layout') with finish-to-start-next-day dependency type
@@ -103,8 +103,8 @@ Returns::
 Updating the Dependency type
 ****************************
 
-When updating dependency type for the existing dependencies,
-update a ``dependency_type`` field of the TaskDependency directly::
+When updating the dependency type for the existing dependencies,
+update the ``dependency_type`` field of the TaskDependency directly::
 
     result = sg.update('TaskDependency', 128, {'dependency_type': 'start-to-start'})
 
