@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Task Dependencies &mdash; python-api v3.2.4 documentation</title>
+  <title>Task Dependencies &mdash; python-api v3.2.5 documentation</title>
   
 
   
@@ -19,43 +19,45 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'v3.2.5',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="python-api v3.2.4 documentation" href="../../index.html"/>
-        <link rel="up" title="Working With Tasks" href="../tasks.html"/>
-        <link rel="next" title="Split Tasks" href="split_tasks.html"/>
-        <link rel="prev" title="Updating Task Dates: How Shotgun Thinks" href="updating_tasks.html"/> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Split Tasks" href="split_tasks.html" />
+    <link rel="prev" title="Updating Task Dates: How Shotgun Thinks" href="updating_tasks.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
     <a href='http://developer.shotgunsoftware.com'>
     
@@ -112,6 +114,8 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Task Dependencies</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#create-tasks">Create Tasks</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#create-a-dependency">Create A Dependency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#query-task-dependencies">Query Task Dependencies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#updating-the-dependency-type">Updating the Dependency type</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#query-tasks-with-dependency-fields">Query Tasks with Dependency Fields</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#updating-the-end-date-on-a-task-with-downstream-task-dependencies">Updating the End Date on a Task with Downstream Task Dependencies</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#creating-a-dependency-violation-by-pushing-up-a-start-date">Creating a Dependency Violation by pushing up a Start Date</a></li>
@@ -150,7 +154,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.4.<br>
+    <b>python-api</b> v3.2.5.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -168,7 +172,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
@@ -176,9 +180,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -277,9 +282,15 @@ Task for our Shot:</p>
 <h2>Create A Dependency<a class="headerlink" href="#create-a-dependency" title="Permalink to this headline">¶</a></h2>
 <p>Tasks each have an <code class="docutils literal"><span class="pre">upstream_tasks</span></code> field and a <code class="docutils literal"><span class="pre">downstream_tasks</span></code> field. Each field is a
 list <code class="docutils literal"><span class="pre">[]</span></code> type and can contain zero, one, or multiple Task entity dictionaries representing the
-dependent Tasks. Here is how to create a dependency between our &#8220;Layout&#8221; and &#8220;Anim&#8221; Tasks:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># make &#39;Layout&#39; and upstream Task to &#39;Anm&#39;. (aka, make &#39;Anm&#39; dependent on &#39;Layout&#39;)</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;upstream_tasks&#39;</span><span class="p">:[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">556</span><span class="p">}]})</span>
+dependent Tasks.
+There are four dependency types from which you can choose: <code class="docutils literal"><span class="pre">finish-to-start-next-day</span></code>, <code class="docutils literal"><span class="pre">start-to-finish-next-day</span></code>, <code class="docutils literal"><span class="pre">start-to-start</span></code>, <code class="docutils literal"><span class="pre">finish-to-finish</span></code>.
+If no dependency type is provided the default <code class="docutils literal"><span class="pre">finish-to-start-next-day</span></code> will be used.
+Here is how to create a dependency between our &#8220;Layout&#8221; and &#8220;Anm&#8221; Tasks:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># make &#39;Layout&#39; an upstream Task to &#39;Anm&#39;. (aka, make &#39;Anm&#39; dependent on &#39;Layout&#39;) with finish-to-start-next-day dependency type</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;upstream_tasks&#39;</span><span class="p">:[{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">556</span><span class="p">,</span> <span class="s1">&#39;dependency_type&#39;</span><span class="p">:</span> <span class="s1">&#39;finish-to-start-next-day&#39;</span><span class="p">}]</span>
+<span class="p">}</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Returns:</p>
@@ -289,6 +300,32 @@ dependent Tasks. Here is how to create a dependency between our &#8220;Layout&#8
 </pre></div>
 </div>
 <p>This will also automatically update the <cite>downstream_tasks</cite> field on &#8216;Layout&#8217; to include the &#8216;Anm&#8217; Task.</p>
+</div>
+<div class="section" id="query-task-dependencies">
+<h2>Query Task Dependencies<a class="headerlink" href="#query-task-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>Task Dependencies each have a <code class="docutils literal"><span class="pre">dependent_task_id</span></code> and a <code class="docutils literal"><span class="pre">task_id</span></code> fields.
+They correspond to <code class="docutils literal"><span class="pre">upstream_task</span></code> and <code class="docutils literal"><span class="pre">downstream_task</span></code> ids of the dependency accordingly.
+Here is how to get a TaskDependency using a <code class="docutils literal"><span class="pre">dependent_task_id</span></code> and a <code class="docutils literal"><span class="pre">task_id</span></code> fields:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;dependent_task_id&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="mi">72</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;task_id&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="mi">75</span><span class="p">]]</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">&#39;TaskDependency&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Returns:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;TaskDependency&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="updating-the-dependency-type">
+<h2>Updating the Dependency type<a class="headerlink" href="#updating-the-dependency-type" title="Permalink to this headline">¶</a></h2>
+<p>When updating the dependency type for the existing dependencies,
+update the <code class="docutils literal"><span class="pre">dependency_type</span></code> field of the TaskDependency directly:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;TaskDependency&#39;</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;dependency_type&#39;</span><span class="p">:</span> <span class="s1">&#39;start-to-start&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Returns:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;dependency_type&#39;</span><span class="p">:</span> <span class="s1">&#39;start-to-start&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;TaskDependency&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">}</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="query-tasks-with-dependency-fields">
 <h2>Query Tasks with Dependency Fields<a class="headerlink" href="#query-tasks-with-dependency-fields" title="Permalink to this headline">¶</a></h2>
@@ -538,9 +575,7 @@ to modify it will generate a Fault:</p>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -549,7 +584,7 @@ to modify it will generate a Fault:</p>
         <a href="split_tasks.html" class="btn btn-neutral float-right" title="Split Tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="updating_tasks.html" class="btn btn-neutral" title="Updating Task Dates: How Shotgun Thinks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="updating_tasks.html" class="btn btn-neutral float-left" title="Updating Task Dates: How Shotgun Thinks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -558,7 +593,7 @@ to modify it will generate a Fault:</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2020, Autodesk.
+        &copy; Copyright 2020, Autodesk
 
     </p>
   </div> 
@@ -574,36 +609,15 @@ to modify it will generate a Fault:</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'v3.2.4',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
   
  
 
