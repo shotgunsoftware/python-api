@@ -9,16 +9,15 @@
 # By accessing, using, copying or modifying this work you indicate your
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
-import sys
 from . import base
 from shotgun_api3.lib import httplib2
 
 
 class CertificateTest(base.TestBase):
-    '''Tests for server connection'''
+    '''Tests Amazon certificate endpoints'''
 
     def test_bad_cert_url(self):
-        '''Tests server connects and returns nothing'''
+        '''Tests that trying to connect to a bad ssl url throws and error'''
         url = "https://untrusted-root.badssl.com/"
 
         http = httplib2.Http()
@@ -28,7 +27,7 @@ class CertificateTest(base.TestBase):
         )
 
     def test_amazon_cert_urls(self):
-        '''Tests server connects and returns nothing'''
+        '''Tests we can connect to the Amazon certificate urls endpoints'''
         test_urls = [
             "https://good.sca1a.amazontrust.com/",
             "https://good.sca2a.amazontrust.com/",
