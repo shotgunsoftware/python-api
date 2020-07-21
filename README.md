@@ -34,10 +34,11 @@ You can see the [full history of the Python API on the documentation site](http:
 
 ## Updating HTTPLib2
 
-1. Download the latest version of HTTPLib2 at https://pypi.org/project/httplib2.
-2. Extract the python2/httplib2 into shotgun_api3/lib/http2lib/python2 without the test folder.
-3. Extract the python3/httplib2 into shotgun_api3/lib/http2lib/python3 without the test folder.
-4. Scan the files for any references to importing httplib2 and make sure they import "from ." instead of "from httplib2" because the library isn't in the Python path.
+The API comes with a copy of the `httplib2` inside the `shotgun_api3/lib` folder. To update the copy to a more recent version of the API, you can run the `update_httplib2.py` script at the root of this repository like this:
+
+    python update_httplib2.py vX.Y.Z
+
+where `vX.Y.Z` is a release found on `httplib2`'s [release page](https://github.com/httplib2/httplib2/releases).
 
 ## Maintaining Python 2 and 3 compatibility
 
