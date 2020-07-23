@@ -14,10 +14,10 @@ from shotgun_api3.lib import httplib2
 
 
 class CertificateTest(base.TestBase):
-    '''Tests Amazon certificate endpoints'''
+    """Tests Amazon certificate endpoints"""
 
     def test_bad_cert_url(self):
-        '''Tests that trying to connect to a bad ssl url throws and error'''
+        """Tests that trying to connect to a bad ssl url throws and error"""
         url = "https://untrusted-root.badssl.com/"
 
         http = httplib2.Http()
@@ -27,7 +27,7 @@ class CertificateTest(base.TestBase):
         )
 
     def test_amazon_cert_urls(self):
-        '''Tests we can connect to the Amazon certificate urls endpoints'''
+        """Tests we can connect to the Amazon certificate urls endpoints"""
         test_urls = [
             "https://good.sca1a.amazontrust.com/",
             "https://good.sca2a.amazontrust.com/",
