@@ -3219,7 +3219,8 @@ class Shotgun(object):
             handlers.append(handler)
         return urllib.request.build_opener(*handlers)
 
-    def _get_certs_file(self, ca_certs):
+    @classmethod
+    def _get_certs_file(cls, ca_certs):
         """
         The following method tells the API where to look for
         certificate authorities certificates (we will be referring to these
