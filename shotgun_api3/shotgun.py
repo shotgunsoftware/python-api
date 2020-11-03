@@ -52,7 +52,6 @@ import shutil       # used for attachment download
 from .lib.six.moves import http_client      # Used for secure file upload.
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib.sgtimezone import SgTimezone
-from .lib.certifi import where
 
 # Import Error and ResponseError (even though they're unused in this file) since they need
 # to be exposed as part of the API.
@@ -3258,16 +3257,26 @@ class Shotgun(object):
         :param ca_certs: A default cert can be provided
         :return: The cert file path to use.
         """
-
         if ca_certs is not None:
             # certs were provided up front so use these
             return ca_certs
         elif "SHOTGUN_API_CACERTS" in os.environ:
             return os.environ.get("SHOTGUN_API_CACERTS")
         else:
-            # No certs have been specifically provided fallback to
-            # using the certs shipped with this API.
-            return where()
+            # No certs have been specifically provided fallback to using the
+            # certs shipped with this API.
+            # We bundle certifi with this API so that we have a higher chance
+            # of using an uptodate certificate, rather than relying
+            # on the certs that are bundled with Python or the OS in some cases.
+            # However we can't use certifi.where() since that searches for the
+            # cacert.pem file using the sys.path and this means that if another
+            # copy of certifi can be found first, then it won't use ours.
+            # So we manually generate the path to the cert, but still use certifi
+            # to make it easier for updating the bundled cert with the API.
+            cur_dir = os.path.dirname(os.path.abspath(__file__))
+            # Now add the rest of the path to the cert file.
+            cert_file = os.path.join(cur_dir, "lib/certifi/cacert.pem")
+            return cert_file
 
     def _turn_off_ssl_validation(self):
         """
