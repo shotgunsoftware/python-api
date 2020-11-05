@@ -3275,7 +3275,7 @@ class Shotgun(object):
             # to make it easier for updating the bundled cert with the API.
             cur_dir = os.path.dirname(os.path.abspath(__file__))
             # Now add the rest of the path to the cert file.
-            cert_file = os.path.join(cur_dir, "lib/certifi/cacert.pem")
+            cert_file = os.path.join(cur_dir, "lib", "certifi", "cacert.pem")
             return cert_file
 
     def _turn_off_ssl_validation(self):
