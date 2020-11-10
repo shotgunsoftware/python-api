@@ -643,38 +643,7 @@ class Shotgun(object):
 
         self._connection = None
 
-        # The following lines of code allow to tell the API where to look for
-        # certificate authorities certificates (we will be referring to these
-        # as CAC from now on). Here's how the Python API interacts with those.
-        #
-        # Auth and CRUD operations
-        # ========================
-        # These operations are executed with httplib2. httplib2 ships with a
-        # list of CACs instead of asking Python's ssl module for them.
-        #
-        # Upload/Downloads
-        # ================
-        # These operations are executed using urllib2. urllib2 asks a Python
-        # module called `ssl` for CACs. On Windows, ssl searches for CACs in
-        # the Windows Certificate Store. On Linux/macOS, it asks the OpenSSL
-        # library linked with Python for CACs. Depending on how Python was
-        # compiled for a given DCC, Python may be linked against the OpenSSL
-        # from the OS or a copy of OpenSSL distributed with the DCC. This
-        # impacts which versions of the certificates are available to Python,
-        # as an OS level OpenSSL will be aware of system wide certificates that
-        # have been added, while an OpenSSL that comes with a DCC is likely
-        # bundling a list of certificates that get update with each release and
-        # no not contain system wide certificates.
-        #
-        # Using custom CACs
-        # =================
-        # When a user requires a non-standard CAC, the SHOTGUN_API_CACERTS
-        # environment variable allows to provide an alternate location for
-        # the CACs.
-        if ca_certs is not None:
-            self.__ca_certs = ca_certs
-        else:
-            self.__ca_certs = os.environ.get("SHOTGUN_API_CACERTS")
+        self.__ca_certs = self._get_certs_file(ca_certs)
 
         self.base_url = (base_url or "").lower()
         self.config.set_server_params(self.base_url)
@@ -3248,6 +3217,66 @@ class Shotgun(object):
         if handler is not None:
             handlers.append(handler)
         return urllib.request.build_opener(*handlers)
+
+    @classmethod
+    def _get_certs_file(cls, ca_certs):
+        """
+        The following method tells the API where to look for
+        certificate authorities certificates (we will be referring to these
+        as CAC from now on). Here's how the Python API interacts with those.
+
+        Auth and CRUD operations
+        ========================
+        These operations are executed with httplib2. httplib2 ships with a
+        list of CACs instead of asking Python's ssl module for them.
+
+        Upload/Downloads
+        ================
+        These operations are executed using urllib2. urllib2 asks a Python
+        module called `ssl` for CACs. We have bundled certifi with the API
+        so that we can be sure the certs are correct at the time of the API
+        release. This does however mean when the certs change we must update
+        the API to contain the latest certifi.
+        This approach is preferable to not using certifi since, on Windows,
+        ssl searches for CACs in the Windows Certificate Store, on
+        Linux/macOS, it asks the OpenSSL library linked with Python for CACs.
+        Depending on how Python was compiled for a given DCC, Python may be
+        linked against the OpenSSL from the OS or a copy of OpenSSL distributed
+        with the DCC. This impacts which versions of the certificates are
+        available to Python, as an OS level OpenSSL will be aware of system
+        wide certificates that have been added, while an OpenSSL that comes
+        with a DCC is likely bundling a list of certificates that get update
+        with each release and may not contain system wide certificates.
+
+        Using custom CACs
+        =================
+        When a user requires a non-standard CAC, the SHOTGUN_API_CACERTS
+        environment variable allows to provide an alternate location for
+        the CACs.
+
+        :param ca_certs: A default cert can be provided
+        :return: The cert file path to use.
+        """
+        if ca_certs is not None:
+            # certs were provided up front so use these
+            return ca_certs
+        elif "SHOTGUN_API_CACERTS" in os.environ:
+            return os.environ.get("SHOTGUN_API_CACERTS")
+        else:
+            # No certs have been specifically provided fallback to using the
+            # certs shipped with this API.
+            # We bundle certifi with this API so that we have a higher chance
+            # of using an uptodate certificate, rather than relying
+            # on the certs that are bundled with Python or the OS in some cases.
+            # However we can't use certifi.where() since that searches for the
+            # cacert.pem file using the sys.path and this means that if another
+            # copy of certifi can be found first, then it won't use ours.
+            # So we manually generate the path to the cert, but still use certifi
+            # to make it easier for updating the bundled cert with the API.
+            cur_dir = os.path.dirname(os.path.abspath(__file__))
+            # Now add the rest of the path to the cert file.
+            cert_file = os.path.join(cur_dir, "lib", "certifi", "cacert.pem")
+            return cert_file
 
     def _turn_off_ssl_validation(self):
         """
