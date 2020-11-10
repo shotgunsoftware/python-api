@@ -29,4 +29,5 @@
 # This file is unused. It is left there so Github can warn us is a CVE is
 # released for our dependencies.
 httplib2==0.18.0
-six==1.12.0
+six==1.13.0
+certifi==2020.06.20
