@@ -455,7 +455,11 @@ class TestCerts(unittest.TestCase):
         # Get the path to the cert file we expect the Shotgun API to find
         cur_path = os.path.dirname(os.path.abspath(__file__))
         cert_path = os.path.normpath(
-            os.path.join(cur_path, "..", "shotgun_api3", "lib", "certifi", "cacert.pem")
+            # Get the path relative to where we picked up the API and not relative
+            # to file on disk. On CI we pip install the API to run the tests
+            # so we have to pick the location from the installed copy.
+            # Call dirname to remove from __init__.py
+            os.path.join(os.path.dirname(api.__file__), "lib", "certifi", "cacert.pem")
         )
         # Now ensure that the path the SG API has found is correct.
         self.assertEquals(cert_path, self.certs)
