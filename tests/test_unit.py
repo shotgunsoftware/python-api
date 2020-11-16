@@ -453,7 +453,6 @@ class TestCerts(unittest.TestCase):
         isn't set), is the one bundled with this API
         """
         # Get the path to the cert file we expect the Shotgun API to find
-        cur_path = os.path.dirname(os.path.abspath(__file__))
         cert_path = os.path.normpath(
             # Get the path relative to where we picked up the API and not relative
             # to file on disk. On CI we pip install the API to run the tests
