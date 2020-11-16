@@ -47,7 +47,7 @@ install:
   - pip install -r tests/ci_requirements.txt
   - pip install . -U
 before_script:
-  - cp ./example_config ./config
+  - cp ./tests/example_config ./tests/config
 # Run flake and then run tests
 script:
   - if [ -n "$RUN_FLAKE" = true ]; then flake8; fi
