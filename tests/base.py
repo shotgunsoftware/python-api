@@ -23,8 +23,6 @@ except ImportError:
     def skip(f):
         return lambda self: None
 
-CONFIG_PATH = "config"
-
 
 class TestBase(unittest.TestCase):
     '''Base class for tests.
@@ -57,7 +55,9 @@ class TestBase(unittest.TestCase):
         # Since the file is read and never modified, we will only read
         # it once in memory and be done.
         cls.config = SgTestConfig()
-        cls.config.read_config(CONFIG_PATH)
+        cur_folder = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(cur_folder, "config")
+        cls.config.read_config(config_path)
 
     def setUp(self, auth_mode='ApiUser'):
         self.human_login = self.config.human_login
