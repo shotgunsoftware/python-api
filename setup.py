@@ -37,6 +37,6 @@ setup(
     packages=find_packages(exclude=('tests',)),
     script_args=script_args,
     include_package_data=True,
-    package_data={'': ['cacerts.txt', 'cacert.pem']},
+    package_data={'': ['cacerts.txt']},
     zip_safe=False,
 )

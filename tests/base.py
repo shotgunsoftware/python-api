@@ -23,7 +23,7 @@ except ImportError:
     def skip(f):
         return lambda self: None
 
-CONFIG_PATH = 'config'
+CONFIG_PATH = "config"
 
 
 class TestBase(unittest.TestCase):
