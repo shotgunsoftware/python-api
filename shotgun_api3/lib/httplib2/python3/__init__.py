@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """Small, fast HTTP client library for Python."""
 
+# TODO: remove __future__ import when support for py2 is completely dropped
+# Needed until then to avoid py2 packaging barking on things of the form: print(..., end=...)
+from __future__ import print_function
+
 __author__ = "Joe Gregorio (joe@bitworking.org)"
 __copyright__ = "Copyright 2006, Joe Gregorio"
 __contributors__ = [

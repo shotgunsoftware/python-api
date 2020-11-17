@@ -434,7 +434,7 @@ class socksocket(socket.socket):
         wrote_host_header = False
         wrote_auth_header = False
         if self.__proxy[6] != None:
-            for key, val in self.__proxy[6].iteritems():
+            for key, val in self.__proxy[6].items():
                 headers += [key, ": ", val, "\r\n"]
                 wrote_host_header = key.lower() == "host"
                 wrote_auth_header = key.lower() == "proxy-authorization"
