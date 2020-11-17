@@ -1,5 +1,5 @@
 #! /opt/local/bin/python
- 
+
 # XML-RPC CLIENT LIBRARY
 # $Id: xmlrpclib.py 41594 2005-12-04 19:11:17Z andrew.kuchling $
 #
@@ -98,23 +98,23 @@ The marshalling and response parser code can also be used to
 implement XML-RPC servers.
 
 Exported exceptions:
-  
+
   Error          Base class for client errors
   ProtocolError  Indicates an HTTP protocol error
   ResponseError  Indicates a broken response package
   Fault          Indicates an XML-RPC fault package
 
 Exported classes:
-  
+
   ServerProxy    Represents a logical connection to an XML-RPC server
-  
+
   MultiCall      Executor of boxcared xmlrpc requests
   Boolean        boolean wrapper to generate a "boolean" XML-RPC value
   DateTime       dateTime wrapper for an ISO 8601 string or time tuple or
                  localtime integer value to generate a "dateTime.iso8601"
                  XML-RPC value
   Binary         binary data wrapper
-  
+
   SlowParser     Slow but safe standard parser (based on xmllib)
   Marshaller     Generate an XML-RPC params chunk from a Python data structure
   Unmarshaller   Unmarshal an XML-RPC response from incoming XML event message
@@ -122,12 +122,12 @@ Exported classes:
   SafeTransport  Handles an HTTPS transaction to an XML-RPC server
 
 Exported constants:
-  
+
   True
   False
 
 Exported functions:
-  
+
   boolean        Convert any Python value to an XML-RPC boolean
   getparser      Create instance of the fastest available parser & attach
                  to an unmarshalling object
@@ -142,7 +142,6 @@ import re, string, time, operator
 from types import *
 import socket
 import errno
-import httplib
 
 # --------------------------------------------------------------------
 # Internal stuff
@@ -150,6 +149,8 @@ import httplib
 try:
     unicode
 except NameError:
+    # TODO: this could be simply 'unicode = str'
+    # as in py3 there is no more special 'unicode' type (everything is unicode...)
     unicode = None # unicode support not available
 
 try:
@@ -188,8 +189,8 @@ else:
 #__version__ = "1.0.1"
 
 # xmlrpc integer limits
-MAXINT =  2L**31-1
-MININT = -2L**31
+MAXINT =  2**31-1
+MININT = -2**31
 
 # --------------------------------------------------------------------
 # Error constants (from Dan Libby's specification at
@@ -289,40 +290,60 @@ class Fault(Error):
 
 if _bool_is_builtin:
     boolean = Boolean = bool
-    # to avoid breaking code which references xmlrpclib.{True,False}
-    True, False = True, False
+    try:
+        # TODO: remove this when py2 support is completely dropped
+        # to avoid breaking code which references xmlrpclib.{True,False}
+        True, False = True, False
+
+    except SyntaxError:
+        pass  # We're in py3
+
 else:
     class Boolean:
         """Boolean-value wrapper.
-        
+
         Use True or False to generate a "boolean" XML-RPC value.
         """
-        
+
         def __init__(self, value = 0):
             self.value = operator.truth(value)
-        
+
         def encode(self, out):
             out.write("<value><boolean>%d</boolean></value>\n" % self.value)
-        
+
         def __cmp__(self, other):
+            # cmp() is not part of py3: https://python-future.org/compatible_idioms.html#cmp
             if isinstance(other, Boolean):
                 other = other.value
-            return cmp(self.value, other)
-        
+
+            if self.value is None:
+                return 0 if other is None else -1
+
+            if other is None:
+                return 1
+
+            return self.value.__cmp__(other)
+
         def __repr__(self):
             if self.value:
                 return "<Boolean True at %x>" % id(self)
             else:
                 return "<Boolean False at %x>" % id(self)
-        
+
         def __int__(self):
             return self.value
-        
+
         def __nonzero__(self):
             return self.value
-    
-    True, False = Boolean(1), Boolean(0)
-    
+
+    try:
+        # TODO: remove this when py2 support is completely dropped
+        # to avoid breaking code which references xmlrpclib.{True,False}
+        True, False = Boolean(1), Boolean(0)
+
+    except SyntaxError:
+        pass  # We're in py3
+
     ##
     # Map true or false value to XML-RPC boolean values.
     #
@@ -333,7 +354,7 @@ else:
     # @see Boolean
     # @see True
     # @see False
-    
+
     def boolean(value, _truefalse=(False, True)):
         """Convert any Python value to XML-RPC 'boolean'."""
         return _truefalse[operator.truth(value)]
