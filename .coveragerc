@@ -17,4 +17,3 @@ source=shotgun_api3
 omit=
     shotgun_api3/lib/httplib2/*
     shotgun_api3/lib/six.py
-    shotgun_api3/lib/xmlrpclib.py
