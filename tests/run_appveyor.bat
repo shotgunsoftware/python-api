@@ -14,4 +14,6 @@
 
 copy tests\example_config tests\config
 %PYTHON%\Scripts\pip install -r tests/ci_requirements.txt
-%PYTHON%\Scripts\nosetests.exe -v --config="nose.cfg"
+%PYTHON%\Scripts\pip install . -U
+cd tests
+%PYTHON%\Scripts\nosetests.exe -v --no-path-adjustment
