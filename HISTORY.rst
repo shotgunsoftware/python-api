@@ -4,7 +4,7 @@ Shotgun Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
-v3.2.6 (2020 May 25)
+v3.2.6 (2020 Nov 24)
 =====================
 - Now includes certifi and defaults to using the certificates provided with that module.
 
