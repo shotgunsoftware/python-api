@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Upload a Thumbnail for a Version &mdash; python-api v3.2.5 documentation</title>
+  <title>Upload a Thumbnail for a Version &mdash; python-api v3.2.6 documentation</title>
   
 
   
@@ -22,20 +22,11 @@
   <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'v3.2.5',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script type="text/javascript" src="../../_static/jquery.js"></script>
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -44,6 +35,7 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Handling Action Menu Item Calls" href="ami_handler.html" />
@@ -151,7 +143,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.5.<br>
+    <b>python-api</b> v3.2.6.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -226,28 +218,28 @@
             
   <div class="section" id="upload-a-thumbnail-for-a-version">
 <h1>Upload a Thumbnail for a Version<a class="headerlink" href="#upload-a-thumbnail-for-a-version" title="Permalink to this headline">¶</a></h1>
-<p>So you&#8217;ve created a new Version of a Shot, and you&#8217;ve updated Shotgun, but now you want to upload a
-beauty frame to display as the thumbnail for your Version. We&#8217;ll assume you already have the image
-made (located on your machine at <code class="docutils literal"><span class="pre">/v1/gun/s100/010/beauties/anim/100_010_animv1.jpg</span></code>) . And since
-you&#8217;ve just created your Version in Shotgun, you know its <code class="docutils literal"><span class="pre">id</span></code> is <strong>214</strong>.</p>
+<p>So you’ve created a new Version of a Shot, and you’ve updated Shotgun, but now you want to upload a
+beauty frame to display as the thumbnail for your Version. We’ll assume you already have the image
+made (located on your machine at <code class="docutils literal notranslate"><span class="pre">/v1/gun/s100/010/beauties/anim/100_010_animv1.jpg</span></code>) . And since
+you’ve just created your Version in Shotgun, you know its <code class="docutils literal notranslate"><span class="pre">id</span></code> is <strong>214</strong>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">If you upload a movie file or image to the <code class="docutils literal"><span class="pre">sg_uploaded_movie</span></code> field and you have
+<p class="last">If you upload a movie file or image to the <code class="docutils literal notranslate"><span class="pre">sg_uploaded_movie</span></code> field and you have
 transcoding enabled on your server (the default for hosted sites), a thumbnail will be
 generated automatically as well as a filmstrip thumbnail (if possible).
 This is a basic example of how to manually provide or replace a thumbnail image.</p>
 </div>
 <div class="section" id="upload-the-image-using-upload-thumbnail">
-<h2>Upload the Image using <code class="xref py py-meth docutils literal"><span class="pre">upload_thumbnail()</span></code><a class="headerlink" href="#upload-the-image-using-upload-thumbnail" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">upload_thumbnail</span><span class="p">(</span><span class="s2">&quot;Version&quot;</span><span class="p">,</span> <span class="mi">214</span><span class="p">,</span> <span class="s2">&quot;/v1/gun/s100/010/beauties/anim/100_010_animv1.jpg&quot;</span><span class="p">)</span>
+<h2>Upload the Image using <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code><a class="headerlink" href="#upload-the-image-using-upload-thumbnail" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">upload_thumbnail</span><span class="p">(</span><span class="s2">&quot;Version&quot;</span><span class="p">,</span> <span class="mi">214</span><span class="p">,</span> <span class="s2">&quot;/v1/gun/s100/010/beauties/anim/100_010_animv1.jpg&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Shotgun will take care of resizing the thumbnail for you. If something does go wrong, an exception
-will be thrown and you&#8217;ll see the error details.</p>
+will be thrown and you’ll see the error details.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The result returned by <code class="xref py py-meth docutils literal"><span class="pre">upload_thumbnail()</span></code> is an integer
-representing the id of a special <code class="docutils literal"><span class="pre">Attachment</span></code> entity in Shotgun. Working with Attachments
+<p class="last">The result returned by <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code> is an integer
+representing the id of a special <code class="docutils literal notranslate"><span class="pre">Attachment</span></code> entity in Shotgun. Working with Attachments
 is beyond the scope of this example. :)</p>
 </div>
 </div>

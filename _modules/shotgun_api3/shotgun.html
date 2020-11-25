@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>shotgun_api3.shotgun &mdash; python-api v3.2.5 documentation</title>
+  <title>shotgun_api3.shotgun &mdash; python-api v3.2.6 documentation</title>
   
 
   
@@ -22,20 +22,11 @@
   <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'v3.2.5',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script type="text/javascript" src="../../_static/jquery.js"></script>
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -44,6 +35,7 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -128,7 +120,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.5.<br>
+    <b>python-api</b> v3.2.6.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -230,13 +222,13 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># Python 2/3 compatibility</span>
-<span class="kn">from</span> <span class="nn">.lib</span> <span class="k">import</span> <span class="n">six</span>
-<span class="kn">from</span> <span class="nn">.lib</span> <span class="k">import</span> <span class="n">sgsix</span>
-<span class="kn">from</span> <span class="nn">.lib.six</span> <span class="k">import</span> <span class="n">BytesIO</span>               <span class="c1"># used for attachment upload</span>
-<span class="kn">from</span> <span class="nn">.lib.six.moves</span> <span class="k">import</span> <span class="nb">map</span>
+<span class="kn">from</span> <span class="nn">.lib</span> <span class="kn">import</span> <span class="n">six</span>
+<span class="kn">from</span> <span class="nn">.lib</span> <span class="kn">import</span> <span class="n">sgsix</span>
+<span class="kn">from</span> <span class="nn">.lib.six</span> <span class="kn">import</span> <span class="n">BytesIO</span>               <span class="c1"># used for attachment upload</span>
+<span class="kn">from</span> <span class="nn">.lib.six.moves</span> <span class="kn">import</span> <span class="nb">map</span>
 
 <span class="kn">import</span> <span class="nn">base64</span>
-<span class="kn">from</span> <span class="nn">.lib.six.moves</span> <span class="k">import</span> <span class="n">http_cookiejar</span>  <span class="c1"># used for attachment upload</span>
+<span class="kn">from</span> <span class="nn">.lib.six.moves</span> <span class="kn">import</span> <span class="n">http_cookiejar</span>  <span class="c1"># used for attachment upload</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">uuid</span>                                <span class="c1"># used for attachment upload</span>
@@ -247,15 +239,15 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">.lib.six.moves</span> <span class="k">import</span> <span class="n">urllib</span>
+<span class="kn">from</span> <span class="nn">.lib.six.moves</span> <span class="kn">import</span> <span class="n">urllib</span>
 <span class="kn">import</span> <span class="nn">shutil</span>       <span class="c1"># used for attachment download</span>
-<span class="kn">from</span> <span class="nn">.lib.six.moves</span> <span class="k">import</span> <span class="n">http_client</span>      <span class="c1"># Used for secure file upload.</span>
-<span class="kn">from</span> <span class="nn">.lib.httplib2</span> <span class="k">import</span> <span class="n">Http</span><span class="p">,</span> <span class="n">ProxyInfo</span><span class="p">,</span> <span class="n">socks</span><span class="p">,</span> <span class="n">ssl_error_classes</span>
-<span class="kn">from</span> <span class="nn">.lib.sgtimezone</span> <span class="k">import</span> <span class="n">SgTimezone</span>
+<span class="kn">from</span> <span class="nn">.lib.six.moves</span> <span class="kn">import</span> <span class="n">http_client</span>      <span class="c1"># Used for secure file upload.</span>
+<span class="kn">from</span> <span class="nn">.lib.httplib2</span> <span class="kn">import</span> <span class="n">Http</span><span class="p">,</span> <span class="n">ProxyInfo</span><span class="p">,</span> <span class="n">socks</span><span class="p">,</span> <span class="n">ssl_error_classes</span>
+<span class="kn">from</span> <span class="nn">.lib.sgtimezone</span> <span class="kn">import</span> <span class="n">SgTimezone</span>
 
 <span class="c1"># Import Error and ResponseError (even though they&#39;re unused in this file) since they need</span>
 <span class="c1"># to be exposed as part of the API.</span>
-<span class="kn">from</span> <span class="nn">.lib.six.moves.xmlrpc_client</span> <span class="k">import</span> <span class="n">Error</span><span class="p">,</span> <span class="n">ProtocolError</span><span class="p">,</span> <span class="n">ResponseError</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">.lib.six.moves.xmlrpc_client</span> <span class="kn">import</span> <span class="n">Error</span><span class="p">,</span> <span class="n">ProtocolError</span><span class="p">,</span> <span class="n">ResponseError</span>  <span class="c1"># noqa</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;shotgun_api3&quot;</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -287,7 +279,7 @@
 
 
 <span class="k">if</span> <span class="n">_is_mimetypes_broken</span><span class="p">():</span>
-    <span class="kn">from</span> <span class="nn">.lib</span> <span class="k">import</span> <span class="n">mimetypes</span> <span class="k">as</span> <span class="n">mimetypes</span>
+    <span class="kn">from</span> <span class="nn">.lib</span> <span class="kn">import</span> <span class="n">mimetypes</span> <span class="k">as</span> <span class="n">mimetypes</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">mimetypes</span>
 
@@ -317,7 +309,7 @@
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.2.4&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.2.6&quot;</span>
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Errors</span>
@@ -395,7 +387,7 @@
 <span class="sd">        the future. Therefore, usage of this class is discouraged.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">meta</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">meta</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ServerCapabilities.__init__</span>
 
@@ -518,7 +510,7 @@
             <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;return thumbnail URLs&quot;</span>
         <span class="p">},</span> <span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;ServerCapabilities: host </span><span class="si">%s</span><span class="s2">, version </span><span class="si">%s</span><span class="s2">, is_dev </span><span class="si">%s</span><span class="s2">&quot;</span>\
             <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dev</span><span class="p">)</span>
 
@@ -542,7 +534,7 @@
 <span class="sd">        Defaults to ``unknown``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">system</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">system</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
@@ -569,7 +561,7 @@
         <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">NameError</span><span class="p">):</span>
             <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;ClientCapabilities: platform </span><span class="si">%s</span><span class="s2">, local_path_field </span><span class="si">%s</span><span class="s2">, &quot;</span>\
             <span class="s2">&quot;py_verison </span><span class="si">%s</span><span class="s2">, ssl version </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">platform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_path_field</span><span class="p">,</span>
                                                <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_version</span><span class="p">)</span>
@@ -580,7 +572,7 @@
 <span class="sd">    Container for the client configuration.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param sg: Shotgun connection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -688,7 +680,7 @@
 
     <span class="n">_MULTIPART_UPLOAD_CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">20000000</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">base_url</span><span class="p">,</span>
                  <span class="n">script_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -843,38 +835,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c1"># The following lines of code allow to tell the API where to look for</span>
-        <span class="c1"># certificate authorities certificates (we will be referring to these</span>
-        <span class="c1"># as CAC from now on). Here&#39;s how the Python API interacts with those.</span>
-        <span class="c1">#</span>
-        <span class="c1"># Auth and CRUD operations</span>
-        <span class="c1"># ========================</span>
-        <span class="c1"># These operations are executed with httplib2. httplib2 ships with a</span>
-        <span class="c1"># list of CACs instead of asking Python&#39;s ssl module for them.</span>
-        <span class="c1">#</span>
-        <span class="c1"># Upload/Downloads</span>
-        <span class="c1"># ================</span>
-        <span class="c1"># These operations are executed using urllib2. urllib2 asks a Python</span>
-        <span class="c1"># module called `ssl` for CACs. On Windows, ssl searches for CACs in</span>
-        <span class="c1"># the Windows Certificate Store. On Linux/macOS, it asks the OpenSSL</span>
-        <span class="c1"># library linked with Python for CACs. Depending on how Python was</span>
-        <span class="c1"># compiled for a given DCC, Python may be linked against the OpenSSL</span>
-        <span class="c1"># from the OS or a copy of OpenSSL distributed with the DCC. This</span>
-        <span class="c1"># impacts which versions of the certificates are available to Python,</span>
-        <span class="c1"># as an OS level OpenSSL will be aware of system wide certificates that</span>
-        <span class="c1"># have been added, while an OpenSSL that comes with a DCC is likely</span>
-        <span class="c1"># bundling a list of certificates that get update with each release and</span>
-        <span class="c1"># no not contain system wide certificates.</span>
-        <span class="c1">#</span>
-        <span class="c1"># Using custom CACs</span>
-        <span class="c1"># =================</span>
-        <span class="c1"># When a user requires a non-standard CAC, the SHOTGUN_API_CACERTS</span>
-        <span class="c1"># environment variable allows to provide an alternate location for</span>
-        <span class="c1"># the CACs.</span>
-        <span class="k">if</span> <span class="n">ca_certs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span> <span class="o">=</span> <span class="n">ca_certs</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SHOTGUN_API_CACERTS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_certs_file</span><span class="p">(</span><span class="n">ca_certs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_url</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set_server_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="p">)</span>
@@ -3449,6 +3410,66 @@
             <span class="n">handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">build_opener</span><span class="p">(</span><span class="o">*</span><span class="n">handlers</span><span class="p">)</span>
 
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_certs_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ca_certs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The following method tells the API where to look for</span>
+<span class="sd">        certificate authorities certificates (we will be referring to these</span>
+<span class="sd">        as CAC from now on). Here&#39;s how the Python API interacts with those.</span>
+
+<span class="sd">        Auth and CRUD operations</span>
+<span class="sd">        ========================</span>
+<span class="sd">        These operations are executed with httplib2. httplib2 ships with a</span>
+<span class="sd">        list of CACs instead of asking Python&#39;s ssl module for them.</span>
+
+<span class="sd">        Upload/Downloads</span>
+<span class="sd">        ================</span>
+<span class="sd">        These operations are executed using urllib2. urllib2 asks a Python</span>
+<span class="sd">        module called `ssl` for CACs. We have bundled certifi with the API</span>
+<span class="sd">        so that we can be sure the certs are correct at the time of the API</span>
+<span class="sd">        release. This does however mean when the certs change we must update</span>
+<span class="sd">        the API to contain the latest certifi.</span>
+<span class="sd">        This approach is preferable to not using certifi since, on Windows,</span>
+<span class="sd">        ssl searches for CACs in the Windows Certificate Store, on</span>
+<span class="sd">        Linux/macOS, it asks the OpenSSL library linked with Python for CACs.</span>
+<span class="sd">        Depending on how Python was compiled for a given DCC, Python may be</span>
+<span class="sd">        linked against the OpenSSL from the OS or a copy of OpenSSL distributed</span>
+<span class="sd">        with the DCC. This impacts which versions of the certificates are</span>
+<span class="sd">        available to Python, as an OS level OpenSSL will be aware of system</span>
+<span class="sd">        wide certificates that have been added, while an OpenSSL that comes</span>
+<span class="sd">        with a DCC is likely bundling a list of certificates that get update</span>
+<span class="sd">        with each release and may not contain system wide certificates.</span>
+
+<span class="sd">        Using custom CACs</span>
+<span class="sd">        =================</span>
+<span class="sd">        When a user requires a non-standard CAC, the SHOTGUN_API_CACERTS</span>
+<span class="sd">        environment variable allows to provide an alternate location for</span>
+<span class="sd">        the CACs.</span>
+
+<span class="sd">        :param ca_certs: A default cert can be provided</span>
+<span class="sd">        :return: The cert file path to use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ca_certs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># certs were provided up front so use these</span>
+            <span class="k">return</span> <span class="n">ca_certs</span>
+        <span class="k">elif</span> <span class="s2">&quot;SHOTGUN_API_CACERTS&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SHOTGUN_API_CACERTS&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No certs have been specifically provided fallback to using the</span>
+            <span class="c1"># certs shipped with this API.</span>
+            <span class="c1"># We bundle certifi with this API so that we have a higher chance</span>
+            <span class="c1"># of using an uptodate certificate, rather than relying</span>
+            <span class="c1"># on the certs that are bundled with Python or the OS in some cases.</span>
+            <span class="c1"># However we can&#39;t use certifi.where() since that searches for the</span>
+            <span class="c1"># cacert.pem file using the sys.path and this means that if another</span>
+            <span class="c1"># copy of certifi can be found first, then it won&#39;t use ours.</span>
+            <span class="c1"># So we manually generate the path to the cert, but still use certifi</span>
+            <span class="c1"># to make it easier for updating the bundled cert with the API.</span>
+            <span class="n">cur_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+            <span class="c1"># Now add the rest of the path to the cert file.</span>
+            <span class="n">cert_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cur_dir</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;certifi&quot;</span><span class="p">,</span> <span class="s2">&quot;cacert.pem&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">cert_file</span>
+
     <span class="k">def</span> <span class="nf">_turn_off_ssl_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Turn off SSL certificate validation.</span>
@@ -4290,7 +4311,7 @@
 
     <span class="n">default_port</span> <span class="o">=</span> <span class="n">http_client</span><span class="o">.</span><span class="n">HTTPS_PORT</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param args: Positional arguments passed down to the base class.</span>
 <span class="sd">        :param ca_certs: Path to the custom CA certs file.</span>
@@ -4316,7 +4337,7 @@
 <span class="sd">    Handler that ensures https connections are created with the custom CA certs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cacerts</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cacerts</span><span class="p">):</span>
         <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">HTTPSHandler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span> <span class="o">=</span> <span class="n">cacerts</span>
 

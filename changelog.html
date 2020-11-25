@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Shotgun Python API Changelog &mdash; python-api v3.2.5 documentation</title>
+  <title>Shotgun Python API Changelog &mdash; python-api v3.2.6 documentation</title>
   
 
   
@@ -22,20 +22,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'v3.2.5',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -44,6 +35,7 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="IronPython" href="advanced/iron_python.html" /> 
@@ -109,6 +101,7 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced/packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/iron_python.html">IronPython</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Shotgun Python API Changelog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v3-2-6-2020-nov-24">v3.2.6 (2020 Nov 24)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-2-4-2020-may-25">v3.2.4 (2020 May 25)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-2-3-2020-apr-21">v3.2.3 (2020 Apr 21)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-2-2-2019-dec-11">v3.2.2 (2019 Dec 11)</a></li>
@@ -194,7 +187,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.5.<br>
+    <b>python-api</b> v3.2.6.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -268,6 +261,12 @@
   <div class="section" id="shotgun-python-api-changelog">
 <h1>Shotgun Python API Changelog<a class="headerlink" href="#shotgun-python-api-changelog" title="Permalink to this headline">¶</a></h1>
 <p>Here you can see the full list of changes between each Python API release.</p>
+<div class="section" id="v3-2-6-2020-nov-24">
+<h2>v3.2.6 (2020 Nov 24)<a class="headerlink" href="#v3-2-6-2020-nov-24" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Now includes certifi and defaults to using the certificates provided with that module.</li>
+</ul>
+</div>
 <div class="section" id="v3-2-4-2020-may-25">
 <h2>v3.2.4 (2020 May 25)<a class="headerlink" href="#v3-2-4-2020-may-25" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -284,7 +283,7 @@
 <h2>v3.2.2 (2019 Dec 11)<a class="headerlink" href="#v3-2-2-2019-dec-11" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Upgrades packaged six module to 1.13.0</li>
-<li>Adds <code class="docutils literal"><span class="pre">platform</span></code> and <code class="docutils literal"><span class="pre">normalize_platform</span></code> to sgsix module to provide unified platform value across Python 2/3</li>
+<li>Adds <code class="docutils literal notranslate"><span class="pre">platform</span></code> and <code class="docutils literal notranslate"><span class="pre">normalize_platform</span></code> to sgsix module to provide unified platform value across Python 2/3</li>
 <li>Changes httplib import procedure to emulate direct import of the module</li>
 <li>Adds test to ensure httplib2 is importable as expected</li>
 </ul>
@@ -292,20 +291,20 @@
 <div class="section" id="v3-2-1-2019-oct-29">
 <h2>v3.2.1 (2019 Oct 29)<a class="headerlink" href="#v3-2-1-2019-oct-29" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Returns a specific error from <code class="docutils literal"><span class="pre">share_thumbnail</span></code> when the source thumbnail is a &#8216;transient&#8217; thumbnail.</li>
+<li>Returns a specific error from <code class="docutils literal notranslate"><span class="pre">share_thumbnail</span></code> when the source thumbnail is a ‘transient’ thumbnail.</li>
 </ul>
 </div>
 <div class="section" id="v3-2-0-2019-sept-23">
 <h2>v3.2.0 (2019 Sept 23)<a class="headerlink" href="#v3-2-0-2019-sept-23" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Adds a new <code class="docutils literal"><span class="pre">project_entity</span></code> parameter to  <code class="docutils literal"><span class="pre">schema_field_update</span></code> that allows to modify field visibility for a given project.</li>
+<li>Adds a new <code class="docutils literal notranslate"><span class="pre">project_entity</span></code> parameter to  <code class="docutils literal notranslate"><span class="pre">schema_field_update</span></code> that allows to modify field visibility for a given project.</li>
 </ul>
 </div>
 <div class="section" id="v3-1-2-2019-sept-17">
 <h2>v3.1.2 (2019 Sept 17)<a class="headerlink" href="#v3-1-2-2019-sept-17" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Adds an optional <cite>localized</cite> property on the Shotgun object which allows to retrieve localized display names on
-methods <code class="docutils literal"><span class="pre">schema_entity_read()</span></code>, <code class="docutils literal"><span class="pre">schema_field_read()</span></code>, and <code class="docutils literal"><span class="pre">schema_read()</span></code>.</li>
+methods <code class="docutils literal notranslate"><span class="pre">schema_entity_read()</span></code>, <code class="docutils literal notranslate"><span class="pre">schema_field_read()</span></code>, and <code class="docutils literal notranslate"><span class="pre">schema_read()</span></code>.</li>
 </ul>
 </div>
 <div class="section" id="v3-1-1-2019-august-29">
@@ -342,7 +341,7 @@ are used when uploading a file.</li>
 <div class="section" id="v3-0-38-2019-february-7">
 <h2>v3.0.38 (2019 February 7)<a class="headerlink" href="#v3-0-38-2019-february-7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Upgrades the version of <code class="docutils literal"><span class="pre">httplib2</span></code> to <code class="docutils literal"><span class="pre">0.12.0</span></code>, which fixes SNI issues. Note this
+<li>Upgrades the version of <code class="docutils literal notranslate"><span class="pre">httplib2</span></code> to <code class="docutils literal notranslate"><span class="pre">0.12.0</span></code>, which fixes SNI issues. Note this
 version contains a more recent list of certificate authorities. If you are running Shotgun locally and have
 signed your https certificate with an outdated certificate authority, the Shotgun connection will be rejected.</li>
 </ul>
@@ -358,8 +357,8 @@ signed your https certificate with an outdated certificate authority, the Shotgu
 <div class="section" id="v3-0-36-2018-april-3">
 <h2>v3.0.36 (2018 April 3)<a class="headerlink" href="#v3-0-36-2018-april-3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Fixes an error where <code class="docutils literal"><span class="pre">connect=False</span></code> during <code class="docutils literal"><span class="pre">__init__</span></code> would still connect to Shotgun.</li>
-<li>Adds support for <code class="docutils literal"><span class="pre">SHOTGUN_API_CACERTS</span></code> when uploading and downloading files.</li>
+<li>Fixes an error where <code class="docutils literal notranslate"><span class="pre">connect=False</span></code> during <code class="docutils literal notranslate"><span class="pre">__init__</span></code> would still connect to Shotgun.</li>
+<li>Adds support for <code class="docutils literal notranslate"><span class="pre">SHOTGUN_API_CACERTS</span></code> when uploading and downloading files.</li>
 <li>Properly handles failed downloads due to malware scanning.</li>
 </ul>
 </div>
@@ -375,25 +374,25 @@ pair on an SSO-enabled Shotgun site.</li>
 <h2>v3.0.34 (2017 September 18)<a class="headerlink" href="#v3-0-34-2017-september-18" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Optimized pagination strategy for Shotgun 7.4+</li>
-<li>Switched from a hard-coded value of 500 for &#8220;records_per_page&#8221; to a server-defined value. We will be experimenting with higher values with the goal of increasing performance for large result sets.</li>
+<li>Switched from a hard-coded value of 500 for “records_per_page” to a server-defined value. We will be experimenting with higher values with the goal of increasing performance for large result sets.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-33-2017-july-18">
 <h2>v3.0.33 (2017 July 18)<a class="headerlink" href="#v3-0-33-2017-july-18" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Raise an exception when uploading an empty file using <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code></a>, <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_thumbnail"><code class="xref py py-meth docutils literal"><span class="pre">upload_thumbnail()</span></code></a>
-or <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_filmstrip_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_filmstrip_thumbnail"><code class="xref py py-meth docutils literal"><span class="pre">upload_filmstrip_thumbnail()</span></code></a> before calling out to the server.</li>
+<li>Raise an exception when uploading an empty file using <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code></a>, <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_thumbnail"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code></a>
+or <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_filmstrip_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_filmstrip_thumbnail"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_filmstrip_thumbnail()</span></code></a> before calling out to the server.</li>
 <li>Multiple enhancements and bugfixes to Mockgun</li>
-<li>Added <code class="docutils literal"><span class="pre">nav_search_string()</span></code> and <code class="docutils literal"><span class="pre">nav_search_entity()</span></code> methods as experimental, internal methods for querying SG hierarchy.</li>
-<li>Introduces a <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.following" title="shotgun_api3.shotgun.Shotgun.following"><code class="xref py py-meth docutils literal"><span class="pre">following()</span></code></a> query method, that accepts a user entity and optionally an entity type and/or project.</li>
+<li>Added <code class="docutils literal notranslate"><span class="pre">nav_search_string()</span></code> and <code class="docutils literal notranslate"><span class="pre">nav_search_entity()</span></code> methods as experimental, internal methods for querying SG hierarchy.</li>
+<li>Introduces a <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.following" title="shotgun_api3.shotgun.Shotgun.following"><code class="xref py py-meth docutils literal notranslate"><span class="pre">following()</span></code></a> query method, that accepts a user entity and optionally an entity type and/or project.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-32-2016-sep-22">
 <h2>v3.0.32 (2016 Sep 22)<a class="headerlink" href="#v3-0-32-2016-sep-22" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Optimized import speed of the API on Python 2.7.</li>
-<li>Integrated the latest fixes to the <code class="docutils literal"><span class="pre">mimetypes</span></code> module.</li>
-<li>Added <code class="docutils literal"><span class="pre">nav_expand()</span></code> method as an experimental, internal method for querying SG hierarchy.</li>
+<li>Integrated the latest fixes to the <code class="docutils literal notranslate"><span class="pre">mimetypes</span></code> module.</li>
+<li>Added <code class="docutils literal notranslate"><span class="pre">nav_expand()</span></code> method as an experimental, internal method for querying SG hierarchy.</li>
 <li>Ported all documentation to sphinx. See <a class="reference external" href="http://developer.shotgunsoftware.com/python-api">http://developer.shotgunsoftware.com/python-api</a>.</li>
 <li>Moved Changelog to dedicated HISTORY file.</li>
 </ul>
@@ -401,7 +400,7 @@ or <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotg
 <div class="section" id="v3-0-31-2016-may-18">
 <h2>v3.0.31 (2016 May 18)<a class="headerlink" href="#v3-0-31-2016-may-18" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Add optional <code class="docutils literal"><span class="pre">additional_filter_presets</span></code> argument to <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.find" title="shotgun_api3.shotgun.Shotgun.find"><code class="xref py py-meth docutils literal"><span class="pre">find()</span></code></a> and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.find_one" title="shotgun_api3.shotgun.Shotgun.find_one"><code class="xref py py-meth docutils literal"><span class="pre">find_one()</span></code></a></li>
+<li>Add optional <code class="docutils literal notranslate"><span class="pre">additional_filter_presets</span></code> argument to <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.find" title="shotgun_api3.shotgun.Shotgun.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a> and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.find_one" title="shotgun_api3.shotgun.Shotgun.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one()</span></code></a></li>
 </ul>
 </div>
 <div class="section" id="v3-0-30-2016-apr-25">
@@ -409,7 +408,7 @@ or <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotg
 <ul class="simple">
 <li>Add option to use add/remove/set modes when updating multi-entity fields.</li>
 <li>Add explicit file handler close to download_attachment.</li>
-<li>Add basic <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.find" title="shotgun_api3.shotgun.Shotgun.find"><code class="xref py py-meth docutils literal"><span class="pre">find()</span></code></a> ordering support to mockgun.</li>
+<li>Add basic <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.find" title="shotgun_api3.shotgun.Shotgun.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a> ordering support to mockgun.</li>
 <li>Allow for product specific authorization parameters.</li>
 </ul>
 </div>
@@ -422,15 +421,15 @@ or <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotg
 <div class="section" id="v3-0-28-2016-mar-3">
 <h2>v3.0.28 (2016 Mar 3)<a class="headerlink" href="#v3-0-28-2016-mar-3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Refactored nested classing of <code class="docutils literal"><span class="pre">sgtimezone</span></code> library to allow for serializable timestamps.</li>
+<li>Refactored nested classing of <code class="docutils literal notranslate"><span class="pre">sgtimezone</span></code> library to allow for serializable timestamps.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-27-2016-feb-18">
 <h2>v3.0.27 (2016 Feb 18)<a class="headerlink" href="#v3-0-27-2016-feb-18" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Make sure HTTP proxy authentication works with the <code class="docutils literal"><span class="pre">&#64;</span></code> character in a password.</li>
+<li>Make sure HTTP proxy authentication works with the <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> character in a password.</li>
 <li>Make sure sudo authentication test works with Shotgun versions after v6.3.10.</li>
-<li>Smarter uploading of thumbnails and filmstrips with the <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code></a> method.</li>
+<li>Smarter uploading of thumbnails and filmstrips with the <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code></a> method.</li>
 <li>Improve Travis build integration of the Python-API to run the full suite of
 API tests instead of just the unit and client tests.</li>
 </ul>
@@ -439,16 +438,16 @@ API tests instead of just the unit and client tests.</li>
 <h2>v3.0.26 (2016 Feb 1)<a class="headerlink" href="#v3-0-26-2016-feb-1" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Updating testing framework to use environment variables inconjunction with existing
-<code class="docutils literal"><span class="pre">example_config</span></code> file so that commits and pull requests are automatically run on travis-ci.</li>
+<code class="docutils literal notranslate"><span class="pre">example_config</span></code> file so that commits and pull requests are automatically run on travis-ci.</li>
 <li>Fix to prevent stripping out case-sensitivity of a URL if the user passes their credentials to
-<code class="docutils literal"><span class="pre">config.server</span></code> as an authorization header.</li>
+<code class="docutils literal notranslate"><span class="pre">config.server</span></code> as an authorization header.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-25-2016-jan-12">
 <h2>v3.0.25 (2016 Jan 12)<a class="headerlink" href="#v3-0-25-2016-jan-12" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Add handling for Python versions incompatible with SHA-2 (see <a class="reference external" href="http://blog.shotgunsoftware.com/2016/01/important-ssl-certificate-renewal-and.html">this blog post</a>).</li>
-<li>Add <code class="docutils literal"><span class="pre">SHOTGUN_FORCE_CERTIFICATE_VALIDATION</span></code> environment variable to prevent disabling certficate
+<li>Add <code class="docutils literal notranslate"><span class="pre">SHOTGUN_FORCE_CERTIFICATE_VALIDATION</span></code> environment variable to prevent disabling certficate
 validation when SHA-2 validation is not available.</li>
 <li>Add SSL info to user-agent header.</li>
 </ul>
@@ -471,13 +470,13 @@ module (thanks <a class="reference external" href="http://github.com/patrickwolf
 <div class="section" id="v3-0-22-2015-sept-9">
 <h2>v3.0.22 (2015 Sept 9)<a class="headerlink" href="#v3-0-22-2015-sept-9" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Added method <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.text_search" title="shotgun_api3.shotgun.Shotgun.text_search"><code class="xref py py-meth docutils literal"><span class="pre">text_search()</span></code></a> which allows an API client to access the Shotgun global search
+<li>Added method <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.text_search" title="shotgun_api3.shotgun.Shotgun.text_search"><code class="xref py py-meth docutils literal notranslate"><span class="pre">text_search()</span></code></a> which allows an API client to access the Shotgun global search
 and auto completer.</li>
-<li>Added method <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.activity_stream_read" title="shotgun_api3.shotgun.Shotgun.activity_stream_read"><code class="xref py py-meth docutils literal"><span class="pre">activity_stream_read()</span></code></a> which allows an API client to access the activity
+<li>Added method <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.activity_stream_read" title="shotgun_api3.shotgun.Shotgun.activity_stream_read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">activity_stream_read()</span></code></a> which allows an API client to access the activity
 stream for a given Shotgun entity.</li>
-<li>Added method <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.note_thread_read" title="shotgun_api3.shotgun.Shotgun.note_thread_read"><code class="xref py py-meth docutils literal"><span class="pre">note_thread_read()</span></code></a> which allows an API client to download an entire Note
+<li>Added method <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.note_thread_read" title="shotgun_api3.shotgun.Shotgun.note_thread_read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">note_thread_read()</span></code></a> which allows an API client to download an entire Note
 conversation, including Replies and Attachments, using a single API call.</li>
-<li>Added an experimental <code class="docutils literal"><span class="pre">mockgun</span></code> module which can be used to emulate the Shotgun API, for
+<li>Added an experimental <code class="docutils literal notranslate"><span class="pre">mockgun</span></code> module which can be used to emulate the Shotgun API, for
 example inside unit test rigs.</li>
 <li>[minor] Improved docstrings.</li>
 </ul>
@@ -485,7 +484,7 @@ example inside unit test rigs.</li>
 <div class="section" id="v3-0-21-2015-aug-13">
 <h2>v3.0.21 (2015 Aug 13)<a class="headerlink" href="#v3-0-21-2015-aug-13" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Update bundled <code class="docutils literal"><span class="pre">httplib2</span></code> module to latest v0.9.1 - fixes some bugs</li>
+<li>Update bundled <code class="docutils literal notranslate"><span class="pre">httplib2</span></code> module to latest v0.9.1 - fixes some bugs</li>
 </ul>
 </div>
 <div class="section" id="v3-0-20-2015-jun-10">
@@ -497,11 +496,11 @@ example inside unit test rigs.</li>
 <div class="section" id="v3-0-19-2015-mar-25">
 <h2>v3.0.19 (2015 Mar 25)<a class="headerlink" href="#v3-0-19-2015-mar-25" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Add ability to authenticate with Shotgun using <code class="docutils literal"><span class="pre">session_token</span></code>.</li>
-<li>Add  <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.get_session_token" title="shotgun_api3.shotgun.Shotgun.get_session_token"><code class="xref py py-meth docutils literal"><span class="pre">get_session_token()</span></code></a> method for obtaining token to authenticate with.</li>
-<li>Add new <code class="docutils literal"><span class="pre">AuthenticationFault</span></code> exception type to indicate when server communication has failed
+<li>Add ability to authenticate with Shotgun using <code class="docutils literal notranslate"><span class="pre">session_token</span></code>.</li>
+<li>Add  <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.get_session_token" title="shotgun_api3.shotgun.Shotgun.get_session_token"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_session_token()</span></code></a> method for obtaining token to authenticate with.</li>
+<li>Add new <code class="docutils literal notranslate"><span class="pre">AuthenticationFault</span></code> exception type to indicate when server communication has failed
 due to authentication reasons.</li>
-<li>Add support for <code class="docutils literal"><span class="pre">SHOTGUN_API_CACERTS</span></code> environment variable to provide location of external
+<li>Add support for <code class="docutils literal notranslate"><span class="pre">SHOTGUN_API_CACERTS</span></code> environment variable to provide location of external
 SSL certificates file.</li>
 <li>Fixes and updates to various tests.</li>
 </ul>
@@ -516,26 +515,26 @@ SSL certificates file.</li>
 <div class="section" id="v3-0-17-2014-jul-10">
 <h2>v3.0.17 (2014 Jul 10)<a class="headerlink" href="#v3-0-17-2014-jul-10" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Add ability to update <code class="docutils literal"><span class="pre">last_accessed_by_current_user</span></code> on Project.</li>
+<li>Add ability to update <code class="docutils literal notranslate"><span class="pre">last_accessed_by_current_user</span></code> on Project.</li>
 <li>Add workaround for <a class="reference external" href="http://bugs.python.org/issue9291">bug #9291 in Python 2.7</a> affecting
 mimetypes library on Windows.</li>
-<li>Add platform and Python version to user-agent (eg. <code class="docutils literal"><span class="pre">shotgun-json</span> <span class="pre">(3.0.17);</span> <span class="pre">Python</span> <span class="pre">2.7</span> <span class="pre">(Mac)</span></code>)</li>
+<li>Add platform and Python version to user-agent (eg. <code class="docutils literal notranslate"><span class="pre">shotgun-json</span> <span class="pre">(3.0.17);</span> <span class="pre">Python</span> <span class="pre">2.7</span> <span class="pre">(Mac)</span></code>)</li>
 </ul>
 </div>
 <div class="section" id="v3-0-16-2014-may-23">
 <h2>v3.0.16 (2014 May 23)<a class="headerlink" href="#v3-0-16-2014-may-23" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Add flag to ignore entities from archived Projects.</li>
-<li>Add support for differentiating between zero and <code class="docutils literal"><span class="pre">None</span></code> for number fields.</li>
+<li>Add support for differentiating between zero and <code class="docutils literal notranslate"><span class="pre">None</span></code> for number fields.</li>
 <li>Add ability to act as a different user.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-15-2014-mar-6">
 <h2>v3.0.15 (2014 Mar 6)<a class="headerlink" href="#v3-0-15-2014-mar-6" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Fixed bug which allowed a value of <code class="docutils literal"><span class="pre">None</span></code> for password parameter in
-<a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.authenticate_human_user" title="shotgun_api3.shotgun.Shotgun.authenticate_human_user"><code class="xref py py-meth docutils literal"><span class="pre">authenticate_human_user()</span></code></a></li>
-<li>Add <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.follow" title="shotgun_api3.shotgun.Shotgun.follow"><code class="xref py py-meth docutils literal"><span class="pre">follow()</span></code></a>, <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.unfollow" title="shotgun_api3.shotgun.Shotgun.unfollow"><code class="xref py py-meth docutils literal"><span class="pre">unfollow()</span></code></a> and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.followers" title="shotgun_api3.shotgun.Shotgun.followers"><code class="xref py py-meth docutils literal"><span class="pre">followers()</span></code></a> methods.</li>
+<li>Fixed bug which allowed a value of <code class="docutils literal notranslate"><span class="pre">None</span></code> for password parameter in
+<a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.authenticate_human_user" title="shotgun_api3.shotgun.Shotgun.authenticate_human_user"><code class="xref py py-meth docutils literal notranslate"><span class="pre">authenticate_human_user()</span></code></a></li>
+<li>Add <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.follow" title="shotgun_api3.shotgun.Shotgun.follow"><code class="xref py py-meth docutils literal notranslate"><span class="pre">follow()</span></code></a>, <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.unfollow" title="shotgun_api3.shotgun.Shotgun.unfollow"><code class="xref py py-meth docutils literal notranslate"><span class="pre">unfollow()</span></code></a> and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.followers" title="shotgun_api3.shotgun.Shotgun.followers"><code class="xref py py-meth docutils literal notranslate"><span class="pre">followers()</span></code></a> methods.</li>
 <li>Add ability to login as HumanUser.</li>
 <li>Ensure that webm/mp4 mime types are always available.</li>
 <li>Updated link to video tour in README.</li>
@@ -546,16 +545,16 @@ mimetypes library on Windows.</li>
 <h2>v3.0.14 (2013 Jun 26)<a class="headerlink" href="#v3-0-14-2013-jun-26" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>added: additional tests for thumbnails.</li>
-<li>added: support for downloading from s3 in <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.download_attachment" title="shotgun_api3.shotgun.Shotgun.download_attachment"><code class="xref py py-meth docutils literal"><span class="pre">download_attachment()</span></code></a>. Accepts an Attachment
+<li>added: support for downloading from s3 in <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.download_attachment" title="shotgun_api3.shotgun.Shotgun.download_attachment"><code class="xref py py-meth docutils literal notranslate"><span class="pre">download_attachment()</span></code></a>. Accepts an Attachment
 entity dict as a parameter (is still backwards compatible with passing in an Attachment id).</li>
-<li>added: optional <code class="docutils literal"><span class="pre">file_path</span></code> parameter to <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.download_attachment" title="shotgun_api3.shotgun.Shotgun.download_attachment"><code class="xref py py-meth docutils literal"><span class="pre">download_attachment()</span></code></a> to write data directly to
+<li>added: optional <code class="docutils literal notranslate"><span class="pre">file_path</span></code> parameter to <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.download_attachment" title="shotgun_api3.shotgun.Shotgun.download_attachment"><code class="xref py py-meth docutils literal notranslate"><span class="pre">download_attachment()</span></code></a> to write data directly to
 disk instead of loading into memory. (thanks to Adam Goforth <a class="reference external" href="https://github.com/aag">&#64;aag</a>)</li>
 </ul>
 </div>
 <div class="section" id="v3-0-13-2013-apr-11">
 <h2>v3.0.13 (2013 Apr 11)<a class="headerlink" href="#v3-0-13-2013-apr-11" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>fixed: #20856 <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.authenticate_human_user" title="shotgun_api3.shotgun.Shotgun.authenticate_human_user"><code class="xref py py-meth docutils literal"><span class="pre">authenticate_human_user()</span></code></a> login was sticky and would be used for permissions
+<li>fixed: #20856 <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.authenticate_human_user" title="shotgun_api3.shotgun.Shotgun.authenticate_human_user"><code class="xref py py-meth docutils literal notranslate"><span class="pre">authenticate_human_user()</span></code></a> login was sticky and would be used for permissions
 and logging.</li>
 </ul>
 </div>
@@ -563,10 +562,10 @@ and logging.</li>
 <h2>v3.0.12 (2013 Feb 22)<a class="headerlink" href="#v3-0-12-2013-feb-22" title="Permalink to this headline">¶</a></h2>
 <p><em>no tag</em></p>
 <ul class="simple">
-<li>added: #18171 New <code class="docutils literal"><span class="pre">ca_certs</span></code> argument to the <code class="xref py py-class docutils literal"><span class="pre">Shotgun</span></code> constructor to specify the
+<li>added: #18171 New <code class="docutils literal notranslate"><span class="pre">ca_certs</span></code> argument to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Shotgun</span></code> constructor to specify the
 certificates to use in SSL validation.</li>
-<li>added: <code class="docutils literal"><span class="pre">setup.py</span></code> doesn&#8217;t compress the installed <code class="docutils literal"><span class="pre">.egg</span></code> file which makes the
-<code class="docutils literal"><span class="pre">cacerts.txt</span></code> file accessible.</li>
+<li>added: <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> doesn’t compress the installed <code class="docutils literal notranslate"><span class="pre">.egg</span></code> file which makes the
+<code class="docutils literal notranslate"><span class="pre">cacerts.txt</span></code> file accessible.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-11-2013-jan-31">
@@ -578,42 +577,42 @@ certificates to use in SSL validation.</li>
 <div class="section" id="v3-0-10-2013-jan-25">
 <h2>v3.0.10 (2013 Jan 25)<a class="headerlink" href="#v3-0-10-2013-jan-25" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>added: <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.add_user_agent" title="shotgun_api3.shotgun.Shotgun.add_user_agent"><code class="xref py py-meth docutils literal"><span class="pre">add_user_agent()</span></code></a> and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.reset_user_agent" title="shotgun_api3.shotgun.Shotgun.reset_user_agent"><code class="xref py py-meth docutils literal"><span class="pre">reset_user_agent()</span></code></a> methods to allow client code to add
+<li>added: <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.add_user_agent" title="shotgun_api3.shotgun.Shotgun.add_user_agent"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_user_agent()</span></code></a> and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.reset_user_agent" title="shotgun_api3.shotgun.Shotgun.reset_user_agent"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset_user_agent()</span></code></a> methods to allow client code to add
 strings to track.</li>
-<li>added: Changed default <code class="docutils literal"><span class="pre">user-agent</span></code> to include API version.</li>
+<li>added: Changed default <code class="docutils literal notranslate"><span class="pre">user-agent</span></code> to include API version.</li>
 <li>updated: advanced summarize filter support.</li>
-<li>fixed: #19830 <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.share_thumbnail" title="shotgun_api3.shotgun.Shotgun.share_thumbnail"><code class="xref py py-meth docutils literal"><span class="pre">share_thumbnail()</span></code></a> errors when source has no thumbnail.</li>
+<li>fixed: #19830 <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.share_thumbnail" title="shotgun_api3.shotgun.Shotgun.share_thumbnail"><code class="xref py py-meth docutils literal notranslate"><span class="pre">share_thumbnail()</span></code></a> errors when source has no thumbnail.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-9-2012-dec-05">
 <h2>v3.0.9 (2012 Dec 05)<a class="headerlink" href="#v3-0-9-2012-dec-05" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>added: <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.share_thumbnail" title="shotgun_api3.shotgun.Shotgun.share_thumbnail"><code class="xref py py-meth docutils literal"><span class="pre">share_thumbnail()</span></code></a> method to share the same thumbnail record and media between
+<li>added: <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.share_thumbnail" title="shotgun_api3.shotgun.Shotgun.share_thumbnail"><code class="xref py py-meth docutils literal notranslate"><span class="pre">share_thumbnail()</span></code></a> method to share the same thumbnail record and media between
 entities.</li>
-<li>added: proxy handling to methods that transfer binary data (ie. <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code></a>,
-<a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_thumbnail"><code class="xref py py-meth docutils literal"><span class="pre">upload_thumbnail()</span></code></a>, etc.).</li>
+<li>added: proxy handling to methods that transfer binary data (ie. <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code></a>,
+<a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_thumbnail"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code></a>, etc.).</li>
 <li>updated: default logging level to WARN.</li>
-<li>updated: documentation for <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.summarize" title="shotgun_api3.shotgun.Shotgun.summarize"><code class="xref py py-meth docutils literal"><span class="pre">summarize()</span></code></a> method, previously released but without
+<li>updated: documentation for <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.summarize" title="shotgun_api3.shotgun.Shotgun.summarize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">summarize()</span></code></a> method, previously released but without
 documentation.</li>
 <li>fixed: unicode strings not always being encoded correctly.</li>
-<li>fixed: <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.create" title="shotgun_api3.shotgun.Shotgun.create"><code class="xref py py-meth docutils literal"><span class="pre">create()</span></code></a> generates error when <code class="docutils literal"><span class="pre">return_fields</span></code> is None.</li>
-<li>fixed: clearing thumbnail by setting <code class="docutils literal"><span class="pre">image</span></code> value to <code class="docutils literal"><span class="pre">None</span></code> not working as expected.</li>
+<li>fixed: <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.create" title="shotgun_api3.shotgun.Shotgun.create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code></a> generates error when <code class="docutils literal notranslate"><span class="pre">return_fields</span></code> is None.</li>
+<li>fixed: clearing thumbnail by setting <code class="docutils literal notranslate"><span class="pre">image</span></code> value to <code class="docutils literal notranslate"><span class="pre">None</span></code> not working as expected.</li>
 <li>fixed: some html entities being returned sanitized via API.</li>
-<li>improved: <code class="docutils literal"><span class="pre">simplejson</span></code> fallback now uses relative imports to match other bundled packages.</li>
+<li>improved: <code class="docutils literal notranslate"><span class="pre">simplejson</span></code> fallback now uses relative imports to match other bundled packages.</li>
 <li>improved: various error messages are now clearer and more informative.</li>
-<li>installation is now <code class="docutils literal"><span class="pre">pip</span></code> compatible.</li>
+<li>installation is now <code class="docutils literal notranslate"><span class="pre">pip</span></code> compatible.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-9-beta2-2012-mar-19">
 <h2>v3.0.9.beta2 (2012 Mar 19)<a class="headerlink" href="#v3-0-9-beta2-2012-mar-19" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>use relative imports for included libraries when using Python v2.5 or later.</li>
-<li>replace sideband request for <code class="docutils literal"><span class="pre">image</span></code> (thumbnail) field with native support (requires Shotgun
+<li>replace sideband request for <code class="docutils literal notranslate"><span class="pre">image</span></code> (thumbnail) field with native support (requires Shotgun
 server &gt;= v3.3.0. Request will still work on older versions but fallback to slow sideband
 method).</li>
-<li>allow setting <code class="docutils literal"><span class="pre">image</span></code> and <code class="docutils literal"><span class="pre">filmstrip_thumbnail</span></code> in data dict on <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.create" title="shotgun_api3.shotgun.Shotgun.create"><code class="xref py py-meth docutils literal"><span class="pre">create()</span></code></a> and
-<a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.update" title="shotgun_api3.shotgun.Shotgun.update"><code class="xref py py-meth docutils literal"><span class="pre">update()</span></code></a> (thanks <a class="reference external" href="https://github.com/HughMacdonald">&#64;hughmacdonald</a>).</li>
-<li>fixed bug causing <code class="docutils literal"><span class="pre">Attachment.tag_list</span></code> to be set to <code class="docutils literal"><span class="pre">&quot;None&quot;</span></code> (str) for uploads.</li>
+<li>allow setting <code class="docutils literal notranslate"><span class="pre">image</span></code> and <code class="docutils literal notranslate"><span class="pre">filmstrip_thumbnail</span></code> in data dict on <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.create" title="shotgun_api3.shotgun.Shotgun.create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code></a> and
+<a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.update" title="shotgun_api3.shotgun.Shotgun.update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code></a> (thanks <a class="reference external" href="https://github.com/HughMacdonald">&#64;hughmacdonald</a>).</li>
+<li>fixed bug causing <code class="docutils literal notranslate"><span class="pre">Attachment.tag_list</span></code> to be set to <code class="docutils literal notranslate"><span class="pre">&quot;None&quot;</span></code> (str) for uploads.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-9-beta1-2012-feb-23">
@@ -621,7 +620,7 @@ method).</li>
 <ul class="simple">
 <li>added support for access to WorkDayRules (requires Shotgun server &gt;= v3.2.0).</li>
 <li>added support for filmstrip thumbnails (requires Shotgun server &gt;= v3.1.0).</li>
-<li>fixed <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.download_attachment" title="shotgun_api3.shotgun.Shotgun.download_attachment"><code class="xref py py-meth docutils literal"><span class="pre">download_attachment()</span></code></a> pointing to incorrect url.</li>
+<li>fixed <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.download_attachment" title="shotgun_api3.shotgun.Shotgun.download_attachment"><code class="xref py py-meth docutils literal notranslate"><span class="pre">download_attachment()</span></code></a> pointing to incorrect url.</li>
 <li>fixed some issues with module import paths.</li>
 </ul>
 </div>
@@ -629,37 +628,37 @@ method).</li>
 <h2>v3.0.8 (2011 Oct 7)<a class="headerlink" href="#v3-0-8-2011-oct-7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>now uses JSON as a transport rather than XML-RPC. This provides as much as a 40% speed boost.</li>
-<li>added the <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.summarize" title="shotgun_api3.shotgun.Shotgun.summarize"><code class="xref py py-meth docutils literal"><span class="pre">summarize()</span></code></a> method.</li>
+<li>added the <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.summarize" title="shotgun_api3.shotgun.Shotgun.summarize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">summarize()</span></code></a> method.</li>
 <li>refactored single file into package.</li>
 <li>tests added (Thanks to Aaron Morton <a class="reference external" href="https://github.com/amorton">&#64;amorton</a>).</li>
-<li>return all strings as ascii for backwards compatibility, added <code class="docutils literal"><span class="pre">ensure_ascii</span></code> parameter to
+<li>return all strings as ascii for backwards compatibility, added <code class="docutils literal notranslate"><span class="pre">ensure_ascii</span></code> parameter to
 enable returning unicode.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-7-2011-apr-04">
 <h2>v3.0.7 (2011 Apr 04)<a class="headerlink" href="#v3-0-7-2011-apr-04" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>fix: <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.update" title="shotgun_api3.shotgun.Shotgun.update"><code class="xref py py-meth docutils literal"><span class="pre">update()</span></code></a> method should return a <code class="docutils literal"><span class="pre">dict</span></code> object not a <code class="docutils literal"><span class="pre">list</span></code>.</li>
+<li>fix: <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.update" title="shotgun_api3.shotgun.Shotgun.update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code></a> method should return a <code class="docutils literal notranslate"><span class="pre">dict</span></code> object not a <code class="docutils literal notranslate"><span class="pre">list</span></code>.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-6-2010-jan-25">
 <h2>v3.0.6 (2010 Jan 25)<a class="headerlink" href="#v3-0-6-2010-jan-25" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>optimization: don&#8217;t request <code class="docutils literal"><span class="pre">paging_info</span></code> unless required (and server support is available).</li>
+<li>optimization: don’t request <code class="docutils literal notranslate"><span class="pre">paging_info</span></code> unless required (and server support is available).</li>
 </ul>
 </div>
 <div class="section" id="v3-0-5-2010-dec-20">
 <h2>v3.0.5 (2010 Dec 20)<a class="headerlink" href="#v3-0-5-2010-dec-20" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>officially remove support for old <code class="docutils literal"><span class="pre">api3_preview</span></code> controller.</li>
-<li><a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.find" title="shotgun_api3.shotgun.Shotgun.find"><code class="xref py py-meth docutils literal"><span class="pre">find()</span></code></a>: allow requesting a specific page of results instead of returning them all at once.</li>
-<li>add support for <code class="docutils literal"><span class="pre">session_uuid</span></code> parameter for communicating with a web browser session.</li>
+<li>officially remove support for old <code class="docutils literal notranslate"><span class="pre">api3_preview</span></code> controller.</li>
+<li><a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.find" title="shotgun_api3.shotgun.Shotgun.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a>: allow requesting a specific page of results instead of returning them all at once.</li>
+<li>add support for <code class="docutils literal notranslate"><span class="pre">session_uuid</span></code> parameter for communicating with a web browser session.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-4-2010-nov-22">
 <h2>v3.0.4 (2010 Nov 22)<a class="headerlink" href="#v3-0-4-2010-nov-22" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>fix for issue where <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.create" title="shotgun_api3.shotgun.Shotgun.create"><code class="xref py py-meth docutils literal"><span class="pre">create()</span></code></a> method was returning list type instead of dictionary.</li>
+<li>fix for issue where <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.create" title="shotgun_api3.shotgun.Shotgun.create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code></a> method was returning list type instead of dictionary.</li>
 <li>support new style classes (thanks to Alex Schworer <a class="reference external" href="https://github.com/schworer">&#64;schworer</a>).</li>
 </ul>
 </div>
@@ -673,22 +672,22 @@ enable returning unicode.</li>
 <div class="section" id="v3-0-2-2010-aug-27">
 <h2>v3.0.2 (2010 Aug 27)<a class="headerlink" href="#v3-0-2-2010-aug-27" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>add <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.revive" title="shotgun_api3.shotgun.Shotgun.revive"><code class="xref py py-meth docutils literal"><span class="pre">revive()</span></code></a> method to revive deleted entities.</li>
+<li>add <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.revive" title="shotgun_api3.shotgun.Shotgun.revive"><code class="xref py py-meth docutils literal notranslate"><span class="pre">revive()</span></code></a> method to revive deleted entities.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-1-2010-may-10">
 <h2>v3.0.1 (2010 May 10)<a class="headerlink" href="#v3-0-1-2010-may-10" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.find" title="shotgun_api3.shotgun.Shotgun.find"><code class="xref py py-meth docutils literal"><span class="pre">find()</span></code></a>: default sorting to ascending, if not set (instead of requiring
+<li><a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.find" title="shotgun_api3.shotgun.Shotgun.find"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code></a>: default sorting to ascending, if not set (instead of requiring
 ascending/descending).</li>
-<li><a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code></a> and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_thumbnail"><code class="xref py py-meth docutils literal"><span class="pre">upload_thumbnail()</span></code></a>: pass auth info through.</li>
+<li><a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code></a> and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_thumbnail"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code></a>: pass auth info through.</li>
 </ul>
 </div>
 <div class="section" id="v3-0-2010-may-5">
 <h2>v3.0 (2010 May 5)<a class="headerlink" href="#v3-0-2010-may-5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>non-beta!</li>
-<li>add <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.batch" title="shotgun_api3.shotgun.Shotgun.batch"><code class="xref py py-meth docutils literal"><span class="pre">batch()</span></code></a> method to do multiple <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.create" title="shotgun_api3.shotgun.Shotgun.create"><code class="xref py py-meth docutils literal"><span class="pre">create()</span></code></a>, <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.update" title="shotgun_api3.shotgun.Shotgun.update"><code class="xref py py-meth docutils literal"><span class="pre">update()</span></code></a>, and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.delete" title="shotgun_api3.shotgun.Shotgun.delete"><code class="xref py py-meth docutils literal"><span class="pre">delete()</span></code></a>
+<li>add <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.batch" title="shotgun_api3.shotgun.Shotgun.batch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">batch()</span></code></a> method to do multiple <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.create" title="shotgun_api3.shotgun.Shotgun.create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code></a>, <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.update" title="shotgun_api3.shotgun.Shotgun.update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code></a>, and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.delete" title="shotgun_api3.shotgun.Shotgun.delete"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete()</span></code></a>
 operations in one request to the server (requires Shotgun server to be v1.13.0 or higher).</li>
 </ul>
 </div>
@@ -696,7 +695,7 @@ operations in one request to the server (requires Shotgun server to be v1.13.0 o
 <h2>v3.0b8 (2010 Feb 19)<a class="headerlink" href="#v3-0b8-2010-feb-19" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>fix python gotcha about using lists / dictionaries as defaults (<a class="reference external" href="http://www.ferg.org/projects/python_gotchas.html#contents_item_6">see this page for more info</a>).</li>
-<li>add <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.schema_read" title="shotgun_api3.shotgun.Shotgun.schema_read"><code class="xref py py-meth docutils literal"><span class="pre">schema_read()</span></code></a> method.</li>
+<li>add <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.schema_read" title="shotgun_api3.shotgun.Shotgun.schema_read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">schema_read()</span></code></a> method.</li>
 </ul>
 </div>
 <div class="section" id="v3-0b7-2009-nov-30">
@@ -708,36 +707,36 @@ operations in one request to the server (requires Shotgun server to be v1.13.0 o
 <div class="section" id="v3-0b6-2009-oct-20">
 <h2>v3.0b6 (2009 Oct 20)<a class="headerlink" href="#v3-0b6-2009-oct-20" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>add support for <code class="docutils literal"><span class="pre">HTTP/1.1</span> <span class="pre">keepalive</span></code>, which greatly improves performance for multiple
+<li>add support for <code class="docutils literal notranslate"><span class="pre">HTTP/1.1</span> <span class="pre">keepalive</span></code>, which greatly improves performance for multiple
 requests.</li>
-<li>add more helpful error if server entered is not <code class="docutils literal"><span class="pre">http</span></code> or <code class="docutils literal"><span class="pre">https</span></code></li>
+<li>add more helpful error if server entered is not <code class="docutils literal notranslate"><span class="pre">http</span></code> or <code class="docutils literal notranslate"><span class="pre">https</span></code></li>
 <li>add support assigning tags to file uploads (for Shotgun version &gt;= 1.10.6).</li>
 </ul>
 </div>
 <div class="section" id="v3-0b5-2009-sept-29">
 <h2>v3.0b5 (2009 Sept 29)<a class="headerlink" href="#v3-0b5-2009-sept-29" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>fixed deprecation warnings to raise <code class="docutils literal"><span class="pre">Exception</span></code> class for python 2.5.</li>
+<li>fixed deprecation warnings to raise <code class="docutils literal notranslate"><span class="pre">Exception</span></code> class for python 2.5.</li>
 </ul>
 </div>
 <div class="section" id="v3-0b4-2009-july-3">
 <h2>v3.0b4 (2009 July 3)<a class="headerlink" href="#v3-0b4-2009-july-3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>made <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code></a> and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_thumbnail"><code class="xref py py-meth docutils literal"><span class="pre">upload_thumbnail()</span></code></a> methods more backwards compatible.</li>
-<li>changes to <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.find_one" title="shotgun_api3.shotgun.Shotgun.find_one"><code class="xref py py-meth docutils literal"><span class="pre">find_one()</span></code></a>: now defaults to no <code class="docutils literal"><span class="pre">filter_operator</span></code>.</li>
+<li>made <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code></a> and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_thumbnail"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code></a> methods more backwards compatible.</li>
+<li>changes to <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.find_one" title="shotgun_api3.shotgun.Shotgun.find_one"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one()</span></code></a>: now defaults to no <code class="docutils literal notranslate"><span class="pre">filter_operator</span></code>.</li>
 </ul>
 </div>
 <div class="section" id="v3-0b3-2009-june-24">
 <h2>v3.0b3 (2009 June 24)<a class="headerlink" href="#v3-0b3-2009-june-24" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>fixed <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal"><span class="pre">upload()</span></code></a> and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_thumbnail"><code class="xref py py-meth docutils literal"><span class="pre">upload_thumbnail()</span></code></a> methods.</li>
-<li>added <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.download_attachment" title="shotgun_api3.shotgun.Shotgun.download_attachment"><code class="xref py py-meth docutils literal"><span class="pre">download_attachment()</span></code></a> method.</li>
-<li>added <code class="docutils literal"><span class="pre">schema_*</span></code> methods for accessing entities and fields.</li>
+<li>fixed <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code></a> and <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.upload_thumbnail" title="shotgun_api3.shotgun.Shotgun.upload_thumbnail"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code></a> methods.</li>
+<li>added <a class="reference internal" href="reference.html#shotgun_api3.shotgun.Shotgun.download_attachment" title="shotgun_api3.shotgun.Shotgun.download_attachment"><code class="xref py py-meth docutils literal notranslate"><span class="pre">download_attachment()</span></code></a> method.</li>
+<li>added <code class="docutils literal notranslate"><span class="pre">schema_*</span></code> methods for accessing entities and fields.</li>
 <li>added support for http proxy servers.</li>
-<li>added <code class="docutils literal"><span class="pre">__version__</span></code> string.</li>
-<li>removed <code class="docutils literal"><span class="pre">RECORDS_PER_PAGE</span></code> global (can just set <code class="docutils literal"><span class="pre">records_per_page</span></code> on the Shotgun object
+<li>added <code class="docutils literal notranslate"><span class="pre">__version__</span></code> string.</li>
+<li>removed <code class="docutils literal notranslate"><span class="pre">RECORDS_PER_PAGE</span></code> global (can just set <code class="docutils literal notranslate"><span class="pre">records_per_page</span></code> on the Shotgun object
 after initializing it).</li>
-<li>removed <code class="docutils literal"><span class="pre">api_ver</span></code> from the constructor, as this class is only designed to work with API v3.</li>
+<li>removed <code class="docutils literal notranslate"><span class="pre">api_ver</span></code> from the constructor, as this class is only designed to work with API v3.</li>
 </ul>
 </div>
 </div>

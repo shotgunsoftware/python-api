@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Delete A Shot &mdash; python-api v3.2.5 documentation</title>
+  <title>Delete A Shot &mdash; python-api v3.2.6 documentation</title>
   
 
   
@@ -22,20 +22,11 @@
   <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'v3.2.5',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script type="text/javascript" src="../../_static/jquery.js"></script>
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -44,6 +35,7 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Create a Shot with a Task Template" href="basic_create_shot_task_template.html" />
@@ -151,7 +143,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.5.<br>
+    <b>python-api</b> v3.2.6.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -227,28 +219,28 @@
   <div class="section" id="delete-a-shot">
 <h1>Delete A Shot<a class="headerlink" href="#delete-a-shot" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="calling-delete">
-<h2>Calling <code class="xref py py-meth docutils literal"><span class="pre">delete()</span></code><a class="headerlink" href="#calling-delete" title="Permalink to this headline">¶</a></h2>
+<h2>Calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">delete()</span></code><a class="headerlink" href="#calling-delete" title="Permalink to this headline">¶</a></h2>
 <p>Deleting an entity in Shotgun is pretty straight-forward. No extraneous steps required.:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;Shot&quot;</span><span class="p">,</span> <span class="mi">40435</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;Shot&quot;</span><span class="p">,</span> <span class="mi">40435</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="result">
 <h2>Result<a class="headerlink" href="#result" title="Permalink to this headline">¶</a></h2>
-<p>If the Shot was deleted successfully <code class="docutils literal"><span class="pre">result</span></code> will contain:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kc">True</span>
+<p>If the Shot was deleted successfully <code class="docutils literal notranslate"><span class="pre">result</span></code> will contain:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kc">True</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="the-complete-example">
 <h2>The Complete Example<a class="headerlink" href="#the-complete-example" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Imports</span>
 <span class="c1"># --------------------------------------</span>
 <span class="kn">import</span> <span class="nn">shotgun_api3</span>
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pprint</span> <span class="c1"># useful for debugging</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span> <span class="c1"># useful for debugging</span>
 
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Globals</span>
@@ -273,7 +265,7 @@
 </pre></div>
 </div>
 <p>And here is the output:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kc">True</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kc">True</span>
 </pre></div>
 </div>
 </div>

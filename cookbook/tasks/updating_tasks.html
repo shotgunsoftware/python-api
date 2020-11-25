@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Updating Task Dates: How Shotgun Thinks &mdash; python-api v3.2.5 documentation</title>
+  <title>Updating Task Dates: How Shotgun Thinks &mdash; python-api v3.2.6 documentation</title>
   
 
   
@@ -22,20 +22,11 @@
   <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../',
-              VERSION:'v3.2.5',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script type="text/javascript" src="../../_static/jquery.js"></script>
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -44,6 +35,7 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Task Dependencies" href="task_dependencies.html" />
@@ -146,7 +138,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.5.<br>
+    <b>python-api</b> v3.2.6.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
@@ -222,29 +214,29 @@
   <div class="section" id="updating-task-dates-how-shotgun-thinks">
 <span id="updating-tasks"></span><h1>Updating Task Dates: How Shotgun Thinks<a class="headerlink" href="#updating-task-dates-how-shotgun-thinks" title="Permalink to this headline">¶</a></h1>
 <p>When updating Task dates in an API update() request, there is no specified order to the values that
-are passed in. Shotgun also does automatic calculation of the``start_date``,``due_date``, and <code class="docutils literal"><span class="pre">duration</span></code> fields for convenience. In order to clarify how updates are handled by Shotgun we are
+are passed in. Shotgun also does automatic calculation of the``start_date``,``due_date``, and <code class="docutils literal notranslate"><span class="pre">duration</span></code> fields for convenience. In order to clarify how updates are handled by Shotgun we are
 providing some general rules below and examples of what will happen when you make updates to your
 Tasks.</p>
 <div class="section" id="general-rules">
 <h2>General Rules<a class="headerlink" href="#general-rules" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Updating the <code class="docutils literal"><span class="pre">start_date</span></code> automatically updates the <code class="docutils literal"><span class="pre">due_date</span></code> (<code class="docutils literal"><span class="pre">duration</span></code> remains constant)</li>
-<li>Updating the <code class="docutils literal"><span class="pre">due_date</span></code> automatically updates the <code class="docutils literal"><span class="pre">duration</span></code> (<code class="docutils literal"><span class="pre">start_date</span></code> remains constant)</li>
-<li>Updating the <code class="docutils literal"><span class="pre">duration</span></code> automatically updates the <code class="docutils literal"><span class="pre">due_date</span></code> (<code class="docutils literal"><span class="pre">start_date</span></code> remains constant)</li>
-<li>When updating Task values, Shotgun sets schedule fields (<code class="docutils literal"><span class="pre">milestone</span></code>, <code class="docutils literal"><span class="pre">duration</span></code>,
-<code class="docutils literal"><span class="pre">start_date</span></code>, <code class="docutils literal"><span class="pre">due_date</span></code>) after all other fields, because the Project and Task Assignees
+<li>Updating the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> automatically updates the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> (<code class="docutils literal notranslate"><span class="pre">duration</span></code> remains constant)</li>
+<li>Updating the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> automatically updates the <code class="docutils literal notranslate"><span class="pre">duration</span></code> (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> remains constant)</li>
+<li>Updating the <code class="docutils literal notranslate"><span class="pre">duration</span></code> automatically updates the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> remains constant)</li>
+<li>When updating Task values, Shotgun sets schedule fields (<code class="docutils literal notranslate"><span class="pre">milestone</span></code>, <code class="docutils literal notranslate"><span class="pre">duration</span></code>,
+<code class="docutils literal notranslate"><span class="pre">start_date</span></code>, <code class="docutils literal notranslate"><span class="pre">due_date</span></code>) after all other fields, because the Project and Task Assignees
 affect schedule calculations.</li>
-<li>If <code class="docutils literal"><span class="pre">start_date</span></code> and <code class="docutils literal"><span class="pre">due_date</span></code> are both set, <code class="docutils literal"><span class="pre">duration</span></code> is ignored (<code class="docutils literal"><span class="pre">duration</span></code> can often
-be wrong since it&#8217;s easy to calculate scheduling incorrectly).</li>
-<li>If both <code class="docutils literal"><span class="pre">start_date</span></code> and <code class="docutils literal"><span class="pre">due_date</span></code> are provided, Shotgun sets <code class="docutils literal"><span class="pre">start_date</span></code> before
-<code class="docutils literal"><span class="pre">due_date</span></code>.</li>
-<li>Set <code class="docutils literal"><span class="pre">milestone</span></code> before other schedule fields (because <code class="docutils literal"><span class="pre">start_date</span></code>, <code class="docutils literal"><span class="pre">due_date</span></code>, and
-<code class="docutils literal"><span class="pre">duration</span></code> get lost if <code class="docutils literal"><span class="pre">milestone</span></code> is not set to <code class="docutils literal"><span class="pre">False</span></code> first)</li>
-<li>If <code class="docutils literal"><span class="pre">milestone</span></code> is being set to <code class="docutils literal"><span class="pre">True</span></code>, <code class="docutils literal"><span class="pre">duration</span></code> is ignored.</li>
-<li>If <code class="docutils literal"><span class="pre">milestone</span></code> is set to <code class="docutils literal"><span class="pre">True</span></code> and <code class="docutils literal"><span class="pre">start_date</span></code> and <code class="docutils literal"><span class="pre">due_date</span></code> are also being set to
+<li>If <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">due_date</span></code> are both set, <code class="docutils literal notranslate"><span class="pre">duration</span></code> is ignored (<code class="docutils literal notranslate"><span class="pre">duration</span></code> can often
+be wrong since it’s easy to calculate scheduling incorrectly).</li>
+<li>If both <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">due_date</span></code> are provided, Shotgun sets <code class="docutils literal notranslate"><span class="pre">start_date</span></code> before
+<code class="docutils literal notranslate"><span class="pre">due_date</span></code>.</li>
+<li>Set <code class="docutils literal notranslate"><span class="pre">milestone</span></code> before other schedule fields (because <code class="docutils literal notranslate"><span class="pre">start_date</span></code>, <code class="docutils literal notranslate"><span class="pre">due_date</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">duration</span></code> get lost if <code class="docutils literal notranslate"><span class="pre">milestone</span></code> is not set to <code class="docutils literal notranslate"><span class="pre">False</span></code> first)</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">milestone</span></code> is being set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">duration</span></code> is ignored.</li>
+<li>If <code class="docutils literal notranslate"><span class="pre">milestone</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">due_date</span></code> are also being set to
 conflicting values, an Exception is raised.</li>
-<li>If <code class="docutils literal"><span class="pre">due_date</span></code> and <code class="docutils literal"><span class="pre">duration</span></code> are set together (without <code class="docutils literal"><span class="pre">start_date</span></code>), <code class="docutils literal"><span class="pre">duration</span></code> is set
-first, then <code class="docutils literal"><span class="pre">due_date</span></code> (otherwise setting <code class="docutils literal"><span class="pre">duration</span></code> will change <code class="docutils literal"><span class="pre">due_date</span></code> after it is
+<li>If <code class="docutils literal notranslate"><span class="pre">due_date</span></code> and <code class="docutils literal notranslate"><span class="pre">duration</span></code> are set together (without <code class="docutils literal notranslate"><span class="pre">start_date</span></code>), <code class="docutils literal notranslate"><span class="pre">duration</span></code> is set
+first, then <code class="docutils literal notranslate"><span class="pre">due_date</span></code> (otherwise setting <code class="docutils literal notranslate"><span class="pre">duration</span></code> will change <code class="docutils literal notranslate"><span class="pre">due_date</span></code> after it is
 set).</li>
 </ul>
 </div>
@@ -252,293 +244,293 @@ set).</li>
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>The following examples show what the resulting Task object will look like after being run on the
 initial Task object listed under the header of each section.</p>
-<p>The <code class="docutils literal"><span class="pre">duration</span></code> values in the following examples assume your Shotgun instance is set to
-10-hour work days. If your server is configured with a different setting, the <code class="docutils literal"><span class="pre">duration</span></code> values
+<p>The <code class="docutils literal notranslate"><span class="pre">duration</span></code> values in the following examples assume your Shotgun instance is set to
+10-hour work days. If your server is configured with a different setting, the <code class="docutils literal notranslate"><span class="pre">duration</span></code> values
 will vary.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The <code class="docutils literal"><span class="pre">duration</span></code> field stores <code class="docutils literal"><span class="pre">duration</span></code> values in minutes</p>
+<p class="last">The <code class="docutils literal notranslate"><span class="pre">duration</span></code> field stores <code class="docutils literal notranslate"><span class="pre">duration</span></code> values in minutes</p>
 </div>
 <hr class="docutils" />
 <p class="rubric">Universal</p>
 <p>Regardless of current values on the Task, this behavior rules:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Task</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2011-05-20&#39;</span><span class="p">,</span> <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2011-05-25&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">2400</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Task</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2011-05-20&#39;</span><span class="p">,</span> <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2011-05-25&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">2400</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">}</span>
 </pre></div>
 </div>
 <p><strong>Update start_date and due_date</strong></p>
-<p><code class="docutils literal"><span class="pre">duration</span></code> is ignored if also provided. It is instead set automatically as (<code class="docutils literal"><span class="pre">due_date</span></code> -
-<code class="docutils literal"><span class="pre">start_date</span></code>)</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">,</span> <span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">1200</span><span class="p">})</span>
+<p><code class="docutils literal notranslate"><span class="pre">duration</span></code> is ignored if also provided. It is instead set automatically as (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> -
+<code class="docutils literal notranslate"><span class="pre">start_date</span></code>)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">,</span> <span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">1200</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">duration</span></code> is calculated as (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is calculated as (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> - <code class="docutils literal notranslate"><span class="pre">start_date</span></code>)</li>
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The value provided in the update() is ignored (and in this case was also incorrect).</p>
 </div>
 <p><strong>Update start_date and duration</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: &#39;2011-06-01&#39;, &#39;duration&#39;: 3600, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> + <code class="docutils literal notranslate"><span class="pre">duration</span></code>).</li>
 </ul>
 <p><strong>Update due_date and duration</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2011-05-20&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2011-05-20&#39;</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-20&#39;, &#39;duration&#39;: 600, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">duration</span></code> is calculated as (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is calculated as (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> - <code class="docutils literal notranslate"><span class="pre">start_date</span></code>)</li>
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This means the <code class="docutils literal"><span class="pre">duration</span></code> provided is overwritten.</p>
+<p class="last">This means the <code class="docutils literal notranslate"><span class="pre">duration</span></code> provided is overwritten.</p>
 </div>
 <hr class="docutils" />
 <p class="rubric">Task has start_date only</p>
-<p>If the Task only has a <code class="docutils literal"><span class="pre">start_date</span></code> value and has no other date values, this is how updates
+<p>If the Task only has a <code class="docutils literal notranslate"><span class="pre">start_date</span></code> value and has no other date values, this is how updates
 will behave.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Task</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2011-05-20&#39;</span><span class="p">,</span> <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Task</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2011-05-20&#39;</span><span class="p">,</span> <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">}</span>
 </pre></div>
 </div>
 <p><strong>Update start_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: None, &#39;duration&#39;: None, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li>Only <code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
+<li>Only <code class="docutils literal notranslate"><span class="pre">start_date</span></code> is updated.</li>
 </ul>
 <p><strong>Update due_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> - <code class="docutils literal notranslate"><span class="pre">start_date</span></code>).</li>
 </ul>
 <p><strong>Update duration</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">2400</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">2400</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is set to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is set to (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> + <code class="docutils literal notranslate"><span class="pre">duration</span></code>)</li>
 </ul>
 <hr class="docutils" />
 <p class="rubric">Task has due_date only</p>
-<p>If the Task only has a <code class="docutils literal"><span class="pre">due_date</span></code> value and has no other date values, this is how updates
+<p>If the Task only has a <code class="docutils literal notranslate"><span class="pre">due_date</span></code> value and has no other date values, this is how updates
 will behave.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: None, &#39;id&#39;:123}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: None, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <p><strong>Update start_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-20&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-20&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> - <code class="docutils literal notranslate"><span class="pre">start_date</span></code>).</li>
 </ul>
 <p><strong>Update due_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-20&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-20&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: &#39;2011-05-20&#39;, &#39;duration&#39;: None, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li>only <code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
+<li>only <code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated.</li>
 </ul>
 <p><strong>Update duration</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">2400</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">2400</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">start_date</span></code> is set to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">start_date</span></code> is set to (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> - <code class="docutils literal notranslate"><span class="pre">duration</span></code>)</li>
 </ul>
 <hr class="docutils" />
 <p class="rubric">Task has duration only</p>
-<p>If the Task only has a <code class="docutils literal"><span class="pre">duration</span></code> value and has no other date values, this is how updates
+<p>If the Task only has a <code class="docutils literal notranslate"><span class="pre">duration</span></code> value and has no other date values, this is how updates
 will behave.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: None, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: None, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <p><strong>Update start_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-20&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-20&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> + <code class="docutils literal notranslate"><span class="pre">duration</span></code>).</li>
 </ul>
 <p><strong>Update due_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">start_date</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> - <code class="docutils literal notranslate"><span class="pre">duration</span></code>)</li>
 </ul>
 <p><strong>Update duration</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: None, &#39;duration&#39;: 3600, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li>only <code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
+<li>only <code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated.</li>
 </ul>
 <hr class="docutils" />
 <p class="rubric">Task has start_date and due_date</p>
-<p>If the Task has <code class="docutils literal"><span class="pre">start_date</span></code> and <code class="docutils literal"><span class="pre">due_date</span></code> values but has no <code class="docutils literal"><span class="pre">duration</span></code>, this is how updates
+<p>If the Task has <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">due_date</span></code> values but has no <code class="docutils literal notranslate"><span class="pre">duration</span></code>, this is how updates
 will behave.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: None, &#39;id&#39;:123}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: None, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <p><strong>Update start_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 600, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> - <code class="docutils literal notranslate"><span class="pre">start_date</span></code>).</li>
 </ul>
 <p><strong>Update due_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 4200, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> - <code class="docutils literal notranslate"><span class="pre">start_date</span></code>)</li>
 </ul>
 <p><strong>Update duration</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-27&#39;, &#39;duration&#39;: 3600, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> + <code class="docutils literal notranslate"><span class="pre">duration</span></code>)</li>
 </ul>
 <hr class="docutils" />
 <p class="rubric">Task has start_date and duration</p>
-<p>If the Task has <code class="docutils literal"><span class="pre">start_date</span></code> and <code class="docutils literal"><span class="pre">duration</span></code> values but has no <code class="docutils literal"><span class="pre">due_date</span></code>, this is how updates
+<p>If the Task has <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">duration</span></code> values but has no <code class="docutils literal notranslate"><span class="pre">due_date</span></code>, this is how updates
 will behave.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: None, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: None, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <p><strong>Update start_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> +``duration``).</li>
+<li><code class="docutils literal notranslate"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> +``duration``).</li>
 </ul>
 <p><strong>Update due_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 4200, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> - <code class="docutils literal notranslate"><span class="pre">start_date</span></code>).</li>
 </ul>
 <p><strong>Update duration</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-27&#39;, &#39;duration&#39;: 3600, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> + <code class="docutils literal notranslate"><span class="pre">duration</span></code>)</li>
 </ul>
 <hr class="docutils" />
 <p class="rubric">Task has due_date and duration</p>
-<p>If the Task has <code class="docutils literal"><span class="pre">due_date</span></code> and <code class="docutils literal"><span class="pre">duration</span></code> values but has no <code class="docutils literal"><span class="pre">start_date</span></code>, this is how updates
+<p>If the Task has <code class="docutils literal notranslate"><span class="pre">due_date</span></code> and <code class="docutils literal notranslate"><span class="pre">duration</span></code> values but has no <code class="docutils literal notranslate"><span class="pre">start_date</span></code>, this is how updates
 will behave.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: None, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <p><strong>Update start_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> + <code class="docutils literal notranslate"><span class="pre">duration</span></code>).</li>
 </ul>
 <p><strong>Update due_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-25&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">duration</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">start_date</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> - <code class="docutils literal notranslate"><span class="pre">duration</span></code>).</li>
 </ul>
 <p><strong>Update duration</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-18&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 3600, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">start_date</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> - <code class="docutils literal notranslate"><span class="pre">duration</span></code>)</li>
 </ul>
 <hr class="docutils" />
 <p class="rubric">Task has start_date ,due_date, and duration</p>
-<p>If the Task has <code class="docutils literal"><span class="pre">start_date</span></code>, <code class="docutils literal"><span class="pre">due_date</span></code>, and <code class="docutils literal"><span class="pre">duration</span></code>, this is how updates
+<p>If the Task has <code class="docutils literal notranslate"><span class="pre">start_date</span></code>, <code class="docutils literal notranslate"><span class="pre">due_date</span></code>, and <code class="docutils literal notranslate"><span class="pre">duration</span></code>, this is how updates
 will behave.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-25&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <p><strong>Update start_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-25&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 2400, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">start_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">start_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> + <code class="docutils literal notranslate"><span class="pre">duration</span></code>).</li>
 </ul>
 <p><strong>Update due_date</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;due_date&#39;</span><span class="p">:</span><span class="s1">&#39;2011-05-30&#39;</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-30&#39;, &#39;duration&#39;: 4200, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated to (<code class="docutils literal"><span class="pre">due_date</span></code> - <code class="docutils literal"><span class="pre">start_date</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">due_date</span></code> - <code class="docutils literal notranslate"><span class="pre">start_date</span></code>)</li>
 </ul>
 <p><strong>Update duration</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span> <span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;duration&#39;</span><span class="p">:</span><span class="mi">3600</span><span class="p">})</span>
 <span class="c1"># Task = {&#39;start_date&#39;: &#39;2011-05-20&#39;, &#39;due_date&#39;: &#39;2011-05-27&#39;, &#39;duration&#39;: 3600, &#39;id&#39;:123}</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">duration</span></code> is updated.</li>
-<li><code class="docutils literal"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal"><span class="pre">start_date</span></code> + <code class="docutils literal"><span class="pre">duration</span></code>)</li>
+<li><code class="docutils literal notranslate"><span class="pre">duration</span></code> is updated.</li>
+<li><code class="docutils literal notranslate"><span class="pre">due_date</span></code> is updated to (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> + <code class="docutils literal notranslate"><span class="pre">duration</span></code>)</li>
 </ul>
 </div>
 </div>
