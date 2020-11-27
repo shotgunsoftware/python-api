@@ -2429,15 +2429,8 @@ class Shotgun(object):
         # Step 1b: quote filename
         # To avoid the filename turning into garbled text,
         # quote filename using urllib.parse.quote("<filename_encoding_utf8>")
-        try:
-            filename = filename.encode("utf8")
-        except:
-            pass # do nothing. (keep original filename)
-        try:
-            quote_filename = urllib.parse.quote(filename)
-        except:
-            quote_filename = filename # do nothing. (keep original filename)
-
+        filename = filename.encode("utf8")
+        quote_filename = urllib.parse.quote(filename)
         upload_info = self._get_attachment_upload_info(is_thumbnail, quote_filename, is_multipart_upload)
 
         # Step 2: upload the file
