@@ -2426,7 +2426,21 @@ class Shotgun(object):
 
         is_multipart_upload = (os.path.getsize(path) > self._MULTIPART_UPLOAD_CHUNK_SIZE)
 
-        upload_info = self._get_attachment_upload_info(is_thumbnail, filename, is_multipart_upload)
+        # ------------------------------
+        # To avoid the filename turning into garbled text, I fixed it as follows.
+        # 1. urllib.parse.quote("<filename_encoding_utf8>")
+        # 2. self._get_attachment_upload_info
+        # ------------------------------
+        try:
+            filename = filename.encode("utf8")
+        except:
+            pass # do nothing. (keep original filename)
+        try:
+            quote_filename = urllib.parse.quote(filename)
+        except:
+            quote_filename = filename # do nothing. (keep original filename)
+
+        upload_info = self._get_attachment_upload_info(is_thumbnail, quote_filename, is_multipart_upload)
 
         # Step 2: upload the file
         # We upload large files in multiple parts because it is more robust
