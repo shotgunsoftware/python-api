@@ -2426,11 +2426,9 @@ class Shotgun(object):
 
         is_multipart_upload = (os.path.getsize(path) > self._MULTIPART_UPLOAD_CHUNK_SIZE)
 
-        # ------------------------------
-        # To avoid the filename turning into garbled text, I fixed it as follows.
-        # 1. urllib.parse.quote("<filename_encoding_utf8>")
-        # 2. self._get_attachment_upload_info
-        # ------------------------------
+        # Step 1b: quote filename
+        # To avoid the filename turning into garbled text,
+        # quote filename using urllib.parse.quote("<filename_encoding_utf8>")
         try:
             filename = filename.encode("utf8")
         except:
