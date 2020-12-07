@@ -67,9 +67,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ============================== Certifi ==============================
 
-This Source Code Form is subject to the terms of the Mozilla Public License,
-v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain
-one at http://mozilla.org/MPL/2.0/.
+Certifi is licensed under the Mozilla Public License v.2.0,
+which can be found at http://www.mozilla.org/MPL/2.0/.
+A text copy of this license and the source code for Certifi 2020.06.20 (and modifications made by Autodesk, if any)
+can be found at the Autodesk website www.autodesk.com/lgplsource.
 
 ============================== Httplib2 ==============================
 Httplib2 Software License
