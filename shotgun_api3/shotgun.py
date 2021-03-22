@@ -3332,8 +3332,13 @@ class Shotgun(object):
         backoff = 0.75 # Seconds to wait before retry, times the attempt number
 
         while attempt <= max_attempts:
-            http_status, resp_headers, body = self._make_call("POST", self.config.api_path,
-                                                            encoded_payload, req_headers)
+            http_status, resp_headers, body = self._make_call(
+                "POST",
+                self.config.api_path,
+                encoded_payload,
+                req_headers,
+            )
+
             LOG.debug("Completed rpc call to %s" % (method))
 
             try:
