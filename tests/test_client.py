@@ -376,7 +376,7 @@ class TestShotgunClient(base.MockTestBase):
         d = {"results": ["foo", "bar"]}
         a = {"some": "args"}
         self._mock_http(d, status=(502, "bad gateway"))
-        self.assertRaises(self.sg._call_rpc("list", a))
+        self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
 
     def test_transform_data(self):
         """Outbound data is transformed"""
