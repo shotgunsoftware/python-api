@@ -3327,17 +3327,34 @@ class Shotgun(object):
         if self.config.localized is True:
             req_headers["locale"] = "auto"
 
-        http_status, resp_headers, body = self._make_call("POST", self.config.api_path,
-                                                          encoded_payload, req_headers)
-        LOG.debug("Completed rpc call to %s" % (method))
-        try:
-            self._parse_http_status(http_status)
-        except ProtocolError as e:
-            e.headers = resp_headers
-            # 403 is returned with custom error page when api access is blocked
-            if e.errcode == 403:
-                e.errmsg += ": %s" % body
-            raise
+        attempt = 1
+        max_attempts = 4 # Three retries on failure
+        backoff = 0.75 # Seconds to wait before retry, times the attempt number
+
+        while attempt <= max_attempts:
+            http_status, resp_headers, body = self._make_call("POST", self.config.api_path,
+                                                            encoded_payload, req_headers)
+            LOG.debug("Completed rpc call to %s" % (method))
+
+            try:
+                self._parse_http_status(http_status)
+            except ProtocolError as e:
+                e.headers = resp_headers
+
+                # We've seen some rare instances of SG returning 502 for issues that
+                # appear to be caused by something internal to SG. We're going to
+                # allow for limited retries for those specifically.
+                if attempt != max_attempts and e.errcode == 502:
+                    LOG.debug("Got a 502 response. Waiting and retrying...")
+                    time.sleep(float(attempt) * backoff)
+                    attempt += 1
+                    continue
+                elif e.errcode == 403:
+                    # 403 is returned with custom error page when api access is blocked
+                    e.errmsg += ": %s" % body
+                raise
+            else:
+                break
 
         response = self._decode_response(resp_headers, body)
         self._response_errors(response)

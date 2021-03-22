@@ -371,6 +371,13 @@ class TestShotgunClient(base.MockTestBase):
         expected = "rpc response with list result"
         self.assertEqual(d["results"], rv, expected)
 
+        # Test that we raise on a 502. This is ensuring the retries behavior
+        # in place specific to 502 responses still eventually ends up raising.
+        d = {"results": ["foo", "bar"]}
+        a = {"some": "args"}
+        self._mock_http(d, status=502)
+        self.assertRaises(self.sg._call_rpc("list", a))
+
     def test_transform_data(self):
         """Outbound data is transformed"""
         timestamp = time.time()
