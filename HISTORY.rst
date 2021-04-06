@@ -2,7 +2,7 @@
 Shotgun Python API Changelog
 ****************************
 
-Triggering a build
+Triggering a build again
 
 Here you can see the full list of changes between each Python API release.
 
