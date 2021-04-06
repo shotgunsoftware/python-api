@@ -24,7 +24,7 @@ environment:
     secure: 0/BofzMkXtzwtRqzC94FHt3lcyMBG0rr2w0rUropeT4=
   SG_SCRIPT_NAME: python-api-test
   SG_API_KEY:
-    secure: cTW+pBjl1H17hsjDOvLaspqkc3H9juXfOhoXMvdcA2l3b5FQeJVYUBWaJUxmqTw9gEzAHmUS6R4WVvw07IWOQ9on8UFHsHqv3JkL2Ji/Oeo=
+    secure: Zjz4JgVnT8npR4By6HZDJNJFjDDBFLW+7pOc/eD5kqQ=
   SG_PROJECT_NAME: SG unittest project for AppVeyor
 
 build: off
