@@ -1066,7 +1066,7 @@ class TestDataTypes(base.LiveTestBase):
         entity = 'Task'
         entity_id = self.task['id']
         field_name = 'sg_status_list'
-        pos_values = ['rdy', 'fin']
+        pos_values = ['wtg', 'fin']
         expected, actual = self.assert_set_field(entity,
                                                  entity_id,
                                                  field_name,
