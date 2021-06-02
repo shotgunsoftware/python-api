@@ -774,9 +774,6 @@ class Shotgun(object):
         >>> sg.info()
         {'full_version': [8, 2, 1, 0], 'version': [8, 2, 1], 'user_authentication_method': 'default', ...}
 
-        Tokens and values
-        -----------------
-
         ::
 
             Token                       Value
@@ -2730,13 +2727,11 @@ class Shotgun(object):
         .. note::
             Support for passing in an int representing the Attachment ``id`` is deprecated
 
-        .. todo::
-            Support for a standard entity hash should be removed: #22150
-
         :returns: the download URL for the Attachment or ``None`` if ``None`` was passed to
             ``attachment`` parameter.
         :rtype: str
         """
+        # TODO: Support for a standard entity hash should be removed: #22150
         attachment_id = None
         if isinstance(attachment, int):
             attachment_id = attachment
