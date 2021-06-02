@@ -1,6 +1,6 @@
 [![VFX Platform](https://img.shields.io/badge/vfxplatform-2020-blue.svg)](http://www.vfxplatform.com/)
 [![Python 2.6 2.7 3.7](https://img.shields.io/badge/python-2.6%20%7C%202.7%20%7C%203.7-blue.svg)](https://www.python.org/)
-[![Reference Documentation](http://img.shields.io/badge/doc-reference-blue.svg)](http://developer.shotgunsoftware.com/python-api)
+[![Reference Documentation](http://img.shields.io/badge/doc-reference-blue.svg)](http://developer.shotgridsoftware.com/python-api)
 [![Build Status Linux](https://secure.travis-ci.org/shotgunsoftware/python-api.svg?branch=master)](http://travis-ci.org/shotgunsoftware/python-api)
 [![Build status Windows](https://ci.appveyor.com/api/projects/status/slvw7u4jatvdly98/branch/master?svg=true
 )](https://ci.appveyor.com/project/jfboismenu/python-api/branch/master)
@@ -8,29 +8,29 @@
 
 # Shotgun Python API
 
-Shotgun provides a simple Python-based API for accessing Shotgun and integrating with other tools. This is the official API that is maintained by Shotgun Software (support@shotgunsoftware.com)
+ShotGrid provides a simple Python-based API for accessing ShotGrid and integrating with other tools. This is the official API that is maintained by ShotGrid Software (support@shotgunsoftware.com)
 
 The latest version can always be found at http://github.com/shotgunsoftware/python-api
 
 ## Minimum Requirements
 
-* Shotgun server v2.4.12+.
+* ShotGrid server v2.4.12+.
 * Python v2.6 - v2.7 or v3.7
 
 ## Documentation
-Tutorials and detailed documentation about the Python API are available at http://developer.shotgunsoftware.com/python-api).
+Tutorials and detailed documentation about the Python API are available at http://developer.shotgridsoftware.com/python-api).
 
 Some useful direct links:
 
-* [Installing](http://developer.shotgunsoftware.com/python-api/installation.html)
-* [Tutorials](http://developer.shotgunsoftware.com/python-api/cookbook/tutorials.html)
-* [API Reference](http://developer.shotgunsoftware.com/python-api/reference.html)
-* [Data Types](http://developer.shotgunsoftware.com/python-api/reference.html#data-types)
-* [Filter Syntax](http://developer.shotgunsoftware.com/python-api/reference.html#filter-syntax)
+* [Installing](http://developer.shotgridsoftware.com/python-api/installation.html)
+* [Tutorials](http://developer.shotgridsoftware.com/python-api/cookbook/tutorials.html)
+* [API Reference](http://developer.shotgridsoftware.com/python-api/reference.html)
+* [Data Types](http://developer.shotgridsoftware.com/python-api/reference.html#data-types)
+* [Filter Syntax](http://developer.shotgridsoftware.com/python-api/reference.html#filter-syntax)
 
 ## Changelog
 
-You can see the [full history of the Python API on the documentation site](http://developer.shotgunsoftware.com/python-api/changelog.html).
+You can see the [full history of the Python API on the documentation site](http://developer.shotgridsoftware.com/python-api/changelog.html).
 
 ## Updating HTTPLib2
 
@@ -108,8 +108,8 @@ Integration and unit tests are provided.
 - A `tests/config` file (you can copy an example from `tests/example_config`).
 - Tests can be run individually like this: `nosetests --config="nose.cfg" tests/test_client.py`
     - Make sure to not forget the `--config="nose.cfg"` option. This option tells nose to use our config file.  This will exclude python 2- and 3-specific files in the `/lib` directory, preventing a failure from being reported by nose for compilation due to incompatible syntax in those files.
-- `test_client` and `tests_unit` use mock server interaction and do not require a Shotgun instance to be available (no modifications to `tests/config` are necessary).
-- `test_api` and `test_api_long` *do* require a Shotgun instance, with a script key available for the tests. The server and script user values must be supplied in the `tests/config` file. The tests will add test data to your server based on information in your config. This data will be manipulated by the tests, and should not be used for other purposes.
+- `test_client` and `tests_unit` use mock server interaction and do not require a ShotGrid instance to be available (no modifications to `tests/config` are necessary).
+- `test_api` and `test_api_long` *do* require a ShotGrid instance, with a script key available for the tests. The server and script user values must be supplied in the `tests/config` file. The tests will add test data to your server based on information in your config. This data will be manipulated by the tests, and should not be used for other purposes.
 - To run all of the tests, use the shell script `run-tests`.
 
 ## Release process
