@@ -6,7 +6,7 @@ Here you can see the full list of changes between each Python API release.
 
 v3.3.0 (2021 Jun 7)
 ===================
-- Updates documentation and error messages to mention ShogGrid.
+- Updates documentation and error messages to mention ShotGrid.
 
 v3.2.6 (2020 Nov 24)
 =====================
