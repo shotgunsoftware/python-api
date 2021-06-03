@@ -1,12 +1,16 @@
-****************************
-Shotgun Python API Changelog
-****************************
+*****************************
+ShotGrid Python API Changelog
+*****************************
 
 Here you can see the full list of changes between each Python API release.
 
+v3.3.0 (2021 Jun 7)
+===================
+- Updates documentation and error messages to mention ShogGrid.
+
 v3.2.6 (2020 Nov 24)
 =====================
-- Now includes certifi and defaults to using the certificates provided with that module.
+- Now includes ``certifi`` and defaults to using the certificates provided with that module.
 
 v3.2.4 (2020 May 25)
 =====================

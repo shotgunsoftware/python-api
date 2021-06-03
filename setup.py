@@ -27,11 +27,11 @@ if (sys.version_info[0] <= 2) or (sys.version_info[0] == 2 and sys.version_info[
 
 setup(
     name='shotgun_api3',
-    version='3.2.6',
+    version='3.3.0',
     description='Shotgun Python API ',
     long_description=readme,
     author='Shotgun Software',
-    author_email='support@shotgunsoftware.com',
+    author_email='https://support.shotgunsoftware.com',
     url='https://github.com/shotgunsoftware/python-api',
     license=license,
     packages=find_packages(exclude=('tests',)),
