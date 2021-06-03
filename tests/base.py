@@ -1,4 +1,4 @@
-"""Base class for Shotgun API tests."""
+"""Base class for ShotGrid API tests."""
 import os
 import re
 import unittest

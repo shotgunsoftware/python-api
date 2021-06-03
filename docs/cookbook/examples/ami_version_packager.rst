@@ -27,7 +27,7 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
 
     It uses the example ActionMenu Python class also located in our docs for parsing the ActionMenuItem
     POST variables. For more information about it and accessing the variables in the ActionMenuItem POST request,
-    See: http://developer.shotgunsoftware.com/python-api/examples/ami_handler
+    See: http://developer.shotgridsoftware.com/python-api/examples/ami_handler
 
     The purpose of this script is to download attachment files from Shotgun, create an archive of them
     and copy them to a specified directory. You can invoke it with the following minimal example to connect
