@@ -7,10 +7,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; python-api v3.2.6 documentation</title>
+  <title>Installation &mdash; python-api v3.3.0 documentation</title>
   
 
   
@@ -23,10 +24,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -51,7 +52,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
           
-    <a href='http://developer.shotgunsoftware.com'>
+    <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -135,10 +136,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.6.<br>
+    <b>python-api</b> v3.3.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -204,71 +205,71 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="installation">
+  <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="minimum-requirements">
+<section id="minimum-requirements">
 <h2>Minimum Requirements<a class="headerlink" href="#minimum-requirements" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Shotgun server v5.4.14 or higher for API v3.0.16+.</li>
-<li>Shotgun server v2.4.12 or higher for API v3.0.8.</li>
-<li>Shotgun server v1.8 or higher for API v3.0.7.</li>
-<li>Python 2.6 - 2.7 or Python 3.7</li>
+<li><p>Shotgun server v5.4.14 or higher for API v3.0.16+.</p></li>
+<li><p>Shotgun server v2.4.12 or higher for API v3.0.8.</p></li>
+<li><p>Shotgun server v1.8 or higher for API v3.0.7.</p></li>
+<li><p>Python 2.7 or Python 3.7</p></li>
 </ul>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Some features of the API are only supported by more recent versions of the Shotgun server.
+<p class="admonition-title">Note</p>
+<p>Some features of the API are only supported by more recent versions of the Shotgun server.
 These features are added to the Python API in a backwards compatible way so that existing
 scripts will continue to function as expected. Accessing a method that is not supported for
 your version of Shotgun will raise an appropriate exception. In general, we attempt to
 document these where possible.</p>
 </div>
-</div>
-<div class="section" id="installing-into-pythonpath">
+</section>
+<section id="installing-into-pythonpath">
 <h2>Installing into <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code><a class="headerlink" href="#installing-into-pythonpath" title="Permalink to this headline">¶</a></h2>
 <p>You can  <a class="reference external" href="https://github.com/shotgunsoftware/python-api/releases">download the latest release from Github</a>
 or <a class="reference external" href="https://github.com/shotgunsoftware/python-api">clone the repo</a> to your local filesystem.
 You’ll need to save it somewhere your local Python installation can find it.</p>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<p class="last">For more information on <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> and using modules in Python, see
+<p class="admonition-title">See also</p>
+<p>For more information on <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> and using modules in Python, see
 <a class="reference external" href="http://docs.python.org/tutorial/modules.html">http://docs.python.org/tutorial/modules.html</a></p>
 </div>
-</div>
-<div class="section" id="installing-with-pip">
+</section>
+<section id="installing-with-pip">
 <h2>Installing with <code class="docutils literal notranslate"><span class="pre">pip</span></code><a class="headerlink" href="#installing-with-pip" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="installing-the-master-branch-from-github">
+<section id="installing-the-master-branch-from-github">
 <h3>Installing the Master Branch From Github<a class="headerlink" href="#installing-the-master-branch-from-github" title="Permalink to this headline">¶</a></h3>
 <p>If you wish to install the current master, use the following command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">shotgunsoftware</span><span class="o">/</span><span class="n">python</span><span class="o">-</span><span class="n">api</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The master branch contains the latest revisions and while largely considered “stable”  it
+<p class="admonition-title">Note</p>
+<p>The master branch contains the latest revisions and while largely considered “stable”  it
 is not an official packaged release.</p>
 </div>
-</div>
-<div class="section" id="installing-a-specific-version-from-github">
+</section>
+<section id="installing-a-specific-version-from-github">
 <h3>Installing A specific Version From Github<a class="headerlink" href="#installing-a-specific-version-from-github" title="Permalink to this headline">¶</a></h3>
 <p>To install a specific version of the package from Github, run the following command. This example
 installs the v3.0.26 tag, replace the version tag with the one you want:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">shotgunsoftware</span><span class="o">/</span><span class="n">python</span><span class="o">-</span><span class="n">api</span><span class="o">.</span><span class="n">git</span><span class="nd">@v3</span><span class="o">.</span><span class="mf">0.26</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">shotgunsoftware</span><span class="o">/</span><span class="n">python</span><span class="o">-</span><span class="n">api</span><span class="o">.</span><span class="n">git</span><span class="nd">@v3</span><span class="mf">.0.26</span>
 </pre></div>
 </div>
-<div class="section" id="requirements-txt">
+<section id="requirements-txt">
 <h4><code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code><a class="headerlink" href="#requirements-txt" title="Permalink to this headline">¶</a></h4>
 <p>If you’re using pip with <cite>requirements.txt</cite>, add the following line:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span><span class="o">+</span><span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">shotgunsoftware</span><span class="o">/</span><span class="n">python</span><span class="o">-</span><span class="n">api</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
-</div>
-</div>
-</div>
-<div class="section" id="installing-with-setup-py">
+</section>
+</section>
+</section>
+<section id="installing-with-setup-py">
 <h2>Installing with <code class="docutils literal notranslate"><span class="pre">setup.py</span></code><a class="headerlink" href="#installing-with-setup-py" title="Permalink to this headline">¶</a></h2>
 <p>From a local copy of the repository, you can run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> to copy the package inside your python <code class="docutils literal notranslate"><span class="pre">site-packages</span></code>. Note that while <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> will complain about syntax errors when installing the library, the library is fully functional. However, it ships with both Python 2 and Python 3 copies of <code class="docutils literal notranslate"><span class="pre">httplib2</span></code>, which will generate syntax errors when byte-compiling the Python modules.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

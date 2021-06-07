@@ -7,10 +7,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Upload a Thumbnail for a Version &mdash; python-api v3.2.6 documentation</title>
+  <title>Upload a Thumbnail for a Version &mdash; python-api v3.3.0 documentation</title>
   
 
   
@@ -23,10 +24,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -51,7 +52,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
           
-    <a href='http://developer.shotgunsoftware.com'>
+    <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -143,10 +144,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.6.<br>
+    <b>python-api</b> v3.3.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -216,20 +217,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="upload-a-thumbnail-for-a-version">
+  <section id="upload-a-thumbnail-for-a-version">
 <h1>Upload a Thumbnail for a Version<a class="headerlink" href="#upload-a-thumbnail-for-a-version" title="Permalink to this headline">¶</a></h1>
 <p>So you’ve created a new Version of a Shot, and you’ve updated Shotgun, but now you want to upload a
 beauty frame to display as the thumbnail for your Version. We’ll assume you already have the image
 made (located on your machine at <code class="docutils literal notranslate"><span class="pre">/v1/gun/s100/010/beauties/anim/100_010_animv1.jpg</span></code>) . And since
 you’ve just created your Version in Shotgun, you know its <code class="docutils literal notranslate"><span class="pre">id</span></code> is <strong>214</strong>.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">If you upload a movie file or image to the <code class="docutils literal notranslate"><span class="pre">sg_uploaded_movie</span></code> field and you have
+<p class="admonition-title">Note</p>
+<p>If you upload a movie file or image to the <code class="docutils literal notranslate"><span class="pre">sg_uploaded_movie</span></code> field and you have
 transcoding enabled on your server (the default for hosted sites), a thumbnail will be
 generated automatically as well as a filmstrip thumbnail (if possible).
 This is a basic example of how to manually provide or replace a thumbnail image.</p>
 </div>
-<div class="section" id="upload-the-image-using-upload-thumbnail">
+<section id="upload-the-image-using-upload-thumbnail">
 <h2>Upload the Image using <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code><a class="headerlink" href="#upload-the-image-using-upload-thumbnail" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">upload_thumbnail</span><span class="p">(</span><span class="s2">&quot;Version&quot;</span><span class="p">,</span> <span class="mi">214</span><span class="p">,</span> <span class="s2">&quot;/v1/gun/s100/010/beauties/anim/100_010_animv1.jpg&quot;</span><span class="p">)</span>
 </pre></div>
@@ -237,13 +238,13 @@ This is a basic example of how to manually provide or replace a thumbnail image.
 <p>Shotgun will take care of resizing the thumbnail for you. If something does go wrong, an exception
 will be thrown and you’ll see the error details.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The result returned by <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code> is an integer
+<p class="admonition-title">Note</p>
+<p>The result returned by <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code> is an integer
 representing the id of a special <code class="docutils literal notranslate"><span class="pre">Attachment</span></code> entity in Shotgun. Working with Attachments
 is beyond the scope of this example. :)</p>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

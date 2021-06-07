@@ -7,10 +7,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Task Dependencies &mdash; python-api v3.2.6 documentation</title>
+  <title>Task Dependencies &mdash; python-api v3.3.0 documentation</title>
   
 
   
@@ -23,10 +24,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -51,7 +52,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
           
-    <a href='http://developer.shotgunsoftware.com'>
+    <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -146,10 +147,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.6.<br>
+    <b>python-api</b> v3.3.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -219,12 +220,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="task-dependencies">
+  <section id="task-dependencies">
 <span id="id1"></span><h1>Task Dependencies<a class="headerlink" href="#task-dependencies" title="Permalink to this headline">¶</a></h1>
 <p>Task dependencies work the same way in the API as they do in the UI. You can filter and sort on
 any of the fields. For information about Task Dependencies in Shotgun, check out the <a class="reference external" href="https://support.shotgunsoftware.com/hc/en-us/articles/219031228">main
 documentation page on our support site</a></p>
-<div class="section" id="create-tasks">
+<section id="create-tasks">
 <h2>Create Tasks<a class="headerlink" href="#create-tasks" title="Permalink to this headline">¶</a></h2>
 <p>Let’s create a couple of Tasks and create dependencies between them. First we’ll create a “Layout”
 Task for our Shot:</p>
@@ -269,8 +270,8 @@ Task for our Shot:</p>
  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="create-a-dependency">
+</section>
+<section id="create-a-dependency">
 <h2>Create A Dependency<a class="headerlink" href="#create-a-dependency" title="Permalink to this headline">¶</a></h2>
 <p>Tasks each have an <code class="docutils literal notranslate"><span class="pre">upstream_tasks</span></code> field and a <code class="docutils literal notranslate"><span class="pre">downstream_tasks</span></code> field. Each field is a
 list <code class="docutils literal notranslate"><span class="pre">[]</span></code> type and can contain zero, one, or multiple Task entity dictionaries representing the
@@ -292,8 +293,8 @@ Here is how to create a dependency between our “Layout” and “Anm” Tasks:
 </pre></div>
 </div>
 <p>This will also automatically update the <cite>downstream_tasks</cite> field on ‘Layout’ to include the ‘Anm’ Task.</p>
-</div>
-<div class="section" id="query-task-dependencies">
+</section>
+<section id="query-task-dependencies">
 <h2>Query Task Dependencies<a class="headerlink" href="#query-task-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>Task Dependencies each have a <code class="docutils literal notranslate"><span class="pre">dependent_task_id</span></code> and a <code class="docutils literal notranslate"><span class="pre">task_id</span></code> fields.
 They correspond to <code class="docutils literal notranslate"><span class="pre">upstream_task</span></code> and <code class="docutils literal notranslate"><span class="pre">downstream_task</span></code> ids of the dependency accordingly.
@@ -306,8 +307,8 @@ Here is how to get a TaskDependency using a <code class="docutils literal notran
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;TaskDependency&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="updating-the-dependency-type">
+</section>
+<section id="updating-the-dependency-type">
 <h2>Updating the Dependency type<a class="headerlink" href="#updating-the-dependency-type" title="Permalink to this headline">¶</a></h2>
 <p>When updating the dependency type for the existing dependencies,
 update the <code class="docutils literal notranslate"><span class="pre">dependency_type</span></code> field of the TaskDependency directly:</p>
@@ -318,8 +319,8 @@ update the <code class="docutils literal notranslate"><span class="pre">dependen
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;dependency_type&#39;</span><span class="p">:</span> <span class="s1">&#39;start-to-start&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;TaskDependency&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="query-tasks-with-dependency-fields">
+</section>
+<section id="query-tasks-with-dependency-fields">
 <h2>Query Tasks with Dependency Fields<a class="headerlink" href="#query-tasks-with-dependency-fields" title="Permalink to this headline">¶</a></h2>
 <p>So now lets look at the Tasks we’ve created and their dependency-related fields:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span>
@@ -361,8 +362,8 @@ update the <code class="docutils literal notranslate"><span class="pre">dependen
 </div>
 <p><em>Note that we have also created additional Tasks for this Shot but we’re going to focus on these
 first two for simplicity.</em></p>
-</div>
-<div class="section" id="updating-the-end-date-on-a-task-with-downstream-task-dependencies">
+</section>
+<section id="updating-the-end-date-on-a-task-with-downstream-task-dependencies">
 <h2>Updating the End Date on a Task with Downstream Task Dependencies<a class="headerlink" href="#updating-the-end-date-on-a-task-with-downstream-task-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>If we update the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> field on our “Layout” Task, we’ll see that the “Anm” Task dates
 will automatically get pushed back to keep the dependency satisfied:</p>
@@ -395,8 +396,8 @@ will automatically get pushed back to keep the dependency satisfied:</p>
 <span class="o">...</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="creating-a-dependency-violation-by-pushing-up-a-start-date">
+</section>
+<section id="creating-a-dependency-violation-by-pushing-up-a-start-date">
 <h2>Creating a Dependency Violation by pushing up a Start Date<a class="headerlink" href="#creating-a-dependency-violation-by-pushing-up-a-start-date" title="Permalink to this headline">¶</a></h2>
 <p>Task Dependencies can work nicely if you are pushing out an end date for a Task as it will just
 recalculate the dates for all of the dependent Tasks. But what if we push up the Start Date of our
@@ -436,8 +437,8 @@ change creates a dependency violation. The update succeeds, but Shotgun has also
 <p>The <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field simply means that if the upstream Task(s) are moved, the “Anm” Task will no
 longer get moved with it. The dependency is still there (in <code class="docutils literal notranslate"><span class="pre">upstream_tasks</span></code>) but the Task is
 now “pinned” to those dates until the Dependency Violation is resolved.</p>
-</div>
-<div class="section" id="resolving-a-dependency-violation-by-updating-the-start-date">
+</section>
+<section id="resolving-a-dependency-violation-by-updating-the-start-date">
 <h2>Resolving a Dependency Violation by updating the Start Date<a class="headerlink" href="#resolving-a-dependency-violation-by-updating-the-start-date" title="Permalink to this headline">¶</a></h2>
 <p>We don’t want that violation there. Let’s revert that change so the Start Date for “Anm” is after
 the End Date of “Layout”:</p>
@@ -504,8 +505,8 @@ update that if we want the Task to travel with its dependencies again:</p>
 </div>
 <p>Looks great. But that’s an annoying manual process. What if we want to just reset a Task so that
 it automatically gets updated so that the Start Date is after its dependent Tasks?</p>
-</div>
-<div class="section" id="updating-the-pinned-field-on-a-task-with-a-dependency-violation">
+</section>
+<section id="updating-the-pinned-field-on-a-task-with-a-dependency-violation">
 <h2>Updating the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field on a Task with a Dependency Violation<a class="headerlink" href="#updating-the-pinned-field-on-a-task-with-a-dependency-violation" title="Permalink to this headline">¶</a></h2>
 <p>Let’s go back a couple of steps to where our “Anm” Task had a Dependency Violation because we had
 moved the Start Date up before the “Layout” Task End Date. Remember that the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field
@@ -544,8 +545,8 @@ automatically update the Task dates to satisfy the upstream dependencies and res
 <p>Notice by updating <code class="docutils literal notranslate"><span class="pre">pinned</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>, Shotgun also updated the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and
 <code class="docutils literal notranslate"><span class="pre">due_date</span></code> fields of our “Anm” Task so it will satisfy the upstream Task dependencies. And since
 that succeeded, the <code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> field has also been set to <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
-</div>
-<div class="section" id="dependency-violation-field-is-read-only">
+</section>
+<section id="dependency-violation-field-is-read-only">
 <h2><code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> field is read-only<a class="headerlink" href="#dependency-violation-field-is-read-only" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> field is the only dependency-related field that is read-only. Trying
 to modify it will generate a Fault:</p>
@@ -562,8 +563,8 @@ to modify it will generate a Fault:</p>
 <span class="c1"># ...</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

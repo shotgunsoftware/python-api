@@ -7,10 +7,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Find a Shot &mdash; python-api v3.2.6 documentation</title>
+  <title>Find a Shot &mdash; python-api v3.3.0 documentation</title>
   
 
   
@@ -23,10 +24,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -51,7 +52,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
           
-    <a href='http://developer.shotgunsoftware.com'>
+    <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -143,10 +144,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.6.<br>
+    <b>python-api</b> v3.3.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -216,9 +217,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="find-a-shot">
+  <section id="find-a-shot">
 <span id="example-find-shot"></span><h1>Find a Shot<a class="headerlink" href="#find-a-shot" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="building-the-query">
+<section id="building-the-query">
 <h2>Building the Query<a class="headerlink" href="#building-the-query" title="Permalink to this headline">¶</a></h2>
 <p>We are going to assume we know the ‘id’ of the Shot we’re looking for in this example.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="mi">40435</span><span class="p">]]</span>
@@ -227,14 +228,14 @@
 </div>
 <p>Pretty simple right? Well here’s a little more insight into what’s going on.</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">filters</span></code> is an list of filter conditions. In this example we are filtering for Shots where
-the <code class="docutils literal notranslate"><span class="pre">id</span></code> column is <strong>40435</strong>.</li>
-<li><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the Shotgun API instance.</li>
-<li><code class="docutils literal notranslate"><span class="pre">find_one()</span></code> is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one()</span></code> API method we are calling. We
-provide it with the entity type we’re searching for and our filters.</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code> is an list of filter conditions. In this example we are filtering for Shots where
+the <code class="docutils literal notranslate"><span class="pre">id</span></code> column is <strong>40435</strong>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the Shotgun API instance.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">find_one()</span></code> is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one()</span></code> API method we are calling. We
+provide it with the entity type we’re searching for and our filters.</p></li>
 </ul>
-</div>
-<div class="section" id="seeing-the-result">
+</section>
+<section id="seeing-the-result">
 <h2>Seeing the Result<a class="headerlink" href="#seeing-the-result" title="Permalink to this headline">¶</a></h2>
 <p>So what does this return? The variable result now contains:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">40435</span><span class="p">}</span>
@@ -251,8 +252,8 @@ easier to read. So we’ll add that to the import section of our script.:</p>
 <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span> <span class="c1"># useful for debugging</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="the-complete-example">
+</section>
+<section id="the-complete-example">
 <h2>The Complete Example<a class="headerlink" href="#the-complete-example" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
@@ -289,8 +290,8 @@ easier to read. So we’ll add that to the import section of our script.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">40435</span><span class="p">}</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

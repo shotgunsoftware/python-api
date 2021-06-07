@@ -7,10 +7,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Create a Shot with a Task Template &mdash; python-api v3.2.6 documentation</title>
+  <title>Create a Shot with a Task Template &mdash; python-api v3.3.0 documentation</title>
   
 
   
@@ -23,10 +24,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -51,7 +52,7 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
           
-    <a href='http://developer.shotgunsoftware.com'>
+    <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -143,10 +144,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.2.6.<br>
+    <b>python-api</b> v3.3.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://support.shotgunsoftware.com/home'>Shotgun Support</a>.
+    <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -216,26 +217,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="create-a-shot-with-a-task-template">
+  <section id="create-a-shot-with-a-task-template">
 <h1>Create a Shot with a Task Template<a class="headerlink" href="#create-a-shot-with-a-task-template" title="Permalink to this headline">¶</a></h1>
 <p>Creating a new Shot with a Task Template is just like linking it to another entity, but Shotgun will apply the Task Template in the background and create the appropriate Tasks on the Shot for you.</p>
-<div class="section" id="find-the-task-template">
+<section id="find-the-task-template">
 <h2>Find the Task Template<a class="headerlink" href="#find-the-task-template" title="Permalink to this headline">¶</a></h2>
 <p>First we need to find the Task Template we’re going to apply. We’ll assume you know the name of the Task Template you want to use.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span><span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;3D Shot Template&#39;</span> <span class="p">]]</span>
 <span class="n">template</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">&#39;TaskTemplate&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="the-resulting-task-template">
+</section>
+<section id="the-resulting-task-template">
 <h2>The Resulting Task Template<a class="headerlink" href="#the-resulting-task-template" title="Permalink to this headline">¶</a></h2>
 <p>Assuming the task template was found, we will now have something like this in our <code class="docutils literal notranslate"><span class="pre">template</span></code>
 variable:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;TaskTemplate&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="create-the-shot">
+</section>
+<section id="create-the-shot">
 <h2>Create the Shot<a class="headerlink" href="#create-the-shot" title="Permalink to this headline">¶</a></h2>
 <p>Now we can create the Shot with the link to the <code class="docutils literal notranslate"><span class="pre">TaskTemplate</span></code> to apply.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
@@ -249,16 +250,16 @@ variable:</p>
 Shotgun will then create the Tasks defined in the template and link them to the Shot you just
 created.</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value is
-the value.</li>
-<li><code class="docutils literal notranslate"><span class="pre">project</span></code> and <cite>code</cite> are required</li>
-<li><code class="docutils literal notranslate"><span class="pre">description</span></code> is just a text field that you might want to update as well</li>
-<li><code class="docutils literal notranslate"><span class="pre">task_template</span></code> is another entity column where we set the Task Template which has the Tasks we
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value is
+the value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">project</span></code> and <cite>code</cite> are required</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code> is just a text field that you might want to update as well</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">task_template</span></code> is another entity column where we set the Task Template which has the Tasks we
 wish to create by default on this Shot. We found the specific template we wanted to assign in the
-previous block by searching</li>
+previous block by searching</p></li>
 </ul>
-</div>
-<div class="section" id="result">
+</section>
+<section id="result">
 <h2>Result<a class="headerlink" href="#result" title="Permalink to this headline">¶</a></h2>
 <p>The variable <code class="docutils literal notranslate"><span class="pre">result</span></code> now contains the dictionary of the new Shot that was created.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -279,8 +280,8 @@ previous block by searching</li>
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">You can use an entity dictionary that was returned from the API in a filter as we have
+<p class="admonition-title">Note</p>
+<p>You can use an entity dictionary that was returned from the API in a filter as we have
 done above. Shotgun will only look at the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys and will ignore the rest.
 This is a handy way to pass around entity dictionaries without having to reformat them.</p>
 </div>
@@ -292,8 +293,8 @@ This is a handy way to pass around entity dictionaries without having to reforma
  <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3257</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">}]</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
