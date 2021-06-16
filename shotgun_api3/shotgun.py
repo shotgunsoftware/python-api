@@ -98,7 +98,7 @@ mimetypes.add_type("video/mp4", ".mp4")    # from some OS/distros
 
 SG_TIMEZONE = SgTimezone()
 
-NO_SSL_VALIDATION = False
+NO_SSL_VALIDATION = os.environ.get("SHOTGUN_API_NO_SSL_VALIDATION", False)
 """
 Turns off hostname matching validation for SSL certificates
 
