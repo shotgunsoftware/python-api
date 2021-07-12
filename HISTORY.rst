@@ -4,6 +4,10 @@ ShotGrid Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.3.1 (2021 July 12)
+=====================
+- Implements retries with incremental backoff on 502 errors.
+
 v3.3.0 (2021 Jun 7)
 ===================
 - Updates documentation and error messages to mention ShotGrid.
