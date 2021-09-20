@@ -57,6 +57,9 @@ class Utilities:
 
         contents = contents.replace("from httplib2.", "from .")
         contents = contents.replace("from httplib2", "from .")
+        contents = contents.replace(
+            "import pyparsing as pp",
+            "from shotgun_api3.lib import pyparsing as pp")
 
         with open(file_path, "w") as f:
             f.write(contents)

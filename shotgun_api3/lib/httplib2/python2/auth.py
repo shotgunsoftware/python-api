@@ -1,7 +1,7 @@
 import base64
 import re
 
-import pyparsing as pp
+from shotgun_api3.lib import pyparsing as pp
 
 from .error import *
 
