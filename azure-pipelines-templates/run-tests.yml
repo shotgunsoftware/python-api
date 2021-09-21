@@ -96,13 +96,30 @@ jobs:
       SG_API_KEY: $(ci_site_script_key)
       # The unit tests manipulate the user and project during the tests, which can cause collisions,
       # so sandbox each build variant.
-      # This will give a user login like 'something-macOS-2.7'
+      # Ideally, we would use the agent name here. The problem is that the agent name is in a build
+      # variable, so we can't edit it's value through a ${{replace(a,b,c)}} expression, which are evaluated before
+      # build variables are available. Because of this, we need to find another way to generate a
+      # unique login. So instead, we'll use the the name of the platform and the python version,
+      # which should make it unique.
       SG_HUMAN_LOGIN: $(python_api_human_login)-${{parameters.name}}-$(python.version)
       # This will give a user name like 'something macOS 2.7'
       SG_HUMAN_NAME: $(python_api_human_name) ${{parameters.name}} $(python.version)
       SG_HUMAN_PASSWORD: $(python_api_human_password)
-      # This will give a project name like 'Python API CI - macOS - 2.7'
+      # So, first, we need to make sure that two builds running at the same time do not manipulate
+      # the same entities, so we're sandboxing build nodes based on their name.
       SG_PROJECT_NAME: Python API CI - $(Agent.Name)
+      # The entities created and then reused between tests assume that the same user is always
+      # manipulating them. Because different builds will be assigned different agents and therefore
+      # different projects, it means each project needs to have an entity specific to a given user.
+      # Again, this would have been a lot simpler if we could simply have had a login based on the
+      # agent name, but alas, the agent name has a space in it which needs to be replaced to something
+      # else and string substitution can't be made on build variables, only template parameters.
+      SG_ASSET_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
+      SG_VERSION_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
+      SG_SHOT_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
+      SG_TASK_CONTENT: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
+      SG_TICKET_TILE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
+      SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
 
   # Upload the code coverage result to codecov.io.
   - script: |
