@@ -125,3 +125,5 @@ jobs:
   - script: |
       bash <(curl https://codecov.io/bash) -t $(python_api_codecov_token) -f coverage.xml -F adder -F subtractor
     displayName: 'Uploading code coverage to codecov'
+    # Sometimes the bash uploader fails. Do not consider the build as failed because of this.
+    continueOnError: True
