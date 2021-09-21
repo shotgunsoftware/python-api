@@ -126,17 +126,17 @@ jobs:
     - powershell: |
         $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
-        ./codecov.exe -f coverage.xml
+        .\codecov.exe -f coverage.xml
       displayName: Uploading code coverage
   - ${{ elseif eq(parameters.name, 'Linux') }}:        
     - script: |
         curl -Os https://uploader.codecov.io/latest/linux/codecov
         chmod +x codecov
-        ./codecov.exe -f coverage.xml
+        ./codecov -f coverage.xml
       displayName: Uploading code coverage
   - ${{ else }}:
     - script: |
         curl -Os https://uploader.codecov.io/latest/macos/codecov
         chmod +x codecov
-        .\codecov.exe -f coverage.xml
+        ./codecov -f coverage.xml
       displayName: Uploading code coverage
