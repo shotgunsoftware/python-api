@@ -2125,15 +2125,18 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
                                   password=self.config.human_password,
                                   http_proxy=self.config.http_proxy)
 
+        sg.update_project_last_accessed(self.project)
         initial = sg.find_one('Project', [['id', 'is', self.project['id']]], ['last_accessed_by_current_user'])
+
+        # Make sure time has elapsed so there is a difference between the two time stamps.
+        time.sleep(2)
 
         sg.update_project_last_accessed(self.project)
 
         current = sg.find_one('Project', [['id', 'is', self.project['id']]], ['last_accessed_by_current_user'])
         self.assertNotEqual(initial, current)
         # it's possible initial is None
-        if initial:
-            assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
+        assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
 
     def test_pass_in_user(self):
         if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 20):
