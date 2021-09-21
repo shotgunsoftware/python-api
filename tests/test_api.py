@@ -506,7 +506,7 @@ class TestShotgunApi(base.LiveTestBase):
 
             self.assertEqual(response_version_with_project.get('type'), 'Version')
             self.assertEqual(response_version_with_project.get('id'), self.version['id'])
-            self.assertEqual(response_version_with_project.get('code'), cls.config.version_code)
+            self.assertEqual(response_version_with_project.get('code'), self.config.version_code)
 
             h = Http(".cache")
             thumb_resp, content = h.request(response_version_with_project.get('project.Project.image'), "GET")
@@ -515,7 +515,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         else:
             expected_version_with_project = {
-                'code': cls.config.version_code,
+                'code': self.config.version_code,
                 'type': 'Version',
                 'id': self.version['id'],
                 'project.Project.image': thumb_id
