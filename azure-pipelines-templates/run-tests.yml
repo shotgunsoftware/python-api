@@ -122,8 +122,13 @@ jobs:
       SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
 
   # Upload the code coverage result to codecov.io.
-  - script: |
-      bash <(curl https://codecov.io/bash) -t $(python_api_codecov_token) -f coverage.xml -F adder -F subtractor
-    displayName: 'Uploading code coverage to codecov'
-    # Sometimes the bash uploader fails. Do not consider the build as failed because of this.
-    continueOnError: True
+  - ${{ if eq(parameters.name, 'Windows') }}:
+    - script: |
+      curl -Os https://uploader.codecov.io/latest/linux/codecov
+      chmod +x codecov
+      ./codecov -t ${CODECOV_TOKEN}
+  - ${{ else }}:
+    - powershell: |
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
+        .\codecov.exe -t ${CODECOV_TOKEN}
