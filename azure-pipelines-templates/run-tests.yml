@@ -123,12 +123,20 @@ jobs:
 
   # Upload the code coverage result to codecov.io.
   - ${{ if eq(parameters.name, 'Windows') }}:
-    - script: |
-      curl -Os https://uploader.codecov.io/latest/linux/codecov
-      chmod +x codecov
-      ./codecov -t ${CODECOV_TOKEN}
-  - ${{ else }}:
     - powershell: |
         $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
-        .\codecov.exe -t ${CODECOV_TOKEN}
+        ./codecov.exe -f coverage.xml
+      displayName: Uploading code coverage
+  - ${{ elseif eq(parameters.name, 'Linux') }}:        
+    - script: |
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        chmod +x codecov
+        ./codecov.exe -f coverage.xml
+      displayName: Uploading code coverage
+  - ${{ else }}:
+    - script: |
+        curl -Os https://uploader.codecov.io/latest/macos/codecov
+        chmod +x codecov
+        .\codecov.exe -f coverage.xml
+      displayName: Uploading code coverage
