@@ -36,6 +36,18 @@
 variables:
   - group: sg-credentials
 
+# We want builds to trigger for 3 reasons:
+# - The master branch sees new commits
+# - Each PR should get rebuilt when commits are added to it.
+trigger:
+  branches:
+    include:
+    - master
+pr:
+  branches:
+    include:
+    - "*"
+
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
 jobs:
