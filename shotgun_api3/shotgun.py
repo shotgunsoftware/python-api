@@ -117,7 +117,7 @@ except ImportError as e:
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.2.3"
+__version__ = "3.3.1"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -219,10 +219,10 @@ class ServerCapabilities(object):
         except AttributeError:
             self.version = None
         if not self.version:
-            raise ShotgunError("The Shotgun Server didn't respond with a version number. "
+            raise ShotgunError("The ShotGrid Server didn't respond with a version number. "
                                "This may be because you are running an older version of "
-                               "Shotgun against a more recent version of the Shotgun API. "
-                               "For more information, please contact Shotgun Support.")
+                               "ShotGrid against a more recent version of the ShotGrid API. "
+                               "For more information, please contact ShotGrid Support.")
 
         if len(self.version) > 3 and self.version[3] == "Dev":
             self.is_dev = True
@@ -643,38 +643,7 @@ class Shotgun(object):
 
         self._connection = None
 
-        # The following lines of code allow to tell the API where to look for
-        # certificate authorities certificates (we will be referring to these
-        # as CAC from now on). Here's how the Python API interacts with those.
-        #
-        # Auth and CRUD operations
-        # ========================
-        # These operations are executed with httplib2. httplib2 ships with a
-        # list of CACs instead of asking Python's ssl module for them.
-        #
-        # Upload/Downloads
-        # ================
-        # These operations are executed using urllib2. urllib2 asks a Python
-        # module called `ssl` for CACs. On Windows, ssl searches for CACs in
-        # the Windows Certificate Store. On Linux/macOS, it asks the OpenSSL
-        # library linked with Python for CACs. Depending on how Python was
-        # compiled for a given DCC, Python may be linked against the OpenSSL
-        # from the OS or a copy of OpenSSL distributed with the DCC. This
-        # impacts which versions of the certificates are available to Python,
-        # as an OS level OpenSSL will be aware of system wide certificates that
-        # have been added, while an OpenSSL that comes with a DCC is likely
-        # bundling a list of certificates that get update with each release and
-        # no not contain system wide certificates.
-        #
-        # Using custom CACs
-        # =================
-        # When a user requires a non-standard CAC, the SHOTGUN_API_CACERTS
-        # environment variable allows to provide an alternate location for
-        # the CACs.
-        if ca_certs is not None:
-            self.__ca_certs = ca_certs
-        else:
-            self.__ca_certs = os.environ.get("SHOTGUN_API_CACERTS")
+        self.__ca_certs = self._get_certs_file(ca_certs)
 
         self.base_url = (base_url or "").lower()
         self.config.set_server_params(self.base_url)
@@ -804,9 +773,6 @@ class Shotgun(object):
 
         >>> sg.info()
         {'full_version': [8, 2, 1, 0], 'version': [8, 2, 1], 'user_authentication_method': 'default', ...}
-
-        Tokens and values
-        -----------------
 
         ::
 
@@ -2761,13 +2727,11 @@ class Shotgun(object):
         .. note::
             Support for passing in an int representing the Attachment ``id`` is deprecated
 
-        .. todo::
-            Support for a standard entity hash should be removed: #22150
-
         :returns: the download URL for the Attachment or ``None`` if ``None`` was passed to
             ``attachment`` parameter.
         :rtype: str
         """
+        # TODO: Support for a standard entity hash should be removed: #22150
         attachment_id = None
         if isinstance(attachment, int):
             attachment_id = attachment
@@ -3249,6 +3213,66 @@ class Shotgun(object):
             handlers.append(handler)
         return urllib.request.build_opener(*handlers)
 
+    @classmethod
+    def _get_certs_file(cls, ca_certs):
+        """
+        The following method tells the API where to look for
+        certificate authorities certificates (we will be referring to these
+        as CAC from now on). Here's how the Python API interacts with those.
+
+        Auth and CRUD operations
+        ========================
+        These operations are executed with httplib2. httplib2 ships with a
+        list of CACs instead of asking Python's ssl module for them.
+
+        Upload/Downloads
+        ================
+        These operations are executed using urllib2. urllib2 asks a Python
+        module called `ssl` for CACs. We have bundled certifi with the API
+        so that we can be sure the certs are correct at the time of the API
+        release. This does however mean when the certs change we must update
+        the API to contain the latest certifi.
+        This approach is preferable to not using certifi since, on Windows,
+        ssl searches for CACs in the Windows Certificate Store, on
+        Linux/macOS, it asks the OpenSSL library linked with Python for CACs.
+        Depending on how Python was compiled for a given DCC, Python may be
+        linked against the OpenSSL from the OS or a copy of OpenSSL distributed
+        with the DCC. This impacts which versions of the certificates are
+        available to Python, as an OS level OpenSSL will be aware of system
+        wide certificates that have been added, while an OpenSSL that comes
+        with a DCC is likely bundling a list of certificates that get update
+        with each release and may not contain system wide certificates.
+
+        Using custom CACs
+        =================
+        When a user requires a non-standard CAC, the SHOTGUN_API_CACERTS
+        environment variable allows to provide an alternate location for
+        the CACs.
+
+        :param ca_certs: A default cert can be provided
+        :return: The cert file path to use.
+        """
+        if ca_certs is not None:
+            # certs were provided up front so use these
+            return ca_certs
+        elif "SHOTGUN_API_CACERTS" in os.environ:
+            return os.environ.get("SHOTGUN_API_CACERTS")
+        else:
+            # No certs have been specifically provided fallback to using the
+            # certs shipped with this API.
+            # We bundle certifi with this API so that we have a higher chance
+            # of using an uptodate certificate, rather than relying
+            # on the certs that are bundled with Python or the OS in some cases.
+            # However we can't use certifi.where() since that searches for the
+            # cacert.pem file using the sys.path and this means that if another
+            # copy of certifi can be found first, then it won't use ours.
+            # So we manually generate the path to the cert, but still use certifi
+            # to make it easier for updating the bundled cert with the API.
+            cur_dir = os.path.dirname(os.path.abspath(__file__))
+            # Now add the rest of the path to the cert file.
+            cert_file = os.path.join(cur_dir, "lib", "certifi", "cacert.pem")
+            return cert_file
+
     def _turn_off_ssl_validation(self):
         """
         Turn off SSL certificate validation.
@@ -3298,17 +3322,39 @@ class Shotgun(object):
         if self.config.localized is True:
             req_headers["locale"] = "auto"
 
-        http_status, resp_headers, body = self._make_call("POST", self.config.api_path,
-                                                          encoded_payload, req_headers)
-        LOG.debug("Completed rpc call to %s" % (method))
-        try:
-            self._parse_http_status(http_status)
-        except ProtocolError as e:
-            e.headers = resp_headers
-            # 403 is returned with custom error page when api access is blocked
-            if e.errcode == 403:
-                e.errmsg += ": %s" % body
-            raise
+        attempt = 1
+        max_attempts = 4 # Three retries on failure
+        backoff = 0.75 # Seconds to wait before retry, times the attempt number
+
+        while attempt <= max_attempts:
+            http_status, resp_headers, body = self._make_call(
+                "POST",
+                self.config.api_path,
+                encoded_payload,
+                req_headers,
+            )
+
+            LOG.debug("Completed rpc call to %s" % (method))
+
+            try:
+                self._parse_http_status(http_status)
+            except ProtocolError as e:
+                e.headers = resp_headers
+
+                # We've seen some rare instances of SG returning 502 for issues that
+                # appear to be caused by something internal to SG. We're going to
+                # allow for limited retries for those specifically.
+                if attempt != max_attempts and e.errcode == 502:
+                    LOG.debug("Got a 502 response. Waiting and retrying...")
+                    time.sleep(float(attempt) * backoff)
+                    attempt += 1
+                    continue
+                elif e.errcode == 403:
+                    # 403 is returned with custom error page when api access is blocked
+                    e.errmsg += ": %s" % body
+                raise
+            else:
+                break
 
         response = self._decode_response(resp_headers, body)
         self._response_errors(response)
@@ -3521,7 +3567,7 @@ class Shotgun(object):
         if status[0] >= 300:
             headers = "HTTP error from server"
             if status[0] == 503:
-                errmsg = "Shotgun is currently down for maintenance or too busy to reply. Please try again later."
+                errmsg = "ShotGrid is currently down for maintenance or too busy to reply. Please try again later."
             raise ProtocolError(self.config.server,
                                 error_code,
                                 errmsg,
@@ -3607,12 +3653,12 @@ class Shotgun(object):
                 raise UserCredentialsNotAllowedForSSOAuthenticationFault(
                     sg_response.get("message",
                                     "Authentication using username/password is not "
-                                    "allowed for an SSO-enabled Shotgun site")
+                                    "allowed for an SSO-enabled ShotGrid site")
                 )
             elif sg_response.get("error_code") == ERR_OXYG:
                 raise UserCredentialsNotAllowedForOxygenAuthenticationFault(
                     sg_response.get("message", "Authentication using username/password is not "
-                                    "allowed for an Autodesk Identity enabled Shotgun site")
+                                    "allowed for an Autodesk Identity enabled ShotGrid site")
                 )
             else:
                 # raise general Fault

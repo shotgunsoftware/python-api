@@ -38,8 +38,8 @@ from shotgun_api3.lib.sgsix import ShotgunSSLError
 
 from . import base
 
-THUMBNAIL_MAX_ATTEMPTS = 12
-THUMBNAIL_RETRY_INTERAL = 5
+THUMBNAIL_MAX_ATTEMPTS = 30
+THUMBNAIL_RETRY_INTERAL = 10
 TRANSIENT_IMAGE_PATH = "images/status/transient"
 
 
@@ -1071,7 +1071,7 @@ class TestDataTypes(base.LiveTestBase):
         entity = 'Task'
         entity_id = self.task['id']
         field_name = 'sg_status_list'
-        pos_values = ['rdy', 'fin']
+        pos_values = ['wtg', 'fin']
         expected, actual = self.assert_set_field(entity,
                                                  entity_id,
                                                  field_name,

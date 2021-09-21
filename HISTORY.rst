@@ -1,8 +1,24 @@
-****************************
-Shotgun Python API Changelog
-****************************
+*****************************
+ShotGrid Python API Changelog
+*****************************
 
 Here you can see the full list of changes between each Python API release.
+
+v3.3.1 (2021 July 12)
+=====================
+- Implements retries with incremental backoff on 502 errors.
+
+v3.3.0 (2021 Jun 7)
+===================
+- Updates documentation and error messages to mention ShotGrid.
+
+v3.2.6 (2020 Nov 24)
+=====================
+- Now includes ``certifi`` and defaults to using the certificates provided with that module.
+
+v3.2.4 (2020 May 25)
+=====================
+- Updates httplib2 to v0.18.0.
 
 v3.2.3 (2020 Apr 21)
 =====================
@@ -29,7 +45,7 @@ v3.1.2 (2019 Sept 17)
   methods ``schema_entity_read()``, ``schema_field_read()``, and ``schema_read()``.
 
 v3.1.1 (2019 August 29)
-=====================
+=======================
 - Fixes a regression on Python 2.7.0-2.7.9 on Windows with the mimetypes module.
 
 v3.1.0 (2019 July 29)
@@ -37,53 +53,53 @@ v3.1.0 (2019 July 29)
 - Adds support for Python 3.7
 
 v3.0.41 (2019 June 28)
-=====================
+======================
 - Adds an optional sleep between retries specified via the `SHOTGUN_API_RETRY_INTERVAL` environment variable, or by setting `sg.config.rpc_attempt_interval`.
 
 v3.0.40 (2019 March 13)
-=====================
+=======================
 - Updates encoding method to use shutil when uploading, to avoid memory and overflow errors when reading large files. (contributed by @eestrada)
 
 v3.0.39 (2019 February 20)
-=====================
+==========================
 - Ensures the certificates packaged with the API and those specified via the `SHOTGUN_API_CACERTS` environment variable
   are used when uploading a file.
 
 v3.0.38 (2019 February 7)
-=====================
+=========================
 - Upgrades the version of ``httplib2`` to ``0.12.0``, which fixes SNI issues. Note this
   version contains a more recent list of certificate authorities. If you are running Shotgun locally and have
   signed your https certificate with an outdated certificate authority, the Shotgun connection will be rejected.
 
 v3.0.37 (2018 July 19)
-=====================
+======================
 
 - Proper support added for unicode and utf-8 string paths given to upload methods, and a sane error is raised when an unusable string encoding is used.
 - Adds support for querying preferences from Shotgun via the new preferences_read method.
 - Under-the-hood changes to add support for direct to s3 uploads to Shotgun. This change should be transparent to users.
 
 v3.0.36 (2018 April 3)
-=====================
+======================
 
 - Fixes an error where ``connect=False`` during ``__init__`` would still connect to Shotgun.
 - Adds support for ``SHOTGUN_API_CACERTS`` when uploading and downloading files.
 - Properly handles failed downloads due to malware scanning.
 
 v3.0.35 (2017 December 8)
-=====================
+=========================
 
 - Add exception UserCredentialsNotAllowedForSSOAuthenticationFault.
   Triggered when attempting to initiate a connection with a username/password
   pair on an SSO-enabled Shotgun site.
 
 v3.0.34 (2017 September 18)
-=====================
+===========================
 
 - Optimized pagination strategy for Shotgun 7.4+
 - Switched from a hard-coded value of 500 for "records_per_page" to a server-defined value. We will be experimenting with higher values with the goal of increasing performance for large result sets.
 
 v3.0.33 (2017 July 18)
-=====================
+======================
 
 - Raise an exception when uploading an empty file using :meth:`upload`, :meth:`upload_thumbnail` 
   or :meth:`upload_filmstrip_thumbnail` before calling out to the server.
@@ -97,7 +113,7 @@ v3.0.32 (2016 Sep 22)
 - Optimized import speed of the API on Python 2.7.
 - Integrated the latest fixes to the ``mimetypes`` module.
 - Added ``nav_expand()`` method as an experimental, internal method for querying SG hierarchy. 
-- Ported all documentation to sphinx. See http://developer.shotgunsoftware.com/python-api.
+- Ported all documentation to sphinx. See http://developer.shotgridsoftware.com/python-api.
 - Moved Changelog to dedicated HISTORY file.
 
 v3.0.31 (2016 May 18)

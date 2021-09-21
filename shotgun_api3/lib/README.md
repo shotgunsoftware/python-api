@@ -41,15 +41,15 @@ The version of `six` bundled should be updated manually, however its version is 
 
 ### mockgun
 
-Mockgun is a Shotgun API mocker. It's a class that has got *most* of the same
-methods and parameters that the Shotgun API has got. Mockgun is essentially a
-Shotgun *emulator* that (for basic operations) looks and feels like Shotgun.
+Mockgun is a ShotGrid API mocker. It's a class that has got *most* of the same
+methods and parameters that the ShotGrid API has got. Mockgun is essentially a
+ShotGrid *emulator* that (for basic operations) looks and feels like ShotGrid.
 
 The primary purpose of Mockgun is to drive unit test rigs where it becomes
-too slow, cumbersome or non-practical to connect to a real Shotgun. Using a
+too slow, cumbersome or non-practical to connect to a real ShotGrid. Using a
 Mockgun for unit tests means that a test can be rerun over and over again
 from exactly the same database state. This can be hard to do if you connect
-to a live Shotgun instance.
+to a live ShotGrid instance.
 
 ## Lib `requirements.txt`
 

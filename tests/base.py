@@ -1,4 +1,4 @@
-"""Base class for Shotgun API tests."""
+"""Base class for ShotGrid API tests."""
 import os
 import re
 import unittest
@@ -22,8 +22,6 @@ except ImportError:
     # mark them as skipped, but we will not fail on them.
     def skip(f):
         return lambda self: None
-
-CONFIG_PATH = 'tests/config'
 
 
 class TestBase(unittest.TestCase):
@@ -57,7 +55,9 @@ class TestBase(unittest.TestCase):
         # Since the file is read and never modified, we will only read
         # it once in memory and be done.
         cls.config = SgTestConfig()
-        cls.config.read_config(CONFIG_PATH)
+        cur_folder = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(cur_folder, "config")
+        cls.config.read_config(config_path)
 
     def setUp(self, auth_mode='ApiUser'):
         # When running the tests from a pull request from a client, the Shotgun
