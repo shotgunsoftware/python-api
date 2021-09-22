@@ -1995,7 +1995,7 @@ class TestHumanUserSudoAuth(base.TestBase):
                                  http_proxy=self.config.http_proxy,
                                  sudo_as_login="blah")
         self.assertRaises(shotgun_api3.Fault, x.find_one, 'Shot', [])
-        expected = "Cannot 'sudo' - unknown or retired user:"
+        expected = "The user does not have permission to 'sudo':"
         try:
             x.find_one('Shot', [])
         except shotgun_api3.Fault as e:
