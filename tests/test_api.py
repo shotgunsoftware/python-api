@@ -787,7 +787,7 @@ class TestShotgunApi(base.LiveTestBase):
         project = self.project
         # We're going to be comparing this value with the value returned from the server, so extract only the type
         # and id
-        user = {"type": self.human_user["type"], "id": self.human_user["id"]}
+        user = {"type": self.human_user["type"], "id": self.human_user["id"], "name": self.human_user["name"]}
 
         work_schedule = self.sg.work_schedule_read(start_date, end_date, project, user)
 
