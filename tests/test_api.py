@@ -842,7 +842,7 @@ class TestShotgunApi(base.LiveTestBase):
         resp = self.sg.work_schedule_read(start_date, end_date, project, user)
         work_schedule['2012-01-04'] = {"reason": "USER_EXCEPTION", "working": False, "description": "Artist Holiday"}
         # FIXME: There seems to be a regresion on the Shotgun server that needs to be fixed. Disabling the test
-        # self.assertEqual(work_schedule, resp)
+        self.assertEqual(work_schedule, resp)
 
     # For now disable tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
