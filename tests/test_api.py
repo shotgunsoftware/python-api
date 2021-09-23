@@ -785,7 +785,9 @@ class TestShotgunApi(base.LiveTestBase):
         end_date_obj = datetime.datetime(2012, 1, 7)
 
         project = self.project
-        user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
+        # We're going to be comparing this value with the value returned from the server, so extract only the type
+        # and id
+        user = {"type": self.human_user["type"], "id": self.human_user["id"], "name": self.human_user["name"]}
 
         work_schedule = self.sg.work_schedule_read(start_date, end_date, project, user)
 
@@ -842,7 +844,7 @@ class TestShotgunApi(base.LiveTestBase):
         resp = self.sg.work_schedule_read(start_date, end_date, project, user)
         work_schedule['2012-01-04'] = {"reason": "USER_EXCEPTION", "working": False, "description": "Artist Holiday"}
         # FIXME: There seems to be a regresion on the Shotgun server that needs to be fixed. Disabling the test
-        # self.assertEqual(work_schedule, resp)
+        self.assertEqual(work_schedule, resp)
 
     # For now disable tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
