@@ -8,7 +8,7 @@ v3.3.2 (2021 September 23)
 ==========================
 - Add Azure Pipelines support.
 - Updates version of httplib2.
-- Fixes a bug in the schedule tes
+- Fixes a bug in the schedule test.
 
 v3.3.1 (2021 July 12)
 =====================
