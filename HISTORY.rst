@@ -4,6 +4,12 @@ ShotGrid Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.3.2 (2021 September 23)
+==========================
+- Add Azure Pipelines support.
+- Updates version of httplib2.
+- Fixes a bug in the schedule tes
+
 v3.3.1 (2021 July 12)
 =====================
 - Implements retries with incremental backoff on 502 errors.
