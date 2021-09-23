@@ -785,7 +785,7 @@ class TestShotgunApi(base.LiveTestBase):
         end_date_obj = datetime.datetime(2012, 1, 7)
 
         project = self.project
-        user = self.sg.find_one('HumanUser', [['projects', 'is', project]], ['name'])
+        user = self.human_user
 
         work_schedule = self.sg.work_schedule_read(start_date, end_date, project, user)
 
