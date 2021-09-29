@@ -7,11 +7,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Smart Cut Fields &mdash; python-api v3.3.0 documentation</title>
+  <title>Smart Cut Fields &mdash; python-api v3.3.2 documentation</title>
   
 
   
@@ -24,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -134,7 +133,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.3.0.<br>
+    <b>python-api</b> v3.3.2.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
@@ -205,57 +204,57 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="smart-cut-fields">
+  <div class="section" id="smart-cut-fields">
 <span id="id1"></span><h1>Smart Cut Fields<a class="headerlink" href="#smart-cut-fields" title="Permalink to this headline">¶</a></h1>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Smart Cut Fields should be considered deprecated. Shotgun v7.0, introduced a new version of
+<p class="first admonition-title">Warning</p>
+<p class="last">Smart Cut Fields should be considered deprecated. Shotgun v7.0, introduced a new version of
 cut support. <a class="reference external" href="https://support.shotgunsoftware.com/hc/en-us/articles/222840748">Read the Cut Support Documentation here</a>.</p>
 </div>
 <p>If you want to work with ‘smart’ cut fields through the API, your script should use a corresponding
 ‘raw’ fields for all updates. The ‘smart_cut_fields’ are primarily for display in the UI, the real
 data is stored in a set of ‘raw’ fields that have different names.</p>
-<section id="smart-fields">
+<div class="section" id="smart-fields">
 <h2>Smart Fields<a class="headerlink" href="#smart-fields" title="Permalink to this headline">¶</a></h2>
 <p>In the UI these fields attempt to calculate values based on data entered into the various fields.
 These fields can be queried via the API using the find() method, but not updated. Note that we are
 deprecating this feature and recommend creating your own cut fields from scratch, which will not
 contain any calculations which have proven to be too magical at times.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">smart_cut_duration</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">smart_cut_in</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">smart_cut_out</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">smart_cut_summary_display</span></code> *</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">smart_cut_duration_display</span></code> *</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">smart_head_duration</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">smart_head_in</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">smart_head_out</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">smart_tail_duration</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">smart_tail_in</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">smart_tail_out</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">smart_working_duration</span></code> *</p></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_cut_duration</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_cut_in</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_cut_out</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_cut_summary_display</span></code> *</li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_cut_duration_display</span></code> *</li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_head_duration</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_head_in</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_head_out</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_tail_duration</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_tail_in</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_tail_out</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">smart_working_duration</span></code> *</li>
 </ul>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>* these are special summary fields that have no corresponding “raw” field.</p>
+<p class="first admonition-title">Note</p>
+<p class="last">* these are special summary fields that have no corresponding “raw” field.</p>
 </div>
-</section>
-<section id="raw-fields">
+</div>
+<div class="section" id="raw-fields">
 <h2>Raw Fields<a class="headerlink" href="#raw-fields" title="Permalink to this headline">¶</a></h2>
 <p>These are the “raw” fields that can be queried and updated through the API:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">cut_duration</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cut_in</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cut_out</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">head_duration</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">head_in</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">head_out</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tail_duration</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tail_in</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tail_out</span></code></p></li>
+<li><code class="docutils literal notranslate"><span class="pre">cut_duration</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">cut_in</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">cut_out</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">head_duration</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">head_in</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">head_out</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">tail_duration</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">tail_in</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">tail_out</span></code></li>
 </ul>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>

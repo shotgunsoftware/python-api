@@ -7,11 +7,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>IronPython &mdash; python-api v3.3.0 documentation</title>
+  <title>IronPython &mdash; python-api v3.3.2 documentation</title>
   
 
   
@@ -24,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -128,7 +127,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.3.0.<br>
+    <b>python-api</b> v3.3.2.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
@@ -199,7 +198,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="ironpython">
+  <div class="section" id="ironpython">
 <h1>IronPython<a class="headerlink" href="#ironpython" title="Permalink to this headline">¶</a></h1>
 <p>We do not test against IronPython and cannot be sure that we won’t introduce breaking changes or
 that we will be compatible with future releases of IronPython. While we don’t officially support
@@ -211,25 +210,25 @@ clients Pixomondo for making their work public and letting us refer to it:</p>
 <p><a class="reference external" href="https://github.com/Pixomondo/python-api/tree/v3.0.20.ipy">https://github.com/Pixomondo/python-api/tree/v3.0.20.ipy</a></p>
 <p>v3.0.20 can be used with IronPython with a little bit of added work:</p>
 <ul class="simple">
-<li><p>The Python API uses the zlib module to handle decompressing the gzipped response from the server.
+<li>The Python API uses the zlib module to handle decompressing the gzipped response from the server.
 There’s no built-in zlib module in IronPython, but there’s a potential solution from Jeff Hardy at
 <a class="reference external" href="https://bitbucket.org/jdhardy/ironpythonzlib/src/">https://bitbucket.org/jdhardy/ironpythonzlib/src/</a>. And the blog post about it here
-<a class="reference external" href="http://blog.jdhardy.ca/2008/12/solving-zlib-problem-ironpythonzlib.html">http://blog.jdhardy.ca/2008/12/solving-zlib-problem-ironpythonzlib.html</a></p></li>
-<li><p>If you encounter any SSL errors like
+<a class="reference external" href="http://blog.jdhardy.ca/2008/12/solving-zlib-problem-ironpythonzlib.html">http://blog.jdhardy.ca/2008/12/solving-zlib-problem-ironpythonzlib.html</a></li>
+<li>If you encounter any SSL errors like
 <code class="docutils literal notranslate"><span class="pre">unknown</span> <span class="pre">field:</span> <span class="pre">SERIALNUMBER=0123456789</span></code> or <code class="docutils literal notranslate"><span class="pre">:SSL3_GET_SERVER_CERTIFICATE:certificate</span> <span class="pre">verify</span> <span class="pre">failed</span></code>.
 For now you can workaround this problem by disabling ssl certificate validation which we’ve
 encountered some intermittent issues with. Set <code class="docutils literal notranslate"><span class="pre">NO_SSL_VALIDATION</span> <span class="pre">=</span> <span class="pre">True</span></code> for either case.
-See <a class="reference internal" href="../reference.html#shotgun_api3.shotgun.NO_SSL_VALIDATION" title="shotgun_api3.shotgun.NO_SSL_VALIDATION"><code class="xref py py-const docutils literal notranslate"><span class="pre">shotgun_api3.shotgun.NO_SSL_VALIDATION</span></code></a></p></li>
-<li><p>If you encounter <code class="docutils literal notranslate"><span class="pre">LookupError:</span> <span class="pre">unknown</span> <span class="pre">encoding:</span> <span class="pre">idna</span></code>, you can force utf-8 by changing
+See <a class="reference internal" href="../reference.html#shotgun_api3.shotgun.NO_SSL_VALIDATION" title="shotgun_api3.shotgun.NO_SSL_VALIDATION"><code class="xref py py-const docutils literal notranslate"><span class="pre">shotgun_api3.shotgun.NO_SSL_VALIDATION</span></code></a></li>
+<li>If you encounter <code class="docutils literal notranslate"><span class="pre">LookupError:</span> <span class="pre">unknown</span> <span class="pre">encoding:</span> <span class="pre">idna</span></code>, you can force utf-8 by changing
 iri2uri.py ~ln 71 from <code class="docutils literal notranslate"><span class="pre">authority</span> <span class="pre">=</span> <span class="pre">authority.encode('idna')</span></code> to
-<code class="docutils literal notranslate"><span class="pre">authority</span> <span class="pre">=</span> <span class="pre">authority.encode('utf-8')</span></code></p></li>
-<li><p>If you encounter an SSL error such as <code class="docutils literal notranslate"><span class="pre">SSL3_READ_BYTES:sslv3</span> <span class="pre">alert</span> <span class="pre">handshake</span> <span class="pre">failure</span></code>, then the
+<code class="docutils literal notranslate"><span class="pre">authority</span> <span class="pre">=</span> <span class="pre">authority.encode('utf-8')</span></code></li>
+<li>If you encounter an SSL error such as <code class="docutils literal notranslate"><span class="pre">SSL3_READ_BYTES:sslv3</span> <span class="pre">alert</span> <span class="pre">handshake</span> <span class="pre">failure</span></code>, then the
 lower level SSL library backing python’s network infrastructure is attempting to connect to our
 servers via SSLv3, which is no longer supported. You can use the code from this gist to force the
 SSL connections to use a specific protocol. The forked repo linked above has an example of how to
-do that to force the use of TLSv1.</p></li>
+do that to force the use of TLSv1.</li>
 </ul>
-</section>
+</div>
 
 
            </div>

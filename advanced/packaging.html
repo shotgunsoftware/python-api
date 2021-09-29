@@ -7,11 +7,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Packaging an application with py2app (or py2exe) &mdash; python-api v3.3.0 documentation</title>
+  <title>Packaging an application with py2app (or py2exe) &mdash; python-api v3.3.2 documentation</title>
   
 
   
@@ -24,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -131,7 +130,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.3.0.<br>
+    <b>python-api</b> v3.3.2.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
@@ -202,14 +201,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="packaging-an-application-with-py2app-or-py2exe">
+  <div class="section" id="packaging-an-application-with-py2app-or-py2exe">
 <span id="packaging"></span><h1>Packaging an application with py2app (or py2exe)<a class="headerlink" href="#packaging-an-application-with-py2app-or-py2exe" title="Permalink to this headline">¶</a></h1>
 <p>You can create standalone applications with Python scripts by using
 <a class="reference external" href="https://pythonhosted.org/py2app/">py2app</a> on OS X or <a class="reference external" href="http://www.py2exe.org/">py2exe</a> on
 Windows. This is often done to more easily distribute applications that have a GUI based on
 toolkits like Tk, Qt or others.</p>
 <p>There are caveats you need to be aware of when creating such an app.</p>
-<section id="https-validation-and-cacerts-txt">
+<div class="section" id="https-validation-and-cacerts-txt">
 <h2>HTTPS Validation and cacerts.txt<a class="headerlink" href="#https-validation-and-cacerts-txt" title="Permalink to this headline">¶</a></h2>
 <p>When creating the connection to Shotgun a file is used to validate the Shotgun certificate. This
 file is located at <code class="docutils literal notranslate"><span class="pre">shotgun_api3/lib/httplib2/cacerts.txt</span></code>. Because this file is not a Python
@@ -235,8 +234,8 @@ into the Shotgun connection’s constructor:</p>
 </pre></div>
 </div>
 <p>The process for py2exe should be similar.</p>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>

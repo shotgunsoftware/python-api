@@ -7,11 +7,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Create A Shot &mdash; python-api v3.3.0 documentation</title>
+  <title>Create A Shot &mdash; python-api v3.3.2 documentation</title>
   
 
   
@@ -24,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -144,7 +143,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.3.0.<br>
+    <b>python-api</b> v3.3.2.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
@@ -217,16 +216,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="create-a-shot">
+  <div class="section" id="create-a-shot">
 <span id="example-create-shot"></span><h1>Create A Shot<a class="headerlink" href="#create-a-shot" title="Permalink to this headline">¶</a></h1>
-<section id="building-the-data-and-calling-create">
+<div class="section" id="building-the-data-and-calling-create">
 <h2>Building the data and calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code><a class="headerlink" href="#building-the-data-and-calling-create" title="Permalink to this headline">¶</a></h2>
 <p>To create a Shot, you need to provide the following values:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">project</span></code> is a link to the Project the Shot belongs to. It should be a dictionary like
-<code class="docutils literal notranslate"><span class="pre">{&quot;type&quot;:</span> <span class="pre">&quot;Project&quot;,</span> <span class="pre">&quot;id&quot;:</span> <span class="pre">123}</span></code> where <code class="docutils literal notranslate"><span class="pre">id</span></code> is the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the Project.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">code</span></code> (this is the field that stores the name Shot)</p></li>
-<li><p>optionally any other info you want to provide</p></li>
+<li><code class="docutils literal notranslate"><span class="pre">project</span></code> is a link to the Project the Shot belongs to. It should be a dictionary like
+<code class="docutils literal notranslate"><span class="pre">{&quot;type&quot;:</span> <span class="pre">&quot;Project&quot;,</span> <span class="pre">&quot;id&quot;:</span> <span class="pre">123}</span></code> where <code class="docutils literal notranslate"><span class="pre">id</span></code> is the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the Project.</li>
+<li><code class="docutils literal notranslate"><span class="pre">code</span></code> (this is the field that stores the name Shot)</li>
+<li>optionally any other info you want to provide</li>
 </ul>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
@@ -240,11 +239,11 @@
 </div>
 <p>This will create a new Shot named “100_010” in the Project “Gunslinger” (which has an <code class="docutils literal notranslate"><span class="pre">id</span></code> of 4).</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value
-is the the value to set.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the Shotgun API instance you created in <a class="reference internal" href="basic_sg_instance.html#example-sg-instance"><span class="std std-ref">Create a Shotgun API instance</span></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">create()</span></code> is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun.create()</span></code> API method we are calling. We pass in the
-entity type we’re searching for and the data we’re setting.</p></li>
+<li><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value
+is the the value to set.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the Shotgun API instance you created in <a class="reference internal" href="basic_sg_instance.html#example-sg-instance"><span class="std std-ref">Create a Shotgun API instance</span></a>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">create()</span></code> is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun.create()</span></code> API method we are calling. We pass in the
+entity type we’re searching for and the data we’re setting.</li>
 </ul>
 <p class="rubric">Result</p>
 <p>The variable <code class="docutils literal notranslate"><span class="pre">result</span></code> now contains a dictionary hash with the Shot information you created.:</p>
@@ -263,8 +262,8 @@ entity type we’re searching for and the data we’re setting.</p></li>
 this dictionary represents. It does not correspond to any field in Shotgun.</p>
 <p>Shotgun will <em>always</em> return the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys in the dictionary when there are results
 representing an entity.</p>
-</section>
-<section id="the-complete-example">
+</div>
+<div class="section" id="the-complete-example">
 <h2>The Complete Example<a class="headerlink" href="#the-complete-example" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
@@ -313,8 +312,8 @@ representing an entity.</p>
 <span class="n">The</span> <span class="nb">id</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Shot</span> <span class="ow">is</span> <span class="mf">40435.</span>
 </pre></div>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>

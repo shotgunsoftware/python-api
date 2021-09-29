@@ -7,11 +7,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Split Tasks &mdash; python-api v3.3.0 documentation</title>
+  <title>Split Tasks &mdash; python-api v3.3.2 documentation</title>
   
 
   
@@ -24,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -139,7 +138,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.3.0.<br>
+    <b>python-api</b> v3.3.2.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
@@ -212,11 +211,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="split-tasks">
+  <div class="section" id="split-tasks">
 <span id="id1"></span><h1>Split Tasks<a class="headerlink" href="#split-tasks" title="Permalink to this headline">¶</a></h1>
 <p>Split tasks can be created and edited via the API but must comply to some rules. Before going
 further, a good understanding of <a class="reference internal" href="updating_tasks.html#updating-tasks"><span class="std std-ref">how Shotgun handles task dates is useful</span></a>.</p>
-<section id="overview">
+<div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>The Task entity has a field called <code class="docutils literal notranslate"><span class="pre">splits</span></code> which is a list of dictionaries. Each dictionary
 in the list has two string keys, <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code>, who’s values are strings representing dates
@@ -225,11 +224,10 @@ in the <code class="docutils literal notranslate"><span class="pre">YYYY-mm-dd</
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Splits should be ordered from eldest to newest.</p></li>
-<li><p>There should be gaps between each split.</p>
-<ul>
-<li><p>Gaps are defined as at least one working day. Non-workdays such as weekends and holidays
-are not gaps.</p></li>
+<li>Splits should be ordered from eldest to newest.</li>
+<li>There should be gaps between each split.<ul>
+<li>Gaps are defined as at least one working day. Non-workdays such as weekends and holidays
+are not gaps.</li>
 </ul>
 </li>
 </ul>
@@ -250,33 +248,38 @@ raised. For example:</p>
 <p>Alternately, a split value can be set to <code class="docutils literal notranslate"><span class="pre">None</span></code> to remove splits (you can also use an empty list).
 This will preserve the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">due_date</span></code> values but recalculate the <code class="docutils literal notranslate"><span class="pre">duration</span></code> value
 while appropriately considering all workday rules in effect.</p>
-</section>
-<section id="how-do-splits-influence-dates-and-dates-influence-splits">
+</div>
+<div class="section" id="how-do-splits-influence-dates-and-dates-influence-splits">
 <h2>How Do Splits Influence Dates And Dates Influence Splits<a class="headerlink" href="#how-do-splits-influence-dates-and-dates-influence-splits" title="Permalink to this headline">¶</a></h2>
 <ul>
-<li><p>If splits are specified the supplied <code class="docutils literal notranslate"><span class="pre">start_date</span></code>, <code class="docutils literal notranslate"><span class="pre">due_date</span></code> and <code class="docutils literal notranslate"><span class="pre">duration</span></code> fields will be ignored.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">start_date</span></code> will be inferred from the earliest split.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">due_date</span></code> will be inferred from the last split.</p></li>
-<li><p>If the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> is changed on a task that has splits the first split will be moved to start
+<li><p class="first">If splits are specified the supplied <code class="docutils literal notranslate"><span class="pre">start_date</span></code>, <code class="docutils literal notranslate"><span class="pre">due_date</span></code> and <code class="docutils literal notranslate"><span class="pre">duration</span></code> fields will be ignored.</p>
+</li>
+<li><p class="first">The <code class="docutils literal notranslate"><span class="pre">start_date</span></code> will be inferred from the earliest split.</p>
+</li>
+<li><p class="first">The <code class="docutils literal notranslate"><span class="pre">due_date</span></code> will be inferred from the last split.</p>
+</li>
+<li><p class="first">If the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> is changed on a task that has splits the first split will be moved to start
 on the new <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and all further splits will be moved while maintaining gap lengths
-between splits and respecting workday rules.</p></li>
-<li><p>If the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> is changed on a task that has splits the last split will be moved to end on
+between splits and respecting workday rules.</p>
+</li>
+<li><p class="first">If the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> is changed on a task that has splits the last split will be moved to end on
 the new <code class="docutils literal notranslate"><span class="pre">due_date</span></code> and all prior splits will be moved while maintaining gap lengths between
-splits and respecting workday rules.</p></li>
-<li><p>If the <code class="docutils literal notranslate"><span class="pre">duration</span></code> is changed two scenarios are possible</p>
+splits and respecting workday rules.</p>
+</li>
+<li><p class="first">If the <code class="docutils literal notranslate"><span class="pre">duration</span></code> is changed two scenarios are possible</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>In the case of a longer duration, additional days will be added to the end of the last split</p></li>
-<li><p>In the case of a shorter duration splits, starting with the latest ones, will be either
-removed or shortened until the new duration is met.</p></li>
+<li>In the case of a longer duration, additional days will be added to the end of the last split</li>
+<li>In the case of a shorter duration splits, starting with the latest ones, will be either
+removed or shortened until the new duration is met.</li>
 </ul>
 </div></blockquote>
 </li>
 </ul>
-<section id="examples">
+<div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
 <p>Throughout the following examples, each successive one will build on the previous.</p>
-<section id="start-date-due-date-and-duration-being-ignored">
+<div class="section" id="start-date-due-date-and-duration-being-ignored">
 <h4>start_date, due_date and duration being ignored<a class="headerlink" href="#start-date-due-date-and-duration-being-ignored" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
     <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-06&#39;</span><span class="p">,</span>
@@ -301,8 +304,8 @@ removed or shortened until the new duration is met.</p></li>
 </div>
 <p>Result:</p>
 <img alt="../../_images/split_tasks_1.png" src="../../_images/split_tasks_1.png" />
-</section>
-<section id="moving-the-start-date-of-a-split-task">
+</div>
+<div class="section" id="moving-the-start-date-of-a-split-task">
 <h4>Moving the start_date of a split task<a class="headerlink" href="#moving-the-start-date-of-a-split-task" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
     <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-10&#39;</span>
@@ -320,8 +323,8 @@ removed or shortened until the new duration is met.</p></li>
 </div>
 <p>Result:</p>
 <img alt="../../_images/split_tasks_2.png" src="../../_images/split_tasks_2.png" />
-</section>
-<section id="moving-the-due-date-of-a-split-task">
+</div>
+<div class="section" id="moving-the-due-date-of-a-split-task">
 <h4>Moving the due_date of a split task<a class="headerlink" href="#moving-the-due-date-of-a-split-task" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
     <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-19&#39;</span>
@@ -339,8 +342,8 @@ removed or shortened until the new duration is met.</p></li>
 </div>
 <p>Result:</p>
 <img alt="../../_images/split_tasks_3.png" src="../../_images/split_tasks_3.png" />
-</section>
-<section id="setting-a-longer-duration">
+</div>
+<div class="section" id="setting-a-longer-duration">
 <h4>Setting a longer duration<a class="headerlink" href="#setting-a-longer-duration" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
     <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">4200</span>
@@ -359,8 +362,8 @@ removed or shortened until the new duration is met.</p></li>
 </div>
 <p>Result:</p>
 <img alt="../../_images/split_tasks_4.png" src="../../_images/split_tasks_4.png" />
-</section>
-<section id="setting-a-shorter-duration">
+</div>
+<div class="section" id="setting-a-shorter-duration">
 <h4>Setting a shorter duration<a class="headerlink" href="#setting-a-shorter-duration" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
     <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">2400</span>
@@ -379,8 +382,8 @@ removed or shortened until the new duration is met.</p></li>
 </div>
 <p>Result:</p>
 <img alt="../../_images/split_tasks_5.png" src="../../_images/split_tasks_5.png" />
-</section>
-<section id="another-example-of-shorter-duration">
+</div>
+<div class="section" id="another-example-of-shorter-duration">
 <h4>Another example of shorter duration<a class="headerlink" href="#another-example-of-shorter-duration" title="Permalink to this headline">¶</a></h4>
 <p>We won’t be using the previous result for this example but rather, the following:</p>
 <img alt="../../_images/split_tasks_6.png" src="../../_images/split_tasks_6.png" />
@@ -402,8 +405,8 @@ removed or shortened until the new duration is met.</p></li>
 </div>
 <p>Result:</p>
 <img alt="../../_images/split_tasks_7.png" src="../../_images/split_tasks_7.png" />
-</section>
-<section id="setting-the-due-date-in-a-gap">
+</div>
+<div class="section" id="setting-the-due-date-in-a-gap">
 <h4>Setting the due_date in a gap<a class="headerlink" href="#setting-the-due-date-in-a-gap" title="Permalink to this headline">¶</a></h4>
 <p>When a due date is set in a gap later splits are removed and the day of the due date is considered
 a day when work will be done.</p>
@@ -426,10 +429,10 @@ a day when work will be done.</p>
 </div>
 <p>Result:</p>
 <img alt="../../_images/split_tasks_9.png" src="../../_images/split_tasks_9.png" />
-</section>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
+</div>
 
 
            </div>

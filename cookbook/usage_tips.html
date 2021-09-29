@@ -7,11 +7,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Usage Tips &mdash; python-api v3.3.0 documentation</title>
+  <title>API Usage Tips &mdash; python-api v3.3.2 documentation</title>
   
 
   
@@ -24,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -150,7 +149,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.3.0.<br>
+    <b>python-api</b> v3.3.2.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
@@ -221,14 +220,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="api-usage-tips">
+  <div class="section" id="api-usage-tips">
 <h1>API Usage Tips<a class="headerlink" href="#api-usage-tips" title="Permalink to this headline">¶</a></h1>
 <p>Below is a list of helpful tips when using the Shotgun API. We have tried to make the API very
 simple to use with predictable results while remaining a powerful tool to integrate with your
 pipeline. However, there’s always a couple of things that crop up that our users might not be
 aware of. Those are the types of things you’ll find below. We’ll be adding to this document over
 time as new questions come up from our users that exhibit these types of cases.</p>
-<section id="importing">
+<div class="section" id="importing">
 <h2>Importing<a class="headerlink" href="#importing" title="Permalink to this headline">¶</a></h2>
 <p>We strongly recommend you import the entire <cite>shotgun_api3</cite> module instead of just importing the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun</span></code> class from the module. There is other important functionality that
@@ -242,13 +241,13 @@ is managed at the module level which may not work as expected if you only import
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">shotgun_api3</span> <span class="kn">import</span> <span class="n">Shotgun</span>
 </pre></div>
 </div>
-</section>
-<section id="multi-threading">
+</div>
+<div class="section" id="multi-threading">
 <h2>Multi-threading<a class="headerlink" href="#multi-threading" title="Permalink to this headline">¶</a></h2>
 <p>The Shotgun API is not thread-safe. If you want to do threading we strongly suggest that you use
 one connection object per thread and not share the connection.</p>
-</section>
-<section id="entity-fields">
+</div>
+<div class="section" id="entity-fields">
 <h2>Entity Fields<a class="headerlink" href="#entity-fields" title="Permalink to this headline">¶</a></h2>
 <p>When you do a <code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code> call that returns a field of type entity or
 multi-entity (for example the ‘assets’ column on Shot), the entities are returned in a standard
@@ -260,13 +259,13 @@ dictionary:</p>
 there are fields named <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">name</span></code> on the Asset. These are only used to provide a
 consistent way to represent entities returned via the API.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: the entity type (CamelCase)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: the display name of the entity. For most entity types this is the value of the <code class="docutils literal notranslate"><span class="pre">code</span></code>
+<li><code class="docutils literal notranslate"><span class="pre">type</span></code>: the entity type (CamelCase)</li>
+<li><code class="docutils literal notranslate"><span class="pre">name</span></code>: the display name of the entity. For most entity types this is the value of the <code class="docutils literal notranslate"><span class="pre">code</span></code>
 field but not always. For example, on the Ticket and Delivery entities the <code class="docutils literal notranslate"><span class="pre">name</span></code> key would
-contain the value of the <code class="docutils literal notranslate"><span class="pre">title</span></code> field.</p></li>
+contain the value of the <code class="docutils literal notranslate"><span class="pre">title</span></code> field.</li>
 </ul>
-</section>
-<section id="customentities">
+</div>
+<div class="section" id="customentities">
 <span id="custom-entities"></span><h2>CustomEntities<a class="headerlink" href="#customentities" title="Permalink to this headline">¶</a></h2>
 <p>Entity types are always referenced by their original names. So if you enable CustomEntity01 and
 call it <strong>Widget</strong>. When you access it via the API, you’ll still use CustomEntity01 as the
@@ -300,8 +299,8 @@ Something like the following:</p>
                  <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span> <span class="s1">&#39;sg_shot&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-</section>
-<section id="connectionentities">
+</div>
+<div class="section" id="connectionentities">
 <span id="connection-entities"></span><h2>ConnectionEntities<a class="headerlink" href="#connectionentities" title="Permalink to this headline">¶</a></h2>
 <p>Connection entities exist behind the scenes for any many-to-many relationship. Most of the time
 you won’t need to pay any attention to them. But in some cases, you may need to track information
@@ -369,29 +368,29 @@ entities in Shtogun and are accessible just like any other entity type in Shotgu
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">version</span></code> is the Version record for this connection instance.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">playlist</span></code> is the Playlist record for this connection instance.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sg_sort_order</span></code> is the sort order field on the connection instance.</p></li>
+<li><code class="docutils literal notranslate"><span class="pre">version</span></code> is the Version record for this connection instance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">playlist</span></code> is the Playlist record for this connection instance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sg_sort_order</span></code> is the sort order field on the connection instance.</li>
 </ul>
 <p>We can pull in field values from the linked Playlist and Version entities using dot notation like
 <code class="docutils literal notranslate"><span class="pre">version.Version.code</span></code>. The syntax is <code class="docutils literal notranslate"><span class="pre">fieldname.EntityType.fieldname</span></code>. In this example,
 <code class="docutils literal notranslate"><span class="pre">PlaylistVersionConnection</span></code> has a field named <code class="docutils literal notranslate"><span class="pre">version</span></code>. That field contains a <code class="docutils literal notranslate"><span class="pre">Version</span></code>
 entity. The field we are interested on the Version is <code class="docutils literal notranslate"><span class="pre">code</span></code>. Put those together with our f
 riend the dot and we have <code class="docutils literal notranslate"><span class="pre">version.Version.code</span></code>.</p>
-</section>
-<section id="shotgun-ui-fields-not-available-via-the-api">
+</div>
+<div class="section" id="shotgun-ui-fields-not-available-via-the-api">
 <h2>Shotgun UI fields not available via the API<a class="headerlink" href="#shotgun-ui-fields-not-available-via-the-api" title="Permalink to this headline">¶</a></h2>
 <p>Summary type fields like Query Fields and Pipeline Step summary fields are currently only available
 via the UI. Some other fields may not work as expected through the API because they are “display
 only” fields made available for convenience and are only available in the browser UI.</p>
-<section id="humanuser">
+<div class="section" id="humanuser">
 <h3>HumanUser<a class="headerlink" href="#humanuser" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: This is a UI-only field that is a combination of the <code class="docutils literal notranslate"><span class="pre">firstname</span></code> + <code class="docutils literal notranslate"><span class="pre">'</span> <span class="pre">'</span></code> +
-<code class="docutils literal notranslate"><span class="pre">lastname</span></code>.</p></li>
+<li><code class="docutils literal notranslate"><span class="pre">name</span></code>: This is a UI-only field that is a combination of the <code class="docutils literal notranslate"><span class="pre">firstname</span></code> + <code class="docutils literal notranslate"><span class="pre">'</span> <span class="pre">'</span></code> +
+<code class="docutils literal notranslate"><span class="pre">lastname</span></code>.</li>
 </ul>
-</section>
-<section id="shot">
+</div>
+<div class="section" id="shot">
 <h3>Shot<a class="headerlink" href="#shot" title="Permalink to this headline">¶</a></h3>
 <p><strong>Smart Cut Fields</strong>: These fields are available only in the browser UI. You can read more about
 smart cut fields and the API in the <a class="reference internal" href="smart_cut_fields.html#smart-cut-fields"><span class="std std-ref">Smart Cut Fields doc</span></a>:</p>
@@ -409,27 +408,27 @@ smart cut fields and the API in the <a class="reference internal" href="smart_cu
 <span class="n">smart_working_duration</span>
 </pre></div>
 </div>
-</section>
-<section id="pipeline-step-summary-fields-on-entities">
+</div>
+<div class="section" id="pipeline-step-summary-fields-on-entities">
 <h3>Pipeline Step summary fields on entities<a class="headerlink" href="#pipeline-step-summary-fields-on-entities" title="Permalink to this headline">¶</a></h3>
 <p>The Pipeline Step summary fields on entities that have Tasks aren’t currently available via the API
 and are calculated on the client side in the UI. These fields are like <code class="docutils literal notranslate"><span class="pre">step_0</span></code>, or <code class="docutils literal notranslate"><span class="pre">step_13</span></code>.
 Note that the Pipeline Step entity itself is available via the API as the entity type <code class="docutils literal notranslate"><span class="pre">Step</span></code>.</p>
-</section>
-<section id="query-fields">
+</div>
+<div class="section" id="query-fields">
 <h3>Query Fields<a class="headerlink" href="#query-fields" title="Permalink to this headline">¶</a></h3>
 <p>Query fields are also summary fields like Pipeline Steps, the query is run from the client side UI
 and therefore is not currently supported in the API.</p>
-</section>
-</section>
-<section id="audit-fields">
+</div>
+</div>
+<div class="section" id="audit-fields">
 <h2>Audit Fields<a class="headerlink" href="#audit-fields" title="Permalink to this headline">¶</a></h2>
 <p>You can set the <code class="docutils literal notranslate"><span class="pre">created_by</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code> fields via the API at creation time. This is
 often useful for when you’re importing or migrating data from another source and want to keep the
 history in tact. However, you cannot set the <code class="docutils literal notranslate"><span class="pre">updated_by</span></code> and <code class="docutils literal notranslate"><span class="pre">updated_at</span></code> fields. These are
 automatically set whenever an entity is created or updated.</p>
-</section>
-<section id="logging-messages-from-the-api">
+</div>
+<div class="section" id="logging-messages-from-the-api">
 <span id="logging"></span><h2>Logging Messages from the API<a class="headerlink" href="#logging-messages-from-the-api" title="Permalink to this headline">¶</a></h2>
 <p>The API uses standard python logging but does not define a handler.</p>
 <p>To see the logging output in stdout, define a streamhandler in your script:</p>
@@ -452,10 +451,10 @@ Shotgun logger to a higher level:</p>
 <span class="n">sg_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="optimizations">
+</div>
+<div class="section" id="optimizations">
 <h2>Optimizations<a class="headerlink" href="#optimizations" title="Permalink to this headline">¶</a></h2>
-<section id="combining-related-queries">
+<div class="section" id="combining-related-queries">
 <h3>Combining Related Queries<a class="headerlink" href="#combining-related-queries" title="Permalink to this headline">¶</a></h3>
 <p>Reducing round-trips for data via the API can significantly improve the speed of your application.
 Much like “Bubble Fields” / “Field Hopping” in the UI, we can poll Shotgun for data on the fields
@@ -490,14 +489,14 @@ by adding the status of each Sequence entity associated with each Shot in our pr
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Due to performance concerns with deep linking, we only support using dot syntax chains for
+<p class="first admonition-title">Note</p>
+<p class="last">Due to performance concerns with deep linking, we only support using dot syntax chains for
 single-entity relationships. This means that if you try to pull data through a multi-entity
 field you will not get the desired result.</p>
 </div>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
            </div>

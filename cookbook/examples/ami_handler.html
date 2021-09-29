@@ -7,11 +7,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Handling Action Menu Item Calls &mdash; python-api v3.3.0 documentation</title>
+  <title>Handling Action Menu Item Calls &mdash; python-api v3.3.2 documentation</title>
   
 
   
@@ -24,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -139,7 +138,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.3.0.<br>
+    <b>python-api</b> v3.3.2.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
@@ -212,7 +211,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="handling-action-menu-item-calls">
+  <div class="section" id="handling-action-menu-item-calls">
 <span id="ami-handler"></span><h1>Handling Action Menu Item Calls<a class="headerlink" href="#handling-action-menu-item-calls" title="Permalink to this headline">¶</a></h1>
 <p>This is an example ActionMenu Python class to handle the <code class="docutils literal notranslate"><span class="pre">GET</span></code> request sent from an
 ActionMenuItem. It doesn’t manage dispatching custom protocols but rather takes the arguments
@@ -220,22 +219,22 @@ from any <code class="docutils literal notranslate"><span class="pre">GET</span>
 variables for your Python scripts.</p>
 <p>Available as a Gist at <a class="reference external" href="https://gist.github.com/3253287">https://gist.github.com/3253287</a></p>
 <div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>Our <a class="reference external" href="https://support.shotgunsoftware.com/hc/en-us/articles/219031318">support site has more information about Action Menu Items</a>.</p>
+<p class="first admonition-title">See also</p>
+<p class="last">Our <a class="reference external" href="https://support.shotgunsoftware.com/hc/en-us/articles/219031318">support site has more information about Action Menu Items</a>.</p>
 </div>
-<section id="get-vs-post">
+<div class="section" id="get-vs-post">
 <h2>GET vs. POST<a class="headerlink" href="#get-vs-post" title="Permalink to this headline">¶</a></h2>
 <p>Action Menu Items that open a url via <cite>http</cite> or <cite>https</cite> to another web server send their data
 via <code class="docutils literal notranslate"><span class="pre">POST</span></code>. If you’re using a custom protocol the data is sent via <code class="docutils literal notranslate"><span class="pre">GET</span></code>.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Browsers limit the length of a <code class="docutils literal notranslate"><span class="pre">GET</span></code> request. If you exceed this limit by attempting to
+<p class="first admonition-title">Note</p>
+<p class="last">Browsers limit the length of a <code class="docutils literal notranslate"><span class="pre">GET</span></code> request. If you exceed this limit by attempting to
 select a lot of rows and launch your custom protocol, you may encounter
 “Failed to load resource” errors in your console.</p>
 </div>
 <div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>This <a class="reference external" href="http://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers">Stack Overflow article “What is the maximum length of a URL in different browsers?”</a></p>
+<p class="first admonition-title">See also</p>
+<p class="last">This <a class="reference external" href="http://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers">Stack Overflow article “What is the maximum length of a URL in different browsers?”</a></p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># encoding: utf-8</span>
@@ -450,8 +449,8 @@ select a lot of rows and launch your custom protocol, you may encounter
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;ShotgunAction process finished.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
