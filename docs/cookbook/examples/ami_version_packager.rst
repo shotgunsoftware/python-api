@@ -23,7 +23,7 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
     This example script is meant to be run from an ActionMenuItem in Shotgun. The menu item uses a custom
     protocol in order to launch this script, and is followed by the action 'package4client'. So the full
     url would be something like launchme://package4client?.... See:
-    http://support.shotgunsoftware.com/hc/en-us/articles/219031318-Creating-custom-Action-Menu-Items
+    http://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Developer_dv_shotgrid_dv_custom_amis_html
 
     It uses the example ActionMenu Python class also located in our docs for parsing the ActionMenuItem
     POST variables. For more information about it and accessing the variables in the ActionMenuItem POST request,

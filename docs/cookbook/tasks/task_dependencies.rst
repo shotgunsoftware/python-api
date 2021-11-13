@@ -7,7 +7,7 @@ Task Dependencies
 Task dependencies work the same way in the API as they do in the UI. You can filter and sort on 
 any of the fields. For information about Task Dependencies in Shotgun, check out the `main 
 documentation page on our support site 
-<https://support.shotgunsoftware.com/hc/en-us/articles/219031228>`_
+<https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Producer_pr_scheduling_tasks_pr_gantt_chart_tasks_html>`_
 
 ************
 Create Tasks

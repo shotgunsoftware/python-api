@@ -31,7 +31,7 @@ setup(
     description='Shotgun Python API ',
     long_description=readme,
     author='Shotgun Software',
-    author_email='https://support.shotgunsoftware.com',
+    author_email='https://developer.shotgridsoftware.com',
     url='https://github.com/shotgunsoftware/python-api',
     license=license,
     packages=find_packages(exclude=('tests',)),
