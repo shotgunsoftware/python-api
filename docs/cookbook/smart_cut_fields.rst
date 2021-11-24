@@ -6,7 +6,7 @@ Smart Cut Fields
 
 .. warning::
     Smart Cut Fields should be considered deprecated. Shotgun v7.0, introduced a new version of 
-    cut support. `Read the Cut Support Documentation here <https://support.shotgunsoftware.com/hc/en-us/articles/222840748>`_.
+    cut support. `Read the Cut Support Documentation here <https://knowledge.autodesk.com/support/shotgrid/learn-explore/caas/CloudHelp/cloudhelp/ENU/SG-Editorial/files/SG-Editorial-ed-cut-schema-html-html.html>`_.
 
 If you want to work with 'smart' cut fields through the API, your script should use a corresponding
 'raw' fields for all updates. The 'smart_cut_fields' are primarily for display in the UI, the real 

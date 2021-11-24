@@ -13,7 +13,7 @@ Available as a Gist at https://gist.github.com/3253287
 
 .. seealso::
     Our `support site has more information about Action Menu Items 
-    <https://support.shotgunsoftware.com/hc/en-us/articles/219031318>`_.
+    <https://developer.shotgridsoftware.com/python-api/cookbook/examples/ami_handler.html>`_.
 
 ************
 GET vs. POST

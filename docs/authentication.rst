@@ -61,5 +61,5 @@ For Scripts, the default permission role is "API Admin User" which allows full a
 
 When using user-based authentication in your script, it will be bound by the permission role assigned to you in Shotgun. For example, if you don't have access to edit the status field on Shots, your script won't be able to either. Attempting to perform actions that are prohibited by permissions will raise an appropriate exception.
 
-.. seealso:: `Shotgun Support: Permissions <https://support.shotgunsoftware.com/entries/122037-Permissions>`_
+.. seealso:: `Shotgun Support: Permissions <https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Administrator_ar_site_configuration_ar_permissions_html>`_
 
