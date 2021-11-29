@@ -6,7 +6,7 @@
 
 # Shotgun Python API
 
-ShotGrid provides a simple Python-based API for accessing ShotGrid and integrating with other tools. This is the official API that is maintained by ShotGrid Software (support@shotgunsoftware.com)
+ShotGrid provides a simple Python-based API for accessing ShotGrid and integrating with other tools. This is the official API that is maintained by ShotGrid Software (knowledge.autodesk.com/contact-support)
 
 The latest version can always be found at http://github.com/shotgunsoftware/python-api
 
