@@ -5,7 +5,7 @@ Advanced Topics
 ###############
 
 Below are some more advanced topics regarding usage of the Python API. If you would like to see
-something that's missing here, please feel free to contact support at knowledge.autodesk.com/contact-support 
+something that's missing here, please feel free to contact support at https://knowledge.autodesk.com/contact-support
 with your suggestions and we'll get it added!
 
 .. toctree::
