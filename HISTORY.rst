@@ -4,6 +4,10 @@ ShotGrid Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.3.3 (2021 December 1)
+==========================
+- Replaces shotgunsoftware urls with Autodesk Knowledge Network and ShotGrid Developer Documentation pages.
+
 v3.3.2 (2021 September 27)
 ==========================
 - Updates version of httplib2.
