@@ -52,7 +52,7 @@ need to do.
 .. rubric:: Smart Cut Fields
 
 Smart Cut Fields are deprecated in favor of the 
-`new cut support added in Shotgun v7.0 <https://support.shotgunsoftware.com/hc/en-us/articles/222840748>`_. 
+`new cut support added in Shotgun v7.0 <https://knowledge.autodesk.com/support/shotgrid/learn-explore/caas/CloudHelp/cloudhelp/ENU/SG-Editorial/files/SG-Editorial-ed-cut-schema-html-html.html>`_. 
 This documentation remains only to support studios who may not have upgraded to the new cut support
 features. 
 

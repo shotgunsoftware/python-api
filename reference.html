@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; python-api v3.3.2 documentation</title>
+  <title>API Reference &mdash; python-api v3.3.3 documentation</title>
   
 
   
@@ -198,7 +198,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.3.2.<br>
+    <b>python-api</b> v3.3.3.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
@@ -275,7 +275,7 @@
 class. There are a couple of useful attributes to note.</p>
 <span class="target" id="module-shotgun_api3.shotgun"></span><dl class="data">
 <dt id="shotgun_api3.shotgun.LOG">
-<code class="descclassname">shotgun_api3.shotgun.</code><code class="descname">LOG</code><em class="property"> = &lt;logging.Logger object&gt;</em><a class="headerlink" href="#shotgun_api3.shotgun.LOG" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">shotgun_api3.shotgun.</code><code class="descname">LOG</code><em class="property"> = &lt;Logger shotgun_api3 (WARNING)&gt;</em><a class="headerlink" href="#shotgun_api3.shotgun.LOG" title="Permalink to this definition">¶</a></dt>
 <dd><p>Logging instance for shotgun_api3</p>
 <p>Provides a logging instance where log messages are sent during execution. This instance has no
 handler associated with it.</p>
@@ -336,9 +336,9 @@ the server are then converted back to local time. When <code class="docutils lit
 UTC date time values. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</li>
 <li><strong>http_proxy</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – <p>(optional) URL for a proxy server to use for all connections. The
 expected str format is <code class="docutils literal notranslate"><span class="pre">[username:password&#64;]111.222.333.444[:8080]</span></code>. Examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">192.168</span><span class="o">.</span><span class="mf">0.1</span>
-<span class="mf">192.168</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8888</span>
-<span class="n">joe</span><span class="p">:</span><span class="n">user</span><span class="o">@</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">8888</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">192.168.0.1</span>
+<span class="mf">192.168.0.1</span><span class="p">:</span><span class="mi">8888</span>
+<span class="n">joe</span><span class="p">:</span><span class="n">user</span><span class="o">@</span><span class="mf">192.168.0.1</span><span class="p">:</span><span class="mi">8888</span>
 </pre></div>
 </div>
 </li>
@@ -699,7 +699,7 @@ used internally for downloading attachments from the Shotgun server.</p>
 <code class="descclassname">Shotgun.</code><code class="descname">reset_user_agent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.reset_user_agent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.reset_user_agent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reset user agent to the default value.</p>
 <p>Example default user-agent:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shotgun</span><span class="o">-</span><span class="n">json</span> <span class="p">(</span><span class="mf">3.0</span><span class="o">.</span><span class="mi">17</span><span class="p">);</span> <span class="n">Python</span> <span class="mf">2.6</span> <span class="p">(</span><span class="n">Mac</span><span class="p">);</span> <span class="n">ssl</span> <span class="n">OpenSSL</span> <span class="mf">1.0</span><span class="o">.</span><span class="mi">2</span><span class="n">d</span> <span class="mi">9</span> <span class="n">Jul</span> <span class="mi">2015</span> <span class="p">(</span><span class="n">validate</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shotgun</span><span class="o">-</span><span class="n">json</span> <span class="p">(</span><span class="mf">3.0.17</span><span class="p">);</span> <span class="n">Python</span> <span class="mf">2.6</span> <span class="p">(</span><span class="n">Mac</span><span class="p">);</span> <span class="n">ssl</span> <span class="n">OpenSSL</span> <span class="mf">1.0.2</span><span class="n">d</span> <span class="mi">9</span> <span class="n">Jul</span> <span class="mi">2015</span> <span class="p">(</span><span class="n">validate</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2538,8 +2538,15 @@ types. Properties that are <code class="docutils literal notranslate"><span clas
 <dl class="class">
 <dt id="shotgun_api3.ShotgunError">
 <em class="property">class </em><code class="descclassname">shotgun_api3.</code><code class="descname">ShotgunError</code><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#ShotgunError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shotgun_api3.ShotgunError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/exceptions.html#exceptions.Exception" title="(in Python v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions.Exception</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Base for all Shotgun API Errors.</p>
+<dl class="method">
+<dt id="shotgun_api3.ShotgunError.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.ShotgunError.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -2547,6 +2554,13 @@ types. Properties that are <code class="docutils literal notranslate"><span clas
 <em class="property">class </em><code class="descclassname">shotgun_api3.</code><code class="descname">ShotgunFileDownloadError</code><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#ShotgunFileDownloadError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shotgun_api3.ShotgunFileDownloadError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.shotgun.ShotgunError</span></code></p>
 <p>Exception for file download-related errors.</p>
+<dl class="method">
+<dt id="shotgun_api3.ShotgunFileDownloadError.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.ShotgunFileDownloadError.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -2554,6 +2568,13 @@ types. Properties that are <code class="docutils literal notranslate"><span clas
 <em class="property">class </em><code class="descclassname">shotgun_api3.</code><code class="descname">Fault</code><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Fault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shotgun_api3.Fault" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.shotgun.ShotgunError</span></code></p>
 <p>Exception when server-side exception detected.</p>
+<dl class="method">
+<dt id="shotgun_api3.Fault.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.Fault.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -2561,6 +2582,13 @@ types. Properties that are <code class="docutils literal notranslate"><span clas
 <em class="property">class </em><code class="descclassname">shotgun_api3.</code><code class="descname">AuthenticationFault</code><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#AuthenticationFault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shotgun_api3.AuthenticationFault" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.shotgun.Fault</span></code></p>
 <p>Exception when the server side reports an error related to authentication.</p>
+<dl class="method">
+<dt id="shotgun_api3.AuthenticationFault.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.AuthenticationFault.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -2569,6 +2597,13 @@ types. Properties that are <code class="docutils literal notranslate"><span clas
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.shotgun.Fault</span></code></p>
 <p>Exception when the server side reports an error related to missing two-factor authentication
 credentials.</p>
+<dl class="method">
+<dt id="shotgun_api3.MissingTwoFactorAuthenticationFault.with_traceback">
+<code class="descname">with_traceback</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.MissingTwoFactorAuthenticationFault.with_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception.with_traceback(tb) –
+set self.__traceback__ to tb and return self.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -3268,7 +3303,7 @@ Example above is default.F=Feet f=Frames.</p>
   <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
   <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
 <span class="p">}</span>
-<span class="n">API</span> <span class="n">versions</span> <span class="o">&lt;</span> <span class="n">v3</span><span class="o">.</span><span class="mf">0.3</span><span class="p">:</span>
+<span class="n">API</span> <span class="n">versions</span> <span class="o">&lt;</span> <span class="n">v3</span><span class="mf">.0.3</span><span class="p">:</span>
 
 <span class="p">{</span>
   <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
@@ -3392,7 +3427,7 @@ usage.</p>
 <p>This <strong>does not</strong> mean your Shotgun server performance will suffer in general, just any pages that
 are specifically displaying EventLogEntries in the web application, or API queries on the event
 log that are run. We are always looking for ways to improve this in the future. If you have any
-immediate concerns, please <a class="reference external" href="https://support.shotgunsoftware.com">reach out to our support team</a></p>
+immediate concerns, please <a class="reference external" href="https://developer.shotgridsoftware.com">reach out to our support team</a></p>
 </div>
 </div>
 <div class="section" id="environment-variables">
