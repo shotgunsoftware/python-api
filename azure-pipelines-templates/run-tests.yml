@@ -48,6 +48,8 @@ jobs:
         python.version: '2.7'
       Python37:
         python.version: '3.7'
+      Python39:
+        python.version: '3.9'
 
   # These are the steps that will be executed inside each job.
   steps:
