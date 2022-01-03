@@ -57,7 +57,7 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
          'sort_direction': 'desc',
          'project_id': '4',
          'session_uuid': 'd8592bd6-fc41-11e1-b2c5-000c297a5f50',
-         'column_display_names': 
+         'column_display_names':
         [
             'Version Name',
              'Thumbnail',
@@ -71,19 +71,19 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
         ]
     }
 
-    This simple class parses the url into easy to access types variables from the parameters, 
-    action, and protocol sections of the url. This example url 
+    This simple class parses the url into easy to access types variables from the parameters,
+    action, and protocol sections of the url. This example url
     myCoolProtocol://doSomethingCool?user_id=123&user_login=miled&title=All%20Versions&...
     would be parsed like this:
 
         (string) protocol: myCoolProtocol
         (string) action: doSomethingCool
         (dict)   params: user_id=123&user_login=miled&title=All%20Versions&...
-        
+
     The parameters variable will be returned as a dictionary of string key/value pairs. Here's
     how to instantiate:
 
-      sa = ShotgunAction(sys.argv[1]) # sys.argv[1]  
+      sa = ShotgunAction(sys.argv[1]) # sys.argv[1]
 
       sa.params['user_login'] # returns 'miled'
       sa.params['user_id'] # returns 123
@@ -95,10 +95,10 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
     # Imports
     # ---------------------------------------------------------------------------------------------
     import sys, os
-    import urllib
+    import six
     import logging as logger
 
-    from pprint import pprint
+
 
     # ---------------------------------------------------------------------------------------------
     # Variables
@@ -113,7 +113,7 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
     # ----------------------------------------------
     class ShotgunActionException(Exception):
         pass
-        
+
 
     # ----------------------------------------------
     # ShotgunAction Class to manage ActionMenuItem call
@@ -123,10 +123,10 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
         def __init__(self, url):
             self.logger = self._init_log(logfile)
             self.url = url
-            self.protocol, self.action, self.params = self._parse_url() 
-            
+            self.protocol, self.action, self.params = self._parse_url()
+
             # entity type that the page was displaying
-            self.entity_type = self.params['entity_type']        
+            self.entity_type = self.params['entity_type']
 
             # Project info (if the ActionMenuItem was launched from a page not belonging
             # to a Project (Global Page, My Page, etc.), this will be blank
@@ -146,7 +146,7 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
             if len(self.params['ids']) > 0:
                 ids = self.params['ids'].split(',')
                 self.ids = [int(id) for id in ids]
-                
+
             # All ids of the entities returned by the query in filter format ready
             # to use in a find() query
             self.ids_filter = self._convert_ids_to_filter(self.ids)
@@ -167,7 +167,7 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
                 self.sort = { 'column':self.params['sort_column'], 'direction':self.params['sort_direction'] }
             else:
                 self.sort = None
-                
+
             # title of the page
             self.title = self.params['title']
 
@@ -180,30 +180,30 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
         # ----------------------------------------------
         # Set up logging
         # ----------------------------------------------
-        def _init_log(self, filename="shotgun_action.log"):    
+        def _init_log(self, filename="shotgun_action.log"):
             try:
                 logger.basicConfig(level=logger.DEBUG,
                                 format='%(asctime)s %(levelname)-8s %(message)s',
                                 datefmt='%Y-%b-%d %H:%M:%S',
                                 filename=filename,
                                 filemode='w+')
-            except IOError, e:
+            except IOError as e:
                 raise ShotgunActionException ("Unable to open logfile for writing: %s" % e)
-            logger.info("ShotgunAction logging started.") 
-            return logger   
+            logger.info("ShotgunAction logging started.")
+            return logger
 
 
         # ----------------------------------------------
         # Parse ActionMenuItem call into protocol, action and params
         # ----------------------------------------------
         def _parse_url(self):
-            logger.info("Parsing full url received: %s" % self.url) 
+            logger.info("Parsing full url received: %s" % self.url)
 
-            # get the protocol used 
+            # get the protocol used
             protocol, path = self.url.split(":", 1)
             logger.info("protocol: %s" % protocol)
-            
-            # extract the action 
+
+            # extract the action
             action, params = path.split("?", 1)
             action = action.strip("/")
             logger.info("action: %s" % action)
@@ -213,7 +213,7 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
             params = params.split("&")
             p = {'column_display_names':[], 'cols':[]}
             for arg in params:
-                key, value = map(urllib.unquote, arg.split("=", 1))
+                key, value = map(six.moves.urllib.parse.unquote, arg.split("=", 1))
                 if key == 'column_display_names' or key == 'cols' :
                     p[key].append(value)
                 else:
@@ -221,8 +221,8 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
             params = p
             logger.info("params: %s" % params)
             return (protocol, action, params)
-            
-        
+
+
         # ----------------------------------------------
         # Convert IDs to filter format to us in find() queries
         # ----------------------------------------------
@@ -232,7 +232,7 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
                 filter.append(['id','is',id])
             logger.debug("parsed ids into: %s" % filter)
             return filter
-            
+
 
     # ----------------------------------------------
     # Main Block
@@ -241,6 +241,6 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
         try:
             sa = ShotgunAction(sys.argv[1])
             logger.info("ShotgunAction: Firing... %s" % (sys.argv[1]) )
-        except IndexError, e:
+        except IndexError as e:
             raise ShotgunActionException("Missing GET arguments")
         logger.info("ShotgunAction process finished.")
