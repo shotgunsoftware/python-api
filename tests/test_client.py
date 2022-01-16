@@ -12,11 +12,11 @@
 CRUD functions. These tests always use a mock http connection so not not
 need a live server to run against."""
 
-import base64
 import datetime
-from shotgun_api3.lib.six.moves import urllib
 import os
 import re
+
+from shotgun_api3.lib.six.moves import urllib
 from shotgun_api3.lib import six
 try:
     import simplejson as json
@@ -36,6 +36,7 @@ import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 from . import base
+
 
 if six.PY3:
     from base64 import encodebytes as base64encode
@@ -168,6 +169,26 @@ class TestShotgunClient(base.MockTestBase):
         sg = api.Shotgun(auth_url, None, None, connect=False)
         expected = "Basic " + b64encode(urllib.parse.unquote(login_password)).strip()
         self.assertEqual(expected, sg.config.authorization)
+
+    def test_b64encode(self):
+        """Parse value using the proper encoder."""
+        login = "thelogin"
+        password = "%thepassw0r#$"
+        login_password = "%s:%s" % (login, password)
+        expected = 'dGhlbG9naW46JXRoZXBhc3N3MHIjJA=='
+        result = b64encode(urllib.parse.unquote(login_password)).strip()
+        self.assertEqual(expected, result)
+
+    def test_read_config(self):
+        """Validate that config values are properly coerced."""
+        this_dir = os.path.dirname(os.path.realpath(__file__))
+        config_path = os.path.join(this_dir, "test_config_file")
+        config = base.ConfigParser()
+        config.read(config_path)
+        result = config.get("SERVER_INFO", "api_key")
+        expected = "%abce"
+
+        self.assertEqual(expected, result)
 
     def test_authorization(self):
         """Authorization passed to server"""
