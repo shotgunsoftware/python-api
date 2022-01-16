@@ -659,7 +659,7 @@ class Shotgun(object):
         # Do NOT urlsplit(self.base_url) here, as it contains the lower case version
         # of the base_url argument. Doing so would base64-encode the lowercase
         # version of the credentials.
-        auth, self.config.server = urllib.parse.splituser(urllib.parse.urlsplit(base_url).netloc)
+        auth, self.config.server = self._split_url(base_url)
         if auth:
             auth = base64encode(six.ensure_binary(urllib.parse.unquote(auth))).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
@@ -714,6 +714,26 @@ class Shotgun(object):
             self.config.user_login = None
             self.config.user_password = None
             self.config.auth_token = None
+
+    def _split_url(self, base_url):
+        if six.PY38:
+            auth = None
+            results = urllib.parse.urlparse(base_url)
+            server = results.hostname
+            if results.port:
+                server = "{}:{}".format(server, results.port)
+
+            if results.username:
+                auth = results.username
+
+                if results.password:
+                    auth = "{}:{}".format(auth, results.password)
+
+        else:
+            auth, server = urllib.parse.splituser(
+                urllib.parse.urlsplit(base_url).netloc)
+
+        return auth, server
 
     # ========================================================================
     # API Functions
