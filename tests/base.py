@@ -2,7 +2,7 @@
 import os
 import re
 import unittest
-from shotgun_api3.lib.six.moves.configparser import ConfigParser
+from shotgun_api3.lib.six.moves.configparser import SafeConfigParser as ConfigParser
 
 
 from . import mock
