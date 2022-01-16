@@ -37,9 +37,14 @@ import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 from . import base
 
+if six.PY3:
+    from base64 import encodebytes as base64encode
+else:
+    from base64 import encodestring as base64encode
+
 
 def b64encode(val):
-    return base64.encodestring(six.ensure_binary(val)).decode("utf-8")
+    return base64encode(six.ensure_binary(val)).decode("utf-8")
 
 
 class TestShotgunClient(base.MockTestBase):

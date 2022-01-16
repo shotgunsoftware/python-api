@@ -57,6 +57,12 @@ from .lib.sgtimezone import SgTimezone
 # to be exposed as part of the API.
 from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError  # noqa
 
+if six.PY3:
+    from base64 import encodebytes as base64encode
+else:
+    from base64 import encodestring as base64encode
+
+
 LOG = logging.getLogger("shotgun_api3")
 """
 Logging instance for shotgun_api3
@@ -656,7 +662,7 @@ class Shotgun(object):
         # version of the credentials.
         auth, self.config.server = urllib.parse.splituser(urllib.parse.urlsplit(base_url).netloc)
         if auth:
-            auth = base64.encodestring(six.ensure_binary(urllib.parse.unquote(auth))).decode("utf-8")
+            auth = base64encode(six.ensure_binary(urllib.parse.unquote(auth))).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
