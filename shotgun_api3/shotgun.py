@@ -35,7 +35,6 @@ from .lib import sgsix
 from .lib.six import BytesIO               # used for attachment upload
 from .lib.six.moves import map
 
-import base64
 from .lib.six.moves import http_cookiejar  # used for attachment upload
 import datetime
 import logging
