@@ -190,6 +190,41 @@ class TestShotgunClient(base.MockTestBase):
 
         self.assertEqual(expected, result)
 
+    def test_split_url(self):
+        """Validate that url parts are properly extracted."""
+
+        sg = api.Shotgun("https://ci.shotgunstudio.com",
+                         "foo", "bar", connect=False)
+
+
+        base_url = "https://ci.shotgunstudio.com"
+        expected_server = "ci.shotgunstudio.com"
+        expected_auth = None
+        auth, server = sg._split_url(base_url)
+        self.assertEqual(auth, expected_auth)
+        self.assertEqual(server, expected_server)
+
+        base_url = "https://ci.shotgunstudio.com:9500"
+        expected_server = "ci.shotgunstudio.com:9500"
+        expected_auth = None
+        auth, server = sg._split_url(base_url)
+        self.assertEqual(auth, expected_auth)
+        self.assertEqual(server, expected_server)
+
+        base_url = "https://x:y@ci.shotgunstudio.com:9500"
+        expected_server = "ci.shotgunstudio.com:9500"
+        expected_auth = "x:y"
+        auth, server = sg._split_url(base_url)
+        self.assertEqual(auth, expected_auth)
+        self.assertEqual(server, expected_server)
+
+        base_url = "https://12345XYZ@ci.shotgunstudio.com:9500"
+        expected_server = "ci.shotgunstudio.com:9500"
+        expected_auth = "12345XYZ"
+        auth, server = sg._split_url(base_url)
+        self.assertEqual(auth, expected_auth)
+        self.assertEqual(server, expected_server)
+
     def test_authorization(self):
         """Authorization passed to server"""
         login = self.human_user['login']
