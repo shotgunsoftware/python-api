@@ -656,9 +656,6 @@ class Shotgun(object):
         # if the service contains user information strip it out
         # copied from the xmlrpclib which turned the user:password into
         # and auth header
-        # Do NOT urlsplit(self.base_url) here, as it contains the lower case version
-        # of the base_url argument. Doing so would base64-encode the lowercase
-        # version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
             auth = base64encode(six.ensure_binary(urllib.parse.unquote(auth))).decode("utf-8")
@@ -716,6 +713,13 @@ class Shotgun(object):
             self.config.auth_token = None
 
     def _split_url(self, base_url):
+        """
+        Extract the hostname:port and username/password/token from base_url
+        sent when connect to the API.
+
+        In python 3.8 `urllib.parse.splituser` was deprecated warning devs to
+        use `urllib.parse.urlparse`.
+        """
         if six.PY38:
             auth = None
             results = urllib.parse.urlparse(base_url)
