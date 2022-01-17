@@ -656,15 +656,20 @@ class Shotgun(object):
         # if the service contains user information strip it out
         # copied from the xmlrpclib which turned the user:password into
         # and auth header
+
+        # Do NOT self._split_url(self.base_url) here, as it contains the lower
+        # case version of the base_url argument. Doing so would base64encode
+        # the lowercase version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64encode(six.ensure_binary(urllib.parse.unquote(auth))).decode("utf-8")
+            auth = base64encode(six.ensure_binary(
+                urllib.parse.unquote(auth))).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
         if http_proxy:
-            # check if we're using authentication. Start from the end since there might be
-            # @ in the user's password.
+            # check if we're using authentication. Start from the end since
+            # there might be @ in the user's password.
             p = http_proxy.rsplit("@", 1)
             if len(p) > 1:
                 self.config.proxy_user, self.config.proxy_pass = \
