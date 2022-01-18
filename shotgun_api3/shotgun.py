@@ -35,7 +35,6 @@ from .lib import sgsix
 from .lib.six import BytesIO               # used for attachment upload
 from .lib.six.moves import map
 
-import base64
 from .lib.six.moves import http_cookiejar  # used for attachment upload
 import datetime
 import logging
@@ -56,6 +55,12 @@ from .lib.sgtimezone import SgTimezone
 # Import Error and ResponseError (even though they're unused in this file) since they need
 # to be exposed as part of the API.
 from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError  # noqa
+
+if six.PY3:
+    from base64 import encodebytes as base64encode
+else:
+    from base64 import encodestring as base64encode
+
 
 LOG = logging.getLogger("shotgun_api3")
 """
@@ -651,18 +656,20 @@ class Shotgun(object):
         # if the service contains user information strip it out
         # copied from the xmlrpclib which turned the user:password into
         # and auth header
-        # Do NOT urlsplit(self.base_url) here, as it contains the lower case version
-        # of the base_url argument. Doing so would base64-encode the lowercase
-        # version of the credentials.
-        auth, self.config.server = urllib.parse.splituser(urllib.parse.urlsplit(base_url).netloc)
+
+        # Do NOT self._split_url(self.base_url) here, as it contains the lower
+        # case version of the base_url argument. Doing so would base64encode
+        # the lowercase version of the credentials.
+        auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64.encodestring(six.ensure_binary(urllib.parse.unquote(auth))).decode("utf-8")
+            auth = base64encode(six.ensure_binary(
+                urllib.parse.unquote(auth))).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
         if http_proxy:
-            # check if we're using authentication. Start from the end since there might be
-            # @ in the user's password.
+            # check if we're using authentication. Start from the end since
+            # there might be @ in the user's password.
             p = http_proxy.rsplit("@", 1)
             if len(p) > 1:
                 self.config.proxy_user, self.config.proxy_pass = \
@@ -709,6 +716,33 @@ class Shotgun(object):
             self.config.user_login = None
             self.config.user_password = None
             self.config.auth_token = None
+
+    def _split_url(self, base_url):
+        """
+        Extract the hostname:port and username/password/token from base_url
+        sent when connect to the API.
+
+        In python 3.8 `urllib.parse.splituser` was deprecated warning devs to
+        use `urllib.parse.urlparse`.
+        """
+        if six.PY38:
+            auth = None
+            results = urllib.parse.urlparse(base_url)
+            server = results.hostname
+            if results.port:
+                server = "{}:{}".format(server, results.port)
+
+            if results.username:
+                auth = results.username
+
+                if results.password:
+                    auth = "{}:{}".format(auth, results.password)
+
+        else:
+            auth, server = urllib.parse.splituser(
+                urllib.parse.urlsplit(base_url).netloc)
+
+        return auth, server
 
     # ========================================================================
     # API Functions

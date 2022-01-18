@@ -12,11 +12,11 @@
 CRUD functions. These tests always use a mock http connection so not not
 need a live server to run against."""
 
-import base64
 import datetime
-from shotgun_api3.lib.six.moves import urllib
 import os
 import re
+
+from shotgun_api3.lib.six.moves import urllib
 from shotgun_api3.lib import six
 try:
     import simplejson as json
@@ -38,8 +38,14 @@ from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 from . import base
 
 
+if six.PY3:
+    from base64 import encodebytes as base64encode
+else:
+    from base64 import encodestring as base64encode
+
+
 def b64encode(val):
-    return base64.encodestring(six.ensure_binary(val)).decode("utf-8")
+    return base64encode(six.ensure_binary(val)).decode("utf-8")
 
 
 class TestShotgunClient(base.MockTestBase):
@@ -163,6 +169,61 @@ class TestShotgunClient(base.MockTestBase):
         sg = api.Shotgun(auth_url, None, None, connect=False)
         expected = "Basic " + b64encode(urllib.parse.unquote(login_password)).strip()
         self.assertEqual(expected, sg.config.authorization)
+
+    def test_b64encode(self):
+        """Parse value using the proper encoder."""
+        login = "thelogin"
+        password = "%thepassw0r#$"
+        login_password = "%s:%s" % (login, password)
+        expected = 'dGhlbG9naW46JXRoZXBhc3N3MHIjJA=='
+        result = b64encode(urllib.parse.unquote(login_password)).strip()
+        self.assertEqual(expected, result)
+
+    def test_read_config(self):
+        """Validate that config values are properly coerced."""
+        this_dir = os.path.dirname(os.path.realpath(__file__))
+        config_path = os.path.join(this_dir, "test_config_file")
+        config = base.ConfigParser()
+        config.read(config_path)
+        result = config.get("SERVER_INFO", "api_key")
+        expected = "%abce"
+
+        self.assertEqual(expected, result)
+
+    def test_split_url(self):
+        """Validate that url parts are properly extracted."""
+
+        sg = api.Shotgun("https://ci.shotgunstudio.com",
+                         "foo", "bar", connect=False)
+
+
+        base_url = "https://ci.shotgunstudio.com"
+        expected_server = "ci.shotgunstudio.com"
+        expected_auth = None
+        auth, server = sg._split_url(base_url)
+        self.assertEqual(auth, expected_auth)
+        self.assertEqual(server, expected_server)
+
+        base_url = "https://ci.shotgunstudio.com:9500"
+        expected_server = "ci.shotgunstudio.com:9500"
+        expected_auth = None
+        auth, server = sg._split_url(base_url)
+        self.assertEqual(auth, expected_auth)
+        self.assertEqual(server, expected_server)
+
+        base_url = "https://x:y@ci.shotgunstudio.com:9500"
+        expected_server = "ci.shotgunstudio.com:9500"
+        expected_auth = "x:y"
+        auth, server = sg._split_url(base_url)
+        self.assertEqual(auth, expected_auth)
+        self.assertEqual(server, expected_server)
+
+        base_url = "https://12345XYZ@ci.shotgunstudio.com:9500"
+        expected_server = "ci.shotgunstudio.com:9500"
+        expected_auth = "12345XYZ"
+        auth, server = sg._split_url(base_url)
+        self.assertEqual(auth, expected_auth)
+        self.assertEqual(server, expected_server)
 
     def test_authorization(self):
         """Authorization passed to server"""

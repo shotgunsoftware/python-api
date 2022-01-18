@@ -1661,7 +1661,7 @@ class TestFind(base.LiveTestBase):
 
         # Should be filtered out
         result = self.sg.find('Asset', [['id', 'is', self.asset['id']], [num_field, 'is_not', None]], [num_field])
-        self.assertEquals([], result)
+        self.assertEqual([], result)
 
         # Set it to zero
         self.sg.update('Asset', self.asset['id'], {num_field: 0})
@@ -1681,17 +1681,17 @@ class TestFind(base.LiveTestBase):
         if self.sg.server_caps.version > (5, 3, 13):
             # Ticket #25082
             result = self.sg.find_one('Shot', [['id', 'is', self.shot['id']]])
-            self.assertEquals(self.shot['id'], result['id'])
+            self.assertEqual(self.shot['id'], result['id'])
 
             # archive project
             self.sg.update('Project', self.project['id'], {'archived': True})
 
             # setting defaults to True, so we should get result
             result = self.sg.find_one('Shot', [['id', 'is', self.shot['id']]])
-            self.assertEquals(self.shot['id'], result['id'])
+            self.assertEqual(self.shot['id'], result['id'])
 
             result = self.sg.find_one('Shot', [['id', 'is', self.shot['id']]], include_archived_projects=False)
-            self.assertEquals(None, result)
+            self.assertEqual(None, result)
 
             # unarchive project
             self.sg.update('Project', self.project['id'], {'archived': False})
@@ -2810,7 +2810,7 @@ class TestLibImports(base.LiveTestBase):
         # right one.)
         httplib2_compat_version = httplib2.Http.__module__.split(".")[-1]
         if six.PY2:
-            self.assertEquals(httplib2_compat_version, "python2")
+            self.assertEqual(httplib2_compat_version, "python2")
         elif six.PY3:
             self.assertTrue(httplib2_compat_version, "python3")
 
