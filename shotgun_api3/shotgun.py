@@ -4056,8 +4056,15 @@ class Shotgun(object):
             request.add_header("Content-Type", content_type)
             request.add_header("Content-Length", size)
             request.get_method = lambda: "PUT"
-            result = opener.open(request)
+            if self.config.timeout_secs is not None:
+                result = opener.open(request, timeout=self.config.timeout_secs)
+            else:
+                result = opener.open(request)
             etag = result.info()["Etag"]
+
+        except ssl.SSLError, e:
+            raise ShotgunError("Unanticipated error occurred uploading to %s: %s" % (storage_url, e))
+
         except urllib.error.HTTPError as e:
             if e.code == 500:
                 raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (storage_url, e))
@@ -4149,9 +4156,16 @@ class Shotgun(object):
 
         # Perform the request
         try:
-            resp = opener.open(url, params)
+            if self.config.timeout_secs is not None:
+                resp = opener.open(url, params, timeout=self.config.timeout_secs)
+            else:
+                resp = opener.open(url, params)
             result = resp.read()
             # response headers are in str(resp.info()).splitlines()
+
+        except ssl.SSLError, e:
+            raise ShotgunError("Unanticipated error occurred %s" % (e))
+
         except urllib.error.HTTPError as e:
             if e.code == 500:
                 raise ShotgunError("Server encountered an internal error. "
