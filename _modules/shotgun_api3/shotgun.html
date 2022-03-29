@@ -123,7 +123,7 @@
     <b>python-api</b> master.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>Shotgun Support</a>.
+    <a class=custom_post_menu href='https://support.shotgridsoftware.com/home'>Shotgun Support</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -227,7 +227,6 @@
 <span class="kn">from</span> <span class="nn">.lib.six</span> <span class="kn">import</span> <span class="n">BytesIO</span>               <span class="c1"># used for attachment upload</span>
 <span class="kn">from</span> <span class="nn">.lib.six.moves</span> <span class="kn">import</span> <span class="nb">map</span>
 
-<span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">from</span> <span class="nn">.lib.six.moves</span> <span class="kn">import</span> <span class="n">http_cookiejar</span>  <span class="c1"># used for attachment upload</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -248,6 +247,12 @@
 <span class="c1"># Import Error and ResponseError (even though they&#39;re unused in this file) since they need</span>
 <span class="c1"># to be exposed as part of the API.</span>
 <span class="kn">from</span> <span class="nn">.lib.six.moves.xmlrpc_client</span> <span class="kn">import</span> <span class="n">Error</span><span class="p">,</span> <span class="n">ProtocolError</span><span class="p">,</span> <span class="n">ResponseError</span>  <span class="c1"># noqa</span>
+
+<span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">PY3</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">base64</span> <span class="kn">import</span> <span class="n">encodebytes</span> <span class="k">as</span> <span class="n">base64encode</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">base64</span> <span class="kn">import</span> <span class="n">encodestring</span> <span class="k">as</span> <span class="n">base64encode</span>
+
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;shotgun_api3&quot;</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -843,18 +848,20 @@
         <span class="c1"># if the service contains user information strip it out</span>
         <span class="c1"># copied from the xmlrpclib which turned the user:password into</span>
         <span class="c1"># and auth header</span>
-        <span class="c1"># Do NOT urlsplit(self.base_url) here, as it contains the lower case version</span>
-        <span class="c1"># of the base_url argument. Doing so would base64-encode the lowercase</span>
-        <span class="c1"># version of the credentials.</span>
-        <span class="n">auth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">splituser</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">base_url</span><span class="p">)</span><span class="o">.</span><span class="n">netloc</span><span class="p">)</span>
+
+        <span class="c1"># Do NOT self._split_url(self.base_url) here, as it contains the lower</span>
+        <span class="c1"># case version of the base_url argument. Doing so would base64encode</span>
+        <span class="c1"># the lowercase version of the credentials.</span>
+        <span class="n">auth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_url</span><span class="p">(</span><span class="n">base_url</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">auth</span><span class="p">:</span>
-            <span class="n">auth</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">encodestring</span><span class="p">(</span><span class="n">six</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">unquote</span><span class="p">(</span><span class="n">auth</span><span class="p">)))</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+            <span class="n">auth</span> <span class="o">=</span> <span class="n">base64encode</span><span class="p">(</span><span class="n">six</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span>
+                <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">unquote</span><span class="p">(</span><span class="n">auth</span><span class="p">)))</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">authorization</span> <span class="o">=</span> <span class="s2">&quot;Basic &quot;</span> <span class="o">+</span> <span class="n">auth</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
         <span class="c1"># foo:bar@123.456.789.012:3456</span>
         <span class="k">if</span> <span class="n">http_proxy</span><span class="p">:</span>
-            <span class="c1"># check if we&#39;re using authentication. Start from the end since there might be</span>
-            <span class="c1"># @ in the user&#39;s password.</span>
+            <span class="c1"># check if we&#39;re using authentication. Start from the end since</span>
+            <span class="c1"># there might be @ in the user&#39;s password.</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">http_proxy</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">proxy_user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">proxy_pass</span> <span class="o">=</span> \
@@ -901,6 +908,33 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">user_login</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">user_password</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">auth_token</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_split_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract the hostname:port and username/password/token from base_url</span>
+<span class="sd">        sent when connect to the API.</span>
+
+<span class="sd">        In python 3.8 `urllib.parse.splituser` was deprecated warning devs to</span>
+<span class="sd">        use `urllib.parse.urlparse`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">PY38</span><span class="p">:</span>
+            <span class="n">auth</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">base_url</span><span class="p">)</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">hostname</span>
+            <span class="k">if</span> <span class="n">results</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
+                <span class="n">server</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">results</span><span class="o">.</span><span class="n">username</span><span class="p">:</span>
+                <span class="n">auth</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">username</span>
+
+                <span class="k">if</span> <span class="n">results</span><span class="o">.</span><span class="n">password</span><span class="p">:</span>
+                    <span class="n">auth</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">auth</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">auth</span><span class="p">,</span> <span class="n">server</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">splituser</span><span class="p">(</span>
+                <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">base_url</span><span class="p">)</span><span class="o">.</span><span class="n">netloc</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">auth</span><span class="p">,</span> <span class="n">server</span>
 
     <span class="c1"># ========================================================================</span>
     <span class="c1"># API Functions</span>
