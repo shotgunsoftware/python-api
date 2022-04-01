@@ -54,7 +54,7 @@ installs the v3.0.26 tag, replace the version tag with the one you want::
 ~~~~~~~~~~~~~~~~~~~~
 If you're using pip with `requirements.txt`, add the following line::
 
-    git+git://github.com/shotgunsoftware/python-api.git
+    git+https://github.com/shotgunsoftware/python-api.git
 
 
 ****************************
