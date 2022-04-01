@@ -37,7 +37,7 @@ Installing the Master Branch From Github
 ========================================
 If you wish to install the current master, use the following command::
 
-    pip install git+git://github.com/shotgunsoftware/python-api.git
+    pip install git+https://github.com/shotgunsoftware/python-api.git
 
 .. note:: The master branch contains the latest revisions and while largely considered "stable"  it
     is not an official packaged release.
@@ -47,7 +47,7 @@ Installing A specific Version From Github
 To install a specific version of the package from Github, run the following command. This example
 installs the v3.0.26 tag, replace the version tag with the one you want::
 
-    pip install git+git://github.com/shotgunsoftware/python-api.git@v3.0.26
+    pip install git+https://github.com/shotgunsoftware/python-api.git@v3.0.26
 
 
 ``requirements.txt``
