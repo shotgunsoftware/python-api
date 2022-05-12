@@ -31,7 +31,6 @@ import sys
 import time
 import unittest
 from . import mock
-from mock import patch
 
 import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
