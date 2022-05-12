@@ -4078,7 +4078,6 @@ class Shotgun(object):
 
                 LOG.debug("Completed request to %s" % request.get_method())
 
-
             except urllib.error.HTTPError as e:
                 if e.code == 500:
                     raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (storage_url, e))
