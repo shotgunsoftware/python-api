@@ -31,6 +31,7 @@ import sys
 import time
 import unittest
 from . import mock
+from mock import patch
 
 import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
@@ -438,6 +439,33 @@ class TestShotgunClient(base.MockTestBase):
         a = {"some": "args"}
         self._mock_http(d, status=(502, "bad gateway"))
         self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
+
+
+    def test_upload(self):
+        """
+        Test 503 response is retried when uploading to S3.
+        """
+        this_dir, _ = os.path.split(__file__)
+        storage_url = "https://sg-media-dev-cloud-usor-01.s3-accelerate.amazonaws.com"
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir, "sg_logo.jpg")))
+        max_attempts = 4  # Max retries to S3 server attempts
+
+        # Test the Internal function that is used to upload each
+        # data part in the context of multi-part uploads to S3, we
+        # raise on a 503
+        self.sg._make_upload_request.side_effect = urllib.error.HTTPError(storage_url,
+                                                                          503,
+                                                                          "The server is currently down or to busy to reply.Please try again later.",
+                                                                          None,
+                                                                          None
+                                                                          )
+        with self.assertRaises(api.ShotgunError):
+            self.sg._upload_file_to_storage(path, storage_url)
+        # Test the max retries attempt
+        self.assertTrue(
+            max_attempts == self.sg._make_upload_request.call_count,
+            "Call is repeated up to 3 times")
 
     def test_transform_data(self):
         """Outbound data is transformed"""
