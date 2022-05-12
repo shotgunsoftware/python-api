@@ -4077,7 +4077,6 @@ class Shotgun(object):
                 result = self._make_upload_request(request, opener)
 
                 LOG.debug("Completed request to %s" % request.get_method())
-                LOG.debug("The status of the request was: %s" % result.status)
 
 
             except urllib.error.HTTPError as e:
