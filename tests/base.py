@@ -129,8 +129,8 @@ class MockTestBase(TestBase):
         # eaiser than mocking the http connection + response
         self.sg._http_request = mock.Mock(spec=api.Shotgun._http_request,
                                           return_value=((200, "OK"), {}, None))
-        # Replace the function used to make the final call to the S3 server, and raise a
-        # HTTPError with a 503 status
+        # Replace the function used to make the final call to the S3 server, and simulate
+        # the exception HTTPError raised with 503 status errors
         self.sg._make_upload_request = mock.Mock(spec=api.Shotgun._make_upload_request,
                                                  side_effect = urllib.error.HTTPError(
                                                      "url",
