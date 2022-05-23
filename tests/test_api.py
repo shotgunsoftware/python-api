@@ -43,7 +43,6 @@ THUMBNAIL_RETRY_INTERAL = 10
 TRANSIENT_IMAGE_PATH = "images/status/transient"
 
 
-@unittest.skip
 class TestShotgunApi(base.LiveTestBase):
     def setUp(self):
         super(TestShotgunApi, self).setUp()
