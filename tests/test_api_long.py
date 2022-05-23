@@ -14,12 +14,15 @@ Includes the schema functions and the automated searching for all entity types
 """
 
 from __future__ import print_function
-from . import base
 import random
+import unittest
+
+from . import base
 import shotgun_api3
 from shotgun_api3.lib import six
 
 
+@unittest.skip
 class TestShotgunApiLong(base.LiveTestBase):
 
     def test_automated_find(self):

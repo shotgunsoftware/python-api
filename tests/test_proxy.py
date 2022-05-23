@@ -10,10 +10,13 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 import sys
+import unittest
+
 from . import base
 import shotgun_api3 as api
 
 
+@unittest.skip
 class ServerConnectionTest(base.TestBase):
     '''Tests for server connection'''
     def setUp(self):

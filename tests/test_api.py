@@ -43,6 +43,7 @@ THUMBNAIL_RETRY_INTERAL = 10
 TRANSIENT_IMAGE_PATH = "images/status/transient"
 
 
+@unittest.skip
 class TestShotgunApi(base.LiveTestBase):
     def setUp(self):
         super(TestShotgunApi, self).setUp()
@@ -905,6 +906,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(expected, resp)
 
 
+@unittest.skip
 class TestDataTypes(base.LiveTestBase):
     '''Test fields representing the different data types mapped on the server side.
 
@@ -1131,6 +1133,7 @@ class TestDataTypes(base.LiveTestBase):
         return new_value, new_values[field_name]
 
 
+@unittest.skip
 class TestUtc(base.LiveTestBase):
     '''Test utc options'''
 
@@ -1169,6 +1172,7 @@ class TestUtc(base.LiveTestBase):
         self.assertEqual(result[field_name], expected)
 
 
+@unittest.skip
 class TestFind(base.LiveTestBase):
     def setUp(self):
         super(TestFind, self).setUp()
@@ -1697,6 +1701,7 @@ class TestFind(base.LiveTestBase):
             self.sg.update('Project', self.project['id'], {'archived': False})
 
 
+@unittest.skip
 class TestFollow(base.LiveTestBase):
     def setUp(self):
         super(TestFollow, self).setUp()
@@ -1778,6 +1783,7 @@ class TestFollow(base.LiveTestBase):
         self.assertEqual(1, len(result))
 
 
+@unittest.skip
 class TestErrors(base.TestBase):
     def test_bad_auth(self):
         '''test_bad_auth invalid script name or api key raises fault'''
@@ -1944,6 +1950,7 @@ class TestErrors(base.TestBase):
 #        pass
 
 
+@unittest.skip
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
         super(TestScriptUserSudoAuth, self).setUp('ApiUser')
@@ -1978,6 +1985,7 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
         self.assertEqual(self.config.human_name, version['created_by']['name'])
 
 
+@unittest.skip
 class TestHumanUserSudoAuth(base.TestBase):
     def setUp(self):
         super(TestHumanUserSudoAuth, self).setUp('HumanUser')
@@ -2008,6 +2016,7 @@ class TestHumanUserSudoAuth(base.TestBase):
                 self.assertTrue(e.args[0].startswith(expected))
 
 
+@unittest.skip
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
     """
     Testing the username/password authentication method
@@ -2059,6 +2068,7 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
         self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
 
 
+@unittest.skip
 class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
     """
     Testing the session token based authentication method
@@ -2116,6 +2126,7 @@ class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
             self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
 
 
+@unittest.skip
 class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
     # Ticket #24681
     def test_logged_in_user(self):
@@ -2183,6 +2194,7 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
             assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
 
 
+@unittest.skip
 class TestActivityStream(base.LiveTestBase):
     """
     Unit tests for the activity_stream_read() method
@@ -2293,6 +2305,7 @@ class TestActivityStream(base.LiveTestBase):
                               "type"]))
 
 
+@unittest.skip
 class TestNoteThreadRead(base.LiveTestBase):
     """
     Unit tests for the note_thread_read method
@@ -2470,6 +2483,7 @@ class TestNoteThreadRead(base.LiveTestBase):
         self._check_attachment(result[2], attachment_id, additional_fields["Attachment"])
 
 
+@unittest.skip
 class TestTextSearch(base.LiveTestBase):
     """
     Unit tests for the text_search() method
@@ -2583,6 +2597,7 @@ class TestTextSearch(base.LiveTestBase):
         self.assertEqual(matches[1]["name"], "%s Text Search 4" % self._prefix)
 
 
+@unittest.skip
 class TestReadAdditionalFilterPresets(base.LiveTestBase):
     """
     Unit tests for the additional_filter_presets read parameter
@@ -2783,6 +2798,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
         )
 
 
+@unittest.skip
 class TestLibImports(base.LiveTestBase):
     """
     Ensure that included modules are importable and that the correct version is
