@@ -1997,7 +1997,6 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
 
 
 ### ARIEL - Localmente no funciona
-@unittest.skip
 class TestHumanUserSudoAuth(base.TestBase):
     def setUp(self):
         super(TestHumanUserSudoAuth, self).setUp('HumanUser')
