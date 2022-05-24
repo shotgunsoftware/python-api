@@ -2029,7 +2029,6 @@ class TestHumanUserSudoAuth(base.TestBase):
 
 ### ARIEL - Localmente funciona
 ### User promotion error and rename name
-@unittest.skip
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
     """
     Testing the username/password authentication method
@@ -2054,31 +2053,31 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
         self.assertEqual("Version", version["type"])
         self.assertEqual(self.version['id'], version["id"])
 
-    def test_humanuser_upload_thumbnail_for_version(self):
-        """simple upload thumbnail for version test as human user."""
-        this_dir, _ = os.path.split(__file__)
-        path = os.path.abspath(os.path.expanduser(
-            os.path.join(this_dir, "sg_logo.jpg")))
-
-        # upload thumbnail
-        thumb_id = self.sg.upload_thumbnail("Version", self.version['id'], path)
-        self.assertTrue(isinstance(thumb_id, int))
-
-        # check result on version
-        version_with_thumbnail = find_one_await_thumbnail(self.sg, 'Version', [['id', 'is', self.version['id']]])
-
-        self.assertEqual(version_with_thumbnail.get('type'), 'Version')
-        self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
-
-        h = Http(".cache")
-        thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
-        self.assertEqual(thumb_resp['status'], '200')
-        self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
-
-        # clear thumbnail
-        response_clear_thumbnail = self.sg.update("Version", self.version['id'], {'image': None})
-        expected_clear_thumbnail = {'id': self.version['id'], 'image': None, 'type': 'Version'}
-        self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
+    # def test_humanuser_upload_thumbnail_for_version(self):
+    #     """simple upload thumbnail for version test as human user."""
+    #     this_dir, _ = os.path.split(__file__)
+    #     path = os.path.abspath(os.path.expanduser(
+    #         os.path.join(this_dir, "sg_logo.jpg")))
+    #
+    #     # upload thumbnail
+    #     thumb_id = self.sg.upload_thumbnail("Version", self.version['id'], path)
+    #     self.assertTrue(isinstance(thumb_id, int))
+    #
+    #     # check result on version
+    #     version_with_thumbnail = find_one_await_thumbnail(self.sg, 'Version', [['id', 'is', self.version['id']]])
+    #
+    #     self.assertEqual(version_with_thumbnail.get('type'), 'Version')
+    #     self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
+    #
+    #     h = Http(".cache")
+    #     thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
+    #     self.assertEqual(thumb_resp['status'], '200')
+    #     self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
+    #
+    #     # clear thumbnail
+    #     response_clear_thumbnail = self.sg.update("Version", self.version['id'], {'image': None})
+    #     expected_clear_thumbnail = {'id': self.version['id'], 'image': None, 'type': 'Version'}
+    #     self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
 
 
 ### ARIEL - Localmente no funciona
