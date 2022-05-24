@@ -2140,7 +2140,6 @@ class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
 
 
 ### ARIEL - Localmente no funciona
-@unittest.skip
 class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
     # Ticket #24681
     def test_logged_in_user(self):
