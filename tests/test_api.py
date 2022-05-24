@@ -42,7 +42,7 @@ THUMBNAIL_MAX_ATTEMPTS = 30
 THUMBNAIL_RETRY_INTERAL = 10
 TRANSIENT_IMAGE_PATH = "images/status/transient"
 
-
+@unittest.skip
 class TestShotgunApi(base.LiveTestBase):
     def setUp(self):
         super(TestShotgunApi, self).setUp()
@@ -905,9 +905,9 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(expected, resp)
 
 
-@unittest.skip
 class TestDataTypes(base.LiveTestBase):
-    '''Test fields representing the different data types mapped on the server side.
+    '''
+    Test fields representing the different data types mapped on the server side.
 
      Untested data types:  password, percent, pivot_column, serializable, image, currency
                            system_task_type, timecode, url, uuid, url_template
