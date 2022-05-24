@@ -2200,6 +2200,7 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
             assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
 
 
+@unittest.skip
 class TestActivityStream(base.LiveTestBase):
     """
     Unit tests for the activity_stream_read() method
@@ -2310,7 +2311,6 @@ class TestActivityStream(base.LiveTestBase):
                               "type"]))
 
 
-@unittest.skip
 class TestNoteThreadRead(base.LiveTestBase):
     """
     Unit tests for the note_thread_read method
@@ -2488,7 +2488,6 @@ class TestNoteThreadRead(base.LiveTestBase):
         self._check_attachment(result[2], attachment_id, additional_fields["Attachment"])
 
 
-@unittest.skip
 class TestTextSearch(base.LiveTestBase):
     """
     Unit tests for the text_search() method
@@ -2602,7 +2601,6 @@ class TestTextSearch(base.LiveTestBase):
         self.assertEqual(matches[1]["name"], "%s Text Search 4" % self._prefix)
 
 
-@unittest.skip
 class TestReadAdditionalFilterPresets(base.LiveTestBase):
     """
     Unit tests for the additional_filter_presets read parameter
@@ -2803,7 +2801,6 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
         )
 
 
-@unittest.skip
 class TestLibImports(base.LiveTestBase):
     """
     Ensure that included modules are importable and that the correct version is
