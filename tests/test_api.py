@@ -2019,6 +2019,8 @@ class TestHumanUserSudoAuth(base.TestBase):
                 self.assertTrue(e.args[0].startswith(expected))
 
 
+### ARIEL - Localmente funciona
+@unittest.skip
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
     """
     Testing the username/password authentication method
@@ -2070,6 +2072,7 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
         self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
 
 
+### ARIEL - Localmente no funciona
 @unittest.skip
 class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
     """
@@ -2128,6 +2131,7 @@ class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
             self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
 
 
+### ARIEL - Localmente no funciona
 @unittest.skip
 class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
     # Ticket #24681
@@ -2196,7 +2200,6 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
             assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
 
 
-@unittest.skip
 class TestActivityStream(base.LiveTestBase):
     """
     Unit tests for the activity_stream_read() method
