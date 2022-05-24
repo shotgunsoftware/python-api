@@ -75,7 +75,6 @@ class TestBaseWithExceptionTests(unittest.TestCase):
             self.fail("Expected %s was not raised." % exception_type)
 
 
-@unittest.skip
 class TestMockgunModuleInterface(unittest.TestCase):
     """
     mockgun.py was turned into a module. Ensure we haven't broken the interface.
@@ -94,7 +93,6 @@ class TestMockgunModuleInterface(unittest.TestCase):
         mockgun.Shotgun
 
 
-@unittest.skip
 class TestValidateFilterSyntax(TestBaseWithExceptionTests):
     """
     Tests filter syntax support.
@@ -139,7 +137,6 @@ class TestValidateFilterSyntax(TestBaseWithExceptionTests):
         )
 
 
-@unittest.skip
 class TestEntityFieldComparison(TestBaseWithExceptionTests):
     """
     Checks if entity fields comparison work.
@@ -194,7 +191,6 @@ class TestEntityFieldComparison(TestBaseWithExceptionTests):
         self.assertEqual(items[0]["id"], self._project_link["id"])
 
 
-@unittest.skip
 class TestTextFieldOperators(TestBaseWithExceptionTests):
     """
     Checks if text field comparison work.
@@ -214,7 +210,6 @@ class TestTextFieldOperators(TestBaseWithExceptionTests):
         self.assertTrue(item)
 
 
-@unittest.skip
 class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
     """
     Ensures multi entity field comparison work.
@@ -298,7 +293,6 @@ class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
             self.assertTrue(len(item["users"]) > 0)
 
 
-@unittest.skip
 class TestFilterOperator(TestBaseWithExceptionTests):
     """
     Unit tests for the filter_operator filter syntax.
@@ -439,7 +433,6 @@ class TestFilterOperator(TestBaseWithExceptionTests):
         )
 
 
-@unittest.skip
 class TestConfig(unittest.TestCase):
     """
     Tests the shotgun._Config class
