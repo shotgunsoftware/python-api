@@ -2028,6 +2028,8 @@ class TestHumanUserSudoAuth(base.TestBase):
 
 
 ### ARIEL - Localmente funciona
+### User promotion error and rename name
+@unittest.skip
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
     """
     Testing the username/password authentication method
@@ -2080,7 +2082,6 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
 
 
 ### ARIEL - Localmente no funciona
-@unittest.skip
 class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
     """
     Testing the session token based authentication method
