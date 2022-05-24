@@ -42,6 +42,7 @@ THUMBNAIL_MAX_ATTEMPTS = 30
 THUMBNAIL_RETRY_INTERAL = 10
 TRANSIENT_IMAGE_PATH = "images/status/transient"
 
+
 @unittest.skip
 class TestShotgunApi(base.LiveTestBase):
     def setUp(self):
@@ -1133,6 +1134,7 @@ class TestDataTypes(base.LiveTestBase):
         return new_value, new_values[field_name]
 
 
+@unittest.skip
 class TestUtc(base.LiveTestBase):
     '''Test utc options'''
 
@@ -1169,7 +1171,6 @@ class TestUtc(base.LiveTestBase):
         sg.update(entity_name, entity_id, {field_name: date_time})
         result = sg.find_one(entity_name, [['id', 'is', entity_id]], [field_name])
         self.assertEqual(result[field_name], expected)
-
 
 @unittest.skip
 class TestFind(base.LiveTestBase):
