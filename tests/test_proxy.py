@@ -16,7 +16,6 @@ from . import base
 import shotgun_api3 as api
 
 
-@unittest.skip
 class ServerConnectionTest(base.TestBase):
     '''Tests for server connection'''
     def setUp(self):
