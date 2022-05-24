@@ -1172,6 +1172,7 @@ class TestUtc(base.LiveTestBase):
         result = sg.find_one(entity_name, [['id', 'is', entity_id]], [field_name])
         self.assertEqual(result[field_name], expected)
 
+
 @unittest.skip
 class TestFind(base.LiveTestBase):
     def setUp(self):
@@ -1701,7 +1702,6 @@ class TestFind(base.LiveTestBase):
             self.sg.update('Project', self.project['id'], {'archived': False})
 
 
-@unittest.skip
 class TestFollow(base.LiveTestBase):
     def setUp(self):
         super(TestFollow, self).setUp()
