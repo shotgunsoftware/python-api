@@ -1702,6 +1702,7 @@ class TestFind(base.LiveTestBase):
             self.sg.update('Project', self.project['id'], {'archived': False})
 
 
+@unittest.skip
 class TestFollow(base.LiveTestBase):
     def setUp(self):
         super(TestFollow, self).setUp()
@@ -1783,7 +1784,6 @@ class TestFollow(base.LiveTestBase):
         self.assertEqual(1, len(result))
 
 
-@unittest.skip
 class TestErrors(base.TestBase):
     def test_bad_auth(self):
         '''test_bad_auth invalid script name or api key raises fault'''
