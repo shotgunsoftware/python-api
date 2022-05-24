@@ -1951,6 +1951,8 @@ class TestErrors(base.TestBase):
 #        pass
 
 
+### ARIEL - Localmente funciona
+@unittest.skip
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
         super(TestScriptUserSudoAuth, self).setUp('ApiUser')
@@ -1985,6 +1987,7 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
         self.assertEqual(self.config.human_name, version['created_by']['name'])
 
 
+### ARIEL - Localmente no funciona
 @unittest.skip
 class TestHumanUserSudoAuth(base.TestBase):
     def setUp(self):
@@ -2016,7 +2019,6 @@ class TestHumanUserSudoAuth(base.TestBase):
                 self.assertTrue(e.args[0].startswith(expected))
 
 
-@unittest.skip
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
     """
     Testing the username/password authentication method
