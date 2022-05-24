@@ -1784,6 +1784,7 @@ class TestFollow(base.LiveTestBase):
         self.assertEqual(1, len(result))
 
 
+@unittest.skip
 class TestErrors(base.TestBase):
     def test_bad_auth(self):
         '''test_bad_auth invalid script name or api key raises fault'''
@@ -1950,7 +1951,6 @@ class TestErrors(base.TestBase):
 #        pass
 
 
-@unittest.skip
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
         super(TestScriptUserSudoAuth, self).setUp('ApiUser')
