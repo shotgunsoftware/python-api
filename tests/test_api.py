@@ -905,6 +905,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(expected, resp)
 
 
+@unittest.skip
 class TestDataTypes(base.LiveTestBase):
     '''
     Test fields representing the different data types mapped on the server side.
@@ -1132,7 +1133,6 @@ class TestDataTypes(base.LiveTestBase):
         return new_value, new_values[field_name]
 
 
-@unittest.skip
 class TestUtc(base.LiveTestBase):
     '''Test utc options'''
 
