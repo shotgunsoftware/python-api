@@ -1954,6 +1954,10 @@ class TestErrors(base.TestBase):
 ###############################################################################
 ### ARIEL - Localmente funciona
 ### Localmente no modifica People
+### Remotamente  no modifica people
+### Remotamente sg_response = {'error_code': 104, 'exception': True, 'message': 'API create() CRUD ERROR #13: Invalid project: project [1188] can not be accessed by this user.'}
+### Remotamente funciona en Linux27, Windows27, mac37
+### Remotamente funciona si se hacen retries
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
         super(TestScriptUserSudoAuth, self).setUp('ApiUser')
@@ -1965,6 +1969,8 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
 
         if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 3, 12):
             return
+
+        print("HOLA")
 
         x = shotgun_api3.Shotgun(self.config.server_url,
                                  self.config.script_name,
