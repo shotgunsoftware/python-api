@@ -2028,7 +2028,6 @@ class TestHumanUserSudoAuth(base.TestBase):
 
 
 ### ARIEL - Localmente funciona
-@unittest.skip
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
     """
     Testing the username/password authentication method
