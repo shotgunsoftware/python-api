@@ -1970,7 +1970,7 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 3, 12):
             return
 
-        print("HOLA")
+        print("HOLA: ", self.config.human_login)
 
         x = shotgun_api3.Shotgun(self.config.server_url,
                                  self.config.script_name,
