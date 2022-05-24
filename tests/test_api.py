@@ -1951,8 +1951,9 @@ class TestErrors(base.TestBase):
 #        pass
 
 
+###############################################################################
 ### ARIEL - Localmente funciona
-@unittest.skip
+### Localmente no modifica People
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
         super(TestScriptUserSudoAuth, self).setUp('ApiUser')
@@ -1985,6 +1986,7 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
         self.assertTrue("id" in version)
         self.assertTrue("created_by" in version)
         self.assertEqual(self.config.human_name, version['created_by']['name'])
+###############################################################################
 
 
 ### ARIEL - Localmente no funciona
@@ -2311,6 +2313,7 @@ class TestActivityStream(base.LiveTestBase):
                               "type"]))
 
 
+@unittest.skip
 class TestNoteThreadRead(base.LiveTestBase):
     """
     Unit tests for the note_thread_read method
@@ -2488,6 +2491,7 @@ class TestNoteThreadRead(base.LiveTestBase):
         self._check_attachment(result[2], attachment_id, additional_fields["Attachment"])
 
 
+@unittest.skip
 class TestTextSearch(base.LiveTestBase):
     """
     Unit tests for the text_search() method
@@ -2601,6 +2605,7 @@ class TestTextSearch(base.LiveTestBase):
         self.assertEqual(matches[1]["name"], "%s Text Search 4" % self._prefix)
 
 
+@unittest.skip
 class TestReadAdditionalFilterPresets(base.LiveTestBase):
     """
     Unit tests for the additional_filter_presets read parameter
@@ -2801,6 +2806,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
         )
 
 
+@unittest.skip
 class TestLibImports(base.LiveTestBase):
     """
     Ensure that included modules are importable and that the correct version is
