@@ -2146,21 +2146,34 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
         if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 20):
             return
 
-        sg = shotgun_api3.Shotgun(self.config.server_url,
-                                  login=self.config.human_login,
-                                  password=self.config.human_password,
-                                  http_proxy=self.config.http_proxy)
+        # login human user
+        sg = shotgun_api3.Shotgun(
+            base_url=self.config.server_url,
+            login=self.config.human_login,
+            password=self.config.human_password,
+            http_proxy=self.config.http_proxy
+        )
+        print("Logged in as: ", sg.config.user_login)
 
         sg.update_project_last_accessed(self.project)
-        initial = sg.find_one('Project', [['id', 'is', self.project['id']]], ['last_accessed_by_current_user'])
+        initial = sg.find_one(
+            entity_type='Project',
+            filters=[['id', 'is', self.project['id']]],
+            fields=['last_accessed_by_current_user']
+        )
 
         # Make sure time has elapsed so there is a difference between the two time stamps.
         time.sleep(2)
 
         sg.update_project_last_accessed(self.project)
+        current = sg.find_one(
+            entity_type='Project',
+            filters=[['id', 'is', self.project['id']]],
+            fields=['last_accessed_by_current_user']
+        )
 
-        current = sg.find_one('Project', [['id', 'is', self.project['id']]], ['last_accessed_by_current_user'])
         self.assertNotEqual(initial, current)
+
         # it's possible initial is None
         assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
 
