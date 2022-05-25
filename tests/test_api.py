@@ -2020,7 +2020,7 @@ class TestHumanUserSudoAuth(base.TestBase):
                 self.assertTrue(e.args[0].startswith(expected))
 
 
-### User promotion error and rename name
+@unittest.skip
 class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
     """
     Testing the username/password authentication method
