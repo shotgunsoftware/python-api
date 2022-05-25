@@ -2139,22 +2139,19 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
 #             self.assertEqual(expected_clear_thumbnail, response_clear_thumbnail)
 
 
-### ARIEL - Localmente no funciona
 class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
     # Ticket #24681
     def test_logged_in_user(self):
-        if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 20):
+        server_caps_version = self.sg.server_caps.version
+        if server_caps_version and server_caps_version < (5, 3, 20):
             return
 
-        # login human user
         sg = shotgun_api3.Shotgun(
             base_url=self.config.server_url,
             login=self.config.human_login,
             password=self.config.human_password,
             http_proxy=self.config.http_proxy
         )
-        print("Logged in as: ", sg.config.user_login)
-        print("Working with project id: ", self.project["id"])
 
         sg.update_project_last_accessed(self.project)
         initial = sg.find_one(
@@ -2163,7 +2160,8 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
             fields=['last_accessed_by_current_user']
         )
 
-        # Make sure time has elapsed so there is a difference between the two time stamps.
+        # Make sure time has elapsed so there is a difference between the two
+        # time stamps.
         time.sleep(2)
 
         sg.update_project_last_accessed(self.project)
@@ -2176,7 +2174,9 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
         self.assertNotEqual(initial, current)
 
         # it's possible initial is None
-        assert(initial['last_accessed_by_current_user'] < current['last_accessed_by_current_user'])
+        initial_last_accessed = initial['last_accessed_by_current_user']
+        current_last_accessed = current['last_accessed_by_current_user']
+        assert(initial_last_accessed < current_last_accessed)
 
     # def test_pass_in_user(self):
     #     if self.sg.server_caps.version and self.sg.server_caps.version < (5, 3, 20):
