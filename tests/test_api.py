@@ -2154,6 +2154,7 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
             http_proxy=self.config.http_proxy
         )
         print("Logged in as: ", sg.config.user_login)
+        print("Working with project id: ", self.project["id"])
 
         sg.update_project_last_accessed(self.project)
         initial = sg.find_one(
