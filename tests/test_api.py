@@ -1945,14 +1945,6 @@ class TestErrors(base.TestBase):
 #        pass
 
 
-###############################################################################
-### ARIEL - Localmente funciona
-### Localmente no modifica People
-### Remotamente  no modifica people
-### Remotamente sg_response = {'error_code': 104, 'exception': True, 'message': 'API create() CRUD ERROR #13: Invalid project: project [1188] can not be accessed by this user.'}
-### Remotamente funciona en Linux27, Windows27, mac37
-### Remotamente funciona si se hacen retries
-@unittest.skip
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
         super(TestScriptUserSudoAuth, self).setUp('ApiUser')
@@ -1987,7 +1979,6 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
         self.assertTrue("id" in version)
         self.assertTrue("created_by" in version)
         self.assertEqual(self.config.human_name, version['created_by']['name'])
-###############################################################################
 
 
 class TestHumanUserSudoAuth(base.TestBase):
