@@ -37,7 +37,6 @@ import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 from . import base
 
-
 if six.PY3:
     from base64 import encodebytes as base64encode
 else:
@@ -195,7 +194,6 @@ class TestShotgunClient(base.MockTestBase):
 
         sg = api.Shotgun("https://ci.shotgunstudio.com",
                          "foo", "bar", connect=False)
-
 
         base_url = "https://ci.shotgunstudio.com"
         expected_server = "ci.shotgunstudio.com"
@@ -438,6 +436,29 @@ class TestShotgunClient(base.MockTestBase):
         a = {"some": "args"}
         self._mock_http(d, status=(502, "bad gateway"))
         self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
+
+    def test_upload_s3(self):
+        """
+        Test 503 response is retried when uploading to S3.
+        """
+        this_dir, _ = os.path.split(__file__)
+        storage_url = "http://foo.com/"
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir, "sg_logo.jpg")))
+        max_attempts = 4  # Max retries to S3 server attempts
+        # Expected HTTPError exception error message
+        expected = "The server is currently down or to busy to reply." \
+                   "Please try again later."
+
+        # Test the Internal function that is used to upload each
+        # data part in the context of multi-part uploads to S3, we
+        # simulate the HTTPError exception raised with 503 status errors
+        with self.assertRaises(api.ShotgunError, msg=expected):
+            self.sg._upload_file_to_storage(path, storage_url)
+        # Test the max retries attempt
+        self.assertTrue(
+            max_attempts == self.sg._make_upload_request.call_count,
+            "Call is repeated up to 3 times")
 
     def test_transform_data(self):
         """Outbound data is transformed"""

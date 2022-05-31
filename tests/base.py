@@ -9,6 +9,7 @@ import shotgun_api3 as api
 from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
 from shotgun_api3.lib import six
+from shotgun_api3.lib.six.moves import urllib
 
 if six.PY2:
     from shotgun_api3.lib.six.moves.configparser import SafeConfigParser as ConfigParser
@@ -128,7 +129,17 @@ class MockTestBase(TestBase):
         # eaiser than mocking the http connection + response
         self.sg._http_request = mock.Mock(spec=api.Shotgun._http_request,
                                           return_value=((200, "OK"), {}, None))
-
+        # Replace the function used to make the final call to the S3 server, and simulate
+        # the exception HTTPError raised with 503 status errors
+        self.sg._make_upload_request = mock.Mock(spec=api.Shotgun._make_upload_request,
+                                                 side_effect = urllib.error.HTTPError(
+                                                     "url",
+                                                     503,
+                                                     "The server is currently down or to busy to reply."
+                                                     "Please try again later.",
+                                                     {},
+                                                     None
+                                                 ))
         # also replace the function that is called to get the http connection
         # to avoid calling the server. OK to return a mock as we will not use
         # it

@@ -3588,6 +3588,18 @@ class Shotgun(object):
 
         return (http_status, resp_headers, resp_body)
 
+    def _make_upload_request(self, request, opener):
+        """
+        Open the given request object, return the
+        response, raises URLError on protocol errors.
+        """
+        try:
+            result = opener.open(request)
+
+        except urllib.error.HTTPError:
+            raise
+        return result
+
     def _parse_http_status(self, status):
         """
         Parse the status returned from the http request.
@@ -4049,21 +4061,40 @@ class Shotgun(object):
         :returns: upload url.
         :rtype: str
         """
-        try:
-            opener = self._build_opener(urllib.request.HTTPHandler)
+        opener = self._build_opener(urllib.request.HTTPHandler)
 
-            request = urllib.request.Request(storage_url, data=data)
-            request.add_header("Content-Type", content_type)
-            request.add_header("Content-Length", size)
-            request.get_method = lambda: "PUT"
-            result = opener.open(request)
-            etag = result.info()["Etag"]
-        except urllib.error.HTTPError as e:
-            if e.code == 500:
-                raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (storage_url, e))
+        request = urllib.request.Request(storage_url, data=data)
+        request.add_header("Content-Type", content_type)
+        request.add_header("Content-Length", size)
+        request.get_method = lambda: "PUT"
+
+        attempt = 1
+        max_attempts = 4  # Three retries on failure
+        backoff = 0.75  # Seconds to wait before retry, times the attempt number
+
+        while attempt <= max_attempts:
+            try:
+                result = self._make_upload_request(request, opener)
+
+                LOG.debug("Completed request to %s" % request.get_method())
+
+            except urllib.error.HTTPError as e:
+                if e.code == 500:
+                    raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (storage_url, e))
+                elif attempt != max_attempts and e.code == 503:
+                    LOG.debug("Got a 503 response. Waiting and retrying...")
+                    time.sleep(float(attempt) * backoff)
+                    attempt += 1
+                    continue
+                else:
+                    if e.code == 503:
+                        raise ShotgunError("Got a 503 response when uploading to %s: %s" % (storage_url, e))
+                    raise ShotgunError("Unanticipated error occurred uploading to %s: %s" % (storage_url, e))
+
             else:
-                raise ShotgunError("Unanticipated error occurred uploading to %s: %s" % (storage_url, e))
+                break
 
+        etag = result.info()["Etag"]
         LOG.debug("Part upload completed successfully.")
         return etag
 
