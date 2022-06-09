@@ -4,6 +4,13 @@ ShotGrid Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.3.4 (2022 June 9)
+====================
+- Add Retries on 503 Errors when uploading to S3.
+- Update AMI Documentation to Support Python 3.
+- Add Python 3.9 coverage in Azure Pipeline tests.
+- Fix git protocol for the installation.
+
 v3.3.3 (2021 December 1)
 ==========================
 - Replaces shotgunsoftware urls with Autodesk Knowledge Network and ShotGrid Developer Documentation pages.
