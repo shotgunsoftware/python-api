@@ -42,7 +42,7 @@ variables:
 trigger:
   branches:
     include:
-    - SG-29004_validate_or_upgrade_if_necessary_deprecated_azure_pipelines_machines
+    - master
 pr:
   branches:
     include:
