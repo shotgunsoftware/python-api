@@ -58,7 +58,7 @@ jobs:
 - template: azure-pipelines-templates/run-tests.yml
   parameters:
     name: Linux
-    vm_image: 'ubuntu-22.04'
+    vm_image: 'ubuntu-20.04'
 
 - template: azure-pipelines-templates/run-tests.yml
   parameters:
