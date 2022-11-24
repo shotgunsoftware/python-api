@@ -63,9 +63,9 @@ jobs:
 - template: azure-pipelines-templates/run-tests.yml
   parameters:
     name: macOS
-    vm_image: 'macOS-10.15'
+    vm_image: 'macOS-12'
 
 - template: azure-pipelines-templates/run-tests.yml
   parameters:
     name: Windows
-    vm_image: 'windows-2019'
+    vm_image: 'windows-2022'
