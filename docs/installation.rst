@@ -18,6 +18,11 @@ Minimum Requirements
     your version of Shotgun will raise an appropriate exception. In general, we attempt to
     document these where possible.
 
+**************************************************************
+Setting Up Your Environment with the Python API Overview Video
+**************************************************************
+
+[![](http://img.youtube.com/vi/RYEBQDJiXAs/0.jpg)](https://youtu.be/RYEBQDJiXAs) 
 
 ******************************
 Installing into ``PYTHONPATH``
