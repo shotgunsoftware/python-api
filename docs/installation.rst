@@ -29,7 +29,7 @@ You'll need to save it somewhere your local Python installation can find it.
     http://docs.python.org/tutorial/modules.html
 
 .. note::
-    :ref:`Visit the introduction to the Python API <shotgun-python-api3>` to see an overview video of Setting Up Your Environment with the Python API.
+    :ref:`Visit the introduction to the Python API <index>` to see an overview video of Setting Up Your Environment with the Python API.
 
 ***********************
 Installing with ``pip``
