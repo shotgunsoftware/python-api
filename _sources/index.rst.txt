@@ -18,6 +18,15 @@ Because the needs of every studio can prove to be very different, we don't inclu
 decisions to you. The API is powerful enough you can write your own "smarts" in a wrapper on top
 of the Shotgun API.
 
+.. _pythonoverviewvideo:
+
+Overview Video of Setting Up Your Environment with the Python API
+=================================================================
+
+.. raw:: html
+
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/RYEBQDJiXAs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 In addition to basic metadata, the API contains methods for managing media including thumbnails,
 filmstrip thumbnails, images, uploaded, and both locally and remotely linked media like
 Quicktimes, etc.
