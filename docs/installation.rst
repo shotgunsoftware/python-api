@@ -18,12 +18,6 @@ Minimum Requirements
     your version of Shotgun will raise an appropriate exception. In general, we attempt to
     document these where possible.
 
-**************************************************************
-Setting Up Your Environment with the Python API Overview Video
-**************************************************************
-
-[![](http://img.youtube.com/vi/RYEBQDJiXAs/0.jpg)](https://youtu.be/RYEBQDJiXAs) 
-
 ******************************
 Installing into ``PYTHONPATH``
 ******************************
@@ -33,6 +27,9 @@ You'll need to save it somewhere your local Python installation can find it.
 
 .. seealso:: For more information on ``PYTHONPATH`` and using modules in Python, see
     http://docs.python.org/tutorial/modules.html
+
+.. note::
+    :ref:`Visit the introduction to the Python API <shotgun-python-api3>` to see an overview video of Setting Up Your Environment with the Python API.
 
 ***********************
 Installing with ``pip``
