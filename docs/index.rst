@@ -18,9 +18,10 @@ Because the needs of every studio can prove to be very different, we don't inclu
 decisions to you. The API is powerful enough you can write your own "smarts" in a wrapper on top
 of the Shotgun API.
 
-*****************************************************************
+.. _pythonoverviewvideo:
+
 Overview Video of Setting Up Your Environment with the Python API
-*****************************************************************
+=================================================================
 
 .. raw:: html
 
