@@ -22,7 +22,9 @@ of the Shotgun API.
 Overview Video of Setting Up Your Environment with the Python API
 *****************************************************************
 
-<iframe width="560" height="315" src="http://www.youtube.com/embed/RYEBQDJiXAs?rel=0" frameborder="0" allowfullscreen></iframe>
+.. raw:: html
+
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/RYEBQDJiXAs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 In addition to basic metadata, the API contains methods for managing media including thumbnails,
 filmstrip thumbnails, images, uploaded, and both locally and remotely linked media like
