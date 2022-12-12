@@ -18,7 +18,6 @@ Minimum Requirements
     your version of Shotgun will raise an appropriate exception. In general, we attempt to
     document these where possible.
 
-
 ******************************
 Installing into ``PYTHONPATH``
 ******************************
@@ -28,6 +27,9 @@ You'll need to save it somewhere your local Python installation can find it.
 
 .. seealso:: For more information on ``PYTHONPATH`` and using modules in Python, see
     http://docs.python.org/tutorial/modules.html
+
+.. note::
+    :ref:`Visit the introduction to the Python API <pythonoverviewvideo>` to see an overview video of Setting Up Your Environment with the Python API.
 
 ***********************
 Installing with ``pip``
