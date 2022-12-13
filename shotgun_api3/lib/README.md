@@ -6,7 +6,7 @@ Some third-party modules are bundled with `python-api` inside lib.
 
 ### httplib2
 
-`httplib2` is used to make http connections to the shotgun server.  We bundle both python2 and python3 compatible versions since httplib2 chose to maintain parallel versions of the module for python 2 and 3 compatibility.
+`httplib2` is used to make http connections to the ShotGrid server.  We bundle both python2 and python3 compatible versions since httplib2 chose to maintain parallel versions of the module for python 2 and 3 compatibility.
 
 The version of `httplib2` bundled should be updated manually, however its version is included in the unused `shotgun_api3/lib/requirements.txt` to allow Github's automated CVE notifications to work.
 
@@ -29,7 +29,7 @@ Six is a Python 2/3 compatibility library.  In python-api, it's used to make sim
 
 The version of `six` bundled should be updated manually, however its version is included in the unused `shotgun_api3/lib/requirements.txt` to allow Github's automated CVE notifications to work.
 
-## Shotgun Modules
+## ShotGrid Modules
 
 ### sgsix
 
