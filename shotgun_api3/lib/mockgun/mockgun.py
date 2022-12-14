@@ -395,7 +395,7 @@ class Shotgun(object):
         row = self._db[entity_type][entity_id]
         self._update_row(entity_type, row, data)
 
-        return [dict((field, item) for field, item in row.items() if field in data or field in ("type", "id"))]
+        return dict((field, item) for field, item in row.items() if field in data or field in ("type", "id"))
 
     def delete(self, entity_type, entity_id):
         self._validate_entity_type(entity_type)

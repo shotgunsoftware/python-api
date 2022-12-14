@@ -1028,10 +1028,13 @@ class Shotgun(object):
         params[paging_info_param] = True
         records = []
 
+        # limit = 6000
+        # params["entitites x ..."] = 5000
+
         if self.server_caps.ensure_paging_info_without_counts_support():
             has_next_page = True
             while has_next_page:
-                result = self._call_rpc("read", params)
+                result = self._call_rpc("read", params)  # 5000,has_next_page = True
                 records.extend(result.get("entities"))
 
                 if limit and len(records) >= limit:
