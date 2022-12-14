@@ -14,7 +14,7 @@ There are caveats you need to be aware of when creating such an app.
 ********************************
 HTTPS Validation and cacerts.txt
 ********************************
-When creating the connection to Shotgun a file is used to validate the Shotgun certificate. This
+When creating the connection to ShotGrid a file is used to validate the ShotGrid certificate. This
 file is located at ``shotgun_api3/lib/httplib2/cacerts.txt``. Because this file is not a Python
 file imported by your application, py2app will not know to include it in your package, it will
 need to be explicitly specified in your ``setup.py`` file (edit the path based on the location
@@ -31,10 +31,10 @@ following structure::
     ./Contents/Resources/my_script.py
 
 Where in ``my_script.py`` you can access the ``cacerts.txt`` file using a relative path to pass it
-into the Shotgun connection's constructor::
+into the ShotGrid connection's constructor::
 
     ca_certs = os.path.join(os.path.dirname(__file__), 'shotgun_api3', 'cacerts.txt')
-    sg = shotgun_api3.Shotgun('https://yoursite.shotgunstudio.com', 'script_name', 'script_key',
+    sg = shotgun_api3.Shotgun('https://my-site.shotgrid.autodesk.com', 'script_name', 'script_key',
                               ca_certs=ca_certs)
 
 The process for py2exe should be similar.

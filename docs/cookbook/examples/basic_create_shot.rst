@@ -27,7 +27,7 @@ This will create a new Shot named "100_010" in the Project "Gunslinger" (which h
 
 - ``data`` is a list of key/value pairs where the key is the column name to update and the value 
   is the the value to set.
-- ``sg`` is the Shotgun API instance you created in :ref:`example_sg_instance`. 
+- ``sg`` is the ShotGrid API instance you created in :ref:`example_sg_instance`. 
 - ``create()`` is the :meth:`shotgun_api3.Shotgun.create` API method we are calling. We pass in the 
   entity type we're searching for and the data we're setting.
 
@@ -44,11 +44,11 @@ The variable ``result`` now contains a dictionary hash with the Shot information
         'type': 'Shot'
     }
 
-In addition, Shotgun has returned the ``id`` that it has assigned to the Shot, as well as a 
+In addition, ShotGrid has returned the ``id`` that it has assigned to the Shot, as well as a 
 ``type`` value. ``type`` is provided for convenience simply to help you identify what entity type
-this dictionary represents. It does not correspond to any field in Shotgun. 
+this dictionary represents. It does not correspond to any field in ShotGrid. 
 
-Shotgun will *always* return the ``id`` and ``type`` keys in the dictionary when there are results
+ShotGrid will *always* return the ``id`` and ``type`` keys in the dictionary when there are results
 representing an entity.
 
 The Complete Example
@@ -66,8 +66,8 @@ The Complete Example
     # --------------------------------------
     # Globals
     # --------------------------------------
-    # make sure to change this to match your Shotgun server and auth credentials.
-    SERVER_PATH = "https://mystudio.shotgunstudio.com" 
+    # make sure to change this to match your ShotGrid server and auth credentials.
+    SERVER_PATH = "https://my-site.shotgrid.autodesk.com" 
     SCRIPT_NAME = 'my_script'     
     SCRIPT_KEY = '27b65d7063f46b82e670fe807bd2b6f3fd1676c1'
 

@@ -27,7 +27,7 @@ Shotgun()
     :show-inheritance:
 
 ***************
-Shotgun Methods
+ShotGrid Methods
 ***************
 
 The majority of functionality is contained within the :class:`~shotgun_api3.Shotgun` class. 
@@ -91,7 +91,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.followers
     Shotgun.following
 
-.. rubric:: Working with the Shotgun Schema and Preferences
+.. rubric:: Working with the ShotGrid Schema and Preferences
 
 .. autosummary:: 
     :nosignatures:
@@ -109,7 +109,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
 Connection & Authentication
 ===========================
 
-These methods are used for connecting and authenticating with your Shotgun server. Most of 
+These methods are used for connecting and authenticating with your ShotGrid server. Most of 
 this is done automatically when you instantiate your instance. But if you need finer-grain
 control, these methods are available.
 
@@ -161,7 +161,7 @@ Methods that handle uploading and downloading files including thumbnails.
 Activity Stream
 ===============
 
-Methods that relate to the activity stream and following of entities in Shotgun.
+Methods that relate to the activity stream and following of entities in ShotGrid.
 
 .. automethod:: Shotgun.activity_stream_read
 .. automethod:: Shotgun.follow
@@ -169,10 +169,10 @@ Methods that relate to the activity stream and following of entities in Shotgun.
 .. automethod:: Shotgun.followers
 .. automethod:: Shotgun.following
 
-Working with the Shotgun Schema
+Working with the ShotGrid Schema
 ===============================
 
-Methods allow you to introspect and modify the Shotgun schema.
+Methods allow you to introspect and modify the ShotGrid schema.
 
 .. automethod:: Shotgun.schema_entity_read
 .. automethod:: Shotgun.schema_field_read
@@ -187,7 +187,7 @@ Methods allow you to introspect and modify the Shotgun schema.
 Exceptions
 **********
 
-These are the various exceptions that the Shotgun API will raise. 
+These are the various exceptions that the ShotGrid API will raise. 
 
 .. autoclass:: shotgun_api3.ShotgunError
     :show-inheritance:
@@ -471,7 +471,7 @@ Valid Operators By Data Type
 Additional Filter Presets
 =========================
 
-As of Shotgun version 7.0 it is possible to also use filter presets. These presets provide a simple 
+As of ShotGrid version 7.0 it is possible to also use filter presets. These presets provide a simple 
 way to specify powerful query filters that would otherwise be costly and difficult to craft using 
 traditional filters.
 
@@ -626,7 +626,7 @@ date_time
 :range: Year must be >= 1970
 
     .. note::
-        Datetimes are stored as UTC on the server. The Shotgun API is configured to automatically
+        Datetimes are stored as UTC on the server. The ShotGrid API is configured to automatically
         convert between client local time and UTC. This can be overridden.
 
 duration
@@ -818,7 +818,7 @@ There are three possible states for values returned by an ``image`` field:
 .. note::
     Other upcoming features are likely to require the use of other transient thumbnails.
     For this reason, it is highly recommended to use the prefix part of the placeholder path
-    (e.g. https://yoursubdomain.shotgunstudio.com/images/status/transient/)
+    (e.g. https://my-site.shotgrid.autodesk.com/images/status/transient/)
     to detect any transient URLs rather than use the full path of the thumbnail.
 
 .. _event_types:
@@ -827,15 +827,15 @@ There are three possible states for values returned by an ``image`` field:
 Event Types
 ***********
 
-Whenever a user makes a change to any data in Shotgun, an event log entry record is created, 
-capturing the value before and after. Shotgun also logs some additional useful events that help keep 
-track of various activity on your Shotgun instance.
+Whenever a user makes a change to any data in ShotGrid, an event log entry record is created, 
+capturing the value before and after. ShotGrid also logs some additional useful events that help keep 
+track of various activity on your ShotGrid instance.
 
 Event-based Triggers
 ====================
 
 Events are particularlly useful when used in conjunction with a trigger framework like the
-`Shotgun Event Daemon <https://github.com/shotgunsoftware/shotgunEvents>`_. This allows you to 
+`ShotGrid Event Daemon <https://github.com/shotgunsoftware/shotgunEvents>`_. This allows you to 
 write plug-ins that watch for certain types of events and then run code when they occur.
    
 Structure of Event Types
@@ -845,11 +845,11 @@ The basic structure of event types is broken into 3 parts:
 
 ``Application_EntityType_Action``
 
-- ``Application``: Is always "Shotgun" for events automatically created by the Shotgun server. 
-  Other Shotgun products may use their name in here, for example, Toolkit has its own events
+- ``Application``: Is always "Shotgun" for events automatically created by the ShotGrid server. 
+  Other ShotGrid products may use their name in here, for example, Toolkit has its own events
   that it logs and the application portion is identified by "Toolkit". If you decide to use the 
   EventLogEntry entity to log events for your scripts or tools, you would use your tool name here.
-- ``EntityType``: This is the entity type in Shotgun that was acted upon (eg. Shot, Asset, etc.)
+- ``EntityType``: This is the entity type in ShotGrid that was acted upon (eg. Shot, Asset, etc.)
 - ``Action``: The general action that was taken. (eg. New, Change, Retirement, Revival)   
    
 
@@ -867,14 +867,14 @@ deleted, and revived. They follow this pattern:
 Additional Event Types
 ======================
 
-These are _some_ of the additional event types that are logged by Shotgun:
+These are _some_ of the additional event types that are logged by ShotGrid:
  
 - ``Shotgun_Attachment_View``: an Attachment (file) was viewed by a user.
 - ``Shotgun_Reading_Change``: a threaded entity has been marked read or unread. For example, a 
   Note was read by a user. The readings are unique to the entity<->user connection so when a 
   Note is read by user "joe" it may still be unread by user "jane".
-- ``Shotgun_User_Login``: a user logged in to Shotgun.
-- ``Shotgun_User_Logout``: a user logged out of Shotgun. 
+- ``Shotgun_User_Login``: a user logged in to ShotGrid.
+- ``Shotgun_User_Logout``: a user logged out of ShotGrid. 
    
 
 Custom Event Types
@@ -882,10 +882,10 @@ Custom Event Types
 
 Since ``EventLogEntries`` are entities themselves, you can create them using the API just like any 
 other entity type. As mentioned previously, if you'd like to have your scripts or tools log to 
-the Shotgun event log, simply devise a thoughtful naming structure for your event types and 
+the ShotGrid event log, simply devise a thoughtful naming structure for your event types and 
 create the EventLogEntry as needed following the usual methods for creating entities via the API.
 
-Again, other Shotgun products like Toolkit use event logs this way.
+Again, other ShotGrid products like Toolkit use event logs this way.
 
 .. note:: 
     EventLogEntries cannot be updated or deleted (that would defeat the purpose of course).   
@@ -893,13 +893,13 @@ Again, other Shotgun products like Toolkit use event logs this way.
 Performance
 ===========
 
-Event log database tables can get large very quickly. While Shotgun does very well with event logs 
+Event log database tables can get large very quickly. While ShotGrid does very well with event logs 
 that get into the millions of records, there's an inevitable degradation of performance for pages 
 that display them in the web application as well as any API queries for events when they get too 
 big. This volume of events is not the norm, but can be reached if your server expereinces high 
 usage. 
 
-This **does not** mean your Shotgun server performance will suffer in general, just any pages that 
+This **does not** mean your ShotGrid server performance will suffer in general, just any pages that 
 are specifically displaying EventLogEntries in the web application, or API queries on the event
 log that are run. We are always looking for ways to improve this in the future. If you have any
 immediate concerns, please `reach out to our support team <https://developer.shotgridsoftware.com>`_
@@ -928,7 +928,7 @@ In the case that both this environment variable and the config's ``rpc_attempt_i
 Localization
 ************
 
-The Shotgun API offers the ability to return localized display names in the current user's language.
+The ShotGrid API offers the ability to return localized display names in the current user's language.
 Requests made from script/API users are localized in the site settings.
 
 This functionality is currently supported by the methods ``Shotgun.schema_entity_read``, ``Shotgun.schema_field_read``, and ``Shotgun.schema_read``.

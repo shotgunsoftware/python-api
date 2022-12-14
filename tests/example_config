@@ -13,8 +13,8 @@
 
 [SERVER_INFO]
 
-# Full url to the Shotgun server server
-# e.g. http://my-company.shotgunstudio.com
+# Full url to the ShotGrid server server
+# e.g. https://my-site.shotgrid.autodesk.com
 # be careful to not end server_url with a "/", or some tests may fail
 server_url     : http://0.0.0.0:3000
 # script name as key as listed in admin panel for your server
