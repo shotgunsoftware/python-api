@@ -19,7 +19,6 @@ exceptions which are detailed below.
     in ShotGrid and how to interact with them. If that sounds cool too, then read on!
 
 .. versionadded:: 3.0.3
-    Requires ShotGrid Server v2.2.0+
 
 *****************
 Default structure
