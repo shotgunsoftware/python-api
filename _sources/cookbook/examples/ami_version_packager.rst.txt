@@ -20,7 +20,7 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
     """
     version_packager.py
 
-    This example script is meant to be run from an ActionMenuItem in Shotgun. The menu item uses a custom
+    This example script is meant to be run from an ActionMenuItem in ShotGrid. The menu item uses a custom
     protocol in order to launch this script, and is followed by the action 'package4client'. So the full
     url would be something like launchme://package4client?.... See:
     https://developer.shotgridsoftware.com/python-api/cookbook/examples/ami_handler.html
@@ -29,9 +29,9 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
     POST variables. For more information about it and accessing the variables in the ActionMenuItem POST request,
     See: http://developer.shotgridsoftware.com/python-api/examples/ami_handler
 
-    The purpose of this script is to download attachment files from Shotgun, create an archive of them
+    The purpose of this script is to download attachment files from ShotGrid, create an archive of them
     and copy them to a specified directory. You can invoke it with the following minimal example to connect
-    to Shotgun, download any file that exists in the specified field ('sg_qt') for each selected_id passed from the 
+    to ShotGrid, download any file that exists in the specified field ('sg_qt') for each selected_id passed from the 
     ActionMenu. Then it will create a single archive of the files and move it to the specified directory
     ('/path/where/i/want/to/put/the/archive/'). The archive is named with the Project Name, timestamp, and user
     login who ran the ActionMenuItem ('Demo_Project_2010-04-29-172210_kp.tar.gz'):
@@ -59,9 +59,9 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
     # ---------------------------------------------------------------------------------------------
     # Variables
     # ---------------------------------------------------------------------------------------------
-    # Shotgun server auth info
+    # ShotGrid server auth info
     shotgun_conf = {
-        'url':'https://YOURSTUDIO.shotgunstudio.com', 
+        'url':'https://my-site.shotgrid.autodesk.com', 
         'name':'YOUR_SCRIPT_NAME_HERE', 
         'key':'YOUR_SCRIPT_KEY_HERE'
         }
@@ -79,7 +79,7 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
 
 
     # ----------------------------------------------
-    # Generic Shotgun Exception Class
+    # Generic ShotGrid Exception Class
     # ----------------------------------------------
     class ShotgunException(Exception):
         pass
@@ -125,7 +125,7 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
         attachment_id = extract_attachment_id(attachment)
         if type(attachment_id) != int:
             return None
-        # download the attachment file from Shotgun and write it to local disk
+        # download the attachment file from ShotGrid and write it to local disk
         logger.info("Downloading Attachment #%s" % (attachment_id)) 
         stream = sg.download_attachment(attachment_id)
         try:

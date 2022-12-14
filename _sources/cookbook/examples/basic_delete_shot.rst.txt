@@ -3,7 +3,7 @@ Delete A Shot
 
 Calling :meth:`~shotgun_api3.Shotgun.delete`
 --------------------------------------------
-Deleting an entity in Shotgun is pretty straight-forward. No extraneous steps required.::
+Deleting an entity in ShotGrid is pretty straight-forward. No extraneous steps required.::
 
     result = sg.delete("Shot", 40435) 
 
@@ -28,8 +28,8 @@ The Complete Example
     # --------------------------------------
     # Globals
     # --------------------------------------
-    # make sure to change this to match your Shotgun server and auth credentials.
-    SERVER_PATH = "https://mystudio.shotgunstudio.com"
+    # make sure to change this to match your ShotGrid server and auth credentials.
+    SERVER_PATH = "https://my-site.shotgrid.autodesk.com"
     SCRIPT_NAME = 'my_script'     
     SCRIPT_KEY = '27b65d7063f46b82e670fe807bd2b6f3fd1676c1'
 

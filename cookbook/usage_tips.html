@@ -104,7 +104,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#entity-fields">Entity Fields</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#customentities">CustomEntities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#connectionentities">ConnectionEntities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#shotgun-ui-fields-not-available-via-the-api">Shotgun UI fields not available via the API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#shotgrid-ui-fields-not-available-via-the-api">ShotGrid UI fields not available via the API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#humanuser">HumanUser</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shot">Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pipeline-step-summary-fields-on-entities">Pipeline Step summary fields on entities</a></li>
@@ -228,7 +228,7 @@
             
   <div class="section" id="api-usage-tips">
 <h1>API Usage Tips<a class="headerlink" href="#api-usage-tips" title="Permalink to this headline">¶</a></h1>
-<p>Below is a list of helpful tips when using the Shotgun API. We have tried to make the API very
+<p>Below is a list of helpful tips when using the ShotGrid API. We have tried to make the API very
 simple to use with predictable results while remaining a powerful tool to integrate with your
 pipeline. However, there’s always a couple of things that crop up that our users might not be
 aware of. Those are the types of things you’ll find below. We’ll be adding to this document over
@@ -250,7 +250,7 @@ is managed at the module level which may not work as expected if you only import
 </div>
 <div class="section" id="multi-threading">
 <h2>Multi-threading<a class="headerlink" href="#multi-threading" title="Permalink to this headline">¶</a></h2>
-<p>The Shotgun API is not thread-safe. If you want to do threading we strongly suggest that you use
+<p>The ShotGrid API is not thread-safe. If you want to do threading we strongly suggest that you use
 one connection object per thread and not share the connection.</p>
 </div>
 <div class="section" id="entity-fields">
@@ -299,7 +299,7 @@ Something like the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shotgun_api3</span>
 <span class="kn">import</span> <span class="nn">studio_globals</span>
 
-<span class="n">sg</span> <span class="o">=</span> <span class="n">Shotgun</span><span class="p">(</span><span class="s1">&#39;https://mystudio.shotgunstudio.com&#39;</span><span class="p">,</span> <span class="s1">&#39;script_name&#39;</span><span class="p">,</span> <span class="s1">&#39;0123456789abcdef0123456789abcdef0123456&#39;</span><span class="p">)</span>
+<span class="n">sg</span> <span class="o">=</span> <span class="n">Shotgun</span><span class="p">(</span><span class="s1">&#39;https://my-site.shotgrid.autodesk.com&#39;</span><span class="p">,</span> <span class="s1">&#39;script_name&#39;</span><span class="p">,</span> <span class="s1">&#39;0123456789abcdef0123456789abcdef0123456&#39;</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">studio_globals</span><span class="o">.</span><span class="n">ENTITY_WIDGET</span><span class="p">,</span>
                  <span class="n">filters</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;sg_status_list&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;ip&#39;</span><span class="p">]],</span>
                  <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span> <span class="s1">&#39;sg_shot&#39;</span><span class="p">])</span>
@@ -316,7 +316,7 @@ example of a field that resides on the connection entity between Playlists and V
 connection entity is appropriately called <cite>PlaylistVersionConnection</cite>. Because any Version can
 exist in multiple Playlists, the sort order isn’t specific to the Version, it’s specific to
 each _instance_ of the Version in a Playlist. These instances are tracked using connection
-entities in Shtogun and are accessible just like any other entity type in Shotgun.</p>
+entities in Shtogun and are accessible just like any other entity type in ShotGrid.</p>
 <p>To find information about your Versions in the Playlist “Director Review” (let’s say it has an
 <code class="docutils literal notranslate"><span class="pre">id</span></code> of 4). We’d run a query like so:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;playlist&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Playlist&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">}]]</span>
@@ -384,8 +384,8 @@ entities in Shtogun and are accessible just like any other entity type in Shotgu
 entity. The field we are interested on the Version is <code class="docutils literal notranslate"><span class="pre">code</span></code>. Put those together with our f
 riend the dot and we have <code class="docutils literal notranslate"><span class="pre">version.Version.code</span></code>.</p>
 </div>
-<div class="section" id="shotgun-ui-fields-not-available-via-the-api">
-<h2>Shotgun UI fields not available via the API<a class="headerlink" href="#shotgun-ui-fields-not-available-via-the-api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="shotgrid-ui-fields-not-available-via-the-api">
+<h2>ShotGrid UI fields not available via the API<a class="headerlink" href="#shotgrid-ui-fields-not-available-via-the-api" title="Permalink to this headline">¶</a></h2>
 <p>Summary type fields like Query Fields and Pipeline Step summary fields are currently only available
 via the UI. Some other fields may not work as expected through the API because they are “display
 only” fields made available for convenience and are only available in the browser UI.</p>
@@ -443,14 +443,14 @@ automatically set whenever an entity is created or updated.</p>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To write logging output from the shotgun API to a file, define a file handler in your script:</p>
+<p>To write logging output from the ShotGrid API to a file, define a file handler in your script:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">shotgun_api3</span> <span class="k">as</span> <span class="nn">shotgun</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;/path/to/your/log&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To suppress the logging output from the API in a script which uses logging, set the level of the
-Shotgun logger to a higher level:</p>
+ShotGrid logger to a higher level:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">shotgun_api3</span> <span class="k">as</span> <span class="nn">shotgun</span>
 <span class="n">sg_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;shotgun_api3&#39;</span><span class="p">)</span>
@@ -463,7 +463,7 @@ Shotgun logger to a higher level:</p>
 <div class="section" id="combining-related-queries">
 <h3>Combining Related Queries<a class="headerlink" href="#combining-related-queries" title="Permalink to this headline">¶</a></h3>
 <p>Reducing round-trips for data via the API can significantly improve the speed of your application.
-Much like “Bubble Fields” / “Field Hopping” in the UI, we can poll Shotgun for data on the fields
+Much like “Bubble Fields” / “Field Hopping” in the UI, we can poll ShotGrid for data on the fields
 of entities linked to our main query, both as a part of the query parameters as well as in the
 data returned.</p>
 <p>Starting with a simple and common example, many queries require knowing what project your data is

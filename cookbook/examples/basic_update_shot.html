@@ -101,7 +101,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../usage_tips.html">API Usage Tips</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tutorials.html">Examples</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../tutorials.html#basic">Basic</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a Shotgun API instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a ShotGrid API instance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_create_shot.html">Create A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_find_shot.html">Find a Shot</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Update A Shot</a></li>
@@ -240,7 +240,7 @@ update.:</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the field name to update and the value to
 update it to.</li>
-<li><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the Shotgun API instance.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the ShotGrid API instance.</li>
 <li><code class="docutils literal notranslate"><span class="pre">update()</span></code> is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun.update()</span></code> API method we are calling. We provide it
 with the entity type we’re updating, the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the entity, and the data we’re updating it
 with.</li>
@@ -257,10 +257,10 @@ with.</li>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>In addition, Shotgun has returned the <code class="docutils literal notranslate"><span class="pre">id</span></code> for the Shot, as well as a <code class="docutils literal notranslate"><span class="pre">type</span></code> value. <code class="docutils literal notranslate"><span class="pre">type</span></code>
+<p>In addition, ShotGrid has returned the <code class="docutils literal notranslate"><span class="pre">id</span></code> for the Shot, as well as a <code class="docutils literal notranslate"><span class="pre">type</span></code> value. <code class="docutils literal notranslate"><span class="pre">type</span></code>
 is provided for convenience simply to help you identify what entity type this dictionary represents.
-It does not correspond to any field in Shotgun.</p>
-<p>Shotgun will <em>always</em> return the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys in the dictionary when there are results
+It does not correspond to any field in ShotGrid.</p>
+<p>ShotGrid will <em>always</em> return the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys in the dictionary when there are results
 representing an entity.</p>
 </div>
 <div class="section" id="the-complete-example">
@@ -276,8 +276,8 @@ representing an entity.</p>
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Globals</span>
 <span class="c1"># --------------------------------------</span>
-<span class="c1"># make sure to change this to match your Shotgun server and auth credentials.</span>
-<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">&quot;https://mystudio.shotgunstudio.com&quot;</span>
+<span class="c1"># make sure to change this to match your ShotGrid server and auth credentials.</span>
+<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span>
 <span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="s1">&#39;my_script&#39;</span>
 <span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">&#39;27b65d7063f46b82e670fe807bd2b6f3fd1676c1&#39;</span>
 

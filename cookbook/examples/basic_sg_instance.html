@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Create a Shotgun API instance &mdash; python-api v3.3.4 documentation</title>
+  <title>Create a ShotGrid API instance &mdash; python-api v3.3.4 documentation</title>
   
 
   
@@ -101,7 +101,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../usage_tips.html">API Usage Tips</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tutorials.html">Examples</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../tutorials.html#basic">Basic</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Create a Shotgun API instance</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Create a ShotGrid API instance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_create_shot.html">Create A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_find_shot.html">Find a Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_update_shot.html">Update A Shot</a></li>
@@ -205,7 +205,7 @@
         
           <li><a href="../tutorials.html">Examples</a> &raquo;</li>
         
-      <li>Create a Shotgun API instance</li>
+      <li>Create a ShotGrid API instance</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -222,16 +222,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="create-a-shotgun-api-instance">
-<span id="example-sg-instance"></span><h1>Create a Shotgun API instance<a class="headerlink" href="#create-a-shotgun-api-instance" title="Permalink to this headline">¶</a></h1>
-<p>This example shows you how to establish your initial connection to Shotgun using script-based
-authentication. <code class="docutils literal notranslate"><span class="pre">sg</span></code> represents your Shotgun API instance. Be sure you’ve read
-<a class="reference internal" href="../../authentication.html#setting-up-shotgun"><span class="std std-ref">Setting Up Shotgun for API Access</span></a>.</p>
+  <div class="section" id="create-a-shotgrid-api-instance">
+<span id="example-sg-instance"></span><h1>Create a ShotGrid API instance<a class="headerlink" href="#create-a-shotgrid-api-instance" title="Permalink to this headline">¶</a></h1>
+<p>This example shows you how to establish your initial connection to ShotGrid using script-based
+authentication. <code class="docutils literal notranslate"><span class="pre">sg</span></code> represents your ShotGrid API instance. Be sure you’ve read
+<a class="reference internal" href="../../authentication.html#setting-up-shotgun"><span class="std std-ref">Setting Up ShotGrid for API Access</span></a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pprint</span> <span class="c1"># Useful for debugging</span>
 
 <span class="kn">import</span> <span class="nn">shotgun_api3</span>
 
-<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">&quot;https://your_site.shotgunstudio.com&quot;</span>
+<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span>
 <span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="s1">&#39;my_script&#39;</span>
 <span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">&#39;27b65d7063f46b82e670fe807bd2b6f3fd1676c1&#39;</span>
 
@@ -242,7 +242,7 @@ authentication. <code class="docutils literal notranslate"><span class="pre">sg<
 <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">([</span><span class="n">symbol</span> <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">dir</span><span class="p">(</span><span class="n">sg</span><span class="p">))</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">symbol</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)])</span>
 </pre></div>
 </div>
-<p>For further information on what you can do with this Shotgun object you can read the
+<p>For further information on what you can do with this ShotGrid object you can read the
 <a class="reference internal" href="../../reference.html#apireference"><span class="std std-ref">API reference</span></a>.</p>
 </div>
 

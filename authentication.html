@@ -212,11 +212,11 @@
             
   <div class="section" id="authentication">
 <h1>Authentication<a class="headerlink" href="#authentication" title="Permalink to this headline">¶</a></h1>
-<p>In order to communicate with your Shotgun server via the API, you must provide valid authentication credentials. The API allows you to authenticate with user-based, or script-based credentials.</p>
+<p>In order to communicate with your ShotGrid server via the API, you must provide valid authentication credentials. The API allows you to authenticate with user-based, or script-based credentials.</p>
 <div class="section" id="user-based-authentication">
 <h2>User-based Authentication<a class="headerlink" href="#user-based-authentication" title="Permalink to this headline">¶</a></h2>
-<p>When authenticating as a user, you provide your normal login and password when instantiating your <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun</span></code> object. The actions performed by this instance will be limited to your permission level just as they are in the Shotgun web application.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
+<p>When authenticating as a user, you provide your normal login and password when instantiating your <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun</span></code> object. The actions performed by this instance will be limited to your permission level just as they are in the  web application.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span><span class="p">,</span>
                           <span class="n">login</span><span class="o">=</span><span class="s2">&quot;rhendriks&quot;</span><span class="p">,</span>
                           <span class="n">password</span><span class="o">=</span><span class="s2">&quot;c0mPre$Hi0n&quot;</span><span class="p">)</span>
 </pre></div>
@@ -224,21 +224,21 @@
 </div>
 <div class="section" id="script-based-authentication">
 <h2>Script-based Authentication<a class="headerlink" href="#script-based-authentication" title="Permalink to this headline">¶</a></h2>
-<p>In order to authenticate as a script, your script must be <a class="reference internal" href="#setting-up-shotgun"><span class="std std-ref">registered with Shotgun and have a valid API key</span></a>. When creating your <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun</span></code> object, provide the <code class="docutils literal notranslate"><span class="pre">script_name</span></code> and <code class="docutils literal notranslate"><span class="pre">api_key</span></code>.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://piedpiper.shotgunstudio.com&quot;</span><span class="p">,</span>
+<p>In order to authenticate as a script, your script must be <a class="reference internal" href="#setting-up-shotgun"><span class="std std-ref">registered with ShotGrid and have a valid API key</span></a>. When creating your <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun</span></code> object, provide the <code class="docutils literal notranslate"><span class="pre">script_name</span></code> and <code class="docutils literal notranslate"><span class="pre">api_key</span></code>.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span><span class="p">,</span>
                           <span class="n">script_name</span><span class="o">=</span><span class="s2">&quot;compress&quot;</span><span class="p">,</span>
                           <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">When using script-based authentication, we <strong>strongly</strong> recommend you register each script separately with Shotgun and have individual API keys for each. This allows you to track down each of your scripts and the actions they are performing much more accurately in the event logs.</p>
+<p class="last">When using script-based authentication, we <strong>strongly</strong> recommend you register each script separately with ShotGrid and have individual API keys for each. This allows you to track down each of your scripts and the actions they are performing much more accurately in the event logs.</p>
 </div>
 <div class="section" id="adding-script-users">
 <span id="setting-up-shotgun"></span><h3>Adding Script Users<a class="headerlink" href="#adding-script-users" title="Permalink to this headline">¶</a></h3>
-<p>If you’ll be using script-based authentication, you need to create a Script entity in Shotgun. To create a new key, click the + button on the “Scripts” page in the Admin section and give your script a useful name. It’s a good idea to add any other relevant information that be be helpful to your other friendly Shotgun users such as a description of what the script does that is using this key, the email address of the maintainer, etc.:</p>
+<p>If you’ll be using script-based authentication, you need to create a Script entity in ShotGrid. To create a new key, click the + button on the “Scripts” page in the Admin section and give your script a useful name. It’s a good idea to add any other relevant information that be be helpful to your other friendly ShotGrid users such as a description of what the script does that is using this key, the email address of the maintainer, etc.:</p>
 <img alt="_images/scripts_page.png" src="_images/scripts_page.png" />
-<p>Once you save your new Script entity, Shotgun will automatically generate an application key which will act as the script’s password. The key will look something like this: <code class="docutils literal notranslate"><span class="pre">0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef</span></code>.</p>
+<p>Once you save your new Script entity, ShotGrid will automatically generate an application key which will act as the script’s password. The key will look something like this: <code class="docutils literal notranslate"><span class="pre">0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef</span></code>.</p>
 </div>
 <div class="section" id="why-have-different-application-keys-for-different-scripts">
 <h3>Why have different application keys for different scripts?<a class="headerlink" href="#why-have-different-application-keys-for-different-scripts" title="Permalink to this headline">¶</a></h3>
@@ -246,26 +246,26 @@
 </div>
 <div class="section" id="event-logging">
 <h3>Event Logging<a class="headerlink" href="#event-logging" title="Permalink to this headline">¶</a></h3>
-<p>By default, events generated by scripts using an script-based authentication are logged in Shotgun’s event log. You can turn this off by un-checking the “Generate Events” checkbox either in the script detail page or from the main Scripts admin page in Shotgun.</p>
+<p>By default, events generated by scripts using an script-based authentication are logged in ShotGrid’s event log. You can turn this off by un-checking the “Generate Events” checkbox either in the script detail page or from the main Scripts admin page in ShotGrid.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Turning off event logging will also prevent any email notifications from being triggered by your scripts since the email notifier relies on the event log to find events to notify for.</p>
 </div>
-<p>Scripts using user-based authentication will generate events similarly to if you were performing the same actions in the Shotgun web application, though there is some additional metadata stored in the <code class="docutils literal notranslate"><span class="pre">EventLogEntry</span></code> that identifies the event as created from a script acting on behalf of the user.</p>
+<p>Scripts using user-based authentication will generate events similarly to if you were performing the same actions in the ShotGrid web application, though there is some additional metadata stored in the <code class="docutils literal notranslate"><span class="pre">EventLogEntry</span></code> that identifies the event as created from a script acting on behalf of the user.</p>
 <div class="section" id="why-would-you-want-to-turn-event-logging-off-for-scripts">
 <h4>Why would you want to turn event logging off for scripts?<a class="headerlink" href="#why-would-you-want-to-turn-event-logging-off-for-scripts" title="Permalink to this headline">¶</a></h4>
-<p>It is an optimization that is not used often, but some users have integration scripts that are pushing data into Shotgun just for reference, like publishes from their asset management system. This publish data is never changed later, so the data itself has the entire history, and the events would just clutter the event log. The event log can grow very large. So if you have no need to audit the history of what your script does, and it’s generating an large amount of event log entries, you may find it’s not necessary to create these events.</p>
+<p>It is an optimization that is not used often, but some users have integration scripts that are pushing data into ShotGrid just for reference, like publishes from their asset management system. This publish data is never changed later, so the data itself has the entire history, and the events would just clutter the event log. The event log can grow very large. So if you have no need to audit the history of what your script does, and it’s generating an large amount of event log entries, you may find it’s not necessary to create these events.</p>
 </div>
 </div>
 </div>
 <div class="section" id="permissions">
 <h2>Permissions<a class="headerlink" href="#permissions" title="Permalink to this headline">¶</a></h2>
-<p>Users and scripts are both bound by the restrictions of their permission role in Shotgun. The permission role is assigned by the <strong>Permission Role</strong> field for each entity type.</p>
-<p>For Scripts, the default permission role is “API Admin User” which allows full access to create, update, and delete entities and fields, including editing the “date created” audit field and creating event log entries. If you have other permission roles for ApiUsers, you can set the default role that will be assigned when a new script is created, in your Shotgun site preferences.</p>
-<p>When using user-based authentication in your script, it will be bound by the permission role assigned to you in Shotgun. For example, if you don’t have access to edit the status field on Shots, your script won’t be able to either. Attempting to perform actions that are prohibited by permissions will raise an appropriate exception.</p>
+<p>Users and scripts are both bound by the restrictions of their permission role in ShotGrid. The permission role is assigned by the <strong>Permission Role</strong> field for each entity type.</p>
+<p>For Scripts, the default permission role is “API Admin User” which allows full access to create, update, and delete entities and fields, including editing the “date created” audit field and creating event log entries. If you have other permission roles for ApiUsers, you can set the default role that will be assigned when a new script is created, in your ShotGrid site preferences.</p>
+<p>When using user-based authentication in your script, it will be bound by the permission role assigned to you in ShotGrid. For example, if you don’t have access to edit the status field on Shots, your script won’t be able to either. Attempting to perform actions that are prohibited by permissions will raise an appropriate exception.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><a class="reference external" href="https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Administrator_ar_site_configuration_ar_permissions_html">Shotgun Support: Permissions</a></p>
+<p class="last"><a class="reference external" href="https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Administrator_ar_site_configuration_ar_permissions_html">Permissions Documentation</a></p>
 </div>
 </div>
 </div>

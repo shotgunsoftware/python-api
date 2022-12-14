@@ -216,7 +216,7 @@ toolkits like Tk, Qt or others.</p>
 <p>There are caveats you need to be aware of when creating such an app.</p>
 <div class="section" id="https-validation-and-cacerts-txt">
 <h2>HTTPS Validation and cacerts.txt<a class="headerlink" href="#https-validation-and-cacerts-txt" title="Permalink to this headline">¶</a></h2>
-<p>When creating the connection to Shotgun a file is used to validate the Shotgun certificate. This
+<p>When creating the connection to ShotGrid a file is used to validate the ShotGrid certificate. This
 file is located at <code class="docutils literal notranslate"><span class="pre">shotgun_api3/lib/httplib2/cacerts.txt</span></code>. Because this file is not a Python
 file imported by your application, py2app will not know to include it in your package, it will
 need to be explicitly specified in your <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file (edit the path based on the location
@@ -233,9 +233,9 @@ following structure:</p>
 </pre></div>
 </div>
 <p>Where in <code class="docutils literal notranslate"><span class="pre">my_script.py</span></code> you can access the <code class="docutils literal notranslate"><span class="pre">cacerts.txt</span></code> file using a relative path to pass it
-into the Shotgun connection’s constructor:</p>
+into the ShotGrid connection’s constructor:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ca_certs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;shotgun_api3&#39;</span><span class="p">,</span> <span class="s1">&#39;cacerts.txt&#39;</span><span class="p">)</span>
-<span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s1">&#39;https://yoursite.shotgunstudio.com&#39;</span><span class="p">,</span> <span class="s1">&#39;script_name&#39;</span><span class="p">,</span> <span class="s1">&#39;script_key&#39;</span><span class="p">,</span>
+<span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s1">&#39;https://my-site.shotgrid.autodesk.com&#39;</span><span class="p">,</span> <span class="s1">&#39;script_name&#39;</span><span class="p">,</span> <span class="s1">&#39;script_key&#39;</span><span class="p">,</span>
                           <span class="n">ca_certs</span><span class="o">=</span><span class="n">ca_certs</span><span class="p">)</span>
 </pre></div>
 </div>

@@ -230,25 +230,25 @@
             
   <div class="section" id="details-about-working-with-files">
 <span id="attachments"></span><h1>Details About Working With Files<a class="headerlink" href="#details-about-working-with-files" title="Permalink to this headline">¶</a></h1>
-<p>The Shotgun web application stores Files as Attachment entities. You can see these on a Files page,
+<p>The ShotGrid web application stores Files as Attachment entities. You can see these on a Files page,
 or a Files tab on a detail page, for example. You can access Attachments via the API to create and
 modify uploaded files, url links, and local files, and link them to other entities (Shots,
-Versions, etc). This entity works a lot like other entity types within Shotgun with a few
+Versions, etc). This entity works a lot like other entity types within ShotGrid with a few
 exceptions which are detailed below.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>If you are simply looking for information about how to upload and link things in Shotgun, this
+<p>If you are simply looking for information about how to upload and link things in ShotGrid, this
 doc is not for you. Instead look at the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code> and
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code> methods.</p>
 <p class="last">This doc describes the detailed structure of the Attachment entities that represent files
-in Shotgun and how to interact with them. If that sounds cool too, then read on!</p>
+in ShotGrid and how to interact with them. If that sounds cool too, then read on!</p>
 </div>
 <div class="versionadded">
-<p><span class="versionmodified">New in version 3.0.3: </span>Requires Shotgun Server v2.2.0+</p>
+<p><span class="versionmodified">New in version 3.0.3: </span>Requires ShotGrid Server v2.2.0+</p>
 </div>
 <div class="section" id="default-structure">
 <h2>Default structure<a class="headerlink" href="#default-structure" title="Permalink to this headline">¶</a></h2>
-<p>The following is a list of the default fields that Shotgun creates for Attachments. Your server
+<p>The following is a list of the default fields that ShotGrid creates for Attachments. Your server
 instance may look slightly different depending on your own customizations. Many of these fields are
 optional and some are automatically filled in. These exceptions are listed below in the
 descriptions of each field.</p>
@@ -280,7 +280,7 @@ the size of the file in bytes.</dd>
 </li>
 <li><dl class="first docutils">
 <dt><strong>id</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt>
-<dd>The internal Shotgun id for this Attachment entity.</dd>
+<dd>The internal ShotGrid id for this Attachment entity.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
@@ -324,7 +324,7 @@ reference.</dd>
 </li>
 <li><dl class="first docutils">
 <dt><strong>image</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
-<dd>The url location of the thumbnail image assigned to this Attachment. For uploads, Shotgun
+<dd>The url location of the thumbnail image assigned to this Attachment. For uploads, ShotGrid
 automatically tries to create a thumbnail from the file.
 See <a class="reference internal" href="../reference.html#interpreting-image-field-strings"><span class="std std-ref">Interpreting Image Field Strings</span></a>. Alternatively, you can assign your
 own thumbnail to an Attachment using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code> method.</dd>
@@ -349,13 +349,13 @@ will vary.</p>
 <ul>
 <li><dl class="first docutils">
 <dt><strong>Uploads</strong></dt>
-<dd><p class="first">Designated by <code class="docutils literal notranslate"><span class="pre">link_type:</span> <span class="pre">'upload'</span></code>, this represents a file that was uploaded to Shotgun.
-Uploading files to Shotgun can be done using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code> method.
+<dd><p class="first">Designated by <code class="docutils literal notranslate"><span class="pre">link_type:</span> <span class="pre">'upload'</span></code>, this represents a file that was uploaded to ShotGrid.
+Uploading files to ShotGrid can be done using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code> method.
 You cannot create an Attachment with an uploaded file directly.</p>
 <div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;image/jpeg&#39;</span><span class="p">,</span>
  <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;upload&#39;</span><span class="p">,</span>
  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;western1FULL.jpg&#39;</span><span class="p">,</span>
- <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://superdeathcarracer.shotgunstudio.com/file_serve/attachment/538&#39;</span><span class="p">}</span>
+ <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://my-site.shotgrid.autodesk.com/file_serve/attachment/538&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
 </dd>
@@ -434,23 +434,23 @@ it does, immediately retrying to upload usually works.</p>
 <h2>Updating Attachments<a class="headerlink" href="#updating-attachments" title="Permalink to this headline">¶</a></h2>
 <p>You cannot modify the <code class="docutils literal notranslate"><span class="pre">this_file</span></code> field after you create an Attachment. If you need to provide a
 different file, you will have to create a new Attachment entity. Otherwise, the process for
-updating Attachments is exactly like updating other entity types in Shotgun and is the same for all
+updating Attachments is exactly like updating other entity types in ShotGrid and is the same for all
 Attachment types. See <code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code> for more info.</p>
 </div>
 <div class="section" id="deleting-attachments">
 <h2>Deleting Attachments<a class="headerlink" href="#deleting-attachments" title="Permalink to this headline">¶</a></h2>
-<p>The process of deleting an Attachment is just like other entities in Shotgun. See
+<p>The process of deleting an Attachment is just like other entities in ShotGrid. See
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">delete()</span></code> for more info.</p>
 </div>
 <div class="section" id="working-with-local-file-types">
 <span id="id1"></span><h2>Working With Local File Types<a class="headerlink" href="#working-with-local-file-types" title="Permalink to this headline">¶</a></h2>
-<p>We added support for linking to local files in the UI in Shotgun Server v2.1. This doc covers how
+<p>We added support for linking to local files in the UI in ShotGrid Server v2.1. This doc covers how
 to work with these local file links using the API.</p>
 <div class="section" id="requirements">
 <h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Python API v3.0.3+</li>
-<li>Shotgun Server v2.1.10+</li>
+<li>ShotGrid Server v2.1.10+</li>
 </ul>
 </div>
 <div class="section" id="structure-of-local-file-values">
@@ -545,7 +545,7 @@ if there was no Windows path set for the local storage, <code class="docutils li
 </div>
 <div class="section" id="creating-updating-local-file-fields">
 <span id="creating-local-files"></span><h3>Creating &amp; Updating Local file Fields<a class="headerlink" href="#creating-updating-local-file-fields" title="Permalink to this headline">¶</a></h3>
-<p>When setting a file/link field value to a local file, only the <code class="docutils literal notranslate"><span class="pre">local_path</span></code> is mandatory. Shotgun
+<p>When setting a file/link field value to a local file, only the <code class="docutils literal notranslate"><span class="pre">local_path</span></code> is mandatory. ShotGrid
 will automatically select the appropriate matching local storage for your file based on the path.
 You can optionally specify the <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">content_type</span></code> fields if you wish to override their
 defaults. Any other keys that are provided will be ignored.</p>
@@ -563,7 +563,7 @@ using a best-guess based on the file extension.</dd>
 </li>
 <li><dl class="first docutils">
 <dt><strong>local_path</strong> <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt>
-<dd>The full local path to the file. Shotgun will find the LocalStorage
+<dd>The full local path to the file. ShotGrid will find the LocalStorage
 that has the most specific match to this path and automatically assign that LocalStorage to
 the file.</dd>
 </dl>
@@ -590,7 +590,7 @@ the file.</dd>
  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">}]</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">content_type</span></code> was assigned a best-guess value based on the file extension. Shotgun selected
+<p>The <code class="docutils literal notranslate"><span class="pre">content_type</span></code> was assigned a best-guess value based on the file extension. ShotGrid selected
 the most appropriate specific LocalStorage match and assigned it to local_storage automatically.</p>
 </div>
 <div class="section" id="un-setting-local-file-field-values">

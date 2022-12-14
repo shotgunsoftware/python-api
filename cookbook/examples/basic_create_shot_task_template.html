@@ -101,7 +101,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../usage_tips.html">API Usage Tips</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tutorials.html">Examples</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../tutorials.html#basic">Basic</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a Shotgun API instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a ShotGrid API instance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_create_shot.html">Create A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_find_shot.html">Find a Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_update_shot.html">Update A Shot</a></li>
@@ -224,7 +224,7 @@
             
   <div class="section" id="create-a-shot-with-a-task-template">
 <h1>Create a Shot with a Task Template<a class="headerlink" href="#create-a-shot-with-a-task-template" title="Permalink to this headline">¶</a></h1>
-<p>Creating a new Shot with a Task Template is just like linking it to another entity, but Shotgun will apply the Task Template in the background and create the appropriate Tasks on the Shot for you.</p>
+<p>Creating a new Shot with a Task Template is just like linking it to another entity, but ShotGrid will apply the Task Template in the background and create the appropriate Tasks on the Shot for you.</p>
 <div class="section" id="find-the-task-template">
 <h2>Find the Task Template<a class="headerlink" href="#find-the-task-template" title="Permalink to this headline">¶</a></h2>
 <p>First we need to find the Task Template we’re going to apply. We’ll assume you know the name of the Task Template you want to use.</p>
@@ -252,7 +252,7 @@ variable:</p>
 </pre></div>
 </div>
 <p>This will create a new Shot named “100_010” linked to the TaskTemplate “3D Shot Template” and
-Shotgun will then create the Tasks defined in the template and link them to the Shot you just
+ShotGrid will then create the Tasks defined in the template and link them to the Shot you just
 created.</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value is
@@ -287,7 +287,7 @@ previous block by searching</li>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">You can use an entity dictionary that was returned from the API in a filter as we have
-done above. Shotgun will only look at the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys and will ignore the rest.
+done above. ShotGrid will only look at the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys and will ignore the rest.
 This is a handy way to pass around entity dictionaries without having to reformat them.</p>
 </div>
 <p>Now the <code class="docutils literal notranslate"><span class="pre">tasks</span></code> variable contains the following:</p>

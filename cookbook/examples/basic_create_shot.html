@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Find a Shot" href="basic_find_shot.html" />
-    <link rel="prev" title="Create a Shotgun API instance" href="basic_sg_instance.html" /> 
+    <link rel="prev" title="Create a ShotGrid API instance" href="basic_sg_instance.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -101,7 +101,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../usage_tips.html">API Usage Tips</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tutorials.html">Examples</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../tutorials.html#basic">Basic</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a Shotgun API instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a ShotGrid API instance</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Create A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_find_shot.html">Find a Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_update_shot.html">Update A Shot</a></li>
@@ -247,7 +247,7 @@
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value
 is the the value to set.</li>
-<li><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the Shotgun API instance you created in <a class="reference internal" href="basic_sg_instance.html#example-sg-instance"><span class="std std-ref">Create a Shotgun API instance</span></a>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the ShotGrid API instance you created in <a class="reference internal" href="basic_sg_instance.html#example-sg-instance"><span class="std std-ref">Create a ShotGrid API instance</span></a>.</li>
 <li><code class="docutils literal notranslate"><span class="pre">create()</span></code> is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun.create()</span></code> API method we are calling. We pass in the
 entity type we’re searching for and the data we’re setting.</li>
 </ul>
@@ -263,10 +263,10 @@ entity type we’re searching for and the data we’re setting.</li>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>In addition, Shotgun has returned the <code class="docutils literal notranslate"><span class="pre">id</span></code> that it has assigned to the Shot, as well as a
+<p>In addition, ShotGrid has returned the <code class="docutils literal notranslate"><span class="pre">id</span></code> that it has assigned to the Shot, as well as a
 <code class="docutils literal notranslate"><span class="pre">type</span></code> value. <code class="docutils literal notranslate"><span class="pre">type</span></code> is provided for convenience simply to help you identify what entity type
-this dictionary represents. It does not correspond to any field in Shotgun.</p>
-<p>Shotgun will <em>always</em> return the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys in the dictionary when there are results
+this dictionary represents. It does not correspond to any field in ShotGrid.</p>
+<p>ShotGrid will <em>always</em> return the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys in the dictionary when there are results
 representing an entity.</p>
 </div>
 <div class="section" id="the-complete-example">
@@ -282,8 +282,8 @@ representing an entity.</p>
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Globals</span>
 <span class="c1"># --------------------------------------</span>
-<span class="c1"># make sure to change this to match your Shotgun server and auth credentials.</span>
-<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">&quot;https://mystudio.shotgunstudio.com&quot;</span>
+<span class="c1"># make sure to change this to match your ShotGrid server and auth credentials.</span>
+<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span>
 <span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="s1">&#39;my_script&#39;</span>
 <span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">&#39;27b65d7063f46b82e670fe807bd2b6f3fd1676c1&#39;</span>
 
@@ -332,7 +332,7 @@ representing an entity.</p>
         <a href="basic_find_shot.html" class="btn btn-neutral float-right" title="Find a Shot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="basic_sg_instance.html" class="btn btn-neutral float-left" title="Create a Shotgun API instance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="basic_sg_instance.html" class="btn btn-neutral float-left" title="Create a ShotGrid API instance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

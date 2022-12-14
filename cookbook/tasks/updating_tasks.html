@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Updating Task Dates: How Shotgun Thinks &mdash; python-api v3.3.4 documentation</title>
+  <title>Updating Task Dates: How ShotGrid Thinks &mdash; python-api v3.3.4 documentation</title>
   
 
   
@@ -102,7 +102,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials.html">Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../attachments.html">Details About Working With Files</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tasks.html">Working With Tasks</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Updating Task Dates: How Shotgun Thinks</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Updating Task Dates: How ShotGrid Thinks</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#general-rules">General Rules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
@@ -200,7 +200,7 @@
         
           <li><a href="../tasks.html">Working With Tasks</a> &raquo;</li>
         
-      <li>Updating Task Dates: How Shotgun Thinks</li>
+      <li>Updating Task Dates: How ShotGrid Thinks</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -217,10 +217,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="updating-task-dates-how-shotgun-thinks">
-<span id="updating-tasks"></span><h1>Updating Task Dates: How Shotgun Thinks<a class="headerlink" href="#updating-task-dates-how-shotgun-thinks" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="updating-task-dates-how-shotgrid-thinks">
+<span id="updating-tasks"></span><h1>Updating Task Dates: How ShotGrid Thinks<a class="headerlink" href="#updating-task-dates-how-shotgrid-thinks" title="Permalink to this headline">¶</a></h1>
 <p>When updating Task dates in an API update() request, there is no specified order to the values that
-are passed in. Shotgun also does automatic calculation of the``start_date``,``due_date``, and <code class="docutils literal notranslate"><span class="pre">duration</span></code> fields for convenience. In order to clarify how updates are handled by Shotgun we are
+are passed in. ShotGrid also does automatic calculation of the``start_date``,``due_date``, and <code class="docutils literal notranslate"><span class="pre">duration</span></code> fields for convenience. In order to clarify how updates are handled by ShotGrid we are
 providing some general rules below and examples of what will happen when you make updates to your
 Tasks.</p>
 <div class="section" id="general-rules">
@@ -229,12 +229,12 @@ Tasks.</p>
 <li>Updating the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> automatically updates the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> (<code class="docutils literal notranslate"><span class="pre">duration</span></code> remains constant)</li>
 <li>Updating the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> automatically updates the <code class="docutils literal notranslate"><span class="pre">duration</span></code> (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> remains constant)</li>
 <li>Updating the <code class="docutils literal notranslate"><span class="pre">duration</span></code> automatically updates the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> remains constant)</li>
-<li>When updating Task values, Shotgun sets schedule fields (<code class="docutils literal notranslate"><span class="pre">milestone</span></code>, <code class="docutils literal notranslate"><span class="pre">duration</span></code>,
+<li>When updating Task values, ShotGrid sets schedule fields (<code class="docutils literal notranslate"><span class="pre">milestone</span></code>, <code class="docutils literal notranslate"><span class="pre">duration</span></code>,
 <code class="docutils literal notranslate"><span class="pre">start_date</span></code>, <code class="docutils literal notranslate"><span class="pre">due_date</span></code>) after all other fields, because the Project and Task Assignees
 affect schedule calculations.</li>
 <li>If <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">due_date</span></code> are both set, <code class="docutils literal notranslate"><span class="pre">duration</span></code> is ignored (<code class="docutils literal notranslate"><span class="pre">duration</span></code> can often
 be wrong since it’s easy to calculate scheduling incorrectly).</li>
-<li>If both <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">due_date</span></code> are provided, Shotgun sets <code class="docutils literal notranslate"><span class="pre">start_date</span></code> before
+<li>If both <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">due_date</span></code> are provided, ShotGrid sets <code class="docutils literal notranslate"><span class="pre">start_date</span></code> before
 <code class="docutils literal notranslate"><span class="pre">due_date</span></code>.</li>
 <li>Set <code class="docutils literal notranslate"><span class="pre">milestone</span></code> before other schedule fields (because <code class="docutils literal notranslate"><span class="pre">start_date</span></code>, <code class="docutils literal notranslate"><span class="pre">due_date</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">duration</span></code> get lost if <code class="docutils literal notranslate"><span class="pre">milestone</span></code> is not set to <code class="docutils literal notranslate"><span class="pre">False</span></code> first)</li>
@@ -250,7 +250,7 @@ set).</li>
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>The following examples show what the resulting Task object will look like after being run on the
 initial Task object listed under the header of each section.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">duration</span></code> values in the following examples assume your Shotgun instance is set to
+<p>The <code class="docutils literal notranslate"><span class="pre">duration</span></code> values in the following examples assume your ShotGrid instance is set to
 10-hour work days. If your server is configured with a different setting, the <code class="docutils literal notranslate"><span class="pre">duration</span></code> values
 will vary.</p>
 <div class="admonition note">

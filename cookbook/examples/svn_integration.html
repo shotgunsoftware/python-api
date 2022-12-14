@@ -219,10 +219,10 @@
             
   <div class="section" id="subversion-svn-integration">
 <span id="svn-integration"></span><h1>Subversion (SVN) Integration<a class="headerlink" href="#subversion-svn-integration" title="Permalink to this headline">¶</a></h1>
-<p>Integrating Shotgun with Subversion consists of two basic parts:</p>
+<p>Integrating ShotGrid with Subversion consists of two basic parts:</p>
 <ul class="simple">
 <li>Setup a post-commit hook in Subversion.</li>
-<li>Create a Shotgun API script to create the Revision in Shotgun. This script will be called by
+<li>Create a ShotGrid API script to create the Revision in ShotGrid. This script will be called by
 the post-commit hook.</li>
 </ul>
 <div class="section" id="post-commit-hook">
@@ -234,7 +234,7 @@ repository directory.  This is a template script that has lots of useful comment
 as a starting point for the real thing.</li>
 <li>Create your very own executable script, and save it in the same <code class="docutils literal notranslate"><span class="pre">hooks</span></code> folder, name it
 <code class="docutils literal notranslate"><span class="pre">post-commit</span></code>, and give it executable permission.</li>
-<li>In your <code class="docutils literal notranslate"><span class="pre">post-commit</span></code> script, invoke your Shotgun API script.</li>
+<li>In your <code class="docutils literal notranslate"><span class="pre">post-commit</span></code> script, invoke your ShotGrid API script.</li>
 </ul>
 <p>If this is entirely new to you, we highly suggest reading up on the topic. O’Reilly has <a class="reference external" href="http://svnbook.red-bean.com/nightly/en/svn.reposadmin.create.html#svn.reposadmin.create.hooks">a free
 online guide for Subversion 1.5 and 1.6</a></p>
@@ -272,14 +272,14 @@ environment:  <code class="docutils literal notranslate"><span class="pre">AUTHO
 our <code class="docutils literal notranslate"><span class="pre">REPOS</span></code> and <code class="docutils literal notranslate"><span class="pre">REV</span></code> values, first with the <code class="docutils literal notranslate"><span class="pre">author</span></code>, and then with <code class="docutils literal notranslate"><span class="pre">log</span></code> subcommand.
 These are actually the first two original lines of code - everything else to this point was
 pre-written already in the <code class="docutils literal notranslate"><span class="pre">post-commit.tmpl</span></code> file. nice :)</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">10</span></code>: This is the absolute path to our Shotgun API Script.</li>
+<li>line <code class="docutils literal notranslate"><span class="pre">10</span></code>: This is the absolute path to our ShotGrid API Script.</li>
 </ul>
 </div>
 </div>
-<div class="section" id="shotgun-api-script">
-<h2>Shotgun API Script<a class="headerlink" href="#shotgun-api-script" title="Permalink to this headline">¶</a></h2>
-<p>This script will create the Revision and populate it with some metadata using the Shotgun Python
-API. It will create our Revision in Shotgun along with the author, comment, and because we use
+<div class="section" id="shotgrid-api-script">
+<h2>ShotGrid API Script<a class="headerlink" href="#shotgrid-api-script" title="Permalink to this headline">¶</a></h2>
+<p>This script will create the Revision and populate it with some metadata using the ShotGrid Python
+API. It will create our Revision in ShotGrid along with the author, comment, and because we use
 Trac (a web-based interface for Subversion), it will also populate a URL field with a clickable
 link to the Revision.</p>
 <div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
@@ -346,7 +346,7 @@ link to the Revision.</p>
  <span class="c1"># ---------------------------------------------------------------------------------------------</span>
  <span class="c1"># Globals - update all of these values to those of your studio</span>
  <span class="c1"># ---------------------------------------------------------------------------------------------</span>
- <span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s1">&#39;https ://studio_name.shotgunstudio.com&#39;</span> <span class="c1"># or http:</span>
+ <span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s1">&#39;https ://my-site.shotgrid.autodesk.com&#39;</span> <span class="c1"># or http:</span>
  <span class="n">SCRIPT_USER</span> <span class="o">=</span> <span class="s1">&#39;script_name&#39;</span>
  <span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">&#39;3333333333333333333333333333333333333333&#39;</span>
  <span class="n">REVISIONS_PATH</span> <span class="o">=</span> <span class="s1">&#39;https ://serveraddress/trac/changeset/&#39;</span> <span class="c1"># or other web-based UI</span>
@@ -368,7 +368,7 @@ link to the Revision.</p>
     <span class="c1"># Set the Trac path for this specific revision</span>
     <span class="n">revision_url</span> <span class="o">=</span> <span class="n">REVISIONS_PATH</span> <span class="o">+</span> <span class="n">revision_code</span>
 
-    <span class="c1"># Validate that author is a valid Shotgun HumanUser</span>
+    <span class="c1"># Validate that author is a valid ShotGrid HumanUser</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s2">&quot;HumanUser&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">author</span><span class="p">]])</span>
     <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
         <span class="c1"># Create Revision</span>
@@ -384,32 +384,32 @@ link to the Revision.</p>
 
     <span class="c1"># Send error message if valid HumanUser is not found</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unable to find valid Shotgun User with login: &quot;</span><span class="o">+</span><span class="n">author</span><span class="o">+</span><span class="s2">&quot;, Revision not created in Shotgun.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unable to find valid ShotGrid User with login: &quot;</span><span class="o">+</span><span class="n">author</span><span class="o">+</span><span class="s2">&quot;, Revision not created in ShotGrid.&quot;</span><span class="p">)</span>
 </pre></div></td></tr></table></div>
 </div>
 <div class="section" id="id1">
 <h3>Explanation of selected lines:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>line <code class="docutils literal notranslate"><span class="pre">14</span></code>: This should be the URL to your instance of Shotgun.</li>
+<li>line <code class="docutils literal notranslate"><span class="pre">14</span></code>: This should be the URL to your instance of ShotGrid.</li>
 <li>lines <code class="docutils literal notranslate"><span class="pre">15-16</span></code>: Make sure you get these values from the “Scripts” page in the Admin section of
-the Shotgun web application. If you’re not sure how to do this, check out <a class="reference external" href="https://developer.shotgridsoftware.com/python-api/authentication.html" title="(in python-api vmaster)"><span>Authentication</span></a>.</li>
+the ShotGrid web application. If you’re not sure how to do this, check out <a class="reference external" href="https://developer.shotgridsoftware.com/python-api/authentication.html" title="(in python-api vv3.3.4)"><span>Authentication</span></a>.</li>
 <li>line <code class="docutils literal notranslate"><span class="pre">17</span></code>: This is the address of Trac, our web-based interface that we use with Subversion.
 You may use a different interface, or none at all, so feel free to adjust this line or ignore it
 as your case may be.</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">18</span></code>: Every Revision in Shotgun must have a Project, which is passed to the API as a
+<li>line <code class="docutils literal notranslate"><span class="pre">18</span></code>: Every Revision in ShotGrid must have a Project, which is passed to the API as a
 dictionary with two keys, the <code class="docutils literal notranslate"><span class="pre">type</span></code> and the <code class="docutils literal notranslate"><span class="pre">id</span></code>.  Of course the <code class="docutils literal notranslate"><span class="pre">type</span></code> value will always
 remain <code class="docutils literal notranslate"><span class="pre">Project</span></code> (case sensitive), but the <code class="docutils literal notranslate"><span class="pre">id</span></code> will change by Project.  To find out the
-<code class="docutils literal notranslate"><span class="pre">id</span></code> of your Project, go to the Projects page in the Shotgun web application, locate the
+<code class="docutils literal notranslate"><span class="pre">id</span></code> of your Project, go to the Projects page in the ShotGrid web application, locate the
 Project where you want your Revisions created, and then locate its <code class="docutils literal notranslate"><span class="pre">id</span></code> field (which you may
 need to display - if you don’t see it, right click on any column header then select
 “Insert Column” &gt; “Id”).  Note that for this example we assume that all Revisions in this
 Subversion repository will belong to the same Project.</li>
 <li>lines <code class="docutils literal notranslate"><span class="pre">28-31</span></code>: Grab the values from the objects that were left for us in the environment.</li>
 <li>line <code class="docutils literal notranslate"><span class="pre">34</span></code>: Add the Revision number to complete the path of our Trac url.</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">37</span></code>: Make sure that a valid User exists in Shotgun.  In our example, we assume that our
-Users’ Shotgun logins match their Subversion names.  If the user exists in Shotgun, that
+<li>line <code class="docutils literal notranslate"><span class="pre">37</span></code>: Make sure that a valid User exists in ShotGrid.  In our example, we assume that our
+Users’ ShotGrid logins match their Subversion names.  If the user exists in ShotGrid, that
 user’s <code class="docutils literal notranslate"><span class="pre">id</span></code> will be returned as <code class="docutils literal notranslate"><span class="pre">result['id']</span></code>, which we will need later on in line 46.</li>
-<li>lines <code class="docutils literal notranslate"><span class="pre">40-48</span></code>: Use all the meta data we’ve gathered to create a Revision in Shotgun. If none
+<li>lines <code class="docutils literal notranslate"><span class="pre">40-48</span></code>: Use all the meta data we’ve gathered to create a Revision in ShotGrid. If none
 of these lines make any sense, check out more on the <code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code> method
 here.   Line 41 deserves special mention: notice that we define a dictionary called <code class="docutils literal notranslate"><span class="pre">url</span></code> that
 has three important keys: <code class="docutils literal notranslate"><span class="pre">content_type</span></code>, <code class="docutils literal notranslate"><span class="pre">url</span></code>, and <code class="docutils literal notranslate"><span class="pre">name</span></code>, and we then pass this in as
@@ -425,8 +425,8 @@ double check the syntax and requirements for the different field types here.</li
 <p>Make sure that the script is has explicitly been made executable and that all users who will
 invoke it have appropriate permissions for the script and that folders going back to root.</p>
 </div>
-<div class="section" id="my-shotgun-api-script-is-not-getting-called-by-the-post-commit-hook">
-<h3>My Shotgun API script is not getting called by the post-commit hook.<a class="headerlink" href="#my-shotgun-api-script-is-not-getting-called-by-the-post-commit-hook" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="my-shotgrid-api-script-is-not-getting-called-by-the-post-commit-hook">
+<h3>My ShotGrid API script is not getting called by the post-commit hook.<a class="headerlink" href="#my-shotgrid-api-script-is-not-getting-called-by-the-post-commit-hook" title="Permalink to this headline">¶</a></h3>
 <p>Make sure that the script is called using its absolute path.</p>
 </div>
 </div>

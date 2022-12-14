@@ -4,27 +4,27 @@
 Details About Working With Files
 ################################
 
-The Shotgun web application stores Files as Attachment entities. You can see these on a Files page,
+The ShotGrid web application stores Files as Attachment entities. You can see these on a Files page,
 or a Files tab on a detail page, for example. You can access Attachments via the API to create and
 modify uploaded files, url links, and local files, and link them to other entities (Shots,
-Versions, etc). This entity works a lot like other entity types within Shotgun with a few
+Versions, etc). This entity works a lot like other entity types within ShotGrid with a few
 exceptions which are detailed below.
 
 .. note::
-    If you are simply looking for information about how to upload and link things in Shotgun, this
+    If you are simply looking for information about how to upload and link things in ShotGrid, this
     doc is not for you. Instead look at the :meth:`~shotgun_api3.Shotgun.upload` and
     :meth:`~shotgun_api3.Shotgun.upload_thumbnail` methods.
 
     This doc describes the detailed structure of the Attachment entities that represent files
-    in Shotgun and how to interact with them. If that sounds cool too, then read on!
+    in ShotGrid and how to interact with them. If that sounds cool too, then read on!
 
 .. versionadded:: 3.0.3
-    Requires Shotgun Server v2.2.0+
+    Requires ShotGrid Server v2.2.0+
 
 *****************
 Default structure
 *****************
-The following is a list of the default fields that Shotgun creates for Attachments. Your server
+The following is a list of the default fields that ShotGrid creates for Attachments. Your server
 instance may look slightly different depending on your own customizations. Many of these fields are
 optional and some are automatically filled in. These exceptions are listed below in the
 descriptions of each field.
@@ -47,7 +47,7 @@ descriptions of each field.
     the size of the file in bytes.
 
 - **id** (:obj:`int`):
-    The internal Shotgun id for this Attachment entity.
+    The internal ShotGrid id for this Attachment entity.
 
 - **attachment_links** (:obj:`list`):
     A list of entity dictionaries used for linking Attachments to multiple entities.
@@ -75,7 +75,7 @@ descriptions of each field.
     List of tags (as strings) that are currently assigned to the Attachment.
 
 - **image** (:obj:`str`):
-    The url location of the thumbnail image assigned to this Attachment. For uploads, Shotgun
+    The url location of the thumbnail image assigned to this Attachment. For uploads, ShotGrid
     automatically tries to create a thumbnail from the file.
     See :ref:`interpreting_image_field_strings`. Alternatively, you can assign your
     own thumbnail to an Attachment using the :meth:`~shotgun_api3.Shotgun.upload_thumbnail` method.
@@ -95,8 +95,8 @@ Depending on the type of file the Attachment entity is representing, the value o
 will vary.
 
 - **Uploads**
-    Designated by ``link_type: 'upload'``, this represents a file that was uploaded to Shotgun.
-    Uploading files to Shotgun can be done using the :meth:`~shotgun_api3.Shotgun.upload` method.
+    Designated by ``link_type: 'upload'``, this represents a file that was uploaded to ShotGrid.
+    Uploading files to ShotGrid can be done using the :meth:`~shotgun_api3.Shotgun.upload` method.
     You cannot create an Attachment with an uploaded file directly.
 
     ::
@@ -104,7 +104,7 @@ will vary.
       {'content_type': 'image/jpeg',
        'link_type': 'upload',
        'name': 'western1FULL.jpg',
-       'url': 'https://superdeathcarracer.shotgunstudio.com/file_serve/attachment/538'}
+       'url': 'https://my-site.shotgrid.autodesk.com/file_serve/attachment/538'}
 
 - **Web links**
     Designated by ``link_type: 'web'``, this is represents a url link. Examples include an
@@ -175,14 +175,14 @@ Updating Attachments
 ********************
 You cannot modify the ``this_file`` field after you create an Attachment. If you need to provide a
 different file, you will have to create a new Attachment entity. Otherwise, the process for
-updating Attachments is exactly like updating other entity types in Shotgun and is the same for all
+updating Attachments is exactly like updating other entity types in ShotGrid and is the same for all
 Attachment types. See :meth:`~shotgun_api3.Shotgun.update` for more info.
 
 
 ********************
 Deleting Attachments
 ********************
-The process of deleting an Attachment is just like other entities in Shotgun. See
+The process of deleting an Attachment is just like other entities in ShotGrid. See
 :meth:`~shotgun_api3.Shotgun.delete` for more info.
 
 .. _local_files:
@@ -191,14 +191,14 @@ The process of deleting an Attachment is just like other entities in Shotgun. Se
 Working With Local File Types
 *****************************
 
-We added support for linking to local files in the UI in Shotgun Server v2.1. This doc covers how
+We added support for linking to local files in the UI in ShotGrid Server v2.1. This doc covers how
 to work with these local file links using the API.
 
 Requirements
 ============
 
 - Python API v3.0.3+
-- Shotgun Server v2.1.10+
+- ShotGrid Server v2.1.10+
 
 Structure of Local File Values
 ==============================
@@ -276,7 +276,7 @@ Returns::
 Creating & Updating Local file Fields
 =====================================
 
-When setting a file/link field value to a local file, only the ``local_path`` is mandatory. Shotgun
+When setting a file/link field value to a local file, only the ``local_path`` is mandatory. ShotGrid
 will automatically select the appropriate matching local storage for your file based on the path.
 You can optionally specify the ``name`` and ``content_type`` fields if you wish to override their
 defaults. Any other keys that are provided will be ignored.
@@ -290,7 +290,7 @@ defaults. Any other keys that are provided will be ignored.
     Optional display name of the local file. This is set to the filename by default.
 
 * **local_path** :obj:`str`:
-    The full local path to the file. Shotgun will find the LocalStorage
+    The full local path to the file. ShotGrid will find the LocalStorage
     that has the most specific match to this path and automatically assign that LocalStorage to
     the file.
 
@@ -316,7 +316,7 @@ Returns::
                             'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'},
      'type': 'Version'}]
 
-The ``content_type`` was assigned a best-guess value based on the file extension. Shotgun selected
+The ``content_type`` was assigned a best-guess value based on the file extension. ShotGrid selected
 the most appropriate specific LocalStorage match and assigned it to local_storage automatically.
 
 Un-setting local file field values

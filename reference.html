@@ -99,12 +99,12 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#shotgun-module-attributes"><code class="docutils literal notranslate"><span class="pre">shotgun</span></code> Module Attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#shotgun">Shotgun()</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#shotgun-methods">Shotgun Methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#shotgrid-methods">ShotGrid Methods</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#connection-authentication">Connection &amp; Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#crud-methods">CRUD Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#working-with-files">Working With Files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#activity-stream">Activity Stream</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#working-with-the-shotgun-schema">Working with the Shotgun Schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-the-shotgrid-schema">Working with the ShotGrid Schema</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
@@ -414,8 +414,8 @@ are other patches that were proposed in the bug report that may help you as well
 </dd></dl>
 
 </div>
-<div class="section" id="shotgun-methods">
-<h2>Shotgun Methods<a class="headerlink" href="#shotgun-methods" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="shotgrid-methods">
+<h2>ShotGrid Methods<a class="headerlink" href="#shotgrid-methods" title="Permalink to this headline">¶</a></h2>
 <p>The majority of functionality is contained within the <code class="xref py py-class docutils literal notranslate"><span class="pre">Shotgun</span></code> class.
 The documentation for all of the methods you’ll need in your scripts lives in here.</p>
 <p class="rubric">Connection &amp; Authentication</p>
@@ -556,7 +556,7 @@ The documentation for all of the methods you’ll need in your scripts lives in 
 </tr>
 </tbody>
 </table>
-<p class="rubric">Working with the Shotgun Schema and Preferences</p>
+<p class="rubric">Working with the ShotGrid Schema and Preferences</p>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
@@ -597,7 +597,7 @@ The documentation for all of the methods you’ll need in your scripts lives in 
 </table>
 <div class="section" id="connection-authentication">
 <h3>Connection &amp; Authentication<a class="headerlink" href="#connection-authentication" title="Permalink to this headline">¶</a></h3>
-<p>These methods are used for connecting and authenticating with your Shotgun server. Most of
+<p>These methods are used for connecting and authenticating with your ShotGrid server. Most of
 this is done automatically when you instantiate your instance. But if you need finer-grain
 control, these methods are available.</p>
 <dl class="method">
@@ -1997,7 +1997,7 @@ or <code class="xref py py-class docutils literal notranslate"><span class="pre"
 </div>
 <div class="section" id="activity-stream">
 <h3>Activity Stream<a class="headerlink" href="#activity-stream" title="Permalink to this headline">¶</a></h3>
-<p>Methods that relate to the activity stream and following of entities in Shotgun.</p>
+<p>Methods that relate to the activity stream and following of entities in ShotGrid.</p>
 <dl class="method">
 <dt id="shotgun_api3.shotgun.Shotgun.activity_stream_read">
 <code class="descclassname">Shotgun.</code><code class="descname">activity_stream_read</code><span class="sig-paren">(</span><em>entity_type</em>, <em>entity_id</em>, <em>entity_fields=None</em>, <em>min_id=None</em>, <em>max_id=None</em>, <em>limit=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.activity_stream_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.activity_stream_read" title="Permalink to this definition">¶</a></dt>
@@ -2204,9 +2204,9 @@ passed in.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="working-with-the-shotgun-schema">
-<h3>Working with the Shotgun Schema<a class="headerlink" href="#working-with-the-shotgun-schema" title="Permalink to this headline">¶</a></h3>
-<p>Methods allow you to introspect and modify the Shotgun schema.</p>
+<div class="section" id="working-with-the-shotgrid-schema">
+<h3>Working with the ShotGrid Schema<a class="headerlink" href="#working-with-the-shotgrid-schema" title="Permalink to this headline">¶</a></h3>
+<p>Methods allow you to introspect and modify the ShotGrid schema.</p>
 <dl class="method">
 <dt id="shotgun_api3.shotgun.Shotgun.schema_entity_read">
 <code class="descclassname">Shotgun.</code><code class="descname">schema_entity_read</code><span class="sig-paren">(</span><em>project_entity=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.schema_entity_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.schema_entity_read" title="Permalink to this definition">¶</a></dt>
@@ -2540,7 +2540,7 @@ types. Properties that are <code class="docutils literal notranslate"><span clas
 </div>
 <div class="section" id="exceptions">
 <h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
-<p>These are the various exceptions that the Shotgun API will raise.</p>
+<p>These are the various exceptions that the ShotGrid API will raise.</p>
 <dl class="class">
 <dt id="shotgun_api3.ShotgunError">
 <em class="property">class </em><code class="descclassname">shotgun_api3.</code><code class="descname">ShotgunError</code><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#ShotgunError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shotgun_api3.ShotgunError" title="Permalink to this definition">¶</a></dt>
@@ -2856,7 +2856,7 @@ is “ip” AND is linked to either Asset #9 OR Asset #23:</p>
 </div>
 <div class="section" id="additional-filter-presets">
 <span id="id2"></span><h3>Additional Filter Presets<a class="headerlink" href="#additional-filter-presets" title="Permalink to this headline">¶</a></h3>
-<p>As of Shotgun version 7.0 it is possible to also use filter presets. These presets provide a simple
+<p>As of ShotGrid version 7.0 it is possible to also use filter presets. These presets provide a simple
 way to specify powerful query filters that would otherwise be costly and difficult to craft using
 traditional filters.</p>
 <p>Multiple presets can be specified in cases where it makes sense.</p>
@@ -3040,7 +3040,7 @@ with which parameters.</p>
 <tr class="field-even field"><th class="field-name">range:</th><td class="field-body"><p class="first">Year must be &gt;= 1970</p>
 <div class="last admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Datetimes are stored as UTC on the server. The Shotgun API is configured to automatically
+<p class="last">Datetimes are stored as UTC on the server. The ShotGrid API is configured to automatically
 convert between client local time and UTC. This can be overridden.</p>
 </div>
 </td>
@@ -3360,19 +3360,19 @@ Example above is default.F=Feet f=Frames.</p>
 <p class="first admonition-title">Note</p>
 <p class="last">Other upcoming features are likely to require the use of other transient thumbnails.
 For this reason, it is highly recommended to use the prefix part of the placeholder path
-(e.g. <a class="reference external" href="https://yoursubdomain.shotgunstudio.com/images/status/transient/">https://yoursubdomain.shotgunstudio.com/images/status/transient/</a>)
+(e.g. <a class="reference external" href="https://my-site.shotgrid.autodesk.com/images/status/transient/">https://my-site.shotgrid.autodesk.com/images/status/transient/</a>)
 to detect any transient URLs rather than use the full path of the thumbnail.</p>
 </div>
 </div>
 <div class="section" id="event-types">
 <span id="id5"></span><h2>Event Types<a class="headerlink" href="#event-types" title="Permalink to this headline">¶</a></h2>
-<p>Whenever a user makes a change to any data in Shotgun, an event log entry record is created,
-capturing the value before and after. Shotgun also logs some additional useful events that help keep
-track of various activity on your Shotgun instance.</p>
+<p>Whenever a user makes a change to any data in ShotGrid, an event log entry record is created,
+capturing the value before and after. ShotGrid also logs some additional useful events that help keep
+track of various activity on your ShotGrid instance.</p>
 <div class="section" id="event-based-triggers">
 <h3>Event-based Triggers<a class="headerlink" href="#event-based-triggers" title="Permalink to this headline">¶</a></h3>
 <p>Events are particularlly useful when used in conjunction with a trigger framework like the
-<a class="reference external" href="https://github.com/shotgunsoftware/shotgunEvents">Shotgun Event Daemon</a>. This allows you to
+<a class="reference external" href="https://github.com/shotgunsoftware/shotgunEvents">ShotGrid Event Daemon</a>. This allows you to
 write plug-ins that watch for certain types of events and then run code when they occur.</p>
 </div>
 <div class="section" id="structure-of-event-types">
@@ -3380,11 +3380,11 @@ write plug-ins that watch for certain types of events and then run code when the
 <p>The basic structure of event types is broken into 3 parts:</p>
 <p><code class="docutils literal notranslate"><span class="pre">Application_EntityType_Action</span></code></p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">Application</span></code>: Is always “Shotgun” for events automatically created by the Shotgun server.
-Other Shotgun products may use their name in here, for example, Toolkit has its own events
+<li><code class="docutils literal notranslate"><span class="pre">Application</span></code>: Is always “Shotgun” for events automatically created by the ShotGrid server.
+Other ShotGrid products may use their name in here, for example, Toolkit has its own events
 that it logs and the application portion is identified by “Toolkit”. If you decide to use the
 EventLogEntry entity to log events for your scripts or tools, you would use your tool name here.</li>
-<li><code class="docutils literal notranslate"><span class="pre">EntityType</span></code>: This is the entity type in Shotgun that was acted upon (eg. Shot, Asset, etc.)</li>
+<li><code class="docutils literal notranslate"><span class="pre">EntityType</span></code>: This is the entity type in ShotGrid that was acted upon (eg. Shot, Asset, etc.)</li>
 <li><code class="docutils literal notranslate"><span class="pre">Action</span></code>: The general action that was taken. (eg. New, Change, Retirement, Revival)</li>
 </ul>
 </div>
@@ -3401,23 +3401,23 @@ deleted, and revived. They follow this pattern:</p>
 </div>
 <div class="section" id="additional-event-types">
 <h3>Additional Event Types<a class="headerlink" href="#additional-event-types" title="Permalink to this headline">¶</a></h3>
-<p>These are _some_ of the additional event types that are logged by Shotgun:</p>
+<p>These are _some_ of the additional event types that are logged by ShotGrid:</p>
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">Shotgun_Attachment_View</span></code>: an Attachment (file) was viewed by a user.</li>
 <li><code class="docutils literal notranslate"><span class="pre">Shotgun_Reading_Change</span></code>: a threaded entity has been marked read or unread. For example, a
 Note was read by a user. The readings are unique to the entity&lt;-&gt;user connection so when a
 Note is read by user “joe” it may still be unread by user “jane”.</li>
-<li><code class="docutils literal notranslate"><span class="pre">Shotgun_User_Login</span></code>: a user logged in to Shotgun.</li>
-<li><code class="docutils literal notranslate"><span class="pre">Shotgun_User_Logout</span></code>: a user logged out of Shotgun.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Shotgun_User_Login</span></code>: a user logged in to ShotGrid.</li>
+<li><code class="docutils literal notranslate"><span class="pre">Shotgun_User_Logout</span></code>: a user logged out of ShotGrid.</li>
 </ul>
 </div>
 <div class="section" id="custom-event-types">
 <h3>Custom Event Types<a class="headerlink" href="#custom-event-types" title="Permalink to this headline">¶</a></h3>
 <p>Since <code class="docutils literal notranslate"><span class="pre">EventLogEntries</span></code> are entities themselves, you can create them using the API just like any
 other entity type. As mentioned previously, if you’d like to have your scripts or tools log to
-the Shotgun event log, simply devise a thoughtful naming structure for your event types and
+the ShotGrid event log, simply devise a thoughtful naming structure for your event types and
 create the EventLogEntry as needed following the usual methods for creating entities via the API.</p>
-<p>Again, other Shotgun products like Toolkit use event logs this way.</p>
+<p>Again, other ShotGrid products like Toolkit use event logs this way.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">EventLogEntries cannot be updated or deleted (that would defeat the purpose of course).</p>
@@ -3425,12 +3425,12 @@ create the EventLogEntry as needed following the usual methods for creating enti
 </div>
 <div class="section" id="performance">
 <h3>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h3>
-<p>Event log database tables can get large very quickly. While Shotgun does very well with event logs
+<p>Event log database tables can get large very quickly. While ShotGrid does very well with event logs
 that get into the millions of records, there’s an inevitable degradation of performance for pages
 that display them in the web application as well as any API queries for events when they get too
 big. This volume of events is not the norm, but can be reached if your server expereinces high
 usage.</p>
-<p>This <strong>does not</strong> mean your Shotgun server performance will suffer in general, just any pages that
+<p>This <strong>does not</strong> mean your ShotGrid server performance will suffer in general, just any pages that
 are specifically displaying EventLogEntries in the web application, or API queries on the event
 log that are run. We are always looking for ways to improve this in the future. If you have any
 immediate concerns, please <a class="reference external" href="https://developer.shotgridsoftware.com">reach out to our support team</a></p>
@@ -3454,7 +3454,7 @@ immediate concerns, please <a class="reference external" href="https://developer
 </div>
 <div class="section" id="localization">
 <h2>Localization<a class="headerlink" href="#localization" title="Permalink to this headline">¶</a></h2>
-<p>The Shotgun API offers the ability to return localized display names in the current user’s language.
+<p>The ShotGrid API offers the ability to return localized display names in the current user’s language.
 Requests made from script/API users are localized in the site settings.</p>
 <p>This functionality is currently supported by the methods <code class="docutils literal notranslate"><span class="pre">Shotgun.schema_entity_read</span></code>, <code class="docutils literal notranslate"><span class="pre">Shotgun.schema_field_read</span></code>, and <code class="docutils literal notranslate"><span class="pre">Shotgun.schema_read</span></code>.</p>
 <p>Localization is disabled by default. To enable localization, set the <code class="docutils literal notranslate"><span class="pre">localized</span></code> property to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
