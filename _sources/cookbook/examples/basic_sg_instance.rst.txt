@@ -5,7 +5,7 @@ Create a ShotGrid API instance
 
 This example shows you how to establish your initial connection to ShotGrid using script-based 
 authentication. ``sg`` represents your ShotGrid API instance. Be sure you've read 
-:ref:`Setting Up ShotGrid for API Access <setting_up_shotgun>`.
+:ref:`Setting Up ShotGrid for API Access <setting_up_shotgrid>`.
 ::
 
     import pprint # Useful for debugging

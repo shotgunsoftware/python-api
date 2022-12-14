@@ -224,7 +224,7 @@
 </div>
 <div class="section" id="script-based-authentication">
 <h2>Script-based Authentication<a class="headerlink" href="#script-based-authentication" title="Permalink to this headline">¶</a></h2>
-<p>In order to authenticate as a script, your script must be <a class="reference internal" href="#setting-up-shotgun"><span class="std std-ref">registered with ShotGrid and have a valid API key</span></a>. When creating your <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun</span></code> object, provide the <code class="docutils literal notranslate"><span class="pre">script_name</span></code> and <code class="docutils literal notranslate"><span class="pre">api_key</span></code>.:</p>
+<p>In order to authenticate as a script, your script must be <a class="reference internal" href="#setting-up-shotgrid"><span class="std std-ref">registered with ShotGrid and have a valid API key</span></a>. When creating your <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun</span></code> object, provide the <code class="docutils literal notranslate"><span class="pre">script_name</span></code> and <code class="docutils literal notranslate"><span class="pre">api_key</span></code>.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span><span class="p">,</span>
                           <span class="n">script_name</span><span class="o">=</span><span class="s2">&quot;compress&quot;</span><span class="p">,</span>
                           <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef&quot;</span><span class="p">)</span>
@@ -235,7 +235,7 @@
 <p class="last">When using script-based authentication, we <strong>strongly</strong> recommend you register each script separately with ShotGrid and have individual API keys for each. This allows you to track down each of your scripts and the actions they are performing much more accurately in the event logs.</p>
 </div>
 <div class="section" id="adding-script-users">
-<span id="setting-up-shotgun"></span><h3>Adding Script Users<a class="headerlink" href="#adding-script-users" title="Permalink to this headline">¶</a></h3>
+<span id="setting-up-shotgrid"></span><h3>Adding Script Users<a class="headerlink" href="#adding-script-users" title="Permalink to this headline">¶</a></h3>
 <p>If you’ll be using script-based authentication, you need to create a Script entity in ShotGrid. To create a new key, click the + button on the “Scripts” page in the Admin section and give your script a useful name. It’s a good idea to add any other relevant information that be be helpful to your other friendly ShotGrid users such as a description of what the script does that is using this key, the email address of the maintainer, etc.:</p>
 <img alt="_images/scripts_page.png" src="_images/scripts_page.png" />
 <p>Once you save your new Script entity, ShotGrid will automatically generate an application key which will act as the script’s password. The key will look something like this: <code class="docutils literal notranslate"><span class="pre">0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef</span></code>.</p>

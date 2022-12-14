@@ -17,7 +17,7 @@ When authenticating as a user, you provide your normal login and password when i
 ***************************
 Script-based Authentication
 ***************************
-In order to authenticate as a script, your script must be :ref:`registered with ShotGrid and have a valid API key <setting_up_shotgun>`. When creating your :class:`shotgun_api3.Shotgun` object, provide the ``script_name`` and ``api_key``.::
+In order to authenticate as a script, your script must be :ref:`registered with ShotGrid and have a valid API key <setting_up_shotgrid>`. When creating your :class:`shotgun_api3.Shotgun` object, provide the ``script_name`` and ``api_key``.::
 
     sg = shotgun_api3.Shotgun("https://my-site.shotgrid.autodesk.com",
                               script_name="compress",
@@ -26,7 +26,7 @@ In order to authenticate as a script, your script must be :ref:`registered with 
 .. note:: When using script-based authentication, we **strongly** recommend you register each script separately with ShotGrid and have individual API keys for each. This allows you to track down each of your scripts and the actions they are performing much more accurately in the event logs.
 
 
-.. _setting_up_shotgun:
+.. _setting_up_shotgrid:
 
 Adding Script Users
 ===================
