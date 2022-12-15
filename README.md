@@ -12,7 +12,6 @@ The latest version can always be found at http://github.com/shotgunsoftware/pyth
 
 ## Minimum Requirements
 
-* ShotGrid server v2.4.12+.
 * Python v3.7
 
 ## Documentation

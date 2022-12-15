@@ -6,9 +6,6 @@ Installation
 Minimum Requirements
 ********************
 
-- ShotGrid server v5.4.14 or higher for API v3.0.16+.
-- ShotGrid server v2.4.12 or higher for API v3.0.8.
-- ShotGrid server v1.8 or higher for API v3.0.7.
 - Python 3.7
 
 .. note::
