@@ -4,6 +4,13 @@ ShotGrid Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.3.5 (2023 Jan 5)
+====================
+- Add "Setting Up Your Environment with the Python API" to Python Docs (python-api docs).
+- [Python API Documentation] Update Python version requirements.
+- Rename Shotgun to Shotgrid in every about text like tk-multi-demo git repository.
+- Rename Shotgun servers to ShotGrid servers in the documentation.
+
 v3.3.4 (2022 June 9)
 ====================
 - Adds Retries on 503 Errors when uploading to S3.
