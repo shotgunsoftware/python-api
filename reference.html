@@ -801,15 +801,25 @@ also some specialized convenience methods for accessing particular types of info
 <li><strong>data</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Dictionary of fields and corresponding values to set on the new entity. If
 <code class="docutils literal notranslate"><span class="pre">image</span></code> or <code class="docutils literal notranslate"><span class="pre">filmstrip_image</span></code> fields are provided, the file path will be uploaded
 to the server automatically.</li>
-<li><strong>return_fields</strong> (<em>list</em>) – Optional list of additional field values to return from the new
-entity. Defaults to <code class="docutils literal notranslate"><span class="pre">id</span></code> field.</li>
+<li><strong>return_fields</strong> (<em>list</em>) – <p>Optional list of additional field values to return from the new
+entity. Defaults to <code class="docutils literal notranslate"><span class="pre">id</span></code> field.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="cookbook/usage_tips.html#combining-related-queries"><span class="std std-ref">Combining Related Queries</span></a></p>
+</div>
+</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Shotgun entity dictionary containing the field/value pairs of all of the fields
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>Shotgun entity dictionary containing the field/value pairs of all of the fields
 set from the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter as well as the defaults <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">id</span></code>. If any
 additional fields were provided using the <code class="docutils literal notranslate"><span class="pre">return_fields</span></code> parameter, these would be
 included as well.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="cookbook/usage_tips.html#entity-fields"><span class="std std-ref">Entity Fields</span></a></p>
+</div>
+</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></p>
@@ -844,7 +854,7 @@ included as well.</p>
 </pre></div>
 </div>
 <p>You can drill through single entity links to filter on fields or display linked fields.
-This is often called “deep linking” or using “dot syntax”.</p>
+This is often called “deep linking” or using “dot notation”.</p>
 <blockquote>
 <div><div class="admonition seealso">
 <p class="first admonition-title">See also</p>
@@ -877,11 +887,16 @@ This is often called “deep linking” or using “dot syntax”.</p>
 <li><strong>filters</strong> (<em>list</em>) – <p>list of filters to apply to the query.</p>
 <div class="admonition seealso">
 <p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#filter-syntax"><span class="std std-ref">Filter Syntax</span></a></p>
+<p class="last"><a class="reference internal" href="#filter-syntax"><span class="std std-ref">Filter Syntax</span></a>, <a class="reference internal" href="cookbook/usage_tips.html#combining-related-queries"><span class="std std-ref">Combining Related Queries</span></a></p>
 </div>
 </li>
-<li><strong>fields</strong> (<em>list</em>) – Optional list of fields to include in each entity record returned.
-Defaults to <code class="docutils literal notranslate"><span class="pre">[&quot;id&quot;]</span></code>.</li>
+<li><strong>fields</strong> (<em>list</em>) – <p>Optional list of fields to include in each entity record returned.
+Defaults to <code class="docutils literal notranslate"><span class="pre">[&quot;id&quot;]</span></code>.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="cookbook/usage_tips.html#combining-related-queries"><span class="std std-ref">Combining Related Queries</span></a></p>
+</div>
+</li>
 <li><strong>order</strong> (<em>list</em>) – <p>Optional list of dictionaries defining how to order the results of the
 query. Each dictionary contains the <code class="docutils literal notranslate"><span class="pre">field_name</span></code> to order by and  the <code class="docutils literal notranslate"><span class="pre">direction</span></code>
 to sort:</p>
@@ -917,8 +932,13 @@ argument.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of dictionaries representing each entity with the requested fields, and the
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>list of dictionaries representing each entity with the requested fields, and the
 defaults <code class="docutils literal notranslate"><span class="pre">&quot;id&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;</span></code> which are always included.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="cookbook/usage_tips.html#entity-fields"><span class="std std-ref">Entity Fields</span></a></p>
+</div>
+</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
@@ -979,8 +999,13 @@ argument.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Dictionary representing a single matching entity with the requested fields,
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>Dictionary representing a single matching entity with the requested fields,
 and the defaults <code class="docutils literal notranslate"><span class="pre">&quot;id&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;</span></code> which are always included.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="cookbook/usage_tips.html#entity-fields"><span class="std std-ref">Entity Fields</span></a></p>
+</div>
+</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></p>

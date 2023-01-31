@@ -1072,6 +1072,9 @@
 <span class="sd">            :ref:`additional_filter_presets`</span>
 <span class="sd">        :returns: Dictionary representing a single matching entity with the requested fields,</span>
 <span class="sd">            and the defaults ``&quot;id&quot;`` and ``&quot;type&quot;`` which are always included.</span>
+
+<span class="sd">            .. seealso:: :ref:`entity-fields`</span>
+
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1108,7 +1111,7 @@
 <span class="sd">             {&#39;code&#39;: &#39;Wet Gopher&#39;, &#39;id&#39;: 149, &#39;sg_asset_type&#39;: &#39;Character&#39;, &#39;type&#39;: &#39;Asset&#39;}]</span>
 
 <span class="sd">        You can drill through single entity links to filter on fields or display linked fields.</span>
-<span class="sd">        This is often called &quot;deep linking&quot; or using &quot;dot syntax&quot;.</span>
+<span class="sd">        This is often called &quot;deep linking&quot; or using &quot;dot notation&quot;.</span>
 
 <span class="sd">            .. seealso:: :ref:`filter_syntax`</span>
 
@@ -1131,10 +1134,13 @@
 <span class="sd">        :param str entity_type: Shotgun entity type to find.</span>
 <span class="sd">        :param list filters: list of filters to apply to the query.</span>
 
-<span class="sd">            .. seealso:: :ref:`filter_syntax`</span>
+<span class="sd">            .. seealso:: :ref:`filter_syntax`, :ref:`combining-related-queries`</span>
 
 <span class="sd">        :param list fields: Optional list of fields to include in each entity record returned.</span>
 <span class="sd">            Defaults to ``[&quot;id&quot;]``.</span>
+
+<span class="sd">            .. seealso:: :ref:`combining-related-queries`</span>
+<span class="sd">            </span>
 <span class="sd">        :param list order: Optional list of dictionaries defining how to order the results of the</span>
 <span class="sd">            query. Each dictionary contains the ``field_name`` to order by and  the ``direction``</span>
 <span class="sd">            to sort::</span>
@@ -1168,6 +1174,9 @@
 <span class="sd">            :ref:`additional_filter_presets`</span>
 <span class="sd">        :returns: list of dictionaries representing each entity with the requested fields, and the</span>
 <span class="sd">            defaults ``&quot;id&quot;`` and ``&quot;type&quot;`` which are always included.</span>
+
+<span class="sd">            .. seealso:: :ref:`entity-fields`</span>
+
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1530,10 +1539,16 @@
 <span class="sd">            to the server automatically.</span>
 <span class="sd">        :param list return_fields: Optional list of additional field values to return from the new</span>
 <span class="sd">            entity. Defaults to ``id`` field.</span>
+
+<span class="sd">            .. seealso:: :ref:`combining-related-queries`</span>
+
 <span class="sd">        :returns: Shotgun entity dictionary containing the field/value pairs of all of the fields</span>
 <span class="sd">            set from the ``data`` parameter as well as the defaults ``type`` and ``id``. If any</span>
 <span class="sd">            additional fields were provided using the ``return_fields`` parameter, these would be</span>
 <span class="sd">            included as well.</span>
+
+<span class="sd">            .. seealso:: :ref:`entity-fields`</span>
+
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 

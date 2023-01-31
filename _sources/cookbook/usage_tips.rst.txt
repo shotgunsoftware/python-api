@@ -31,13 +31,15 @@ Multi-threading
 The ShotGrid API is not thread-safe. If you want to do threading we strongly suggest that you use 
 one connection object per thread and not share the connection.
 
+.. _entity-fields:
+
 *************
 Entity Fields
 *************
 
-When you do a :meth:`~shotgun_api3.Shotgun.find` call that returns a field of type entity or 
-multi-entity (for example the 'assets' column on Shot), the entities are returned in a standard 
-dictionary::
+When you do a :meth:`~shotgun_api3.Shotgun.find` or a :meth:`~shotgun_api3.Shotgun.create` call
+that returns a field of type **entity** or **multi-entity** (for example the 'Assets' column on Shot),
+the entities are returned in a standard dictionary::
 
     {'type': 'Asset', 'name': 'redBall', 'id': 1}
 
@@ -260,6 +262,8 @@ ShotGrid logger to a higher level::
 Optimizations
 *************
 
+.. _combining-related-queries: 
+
 Combining Related Queries
 =========================
 Reducing round-trips for data via the API can significantly improve the speed of your application.
@@ -285,7 +289,7 @@ With "field hopping" you can combine these queries into::
     sg_shots = sg.find("Shot", [['project.Project.name', 'is', project_name]], ['code'])
 
 As you can see above, the syntax is to use "``.``" dot notation, joining field names to entity
-types in a chain. In this example we start with the field ``project`` on the Shot entity, then
+types in a chain. In this example we start with the field ``project`` on the ``Shot`` entity, then
 specify we're looking for the "name" field on the Project entity by specifying ``Project.name``.
 
 Now that we've demonstrated querying using dot notation, let's take a look at returning linked data
@@ -296,7 +300,10 @@ by adding the status of each Sequence entity associated with each Shot in our pr
     sg_shots = sg.find("Shot", [['project.Project.name', 'is', project_name]],
                        ['code', 'sg_sequence.Sequence.sg_status_list'])
 
+The previous examples use the :meth:`~shotgun_api3.Shotgun.find` method. However, it's also applicable
+to the :meth:`~shotgun_api3.Shotgun.create` method.
+
 .. note::
-    Due to performance concerns with deep linking, we only support using dot syntax chains for
+    Due to performance concerns with deep linking, we only support using dot notation chains for
     single-entity relationships. This means that if you try to pull data through a multi-entity
     field you will not get the desired result.
