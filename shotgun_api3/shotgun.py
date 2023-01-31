@@ -874,6 +874,9 @@ class Shotgun(object):
             :ref:`additional_filter_presets`
         :returns: Dictionary representing a single matching entity with the requested fields,
             and the defaults ``"id"`` and ``"type"`` which are always included.
+
+            .. seealso:: :ref:`entity-fields`
+
         :rtype: dict
         """
 
@@ -910,7 +913,7 @@ class Shotgun(object):
              {'code': 'Wet Gopher', 'id': 149, 'sg_asset_type': 'Character', 'type': 'Asset'}]
 
         You can drill through single entity links to filter on fields or display linked fields.
-        This is often called "deep linking" or using "dot syntax".
+        This is often called "deep linking" or using "dot notation".
 
             .. seealso:: :ref:`filter_syntax`
 
@@ -933,10 +936,13 @@ class Shotgun(object):
         :param str entity_type: Shotgun entity type to find.
         :param list filters: list of filters to apply to the query.
 
-            .. seealso:: :ref:`filter_syntax`
+            .. seealso:: :ref:`filter_syntax`, :ref:`combining-related-queries`
 
         :param list fields: Optional list of fields to include in each entity record returned.
             Defaults to ``["id"]``.
+
+            .. seealso:: :ref:`combining-related-queries`
+            
         :param list order: Optional list of dictionaries defining how to order the results of the
             query. Each dictionary contains the ``field_name`` to order by and  the ``direction``
             to sort::
@@ -970,6 +976,9 @@ class Shotgun(object):
             :ref:`additional_filter_presets`
         :returns: list of dictionaries representing each entity with the requested fields, and the
             defaults ``"id"`` and ``"type"`` which are always included.
+
+            .. seealso:: :ref:`entity-fields`
+
         :rtype: list
         """
 
@@ -1332,10 +1341,16 @@ class Shotgun(object):
             to the server automatically.
         :param list return_fields: Optional list of additional field values to return from the new
             entity. Defaults to ``id`` field.
+
+            .. seealso:: :ref:`combining-related-queries`
+
         :returns: Shotgun entity dictionary containing the field/value pairs of all of the fields
             set from the ``data`` parameter as well as the defaults ``type`` and ``id``. If any
             additional fields were provided using the ``return_fields`` parameter, these would be
             included as well.
+
+            .. seealso:: :ref:`entity-fields`
+
         :rtype: dict
         """
 
