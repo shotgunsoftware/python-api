@@ -38,7 +38,7 @@ Entity Fields
 *************
 
 When you do a :meth:`~shotgun_api3.Shotgun.find` or a :meth:`~shotgun_api3.Shotgun.create` call
-that returns a field of type **entity** or **multi-entity** (for example the 'assets' column on Shot),
+that returns a field of type **entity** or **multi-entity** (for example the 'Assets' column on Shot),
 the entities are returned in a standard dictionary::
 
     {'type': 'Asset', 'name': 'redBall', 'id': 1}
