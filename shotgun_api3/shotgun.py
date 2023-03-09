@@ -857,7 +857,7 @@ class Shotgun(object):
             and ``"any"``. These are just another way of defining if the query is an AND or OR
             query. Defaults to ``"all"``.
         :param bool retired_only: Optional boolean when ``True`` will return only entities that have
-            been retried. Defaults to ``False`` which returns only entities which have not been
+            been retired. Defaults to ``False`` which returns only entities which have not been
             retired. There is no option to return both retired and non-retired entities in the
             same query.
         :param bool include_archived_projects: Optional boolean flag to include entities whose projects
@@ -959,7 +959,7 @@ class Shotgun(object):
             parameter to control how your query results are paged. Defaults to ``0`` which returns
             all entities that match.
         :param bool retired_only: Optional boolean when ``True`` will return only entities that have
-            been retried. Defaults to ``False`` which returns only entities which have not been
+            been retired. Defaults to ``False`` which returns only entities which have not been
             retired. There is no option to return both retired and non-retired entities in the
             same query.
         :param bool include_archived_projects: Optional boolean flag to include entities whose projects
