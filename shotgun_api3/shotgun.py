@@ -850,7 +850,10 @@ class Shotgun(object):
             Defaults to ``["id"]``.
         :param int order: Optional list of fields to order the results by. List has the format::
 
-            [{'field_name':'foo', 'direction':'asc'}, {'field_name':'bar', 'direction':'desc'}]
+                [
+                    {'field_name':'foo', 'direction':'asc'},
+                    {'field_name':'bar', 'direction':'desc'}
+                ]
 
             Defaults to sorting by ``id`` in ascending order.
         :param str filter_operator: Operator to apply to the filters. Supported values are ``"all"``
@@ -865,7 +868,11 @@ class Shotgun(object):
         :param additional_filter_presets: Optional list of presets to further filter the result
             set, list has the form::
 
-                [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
+                [{
+                    "preset_name": <preset_name>,
+                    <optional_param1>: <optional_value1>,
+                    ...
+                }]
 
             Note that these filters are ANDed together and ANDed with the 'filter'
             argument.
@@ -947,7 +954,10 @@ class Shotgun(object):
             query. Each dictionary contains the ``field_name`` to order by and  the ``direction``
             to sort::
 
-                [{'field_name':'foo', 'direction':'asc'}, {'field_name':'bar', 'direction':'desc'}]
+                [
+                    {'field_name':'foo', 'direction':'asc'},
+                    {'field_name':'bar', 'direction':'desc'}
+                ]
 
             Defaults to sorting by ``id`` in ascending order.
         :param str filter_operator: Operator to apply to the filters. Supported values are ``"all"``
@@ -967,7 +977,11 @@ class Shotgun(object):
         :param additional_filter_presets: Optional list of presets to further filter the result
             set, list has the form::
 
-                [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
+                [{
+                    "preset_name": <preset_name>,
+                    <optional_param1>: <optional_value1>,
+                    ...
+                }]
 
             Note that these filters are ANDed together and ANDed with the 'filter'
             argument.
