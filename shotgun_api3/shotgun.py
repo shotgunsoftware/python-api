@@ -3340,7 +3340,7 @@ class Shotgun(object):
         .. deprecated:: 3.0.0
            Use :meth:`~shotgun_api3.Shotgun.schema_field_read` instead.
         """
-        raise ShotgunError("Deprecated: use schema_field_read('type':'%s') instead" % entity_type)
+        raise ShotgunError("Deprecated: use schema_field_read('%s') instead" % entity_type)
 
     def entity_types(self):
         """
