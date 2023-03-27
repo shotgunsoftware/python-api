@@ -250,16 +250,16 @@ will do all the heavy lifting.  Lines 4 thru 8 queue up some objects that we’l
 <span class="normal"> 7</span>
 <span class="normal"> 8</span>
 <span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span> <span class="c1">#!/bin/sh</span>
- <span class="c1"># POST-COMMIT HOOK</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><span class="w"> </span><span class="c1">#!/bin/sh</span>
+<span class="w"> </span><span class="c1"># POST-COMMIT HOOK</span>
 
- <span class="nv">REPOS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
- <span class="nv">REV</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+<span class="w"> </span><span class="nv">REPOS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+<span class="w"> </span><span class="nv">REV</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
 
- <span class="nb">export</span> <span class="nv">AUTHOR</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook author <span class="nv">$REPOS</span> --revision <span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
- <span class="nb">export</span> <span class="nv">COMMENT</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook log <span class="nv">$REPOS</span> --revision <span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
+<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">AUTHOR</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook<span class="w"> </span>author<span class="w"> </span><span class="nv">$REPOS</span><span class="w"> </span>--revision<span class="w"> </span><span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
+<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">COMMENT</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook<span class="w"> </span>log<span class="w"> </span><span class="nv">$REPOS</span><span class="w"> </span>--revision<span class="w"> </span><span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
 
- /Absolute/path/to/shotgun_api_script.py
+<span class="w"> </span>/Absolute/path/to/shotgun_api_script.py
 </pre></div></td></tr></table></div>
 </div>
 <div class="section" id="explanation-of-selected-lines">

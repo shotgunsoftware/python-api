@@ -900,7 +900,10 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">[&quot;
 <li><strong>order</strong> (<em>list</em>) – <p>Optional list of dictionaries defining how to order the results of the
 query. Each dictionary contains the <code class="docutils literal notranslate"><span class="pre">field_name</span></code> to order by and  the <code class="docutils literal notranslate"><span class="pre">direction</span></code>
 to sort:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;field_name&#39;</span><span class="p">:</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;asc&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;field_name&#39;</span><span class="p">:</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;desc&#39;</span><span class="p">}]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;field_name&#39;</span><span class="p">:</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;asc&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;field_name&#39;</span><span class="p">:</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;desc&#39;</span><span class="p">}</span>
+<span class="p">]</span>
 </pre></div>
 </div>
 <p>Defaults to sorting by <code class="docutils literal notranslate"><span class="pre">id</span></code> in ascending order.</p>
@@ -914,14 +917,18 @@ returns all entities that match.</li>
 parameter to control how your query results are paged. Defaults to <code class="docutils literal notranslate"><span class="pre">0</span></code> which returns
 all entities that match.</li>
 <li><strong>retired_only</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Optional boolean when <code class="docutils literal notranslate"><span class="pre">True</span></code> will return only entities that have
-been retried. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code> which returns only entities which have not been
+been retired. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code> which returns only entities which have not been
 retired. There is no option to return both retired and non-retired entities in the
 same query.</li>
 <li><strong>include_archived_projects</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Optional boolean flag to include entities whose projects
 have been archived. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</li>
 <li><strong>additional_filter_presets</strong> – <p>Optional list of presets to further filter the result
 set, list has the form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s2">&quot;preset_name&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">preset_name</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">optional_param1</span><span class="o">&gt;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">optional_value1</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span> <span class="p">}]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span>
+    <span class="s2">&quot;preset_name&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">preset_name</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="o">&lt;</span><span class="n">optional_param1</span><span class="o">&gt;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">optional_value1</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">}]</span>
 </pre></div>
 </div>
 <p>Note that these filters are ANDed together and ANDed with the ‘filter’
@@ -972,7 +979,10 @@ result.</p>
 <li><strong>fields</strong> (<em>list</em>) – Optional list of fields to include in each entity record returned.
 Defaults to <code class="docutils literal notranslate"><span class="pre">[&quot;id&quot;]</span></code>.</li>
 <li><strong>order</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – <p>Optional list of fields to order the results by. List has the format:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;field_name&#39;</span><span class="p">:</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;asc&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;field_name&#39;</span><span class="p">:</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;desc&#39;</span><span class="p">}]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;field_name&#39;</span><span class="p">:</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;asc&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;field_name&#39;</span><span class="p">:</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;desc&#39;</span><span class="p">}</span>
+<span class="p">]</span>
 </pre></div>
 </div>
 <p>Defaults to sorting by <code class="docutils literal notranslate"><span class="pre">id</span></code> in ascending order.</p>
@@ -981,14 +991,18 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">[&quot;
 and <code class="docutils literal notranslate"><span class="pre">&quot;any&quot;</span></code>. These are just another way of defining if the query is an AND or OR
 query. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>.</li>
 <li><strong>retired_only</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Optional boolean when <code class="docutils literal notranslate"><span class="pre">True</span></code> will return only entities that have
-been retried. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code> which returns only entities which have not been
+been retired. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code> which returns only entities which have not been
 retired. There is no option to return both retired and non-retired entities in the
 same query.</li>
 <li><strong>include_archived_projects</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Optional boolean flag to include entities whose projects
 have been archived. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</li>
 <li><strong>additional_filter_presets</strong> – <p>Optional list of presets to further filter the result
 set, list has the form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s2">&quot;preset_name&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">preset_name</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">optional_param1</span><span class="o">&gt;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">optional_value1</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">...</span> <span class="p">}]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span>
+    <span class="s2">&quot;preset_name&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">preset_name</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="o">&lt;</span><span class="n">optional_param1</span><span class="o">&gt;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">optional_value1</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">}]</span>
 </pre></div>
 </div>
 <p>Note that these filters are ANDed together and ANDed with the ‘filter’
