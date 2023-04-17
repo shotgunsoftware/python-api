@@ -182,7 +182,7 @@ v3.0.25 (2016 Jan 12)
 =====================
 
 - Add handling for Python versions incompatible with SHA-2 (see `this blog post 
-  <http://blog.shotgunsoftware.com/2016/01/important-ssl-certificate-renewal-and.html>`_).
+  <https://www.shotgridsoftware.com/blog/important-ssl-certificate-renewal-and-sha-2/>`_).
 - Add ``SHOTGUN_FORCE_CERTIFICATE_VALIDATION`` environment variable to prevent disabling certficate 
   validation when SHA-2 validation is not available.
 - Add SSL info to user-agent header.
