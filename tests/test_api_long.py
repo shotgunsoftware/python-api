@@ -36,7 +36,7 @@ class TestShotgunApiLong(base.LiveTestBase):
         page = 1
         for entity_type in all_entities:
             if entity_type in ("Asset", "Task", "Shot", "Attachment",
-                               "Candidate"):
+                               "Candidate", "MimProject", "MimEntity", "MimField"):
                 continue
             print("Finding entity type %s" % entity_type)
 
