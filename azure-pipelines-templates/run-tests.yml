@@ -56,6 +56,8 @@ jobs:
   # Specifies which version of Python we want to use. That's where the strategy comes in.
   # Each job will share this set of steps, but each of them will receive a different
   # $(python.version)
+  # TODO: We should provide `githubToken` if we want to download a python release. 
+  #       Otherwise we may hit the GitHub anonymous download limit.
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '$(python.version)'
