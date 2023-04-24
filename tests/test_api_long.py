@@ -21,7 +21,6 @@ from shotgun_api3.lib import six
 
 
 class TestShotgunApiLong(base.LiveTestBase):
-
     def test_automated_find(self):
         """Called find for each entity type and read all fields"""
 
@@ -35,8 +34,16 @@ class TestShotgunApiLong(base.LiveTestBase):
         limit = 1
         page = 1
         for entity_type in all_entities:
-            if entity_type in ("Asset", "Task", "Shot", "Attachment",
-                               "Candidate", "MimProject", "MimEntity", "MimField"):
+            if entity_type in (
+                "Asset",
+                "Task",
+                "Shot",
+                "Attachment",
+                "Candidate",
+                "MimProject",
+                "MimEntity",
+                "MimField",
+            ):
                 continue
             print("Finding entity type %s" % entity_type)
 
@@ -54,21 +61,27 @@ class TestShotgunApiLong(base.LiveTestBase):
                 # Since no_sorting is not exposed to us, we'll have to rely on
                 # this as a safeguard against trying to sort by a field with
                 # allow_sorting=false.
-                if field['data_type']["value"] in sortable_types:
+                if field["data_type"]["value"] in sortable_types:
                     order_field = field_name
                     break
             # TODO for our test project, we haven't populated these entities....
             order = None
             if order_field:
-                order = [{'field_name': order_field, 'direction': direction}]
+                order = [{"field_name": order_field, "direction": direction}]
             if "project" in fields:
-                filters = [['project', 'is', self.project]]
+                filters = [["project", "is", self.project]]
             else:
                 filters = []
 
-            records = self.sg.find(entity_type, filters, fields=list(fields.keys()),
-                                   order=order, filter_operator=filter_operator,
-                                   limit=limit, page=page)
+            records = self.sg.find(
+                entity_type,
+                filters,
+                fields=list(fields.keys()),
+                order=order,
+                filter_operator=filter_operator,
+                limit=limit,
+                page=page,
+            )
 
             self.assertTrue(isinstance(records, list))
 
@@ -117,13 +130,12 @@ class TestShotgunApiLong(base.LiveTestBase):
         human_field_name = "Monkey " + str(random.getrandbits(24))
 
         properties = {"description": "How many monkeys were needed"}
-        new_field_name = self.sg.schema_field_create("Version", "number", human_field_name,
-                                                     properties=properties)
+        new_field_name = self.sg.schema_field_create(
+            "Version", "number", human_field_name, properties=properties
+        )
 
         properties = {"description": "How many monkeys turned up"}
-        ret_val = self.sg.schema_field_update("Version",
-                                              new_field_name,
-                                              properties)
+        ret_val = self.sg.schema_field_update("Version", new_field_name, properties)
         self.assertTrue(ret_val)
 
         ret_val = self.sg.schema_field_delete("Version", new_field_name)
@@ -132,42 +144,56 @@ class TestShotgunApiLong(base.LiveTestBase):
     def test_schema_with_project(self):
         """Called schema functions with project"""
 
-        project_entity = {'type': 'Project', 'id': 0}
+        project_entity = {"type": "Project", "id": 0}
 
         if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 4, 4):
-
             # server does not support this!
-            self.assertRaises(shotgun_api3.ShotgunError, self.sg.schema_entity_read, project_entity)
-            self.assertRaises(shotgun_api3.ShotgunError, self.sg.schema_read, project_entity)
-            self.assertRaises(shotgun_api3.ShotgunError, self.sg.schema_field_read, 'Version', None, project_entity)
-            self.assertRaises(shotgun_api3.ShotgunError, self.sg.schema_field_read, 'Version', 'user', project_entity)
+            self.assertRaises(
+                shotgun_api3.ShotgunError, self.sg.schema_entity_read, project_entity
+            )
+            self.assertRaises(
+                shotgun_api3.ShotgunError, self.sg.schema_read, project_entity
+            )
+            self.assertRaises(
+                shotgun_api3.ShotgunError,
+                self.sg.schema_field_read,
+                "Version",
+                None,
+                project_entity,
+            )
+            self.assertRaises(
+                shotgun_api3.ShotgunError,
+                self.sg.schema_field_read,
+                "Version",
+                "user",
+                project_entity,
+            )
 
         else:
-
             schema = self.sg.schema_entity_read(project_entity)
             self.assertTrue(schema, dict)
             self.assertTrue(len(schema) > 0)
-            self.assertTrue('Project' in schema)
-            self.assertTrue('visible' in schema['Project'])
+            self.assertTrue("Project" in schema)
+            self.assertTrue("visible" in schema["Project"])
 
             schema = self.sg.schema_read(project_entity)
             self.assertTrue(schema, dict)
             self.assertTrue(len(schema) > 0)
-            self.assertTrue('Version' in schema)
-            self.assertFalse('visible' in schema)
+            self.assertTrue("Version" in schema)
+            self.assertFalse("visible" in schema)
 
-            schema = self.sg.schema_field_read('Version', project_entity=project_entity)
+            schema = self.sg.schema_field_read("Version", project_entity=project_entity)
             self.assertTrue(schema, dict)
             self.assertTrue(len(schema) > 0)
-            self.assertTrue('user' in schema)
-            self.assertTrue('visible' in schema['user'])
+            self.assertTrue("user" in schema)
+            self.assertTrue("visible" in schema["user"])
 
-            schema = self.sg.schema_field_read('Version', 'user', project_entity)
+            schema = self.sg.schema_field_read("Version", "user", project_entity)
             self.assertTrue(schema, dict)
             self.assertTrue(len(schema) > 0)
-            self.assertTrue('user' in schema)
-            self.assertTrue('visible' in schema['user'])
+            self.assertTrue("user" in schema)
+            self.assertTrue("visible" in schema["user"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     base.unittest.main()
