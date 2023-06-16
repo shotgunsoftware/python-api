@@ -123,6 +123,7 @@ jobs:
       SG_TICKET_TILE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
       SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
 
+
   # Upload the code coverage result to codecov.io.
   - ${{ if eq(parameters.name, 'Windows') }}:
     - powershell: |
