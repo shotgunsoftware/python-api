@@ -570,6 +570,23 @@ with which parameters.
                                                         will return the Version associated
                                                         to the Task with the highest
                                                         step.list_order value.
+    Published   LATEST            [string] latest_by  'ENTITIES_CREATED_AT':
+    Files                                               When dealing with multiple
+                                                        PublishedFiles associated to a group
+                                                        of entities, returns only the
+                                                        last PublishedFiles created for each
+                                                        entity.
+                                                        For example, when dealing with a
+                                                        set of Versions, this preset allows
+                                                        to find the latest PublishedFile created
+                                                        for each of these Versions.
+
+                                                      'VERSION_NUMBER':
+                                                        When dealing with multiple
+                                                        PublishedFiles associated to a group
+                                                        of entities, returns only the
+                                                        PublishedFile  with the highest
+                                                        version_number.
 
 .. _data_types:
 
