@@ -545,9 +545,9 @@ with which parameters.
                 LATEST            [string] latest_by  'ENTITIES_CREATED_AT':
                                                         When dealing with multiple
                                                         Versions associated to a group
-                                                        of entities, returns only the
-                                                        last Version created for each
-                                                        entity.
+                                                        of entities, this will return
+                                                        only the last Version created
+                                                        for each entity.
                                                         For example, when dealing with a
                                                         set of Shots, this preset allows
                                                         to find the latest Version created
@@ -572,20 +572,20 @@ with which parameters.
                                                         step.list_order value.
     Published   LATEST            [string] latest_by  'ENTITIES_CREATED_AT':
     Files                                               When dealing with multiple
-                                                        PublishedFiles associated to a group
-                                                        of entities, returns only the
-                                                        last PublishedFiles created for each
-                                                        entity.
+                                                        PublishedFiles associated to a
+                                                        group of entities, this will return
+                                                        only the last PublishedFiles created
+                                                        for each entity.
                                                         For example, when dealing with a
                                                         set of Versions, this preset allows
-                                                        to find the latest PublishedFile created
-                                                        for each of these Versions.
+                                                        you to find the latest PublishedFile
+                                                        created for each of these Versions.
 
                                                       'VERSION_NUMBER':
                                                         When dealing with multiple
-                                                        PublishedFiles associated to a group
-                                                        of entities, returns only the
-                                                        PublishedFile  with the highest
+                                                        PublishedFiles associated with a
+                                                        group of entities, this returns only
+                                                        the PublishedFile with the highest
                                                         version_number.
 
 .. _data_types:
