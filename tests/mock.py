@@ -31,30 +31,14 @@ __unittest = True
 import sys
 import warnings
 
+from functools import wraps
+
 try:
     import inspect
 except ImportError:
     # for alternative platforms that
     # may not have inspect
     inspect = None
-
-try:
-    BaseException
-except NameError:
-    # Python 2.4 compatibility
-    BaseException = Exception
-
-try:
-    from functools import wraps
-except ImportError:
-    # Python 2.4 compatibility
-    def wraps(original):
-        def inner(f):
-            f.__name__ = original.__name__
-            f.__doc__ = original.__doc__
-            f.__module__ = original.__module__
-            return f
-        return inner
 
 try:
     unicode

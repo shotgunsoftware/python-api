@@ -53,28 +53,6 @@ Mockgun.set_schema_paths(
 )
 
 
-# FIXME: This should probably be refactored into a base class for
-# all test bases
-class TestBaseWithExceptionTests(unittest.TestCase):
-    """
-    Implements a Python 2.4 compatible assertRaisesRegexp like method. This
-    was introduced in Python 2.7.
-    """
-    def assertRaisesRegexp(self, exception_type, re_msg, func):
-        try:
-            func()
-        except exception_type as exception:
-            matches = re.findall(re_msg, str(exception))
-            if not matches:
-                self.fail("Expected exception to match '%s', got '%s' instead." % (
-                    re_msg, str(exception)
-                ))
-        except Exception as ex:
-            self.fail("Expected exception of type %s, got %s" % (exception_type, type(ex)))
-        else:
-            self.fail("Expected %s was not raised." % exception_type)
-
-
 class TestMockgunModuleInterface(unittest.TestCase):
     """
     mockgun.py was turned into a module. Ensure we haven't broken the interface.
@@ -93,7 +71,7 @@ class TestMockgunModuleInterface(unittest.TestCase):
         mockgun.Shotgun
 
 
-class TestValidateFilterSyntax(TestBaseWithExceptionTests):
+class TestValidateFilterSyntax(unittest.TestCase):
     """
     Tests filter syntax support.
     """
@@ -137,7 +115,7 @@ class TestValidateFilterSyntax(TestBaseWithExceptionTests):
         )
 
 
-class TestEntityFieldComparison(TestBaseWithExceptionTests):
+class TestEntityFieldComparison(unittest.TestCase):
     """
     Checks if entity fields comparison work.
     """
@@ -191,7 +169,7 @@ class TestEntityFieldComparison(TestBaseWithExceptionTests):
         self.assertEqual(items[0]["id"], self._project_link["id"])
 
 
-class TestTextFieldOperators(TestBaseWithExceptionTests):
+class TestTextFieldOperators(unittest.TestCase):
     """
     Checks if text field comparison work.
     """
@@ -210,7 +188,7 @@ class TestTextFieldOperators(TestBaseWithExceptionTests):
         self.assertTrue(item)
 
 
-class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
+class TestMultiEntityFieldComparison(unittest.TestCase):
     """
     Ensures multi entity field comparison work.
     """
@@ -293,7 +271,7 @@ class TestMultiEntityFieldComparison(TestBaseWithExceptionTests):
             self.assertTrue(len(item["users"]) > 0)
 
 
-class TestFilterOperator(TestBaseWithExceptionTests):
+class TestFilterOperator(unittest.TestCase):
     """
     Unit tests for the filter_operator filter syntax.
     """
