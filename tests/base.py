@@ -10,6 +10,7 @@ from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
 from shotgun_api3.lib import six
 from shotgun_api3.lib.six.moves import urllib
+from shotgun_api3.lib.six.moves.configparser import ConfigParser
 from unittest import skip
 
 
