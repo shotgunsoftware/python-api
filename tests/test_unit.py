@@ -506,16 +506,5 @@ class TestMimetypesFix(unittest.TestCase):
         mock.platform = platform
         self.assertEqual(_is_mimetypes_broken(), result)
 
-    def test_correct_mimetypes_imported(self):
-        """
-        Makes sure fix is imported for only for Python 2.7.0 to 2.7.7 on win32
-        """
-        self._test_mimetypes_import("win32", 2, 6, 9, False)
-        for patch_number in range(0, 10):  # 0 to 9 inclusively
-            self._test_mimetypes_import("win32", 2, 7, patch_number, True)
-        self._test_mimetypes_import("win32", 2, 7, 10, False)
-        self._test_mimetypes_import("win32", 3, 0, 0, False)
-        self._test_mimetypes_import("darwin", 2, 7, 0, False)
-
 if __name__ == '__main__':
     unittest.main()

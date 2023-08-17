@@ -44,8 +44,6 @@ jobs:
   strategy:
     matrix:
       # We support these two versions of Python.
-      Python27:
-        python.version: '2.7'
       Python37:
         python.version: '3.7'
       Python39:
