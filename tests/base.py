@@ -10,12 +10,7 @@ from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
 from shotgun_api3.lib import six
 from shotgun_api3.lib.six.moves import urllib
-
-if six.PY2:
-    from shotgun_api3.lib.six.moves.configparser import SafeConfigParser as ConfigParser
-else:
-    from shotgun_api3.lib.six.moves.configparser import ConfigParser
-
+from shotgun_api3.lib.six.moves.configparser import ConfigParser
 
 try:
     # Attempt to import skip from unittest.  Since this was added in Python 2.7

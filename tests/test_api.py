@@ -1206,11 +1206,7 @@ class TestFind(base.LiveTestBase):
         for particular filters.
         """
         results = self.sg.find(entity_type, filters)
-        # can't use 'any' in python 2.4
-        for result in results:
-            if result['id'] == expected_id:
-                return True
-        return False
+        return any(result['id'] == expected_id for result in results)
 
     # TODO test all applicable data types for 'in'
         # 'currency' => [BigDecimal, Float, NilClass],

@@ -39,12 +39,6 @@ except ImportError:
     inspect = None
 
 try:
-    BaseException
-except NameError:
-    # Python 2.4 compatibility
-    BaseException = Exception
-
-try:
     from functools import wraps
 except ImportError:
     # Python 2.4 compatibility
