@@ -105,7 +105,7 @@ class TestValidateFilterSyntax(unittest.TestCase):
         )
 
         # We can't have not dict/list values for filters however.
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ShotgunError,
             "Filters can only be lists or dictionaries, not int.",
             lambda: self._mockgun.find(
@@ -386,7 +386,7 @@ class TestFilterOperator(unittest.TestCase):
 
     def test_invalid_operator(self):
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ShotgunError,
             "Unknown filter_operator type: bad",
             lambda: self._mockgun.find(
@@ -399,7 +399,7 @@ class TestFilterOperator(unittest.TestCase):
                 ])
         )
 
-        self.assertRaisesRegexp(
+        self.assertRaisesRegex(
             ShotgunError,
             "Bad filter operator, requires keys 'filter_operator' and 'filters',",
             lambda: self._mockgun.find(
