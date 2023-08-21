@@ -622,8 +622,7 @@ class Shotgun(object):
             if script_name is not None or api_key is not None:
                 raise ValueError("cannot provide an auth_code with script_name/api_key")
 
-        # Can't use 'all' with python 2.4
-        if len([x for x in [session_token, script_name, api_key, login, password] if x]) == 0:
+        if all([session_token, script_name, api_key, login, password]):
             if connect:
                 raise ValueError("must provide login/password, session_token or script_name/api_key")
 
