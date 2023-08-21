@@ -13,6 +13,7 @@ from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
 import urllib.error
 
+from unittest import skip
 
 class TestBase(unittest.TestCase):
     '''Base class for tests.

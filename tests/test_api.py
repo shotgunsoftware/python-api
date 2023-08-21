@@ -19,7 +19,7 @@ import datetime
 import ssl
 import sys
 import os
-from .mock import patch, MagicMock
+from mock import patch, MagicMock
 import time
 import types
 import uuid

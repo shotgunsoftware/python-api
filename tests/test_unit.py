@@ -12,7 +12,7 @@
 
 import ssl
 import unittest
-from .mock import patch
+from mock import patch
 import shotgun_api3 as api
 from httplib2 import Http
 
