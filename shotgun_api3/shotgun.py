@@ -2650,8 +2650,7 @@ class Shotgun(object):
                 This parameter exists only for backwards compatibility for scripts specifying
                 the parameter with keywords.
         :returns: If ``file_path`` is provided, returns the path to the file on disk.  If
-            ``file_path`` is ``None``, returns the actual data of the file, as str in Python 2 or
-            bytes in Python 3.
+            ``file_path`` is ``None``, returns the actual data of the file, as bytes in Python 3.
         :rtype: str | bytes
         """
         # backwards compatibility when passed via keyword argument
