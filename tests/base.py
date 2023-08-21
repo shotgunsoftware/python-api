@@ -2,15 +2,16 @@
 import os
 import re
 import unittest
+from configparser import ConfigParser
+
+import httplib2
 
 from . import mock
 
 import shotgun_api3 as api
 from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
-from shotgun_api3.lib import six
-from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib.six.moves.configparser import ConfigParser
+import urllib.error
 
 try:
     # Attempt to import skip from unittest.  Since this was added in Python 2.7
@@ -138,7 +139,7 @@ class MockTestBase(TestBase):
         # also replace the function that is called to get the http connection
         # to avoid calling the server. OK to return a mock as we will not use
         # it
-        self.mock_conn = mock.Mock(spec=api.lib.httplib2.Http)
+        self.mock_conn = mock.Mock(spec=httplib2.Http)
         # The Http objects connection property is a dict of connections
         # it is holding
         self.mock_conn.connections = dict()
@@ -159,18 +160,11 @@ class MockTestBase(TestBase):
         if not isinstance(self.sg._http_request, mock.Mock):
             return
 
-        if not isinstance(data, six.string_types):
-            if six.PY2:
-                data = json.dumps(
-                    data,
-                    ensure_ascii=False,
-                    encoding="utf-8"
-                )
-            else:
-                data = json.dumps(
-                    data,
-                    ensure_ascii=False,
-                )
+        if not isinstance(data, str):
+            data = json.dumps(
+                data,
+                ensure_ascii=False,
+            )
 
         resp_headers = {'cache-control': 'no-cache',
                         'connection': 'close',
@@ -192,7 +186,7 @@ class MockTestBase(TestBase):
         """Asserts _http_request is called with the method and params."""
         args, _ = self.sg._http_request.call_args
         arg_body = args[2]
-        assert isinstance(arg_body, six.binary_type)
+        assert isinstance(arg_body, bytes)
         arg_body = json.loads(arg_body)
 
         arg_params = arg_body.get("params")

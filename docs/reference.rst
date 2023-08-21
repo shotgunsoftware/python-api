@@ -964,6 +964,3 @@ Example for a user whose language preference is set to Japanese:
     },
     ...
     }
-
-.. note::
-    If needed, the encoding of the returned localized string can be ensured regardless the Python version using shotgun_api3.lib.six.ensure_text().

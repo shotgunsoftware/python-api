@@ -10,13 +10,13 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
-import os
+import ssl
 import unittest
 from .mock import patch
 import shotgun_api3 as api
-from shotgun_api3.shotgun import _is_mimetypes_broken
-from shotgun_api3.lib.six.moves import range, urllib
-from shotgun_api3.lib.httplib2 import Http, ssl_error_classes
+from httplib2 import Http
+
+import urllib.error, urllib.request, urllib.parse
 
 
 class TestShotgunInit(unittest.TestCase):
@@ -446,31 +446,13 @@ class TestCerts(unittest.TestCase):
         request = urllib.request.Request(url)
         return opener.open(request)
 
-    def test_found_correct_cert(self):
-        """
-        Checks that the cert file the API is finding,
-        (when a cert path isn't passed and the SHOTGUN_API_CACERTS
-        isn't set), is the one bundled with this API
-        """
-        # Get the path to the cert file we expect the Shotgun API to find
-        cert_path = os.path.normpath(
-            # Get the path relative to where we picked up the API and not relative
-            # to file on disk. On CI we pip install the API to run the tests
-            # so we have to pick the location from the installed copy.
-            # Call dirname to remove from __init__.py
-            os.path.join(os.path.dirname(api.__file__), "lib", "certifi", "cacert.pem")
-        )
-        # Now ensure that the path the SG API has found is correct.
-        self.assertEqual(cert_path, self.certs)
-        self.assertTrue(os.path.isfile(self.certs))
-
     def test_httplib(self):
         """
         Checks that we can access the amazon urls using our bundled
         certificate with httplib.
         """
         # First check that we get an error when trying to connect to a known dummy bad URL
-        self.assertRaises(ssl_error_classes, self._check_url_with_sg_api_httplib2, self.bad_url, self.certs)
+        self.assertRaises((ssl.SSLError, ssl.CertificateError), self._check_url_with_sg_api_httplib2, self.bad_url, self.certs)
 
         # Now check that the good urls connect properly using the certs
         for url in self.test_urls:
@@ -489,22 +471,6 @@ class TestCerts(unittest.TestCase):
         for url in self.test_urls:
             response = self._check_url_with_urllib(url)
             assert (response is not None)
-
-
-class TestMimetypesFix(unittest.TestCase):
-    """
-    Makes sure that the mimetypes fix will be imported.
-    """
-
-    @patch('shotgun_api3.shotgun.sys')
-    def _test_mimetypes_import(self, platform, major, minor, patch_number, result, mock):
-        """
-        Mocks sys.platform and sys.version_info to test the mimetypes import code.
-        """
-
-        mock.version_info = [major, minor, patch_number]
-        mock.platform = platform
-        self.assertEqual(_is_mimetypes_broken(), result)
 
 if __name__ == '__main__':
     unittest.main()
