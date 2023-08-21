@@ -65,6 +65,7 @@ jobs:
   # Python 2 and 3, but also for all OSes
   - script: |
       python -m pip install --upgrade pip setuptools wheel
+      python -m pip install .
       python -m pip install -r tests/ci_requirements.txt
     displayName: Install tools
 
