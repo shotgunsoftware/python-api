@@ -2721,7 +2721,7 @@ class Shotgun(object):
                 attachment = req.read()
         # 400 [sg] Attachment id doesn't exist or is a local file
         # 403 [s3] link is invalid
-        except urllib.error.URLError as e:
+        except urllib.error.HTTPError as e:
             if file_path:
                 fp.close()
             err = f"Failed to open {url}\n{e}"
