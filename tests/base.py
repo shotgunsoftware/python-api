@@ -6,23 +6,12 @@ from configparser import ConfigParser
 
 import httplib2
 
-from . import mock
+import mock
 
 import shotgun_api3 as api
 from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
 import urllib.error
-
-try:
-    # Attempt to import skip from unittest.  Since this was added in Python 2.7
-    # in the case that we're running on Python 2.6 we'll need a decorator to
-    # provide some equivalent functionality.
-    from unittest import skip
-except ImportError:
-    # On Python 2.6 we'll just have to ignore tests that are skipped -- we won't
-    # mark them as skipped, but we will not fail on them.
-    def skip(f):
-        return lambda self: None
 
 
 class TestBase(unittest.TestCase):

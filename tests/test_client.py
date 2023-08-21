@@ -30,7 +30,7 @@ import platform
 import sys
 import time
 import unittest
-from . import mock
+import mock
 
 import httplib2
 import shotgun_api3 as api

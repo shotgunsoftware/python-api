@@ -19,3 +19,4 @@ pytest
 pytest-azurepipelines
 coverage
 pytest-coverage
+mock
