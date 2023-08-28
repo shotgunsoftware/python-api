@@ -327,7 +327,7 @@ class TestShotgunClient(base.MockTestBase):
                 "Call is repeated")
             # Ensure that sleep was called with the retry interval between each attempt
             attempt_interval = self.sg.config.rpc_attempt_interval / 1000.0
-            calls = [mock.callargs(((attempt_interval,), {}))]
+            calls = [mock.call(attempt_interval)]
             calls *= (self.sg.config.max_rpc_attempts - 1)
             self.assertTrue(
                 mock_sleep.call_args_list == calls,
