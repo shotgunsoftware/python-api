@@ -4,7 +4,7 @@ ShotGrid Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
-v3.3.6 (TBD)
+v3.3.6 (2023 Aug 29)
 ====================
 - Update docs for entity fields.
 - Fix typo.
@@ -13,6 +13,8 @@ v3.3.6 (TBD)
 - Bump certifi from 2020.06.20 to 2022.12.7 in /shotgun_api3/lib.
 - Skip SG-MIM entities.
 - Replace shotgunsoftware references.
+- Deprecation of Python 2.
+- Security upgrade certifi to latest version 2023.07.22.
 
 v3.3.5 (2023 Jan 5)
 ====================
