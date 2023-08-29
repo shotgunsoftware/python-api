@@ -22,7 +22,7 @@ script_args = sys.argv[1:]
 
 setup(
     name='shotgun_api3',
-    version='3.3.5',
+    version='3.3.6',
     description='Shotgun Python API ',
     long_description=readme,
     author='Shotgun Software',
