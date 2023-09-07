@@ -2049,6 +2049,18 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
         self.assertEqual(thumb_resp['status'], '200')
         self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
 
+        # Repeat to see if cache sends 304....
+
+        thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
+        self.assertEqual(thumb_resp['status'], '200')
+        self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
+
+        thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
+        self.assertEqual(thumb_resp['status'], '200')
+        self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
+
+
+
         # clear thumbnail
         response_clear_thumbnail = self.sg.update("Version", self.version['id'], {'image': None})
         expected_clear_thumbnail = {'id': self.version['id'], 'image': None, 'type': 'Version'}
@@ -2105,6 +2117,17 @@ class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
             thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
             self.assertEqual(thumb_resp['status'], '200')
             self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
+
+            # Repeat to see if cache sends 304....
+
+            thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
+            self.assertEqual(thumb_resp['status'], '200')
+            self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
+
+            thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
+            self.assertEqual(thumb_resp['status'], '200')
+            self.assertEqual(thumb_resp['content-type'], 'image/jpeg')
+
 
             # clear thumbnail
             response_clear_thumbnail = self.sg.update("Version", self.version['id'], {'image': None})
