@@ -1,0 +1,7 @@
+[SERVER_INFO]
+server_url     : https://url
+script_name    : xyz
+api_key        : %%abce
+
+[TEST_DATA]
+project_name   : hjkl
