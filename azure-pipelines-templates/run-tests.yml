@@ -43,11 +43,16 @@ jobs:
   # matrix.
   strategy:
     matrix:
-      # We support these two versions of Python.
+      # We support these versions of Python.
       Python37:
         python.version: '3.7'
       Python39:
         python.version: '3.9'
+      Python310:
+        python.version: '3.10'
+      Python311:
+        python.version: '3.11'
+    maxParallel: 4
 
   # These are the steps that will be executed inside each job.
   steps:
