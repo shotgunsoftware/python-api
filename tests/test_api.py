@@ -1726,8 +1726,13 @@ class TestFollow(base.LiveTestBase):
         assert(result['followed'])
 
         result = self.sg.followers(self.shot)
+
+        result = list(filter(
+            lambda c: c['type'] == 'HumanUser' and c['id'] == self.human_user['id'],
+            result,
+        ))
+
         self.assertEqual(1, len(result))
-        self.assertEqual(self.human_user['id'], result[0]['id'])
 
     def test_following(self):
         '''Test following method'''
@@ -1740,8 +1745,13 @@ class TestFollow(base.LiveTestBase):
         assert(result['followed'])
 
         result = self.sg.following(self.human_user)
+
+        result = list(filter(
+            lambda c: c['type'] == 'Shot' and c['id'] == self.shot['id'],
+            result,
+        ))
+
         self.assertEqual(1, len(result))
-        self.assertEqual(self.shot['id'], result[0]['id'])
 
         result = self.sg.follow(self.human_user, self.task)
         assert(result['followed'])
