@@ -334,6 +334,12 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(new_version.get('project'), self.project)
         self.assertTrue(new_version.get('image') is not None)
 
+        print("new_version:")
+        print("    id: ", new_version.get('id'))
+        print("    image: ", new_version.get('image'))
+
+
+
         h = Http(".cache")
         thumb_resp, content = h.request(new_version.get('image'), "GET")
         self.assertEqual(thumb_resp['status'], '200')
@@ -376,6 +382,10 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(version_with_thumbnail.get('type'), 'Version')
         self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
 
+        print("version_with_thumbnail:")
+        print("    id: ", version_with_thumbnail.get('id'))
+        print("    image: ", version_with_thumbnail.get('image'))
+
         h = Http(".cache")
         thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
         self.assertEqual(thumb_resp['status'], '200')
@@ -402,6 +412,11 @@ class TestShotgunApi(base.LiveTestBase):
 
         self.assertEqual(task_with_thumbnail.get('type'), 'Task')
         self.assertEqual(task_with_thumbnail.get('id'), self.task['id'])
+
+        print("task_with_thumbnail:")
+        print("    id: ", task_with_thumbnail.get('id'))
+        print("    image: ", task_with_thumbnail.get('image'))
+
 
         h = Http(".cache")
         thumb_resp, content = h.request(task_with_thumbnail.get('image'), "GET")
@@ -507,6 +522,10 @@ class TestShotgunApi(base.LiveTestBase):
             self.assertEqual(response_version_with_project.get('type'), 'Version')
             self.assertEqual(response_version_with_project.get('id'), self.version['id'])
             self.assertEqual(response_version_with_project.get('code'), self.config.version_code)
+
+            print("response_version_with_project:")
+            print("    id: ", response_version_with_project.get('id'))
+            print("    image: ", response_version_with_project.get('project.Project.image'))
 
             h = Http(".cache")
             thumb_resp, content = h.request(response_version_with_project.get('project.Project.image'), "GET")
@@ -2044,6 +2063,10 @@ class TestHumanUserAuth(base.HumanUserAuthLiveTestBase):
         self.assertEqual(version_with_thumbnail.get('type'), 'Version')
         self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
 
+        print("version_with_thumbnail:")
+        print("    id: ", version_with_thumbnail.get('id'))
+        print("    image: ", version_with_thumbnail.get('image'))
+
         h = Http(".cache")
         thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
         self.assertEqual(thumb_resp['status'], '200')
@@ -2100,6 +2123,10 @@ class TestSessionTokenAuth(base.SessionTokenAuthLiveTestBase):
 
             self.assertEqual(version_with_thumbnail.get('type'), 'Version')
             self.assertEqual(version_with_thumbnail.get('id'), self.version['id'])
+
+            print("version_with_thumbnail:")
+            print("    id: ", version_with_thumbnail.get('id'))
+            print("    image: ", version_with_thumbnail.get('image'))
 
             h = Http(".cache")
             thumb_resp, content = h.request(version_with_thumbnail.get('image'), "GET")
