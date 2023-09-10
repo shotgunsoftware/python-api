@@ -770,7 +770,7 @@ class Shotgun(object):
                 if "filter_operator" not in f or "filters" not in f:
                     raise ShotgunError(
                         "Bad filter operator, requires keys 'filter_operator' and 'filters', "
-                        "found {}".format_map(", ".join(f.keys()))
+                        "found {}".format(", ".join(f.keys()))
                     )
                 new_filter = [None, f["filter_operator"], f["filters"]]
             else:
