@@ -15,13 +15,13 @@ There are caveats you need to be aware of when creating such an app.
 HTTPS Validation and cacerts.txt
 ********************************
 When creating the connection to ShotGrid a file is used to validate the ShotGrid certificate. This
-file is located at ``shotgun_api3/lib/httplib2/cacerts.txt``. Because this file is not a Python
+file can be located with ``httplib2.BUILTIN_CA_CERTS``. Because this file is not a Python
 file imported by your application, py2app will not know to include it in your package, it will
 need to be explicitly specified in your ``setup.py`` file (edit the path based on the location
 where your ``shotgun_api3`` package is located)::
 
     DATA_FILES = [
-        ('shotgun_api3', ['/shotgun/src/python-api/shotgun_api3/lib/httplib2/cacerts.txt'])
+        ('shotgun_api3', [httplib2.BUILTIN_CA_CERTS])
     ]
 
 Once you create your py2app package its contents should include two files (among others) in the
