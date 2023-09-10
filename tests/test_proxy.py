@@ -17,7 +17,7 @@ import shotgun_api3 as api
 class ServerConnectionTest(base.TestBase):
     '''Tests for server connection'''
     def setUp(self):
-        super(ServerConnectionTest, self).setUp()
+        super().setUp()
 
     def test_connection(self):
         '''Tests server connects and returns nothing'''

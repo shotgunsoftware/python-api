@@ -14,8 +14,8 @@ Includes short run tests, like simple crud and single finds. See
 test_api_long for other tests.
 """
 
-from __future__ import print_function
 import datetime
+import ssl
 import sys
 import os
 from .mock import patch, MagicMock
@@ -23,18 +23,12 @@ import time
 import types
 import uuid
 import unittest
-from shotgun_api3.lib.six.moves import range, urllib
+import urllib.parse, urllib.request, urllib.error
 import warnings
 import glob
 
 import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http
-from shotgun_api3.lib import six
-
-# To mock the correct exception when testion on Python 2 and 3, use the
-# ShotgunSSLError variable from sgsix that contains the appropriate exception
-# class for the current Python version.
-from shotgun_api3.lib.sgsix import ShotgunSSLError
 
 from . import base
 
@@ -45,9 +39,9 @@ TRANSIENT_IMAGE_PATH = "images/status/transient"
 
 class TestShotgunApi(base.LiveTestBase):
     def setUp(self):
-        super(TestShotgunApi, self).setUp()
+        super().setUp()
         # give note unicode content
-        self.sg.update('Note', self.note['id'], {'content': u'La Pe\xf1a'})
+        self.sg.update('Note', self.note['id'], {'content': 'La Pe\xf1a'})
 
     def test_info(self):
         """Called info"""
@@ -243,7 +237,7 @@ class TestShotgunApi(base.LiveTestBase):
         # test upload of non-ascii, unicode path
         u_path = os.path.abspath(
             os.path.expanduser(
-                glob.glob(os.path.join(six.text_type(this_dir), u'No*l.jpg'))[0]
+                glob.glob(os.path.join(str(this_dir), 'No*l.jpg'))[0]
             )
         )
 
@@ -270,42 +264,6 @@ class TestShotgunApi(base.LiveTestBase):
             'attachments',
             tag_list="monkeys, everywhere, send, help"
         )
-        if six.PY2:
-            # In Python2, make sure that non-utf-8 encoded paths raise when they
-            # can't be converted to utf-8.  For Python3, we'll skip these tests
-            # since string encoding is handled differently.
-
-            # We need to touch the file we're going to test with first. We can't
-            # bundle a file with this filename in the repo due to some pip install
-            # problems on Windows. Note that the path below is utf-8 encoding of
-            # what we'll eventually encode as shift-jis.
-            file_path_s = os.path.join(this_dir, "./\xe3\x81\x94.shift-jis")
-            file_path_u = file_path_s.decode("utf-8")
-
-            with open(file_path_u if sys.platform.startswith("win") else file_path_s, "w") as fh:
-                fh.write("This is just a test file with some random data in it.")
-
-            self.assertRaises(
-                shotgun_api3.ShotgunError,
-                self.sg.upload,
-                "Ticket",
-                self.ticket['id'],
-                file_path_u.encode("shift-jis"),
-                'attachments',
-                tag_list="monkeys, everywhere, send, help"
-            )
-
-            # But it should work in all cases if a unicode string is used.
-            self.sg.upload(
-                "Ticket",
-                self.ticket['id'],
-                file_path_u,
-                'attachments',
-                tag_list="monkeys, everywhere, send, help"
-            )
-
-            # cleanup
-            os.remove(file_path_u)
 
         # cleanup
         os.remove(file_path)
@@ -354,7 +312,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         url = new_version.get('filmstrip_image')
         data = self.sg.download_attachment({'url': url})
-        self.assertTrue(isinstance(data, six.binary_type))
+        self.assertTrue(isinstance(data, bytes))
 
         self.sg.delete("Version", new_version['id'])
     # end test_upload_thumbnail_in_create
@@ -673,28 +631,28 @@ class TestShotgunApi(base.LiveTestBase):
         shots = []
 
         shot_data_1 = {
-            "code": "%s Shot 1" % shot_prefix,
+            "code": f"{shot_prefix} Shot 1",
             "sg_status_list": "ip",
             "sg_cut_duration": 100,
             "project": self.project
         }
 
         shot_data_2 = {
-            "code": "%s Shot 2" % shot_prefix,
+            "code": f"{shot_prefix} Shot 2",
             "sg_status_list": "ip",
             "sg_cut_duration": 100,
             "project": self.project
         }
 
         shot_data_3 = {
-            "code": "%s Shot 3" % shot_prefix,
+            "code": f"{shot_prefix} Shot 3",
             "sg_status_list": "fin",
             "sg_cut_duration": 100,
             "project": self.project
         }
 
         shot_data_4 = {
-            "code": "%s Shot 4" % shot_prefix,
+            "code": f"{shot_prefix} Shot 4",
             "sg_status_list": "wtg",
             "sg_cut_duration": 0,
             "project": self.project
@@ -762,9 +720,6 @@ class TestShotgunApi(base.LiveTestBase):
                                         ensure_ascii=True)
 
         result = sg_ascii.find_one('Note', [['id', 'is', self.note['id']]], fields=['content'])
-        if six.PY2:
-            # In Python3 there isn't a separate unicode type.
-            self.assertFalse(_has_unicode(result))
 
     def test_ensure_unicode(self):
         '''test_ensure_unicode tests ensure_unicode flag.'''
@@ -913,7 +868,7 @@ class TestDataTypes(base.LiveTestBase):
     '''
 
     def setUp(self):
-        super(TestDataTypes, self).setUp()
+        super().setUp()
 
     def test_set_checkbox(self):
         entity = 'HumanUser'
@@ -1135,7 +1090,7 @@ class TestUtc(base.LiveTestBase):
     '''Test utc options'''
 
     def setUp(self):
-        super(TestUtc, self).setUp()
+        super().setUp()
         utc = shotgun_api3.shotgun.SG_TIMEZONE.utc
         self.datetime_utc = datetime.datetime(2008, 10, 13, 23, 10, tzinfo=utc)
         local = shotgun_api3.shotgun.SG_TIMEZONE.local
@@ -1171,7 +1126,7 @@ class TestUtc(base.LiveTestBase):
 
 class TestFind(base.LiveTestBase):
     def setUp(self):
-        super(TestFind, self).setUp()
+        super().setUp()
         # We will need the created_at field for the shot
         fields = list(self.shot.keys())[:]
         fields.append('created_at')
@@ -1695,7 +1650,7 @@ class TestFind(base.LiveTestBase):
 
 class TestFollow(base.LiveTestBase):
     def setUp(self):
-        super(TestFollow, self).setUp()
+        super().setUp()
         self.sg.update('HumanUser', self.human_user['id'], {'projects': [self.project]})
 
         # As the Follow entity isn't exposed directly, we clear out existing
@@ -1827,7 +1782,7 @@ class TestErrors(base.TestBase):
     @patch('shotgun_api3.shotgun.Http.request')
     def test_sha2_error(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError(
+        mock_request.side_effect = ssl.SSLError(
             "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
             "encoding routines:ASN1_item_verify: unknown message digest "
             "algorithm"
@@ -1854,7 +1809,7 @@ class TestErrors(base.TestBase):
 
         try:
             self.sg.info()
-        except ShotgunSSLError:
+        except ssl.SSLError:
             # ensure the api has reset the values in the correct fallback behavior
             self.assertTrue(self.sg.config.no_ssl_validation)
             self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
@@ -1867,7 +1822,7 @@ class TestErrors(base.TestBase):
     @patch('shotgun_api3.shotgun.Http.request')
     def test_sha2_error_with_strict(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError(
+        mock_request.side_effect = ssl.SSLError(
             "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
             "encoding routines:ASN1_item_verify: unknown message digest "
             "algorithm"
@@ -1884,7 +1839,7 @@ class TestErrors(base.TestBase):
 
         try:
             self.sg.info()
-        except ShotgunSSLError:
+        except ssl.SSLError:
             # ensure the api has NOT reset the values in the fallback behavior because we have
             # set the env variable to force validation
             self.assertFalse(self.sg.config.no_ssl_validation)
@@ -1942,7 +1897,7 @@ class TestErrors(base.TestBase):
 
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
-        super(TestScriptUserSudoAuth, self).setUp('ApiUser')
+        super().setUp('ApiUser')
 
     def test_user_is_creator(self):
         """
@@ -1976,7 +1931,7 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
 
 class TestHumanUserSudoAuth(base.TestBase):
     def setUp(self):
-        super(TestHumanUserSudoAuth, self).setUp('HumanUser')
+        super().setUp('HumanUser')
 
     def test_human_user_sudo_auth_fails(self):
         """
@@ -2185,10 +2140,10 @@ class TestActivityStream(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestActivityStream, self).setUp()
+        super().setUp()
         self._prefix = uuid.uuid4().hex
 
-        self._shot = self.sg.create("Shot", {"code": "%s activity stream test" % self._prefix,
+        self._shot = self.sg.create("Shot", {"code": f"{self._prefix} activity stream test",
                                              "project": self.project})
 
         self._note = self.sg.create("Note", {"content": "Test!",
@@ -2220,7 +2175,7 @@ class TestActivityStream(base.LiveTestBase):
                            "entity_id": self._shot["id"]})
         self.sg.batch(batch_data)
 
-        super(TestActivityStream, self).tearDown()
+        super().tearDown()
 
     def test_simple(self):
         """
@@ -2275,18 +2230,18 @@ class TestActivityStream(base.LiveTestBase):
 
         self.assertEqual(len(result["updates"]), 2)
         self.assertEqual(set(result["updates"][0]["primary_entity"].keys()),
-                         set(["content",
+                         {"content",
                               "id",
                               "name",
                               "status",
-                              "type"]))
+                              "type"})
 
         self.assertEqual(set(result["updates"][1]["primary_entity"].keys()),
-                         set(["created_by.HumanUser.image",
+                         {"created_by.HumanUser.image",
                               "id",
                               "name",
                               "status",
-                              "type"]))
+                              "type"})
 
 
 class TestNoteThreadRead(base.LiveTestBase):
@@ -2295,7 +2250,7 @@ class TestNoteThreadRead(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestNoteThreadRead, self).setUp()
+        super().setUp()
 
         # get path to our std attahcment
         this_dir, _ = os.path.split(__file__)
@@ -2398,8 +2353,8 @@ class TestNoteThreadRead(base.LiveTestBase):
         reply_thumb = result[1]["user"]["image"]
         url_obj_a = urllib.parse.urlparse(current_thumbnail)
         url_obj_b = urllib.parse.urlparse(reply_thumb)
-        self.assertEqual("%s/%s" % (url_obj_a.netloc, url_obj_a.path),
-                         "%s/%s" % (url_obj_b.netloc, url_obj_b.path),)
+        self.assertEqual(f"{url_obj_a.netloc}/{url_obj_a.path}",
+                         f"{url_obj_b.netloc}/{url_obj_b.path}",)
 
         # and check ther rest of the data
         self._check_note(result[0], note["id"], additional_fields=[])
@@ -2472,14 +2427,14 @@ class TestTextSearch(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestTextSearch, self).setUp()
+        super().setUp()
 
         # create 5 shots and 5 assets to search for
         self._prefix = uuid.uuid4().hex
 
         batch_data = []
         for i in range(5):
-            data = {"code": "%s Text Search %s" % (self._prefix, i),
+            data = {"code": f"{self._prefix} Text Search {i}",
                     "project": self.project}
             batch_data.append({"request_type": "create",
                                "entity_type": "Shot",
@@ -2506,7 +2461,7 @@ class TestTextSearch(base.LiveTestBase):
                                "entity_id": asset_id})
         self.sg.batch(batch_data)
 
-        super(TestTextSearch, self).tearDown()
+        super().tearDown()
 
     def test_simple(self):
         """
@@ -2515,9 +2470,9 @@ class TestTextSearch(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
             return
 
-        result = self.sg.text_search("%s Text Search" % self._prefix, {"Shot": []})
+        result = self.sg.text_search(f"{self._prefix} Text Search", {"Shot": []})
 
-        self.assertEqual(set(["matches", "terms"]), set(result.keys()))
+        self.assertEqual({"matches", "terms"}, set(result.keys()))
         self.assertEqual(result["terms"], [self._prefix, "text", "search"])
         matches = result["matches"]
         self.assertEqual(len(matches), 5)
@@ -2535,7 +2490,7 @@ class TestTextSearch(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
             return
 
-        result = self.sg.text_search("%s Text Search" % self._prefix, {"Shot": []}, limit=3)
+        result = self.sg.text_search(f"{self._prefix} Text Search", {"Shot": []}, limit=3)
         matches = result["matches"]
         self.assertEqual(len(matches), 3)
 
@@ -2546,12 +2501,12 @@ class TestTextSearch(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
             return
 
-        result = self.sg.text_search("%s Text Search" % self._prefix,
+        result = self.sg.text_search(f"{self._prefix} Text Search",
                                      {"Shot": [], "Asset": []})
 
         matches = result["matches"]
 
-        self.assertEqual(set(["matches", "terms"]), set(result.keys()))
+        self.assertEqual({"matches", "terms"}, set(result.keys()))
         self.assertEqual(len(matches), 10)
 
     def test_complex_entity_filter(self):
@@ -2561,7 +2516,7 @@ class TestTextSearch(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
             return
 
-        result = self.sg.text_search("%s Text Search" % self._prefix,
+        result = self.sg.text_search(f"{self._prefix} Text Search",
                                      {
                                          "Shot": [["code", "ends_with", "3"]],
                                          "Asset": [{"filter_operator": "any",
@@ -2570,13 +2525,13 @@ class TestTextSearch(base.LiveTestBase):
 
         matches = result["matches"]
 
-        self.assertEqual(set(["matches", "terms"]), set(result.keys()))
+        self.assertEqual({"matches", "terms"}, set(result.keys()))
         self.assertEqual(len(matches), 2)
 
         self.assertEqual(matches[0]["type"], "Shot")
-        self.assertEqual(matches[0]["name"], "%s Text Search 3" % self._prefix)
+        self.assertEqual(matches[0]["name"], f"{self._prefix} Text Search 3")
         self.assertEqual(matches[1]["type"], "Asset")
-        self.assertEqual(matches[1]["name"], "%s Text Search 4" % self._prefix)
+        self.assertEqual(matches[1]["name"], f"{self._prefix} Text Search 4")
 
 
 class TestReadAdditionalFilterPresets(base.LiveTestBase):
@@ -2723,7 +2678,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
             return
 
         field_display_name = "Project Visibility Test"
-        field_name = "sg_{0}".format(field_display_name.lower().replace(" ", "_"))
+        field_name = "sg_{}".format(field_display_name.lower().replace(" ", "_"))
 
         schema = self.sg.schema_field_read("Asset")
         # Ensure the custom field exists.
@@ -2805,10 +2760,7 @@ class TestLibImports(base.LiveTestBase):
         # python3, depending on what has been imported.  Make sure we got the
         # right one.)
         httplib2_compat_version = httplib2.Http.__module__.split(".")[-1]
-        if six.PY2:
-            self.assertEqual(httplib2_compat_version, "python2")
-        elif six.PY3:
-            self.assertTrue(httplib2_compat_version, "python3")
+        self.assertTrue(httplib2_compat_version, "python3")
 
         # Ensure that socks submodule is present and importable using a from
         # import -- this is a good indication that external httplib2 imports
@@ -2821,9 +2773,9 @@ class TestLibImports(base.LiveTestBase):
 
 def _has_unicode(data):
     for k, v in data.items():
-        if isinstance(k, six.text_type):
+        if isinstance(k, str):
             return True
-        if isinstance(v, six.text_type):
+        if isinstance(v, str):
             return True
     return False
 

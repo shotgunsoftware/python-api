@@ -30,7 +30,7 @@
 -----------------------------------------------------------------------------
 """
 
-from ..six.moves import cPickle as pickle
+import pickle
 import os
 
 from .errors import MockgunError
@@ -58,10 +58,10 @@ class SchemaFactory(object):
         :rtype: tuple
         """
         if not os.path.exists(schema_path):
-            raise MockgunError("Cannot locate Mockgun schema file '%s'!" % schema_path)
+            raise MockgunError(f"Cannot locate Mockgun schema file '{schema_path}'!")
 
         if not os.path.exists(schema_entity_path):
-            raise MockgunError("Cannot locate Mockgun schema file '%s'!" % schema_entity_path)
+            raise MockgunError(f"Cannot locate Mockgun schema file '{schema_entity_path}'!")
 
         # Poor man's attempt at a cache. All of our use cases deal with a single pair of files
         # for the duration of the unit tests, so keep a cache for both inputs. We don't want
@@ -84,9 +84,8 @@ class SchemaFactory(object):
             return pickle.load(fh)
 
 
-# Highest protocol that Python 2.4 supports, which is the earliest version of Python we support.
-# Actually, this is the same version that Python 2.7 supports at the moment!
-_HIGHEST_24_PICKLE_PROTOCOL = 2
+# Highest protocol that Python 3.7 supports, which is the earliest version of Python we support.
+_HIGHEST_37_PICKLE_PROTOCOL = 4
 
 
 # ----------------------------------------------------------------------------
@@ -108,13 +107,13 @@ def generate_schema(shotgun, schema_file_path, schema_entity_file_path):
     schema = shotgun.schema_read()
     fh = open(schema_file_path, "wb")
     try:
-        pickle.dump(schema, fh, protocol=_HIGHEST_24_PICKLE_PROTOCOL)
+        pickle.dump(schema, fh, protocol=_HIGHEST_37_PICKLE_PROTOCOL)
     finally:
         fh.close()
 
     schema_entity = shotgun.schema_entity_read()
     fh = open(schema_entity_file_path, "wb")
     try:
-        pickle.dump(schema_entity, fh, protocol=_HIGHEST_24_PICKLE_PROTOCOL)
+        pickle.dump(schema_entity, fh, protocol=_HIGHEST_37_PICKLE_PROTOCOL)
     finally:
         fh.close()

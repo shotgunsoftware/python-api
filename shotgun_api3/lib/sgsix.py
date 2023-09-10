@@ -31,31 +31,19 @@
 # This module contains addtional functions and variables to supplement the six
 # module for python 2/3 compatibility.
 
-from . import six
 import io
 import sys
 
 # For python 3, the `file` type no longer exists, and open() returns an
 # io.IOBase instance. We add file_types to allow comparison across python
 # versions.  See https://stackoverflow.com/questions/36321030#36321030
-#
-# This means that to test if a variable contains a file in both Python 2 and 3
-# you can use an isinstance test like:
-#     isinstance(value, sgsix.file_types)
-if six.PY3:
-    file_types = (io.IOBase, )
-else:
-    file_types = (file, io.IOBase)  # noqa warning for undefined `file` in python 3
+file_types = (io.IOBase, )
 
 # For python-api calls that result in an SSL error, the exception raised is
 # different on Python 2 and 3. Store the approriate exception class in a
 # variable to allow easier exception handling across Python 2/3.
-if six.PY3:
-    import ssl
-    ShotgunSSLError = ssl.SSLError
-else:
-    from .httplib2 import SSLHandshakeError
-    ShotgunSSLError = SSLHandshakeError
+import ssl
+ShotgunSSLError = ssl.SSLError
 
 
 def normalize_platform(platform, python2=True):

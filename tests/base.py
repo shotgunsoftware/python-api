@@ -2,27 +2,16 @@
 import os
 import re
 import unittest
+from configparser import ConfigParser
 
-from . import mock
+from unittest import mock
 
 import shotgun_api3 as api
 from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
-from shotgun_api3.lib import six
-from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib.six.moves.configparser import ConfigParser
+import urllib.error
 
-try:
-    # Attempt to import skip from unittest.  Since this was added in Python 2.7
-    # in the case that we're running on Python 2.6 we'll need a decorator to
-    # provide some equivalent functionality.
-    from unittest import skip
-except ImportError:
-    # On Python 2.6 we'll just have to ignore tests that are skipped -- we won't
-    # mark them as skipped, but we will not fail on them.
-    def skip(f):
-        return lambda self: None
-
+from unittest import skip
 
 class TestBase(unittest.TestCase):
     '''Base class for tests.
@@ -99,7 +88,7 @@ class TestBase(unittest.TestCase):
                                   http_proxy=self.config.http_proxy,
                                   connect=self.connect)
         else:
-            raise ValueError("Unknown value for auth_mode: %s" % auth_mode)
+            raise ValueError(f"Unknown value for auth_mode: {auth_mode}")
 
         if self.config.session_uuid:
             self.sg.set_session_uuid(self.config.session_uuid)
@@ -112,7 +101,7 @@ class MockTestBase(TestBase):
     '''Test base for tests mocking server interactions.'''
 
     def setUp(self):
-        super(MockTestBase, self).setUp()
+        super().setUp()
         # TODO see if there is another way to stop sg connecting
         self._setup_mock()
         self._setup_mock_data()
@@ -159,18 +148,11 @@ class MockTestBase(TestBase):
         if not isinstance(self.sg._http_request, mock.Mock):
             return
 
-        if not isinstance(data, six.string_types):
-            if six.PY2:
-                data = json.dumps(
-                    data,
-                    ensure_ascii=False,
-                    encoding="utf-8"
-                )
-            else:
-                data = json.dumps(
-                    data,
-                    ensure_ascii=False,
-                )
+        if not isinstance(data, str):
+            data = json.dumps(
+                data,
+                ensure_ascii=False,
+            )
 
         resp_headers = {'cache-control': 'no-cache',
                         'connection': 'close',
@@ -192,7 +174,7 @@ class MockTestBase(TestBase):
         """Asserts _http_request is called with the method and params."""
         args, _ = self.sg._http_request.call_args
         arg_body = args[2]
-        assert isinstance(arg_body, six.binary_type)
+        assert isinstance(arg_body, bytes)
         arg_body = json.loads(arg_body)
 
         arg_params = arg_body.get("params")
@@ -235,7 +217,7 @@ class LiveTestBase(TestBase):
     '''Test base for tests relying on connection to server.'''
 
     def setUp(self, auth_mode='ApiUser'):
-        super(LiveTestBase, self).setUp(auth_mode)
+        super().setUp(auth_mode)
         if self.sg.server_caps.version and \
            self.sg.server_caps.version >= (3, 3, 0) and \
            (self.sg.server_caps.host.startswith('0.0.0.0') or
@@ -255,7 +237,7 @@ class LiveTestBase(TestBase):
         # reloading stuff from Shotgun over and over again during each test.
         # As such, we are using setUpClass to load them once during the
         # entire duration of the tests.
-        super(LiveTestBase, cls).setUpClass()
+        super().setUpClass()
 
         # When running the tests from a pull request from a client, the Shotgun
         # site URL won't be set, so do not attempt to connect to Shotgun.
@@ -347,7 +329,7 @@ class HumanUserAuthLiveTestBase(LiveTestBase):
     '''
 
     def setUp(self):
-        super(HumanUserAuthLiveTestBase, self).setUp('HumanUser')
+        super().setUp('HumanUser')
 
 
 class SessionTokenAuthLiveTestBase(LiveTestBase):
@@ -357,17 +339,17 @@ class SessionTokenAuthLiveTestBase(LiveTestBase):
     '''
 
     def setUp(self):
-        super(SessionTokenAuthLiveTestBase, self).setUp('SessionToken')
+        super().setUp('SessionToken')
 
 
-class SgTestConfig(object):
+class SgTestConfig:
     '''Reads test config and holds values'''
 
     def __init__(self):
         for key in self.config_keys():
             # Look for any environment variables that match our test
             # configuration naming of "SG_{KEY}". Default is None.
-            value = os.environ.get('SG_%s' % (str(key).upper()))
+            value = os.environ.get(f'SG_{str(key).upper()}')
             if key in ['mock']:
                 value = (value is None) or (str(value).lower() in ['true', '1'])
             setattr(self, key, value)
