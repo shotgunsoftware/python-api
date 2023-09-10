@@ -14,7 +14,6 @@ Includes short run tests, like simple crud and single finds. See
 test_api_long for other tests.
 """
 
-from __future__ import print_function
 import datetime
 import ssl
 import sys
@@ -40,9 +39,9 @@ TRANSIENT_IMAGE_PATH = "images/status/transient"
 
 class TestShotgunApi(base.LiveTestBase):
     def setUp(self):
-        super(TestShotgunApi, self).setUp()
+        super().setUp()
         # give note unicode content
-        self.sg.update('Note', self.note['id'], {'content': u'La Pe\xf1a'})
+        self.sg.update('Note', self.note['id'], {'content': 'La Pe\xf1a'})
 
     def test_info(self):
         """Called info"""
@@ -238,7 +237,7 @@ class TestShotgunApi(base.LiveTestBase):
         # test upload of non-ascii, unicode path
         u_path = os.path.abspath(
             os.path.expanduser(
-                glob.glob(os.path.join(str(this_dir), u'No*l.jpg'))[0]
+                glob.glob(os.path.join(str(this_dir), 'No*l.jpg'))[0]
             )
         )
 
@@ -869,7 +868,7 @@ class TestDataTypes(base.LiveTestBase):
     '''
 
     def setUp(self):
-        super(TestDataTypes, self).setUp()
+        super().setUp()
 
     def test_set_checkbox(self):
         entity = 'HumanUser'
@@ -1091,7 +1090,7 @@ class TestUtc(base.LiveTestBase):
     '''Test utc options'''
 
     def setUp(self):
-        super(TestUtc, self).setUp()
+        super().setUp()
         utc = shotgun_api3.shotgun.SG_TIMEZONE.utc
         self.datetime_utc = datetime.datetime(2008, 10, 13, 23, 10, tzinfo=utc)
         local = shotgun_api3.shotgun.SG_TIMEZONE.local
@@ -1127,7 +1126,7 @@ class TestUtc(base.LiveTestBase):
 
 class TestFind(base.LiveTestBase):
     def setUp(self):
-        super(TestFind, self).setUp()
+        super().setUp()
         # We will need the created_at field for the shot
         fields = list(self.shot.keys())[:]
         fields.append('created_at')
@@ -1651,7 +1650,7 @@ class TestFind(base.LiveTestBase):
 
 class TestFollow(base.LiveTestBase):
     def setUp(self):
-        super(TestFollow, self).setUp()
+        super().setUp()
         self.sg.update('HumanUser', self.human_user['id'], {'projects': [self.project]})
 
         # As the Follow entity isn't exposed directly, we clear out existing
@@ -1898,7 +1897,7 @@ class TestErrors(base.TestBase):
 
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
-        super(TestScriptUserSudoAuth, self).setUp('ApiUser')
+        super().setUp('ApiUser')
 
     def test_user_is_creator(self):
         """
@@ -1932,7 +1931,7 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
 
 class TestHumanUserSudoAuth(base.TestBase):
     def setUp(self):
-        super(TestHumanUserSudoAuth, self).setUp('HumanUser')
+        super().setUp('HumanUser')
 
     def test_human_user_sudo_auth_fails(self):
         """
@@ -2141,7 +2140,7 @@ class TestActivityStream(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestActivityStream, self).setUp()
+        super().setUp()
         self._prefix = uuid.uuid4().hex
 
         self._shot = self.sg.create("Shot", {"code": f"{self._prefix} activity stream test",
@@ -2176,7 +2175,7 @@ class TestActivityStream(base.LiveTestBase):
                            "entity_id": self._shot["id"]})
         self.sg.batch(batch_data)
 
-        super(TestActivityStream, self).tearDown()
+        super().tearDown()
 
     def test_simple(self):
         """
@@ -2231,18 +2230,18 @@ class TestActivityStream(base.LiveTestBase):
 
         self.assertEqual(len(result["updates"]), 2)
         self.assertEqual(set(result["updates"][0]["primary_entity"].keys()),
-                         set(["content",
+                         {"content",
                               "id",
                               "name",
                               "status",
-                              "type"]))
+                              "type"})
 
         self.assertEqual(set(result["updates"][1]["primary_entity"].keys()),
-                         set(["created_by.HumanUser.image",
+                         {"created_by.HumanUser.image",
                               "id",
                               "name",
                               "status",
-                              "type"]))
+                              "type"})
 
 
 class TestNoteThreadRead(base.LiveTestBase):
@@ -2251,7 +2250,7 @@ class TestNoteThreadRead(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestNoteThreadRead, self).setUp()
+        super().setUp()
 
         # get path to our std attahcment
         this_dir, _ = os.path.split(__file__)
@@ -2428,7 +2427,7 @@ class TestTextSearch(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestTextSearch, self).setUp()
+        super().setUp()
 
         # create 5 shots and 5 assets to search for
         self._prefix = uuid.uuid4().hex
@@ -2462,7 +2461,7 @@ class TestTextSearch(base.LiveTestBase):
                                "entity_id": asset_id})
         self.sg.batch(batch_data)
 
-        super(TestTextSearch, self).tearDown()
+        super().tearDown()
 
     def test_simple(self):
         """
@@ -2473,7 +2472,7 @@ class TestTextSearch(base.LiveTestBase):
 
         result = self.sg.text_search(f"{self._prefix} Text Search", {"Shot": []})
 
-        self.assertEqual(set(["matches", "terms"]), set(result.keys()))
+        self.assertEqual({"matches", "terms"}, set(result.keys()))
         self.assertEqual(result["terms"], [self._prefix, "text", "search"])
         matches = result["matches"]
         self.assertEqual(len(matches), 5)
@@ -2507,7 +2506,7 @@ class TestTextSearch(base.LiveTestBase):
 
         matches = result["matches"]
 
-        self.assertEqual(set(["matches", "terms"]), set(result.keys()))
+        self.assertEqual({"matches", "terms"}, set(result.keys()))
         self.assertEqual(len(matches), 10)
 
     def test_complex_entity_filter(self):
@@ -2526,7 +2525,7 @@ class TestTextSearch(base.LiveTestBase):
 
         matches = result["matches"]
 
-        self.assertEqual(set(["matches", "terms"]), set(result.keys()))
+        self.assertEqual({"matches", "terms"}, set(result.keys()))
         self.assertEqual(len(matches), 2)
 
         self.assertEqual(matches[0]["type"], "Shot")
@@ -2679,7 +2678,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
             return
 
         field_display_name = "Project Visibility Test"
-        field_name = "sg_{0}".format(field_display_name.lower().replace(" ", "_"))
+        field_name = "sg_{}".format(field_display_name.lower().replace(" ", "_"))
 
         schema = self.sg.schema_field_read("Asset")
         # Ensure the custom field exists.

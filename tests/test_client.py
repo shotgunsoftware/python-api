@@ -23,7 +23,7 @@ import platform
 import sys
 import time
 import unittest
-from . import mock
+from unittest import mock
 
 import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
@@ -41,7 +41,7 @@ class TestShotgunClient(base.MockTestBase):
     '''Test case for shotgun api with server interactions mocked.'''
 
     def setUp(self):
-        super(TestShotgunClient, self).setUp()
+        super().setUp()
         # get domain and uri scheme
         match = re.search('(https?://)(.*)', self.server_url)
         self.uri_prefix = match.group(1)
@@ -223,7 +223,7 @@ class TestShotgunClient(base.MockTestBase):
 
         self.sg = api.Shotgun(auth_url, "foo", "bar", connect=False)
         self._setup_mock()
-        self._mock_http({'version': [2, 4, 0, u'Dev']})
+        self._mock_http({'version': [2, 4, 0, 'Dev']})
 
         self.sg.info()
 
@@ -308,7 +308,7 @@ class TestShotgunClient(base.MockTestBase):
                 "Call is repeated")
             # Ensure that sleep was called with the retry interval between each attempt
             attempt_interval = self.sg.config.rpc_attempt_interval / 1000.0
-            calls = [mock.callargs(((attempt_interval,), {}))]
+            calls = [mock.call(attempt_interval)]
             calls *= (self.sg.config.max_rpc_attempts - 1)
             self.assertTrue(
                 mock_sleep.call_args_list == calls,
@@ -496,21 +496,21 @@ class TestShotgunClient(base.MockTestBase):
     def test_encode_payload(self):
         """Request body is encoded as JSON"""
 
-        d = {"this is ": u"my data \u00E0"}
+        d = {"this is ": "my data \u00E0"}
         j = self.sg._encode_payload(d)
         self.assertTrue(isinstance(j, bytes))
 
         d = {
-            "this is ": u"my data"
+            "this is ": "my data"
         }
         j = self.sg._encode_payload(d)
         self.assertTrue(isinstance(j, bytes))
 
     def test_decode_response_ascii(self):
-        self._assert_decode_resonse(True, u"my data \u00E0")
+        self._assert_decode_resonse(True, "my data \u00E0")
 
     def test_decode_response_unicode(self):
-        self._assert_decode_resonse(False, u"my data \u00E0")
+        self._assert_decode_resonse(False, "my data \u00E0")
 
     def _assert_decode_resonse(self, ensure_ascii, data):
         """HTTP Response is decoded as JSON or text"""

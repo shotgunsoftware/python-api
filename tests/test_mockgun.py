@@ -80,7 +80,7 @@ class TestValidateFilterSyntax(unittest.TestCase):
         """
         Creates test data.
         """
-        super(TestValidateFilterSyntax, self).setUp()
+        super().setUp()
 
         self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
 
@@ -280,7 +280,7 @@ class TestFilterOperator(unittest.TestCase):
         """
         Creates tests data.
         """
-        super(TestFilterOperator, self).setUp()
+        super().setUp()
 
         self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
 

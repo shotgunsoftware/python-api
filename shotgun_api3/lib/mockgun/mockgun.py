@@ -129,7 +129,7 @@ __version__ = "0.0.1"
 # ----------------------------------------------------------------------------
 # API
 
-class Shotgun(object):
+class Shotgun:
     """
     Mockgun is a mocked Shotgun API, designed for test purposes.
     It generates an object which looks and feels like a normal Shotgun API instance.
@@ -205,7 +205,7 @@ class Shotgun(object):
         self._schema, self._schema_entity = SchemaFactory.get_schemas(schema_path, schema_entity_path)
 
         # initialize the "database"
-        self._db = dict((entity, {}) for entity in self._schema)
+        self._db = {entity: {} for entity in self._schema}
 
         # set some basic public members that exist in the Shotgun API
         self.base_url = base_url
@@ -244,7 +244,7 @@ class Shotgun(object):
         if field_name is None:
             return self._schema[entity_type]
         else:
-            return dict((k, v) for k, v in self._schema[entity_type].items() if k == field_name)
+            return {k: v for k, v in self._schema[entity_type].items() if k == field_name}
 
     def find(
         self, entity_type, filters, fields=None, order=None, filter_operator=None,
@@ -308,12 +308,12 @@ class Shotgun(object):
                 results = sorted(results, key=lambda k: k[order_field], reverse=desc_order)
 
         if fields is None:
-            fields = set(["type", "id"])
+            fields = {"type", "id"}
         else:
-            fields = set(fields) | set(["type", "id"])
+            fields = set(fields) | {"type", "id"}
 
         # get the values requested
-        val = [dict((field, self._get_field_from_row(entity_type, row, field)) for field in fields) for row in results]
+        val = [{field: self._get_field_from_row(entity_type, row, field) for field in fields} for row in results]
 
         return val
 
@@ -377,9 +377,9 @@ class Shotgun(object):
         self._db[entity_type][next_id] = row
 
         if return_fields is None:
-            result = dict((field, self._get_field_from_row(entity_type, row, field)) for field in data)
+            result = {field: self._get_field_from_row(entity_type, row, field) for field in data}
         else:
-            result = dict((field, self._get_field_from_row(entity_type, row, field)) for field in return_fields)
+            result = {field: self._get_field_from_row(entity_type, row, field) for field in return_fields}
 
         result["type"] = row["type"]
         result["id"] = row["id"]
@@ -394,7 +394,7 @@ class Shotgun(object):
         row = self._db[entity_type][entity_id]
         self._update_row(entity_type, row, data)
 
-        return [dict((field, item) for field, item in row.items() if field in data or field in ("type", "id"))]
+        return [{field: item for field, item in row.items() if field in data or field in ("type", "id")}]
 
     def delete(self, entity_type, entity_id):
         self._validate_entity_type(entity_type)

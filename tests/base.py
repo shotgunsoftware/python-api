@@ -4,7 +4,7 @@ import re
 import unittest
 from configparser import ConfigParser
 
-from . import mock
+from unittest import mock
 
 import shotgun_api3 as api
 from shotgun_api3.shotgun import json
@@ -101,7 +101,7 @@ class MockTestBase(TestBase):
     '''Test base for tests mocking server interactions.'''
 
     def setUp(self):
-        super(MockTestBase, self).setUp()
+        super().setUp()
         # TODO see if there is another way to stop sg connecting
         self._setup_mock()
         self._setup_mock_data()
@@ -217,7 +217,7 @@ class LiveTestBase(TestBase):
     '''Test base for tests relying on connection to server.'''
 
     def setUp(self, auth_mode='ApiUser'):
-        super(LiveTestBase, self).setUp(auth_mode)
+        super().setUp(auth_mode)
         if self.sg.server_caps.version and \
            self.sg.server_caps.version >= (3, 3, 0) and \
            (self.sg.server_caps.host.startswith('0.0.0.0') or
@@ -237,7 +237,7 @@ class LiveTestBase(TestBase):
         # reloading stuff from Shotgun over and over again during each test.
         # As such, we are using setUpClass to load them once during the
         # entire duration of the tests.
-        super(LiveTestBase, cls).setUpClass()
+        super().setUpClass()
 
         # When running the tests from a pull request from a client, the Shotgun
         # site URL won't be set, so do not attempt to connect to Shotgun.
@@ -329,7 +329,7 @@ class HumanUserAuthLiveTestBase(LiveTestBase):
     '''
 
     def setUp(self):
-        super(HumanUserAuthLiveTestBase, self).setUp('HumanUser')
+        super().setUp('HumanUser')
 
 
 class SessionTokenAuthLiveTestBase(LiveTestBase):
@@ -339,10 +339,10 @@ class SessionTokenAuthLiveTestBase(LiveTestBase):
     '''
 
     def setUp(self):
-        super(SessionTokenAuthLiveTestBase, self).setUp('SessionToken')
+        super().setUp('SessionToken')
 
 
-class SgTestConfig(object):
+class SgTestConfig:
     '''Reads test config and holds values'''
 
     def __init__(self):

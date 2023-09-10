@@ -20,7 +20,7 @@ from datetime import tzinfo, timedelta
 import time as _time
 
 
-class SgTimezone(object):
+class SgTimezone:
     '''
     Shotgun's server infrastructure is configured for Coordinated Universal
     Time (UTC). In order to provide relevant local timestamps to users, we wrap

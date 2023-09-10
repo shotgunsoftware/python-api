@@ -161,7 +161,7 @@ class UserCredentialsNotAllowedForOxygenAuthenticationFault(Fault):
 # API
 
 
-class ServerCapabilities(object):
+class ServerCapabilities:
     """
     Container for the servers capabilities, such as version enabled features.
 
@@ -299,7 +299,7 @@ class ServerCapabilities(object):
         return f"ServerCapabilities: host {self.host}, version {self.version}, is_dev {self.is_dev}"
 
 
-class ClientCapabilities(object):
+class ClientCapabilities:
     """
     Container for the client capabilities.
 
@@ -353,7 +353,7 @@ class ClientCapabilities(object):
                                                         self.ssl_version)
 
 
-class _Config(object):
+class _Config:
     """
     Container for the client configuration.
     """
@@ -450,7 +450,7 @@ class _Config(object):
         return self._records_per_page
 
 
-class Shotgun(object):
+class Shotgun:
     """
     Shotgun Client connection.
     """
@@ -2659,8 +2659,8 @@ class Shotgun(object):
         if file_path:
             try:
                 fp = open(file_path, "wb")
-            except IOError as e:
-                raise IOError("Unable to write Attachment to disk using "
+            except OSError as e:
+                raise OSError("Unable to write Attachment to disk using "
                               f"file_path. {e}")
 
         url = self.get_attachment_download_url(attachment)
@@ -2770,7 +2770,7 @@ class Shotgun(object):
 
         if attachment_id:
             url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
-                                           "/file_serve/attachment/{}".format(urllib.parse.quote(str(attachment_id))),
+                                           f"/file_serve/attachment/{urllib.parse.quote(str(attachment_id))}",
                                            None, None, None))
         return url
 
@@ -3557,10 +3557,10 @@ class Shotgun(object):
         resp, content = conn.request(url, method=verb, body=body, headers=headers)
         # http response code is handled else where
         http_status = (resp.status, resp.reason)
-        resp_headers = dict(
-            (k.lower(), v)
+        resp_headers = {
+            k.lower(): v
             for k, v in resp.items()
-        )
+        }
         resp_body = content
 
         LOG.debug(f"Response status is {http_status}")
@@ -3702,10 +3702,10 @@ class Shotgun(object):
             return tuple(recursive(i, visitor) for i in data)
 
         if isinstance(data, dict):
-            return dict(
-                (k, recursive(v, visitor))
+            return {
+                k: recursive(v, visitor)
                 for k, v in data.items()
-            )
+            }
 
         return visitor(data)
 
@@ -3931,7 +3931,7 @@ class Shotgun(object):
 
         e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
         """
-        return dict([(k, {key_name: v}) for (k, v) in (d or {}).items()])
+        return {k: {key_name: v} for (k, v) in (d or {}).items()}
 
     def _upload_file_to_storage(self, path, storage_url):
         """
