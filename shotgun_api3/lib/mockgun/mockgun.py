@@ -120,7 +120,6 @@ from ... import ShotgunError
 from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
-from .. import six
 
 # ----------------------------------------------------------------------------
 # Version
@@ -339,7 +338,7 @@ class Shotgun(object):
             elif request["request_type"] == "delete":
                 results.append(self.delete(request["entity_type"], request["entity_id"]))
             else:
-                raise ShotgunError("Invalid request type %s in request %s" % (request["request_type"], request))
+                raise ShotgunError(f"Invalid request type {request['request_type']} in request {request}")
         return results
 
     def create(self, entity_type, data, return_fields=None):
@@ -430,7 +429,7 @@ class Shotgun(object):
 
     def _validate_entity_type(self, entity_type):
         if entity_type not in self._schema:
-            raise ShotgunError("%s is not a valid entity" % entity_type)
+            raise ShotgunError(f"{entity_type} is not a valid entity")
 
     def _validate_entity_data(self, entity_type, data):
         if "id" in data or "type" in data:
@@ -449,43 +448,32 @@ class Shotgun(object):
             if field_info["data_type"]["value"] == "multi_entity":
                 if not isinstance(item, list):
                     raise ShotgunError(
-                        "%s.%s is of type multi_entity, but data %s is not a list" %
-                        (entity_type, field, item)
+                        f"{entity_type}.{field} is of type multi_entity, but data {item} is not a list"
                     )
                 elif item and any(not isinstance(sub_item, dict) for sub_item in item):
                     raise ShotgunError(
-                        "%s.%s is of type multi_entity, but data %s contains a non-dictionary" %
-                        (entity_type, field, item)
+                        f"{entity_type}.{field} is of type multi_entity, but data {item} contains a non-dictionary"
                     )
                 elif item and any("id" not in sub_item or "type" not in sub_item for sub_item in item):
                     raise ShotgunError(
-                        "%s.%s is of type multi-entity, but an item in data %s does not contain 'type' and 'id'" %
-                        (entity_type, field, item)
+                        f"{entity_type}.{field} is of type multi-entity, but an item in data {item} does not contain 'type' and 'id'"
                     )
                 elif item and any(
                     sub_item["type"] not in field_info["properties"]["valid_types"]["value"] for sub_item in item
                 ):
                     raise ShotgunError(
-                        "%s.%s is of multi-type entity, but an item in data %s has an invalid type (expected one of %s)"
-                        % (entity_type, field, item, field_info["properties"]["valid_types"]["value"])
+                        f"{entity_type}.{field} is of multi-type entity, but an item in data {item} has an invalid type (expected one of {field_info['properties']['valid_types']['value']})"
                     )
 
             elif field_info["data_type"]["value"] == "entity":
                 if not isinstance(item, dict):
                     raise ShotgunError(
-                        "%s.%s is of type entity, but data %s is not a dictionary" %
-                        (entity_type, field, item)
+                        f"{entity_type}.{field} is of type entity, but data {item} is not a dictionary"
                     )
                 elif "id" not in item or "type" not in item:
                     raise ShotgunError(
-                        "%s.%s is of type entity, but data %s does not contain 'type' and 'id'"
-                        % (entity_type, field, item)
+                        f"{entity_type}.{field} is of type entity, but data {item} does not contain 'type' and 'id'"
                     )
-                # elif item["type"] not in field_info["properties"]["valid_types"]["value"]:
-                #    raise ShotgunError(
-                #        "%s.%s is of type entity, but data %s has an invalid type (expected one of %s)" %
-                #        (entity_type, field, item, field_info["properties"]["valid_types"]["value"])
-                #    )
 
             else:
                 try:
@@ -494,23 +482,21 @@ class Shotgun(object):
                                    "float": float,
                                    "checkbox": bool,
                                    "percent": int,
-                                   "text": six.string_types,
+                                   "text": str,
                                    "serializable": dict,
                                    "date": datetime.date,
                                    "date_time": datetime.datetime,
-                                   "list": six.string_types,
-                                   "status_list": six.string_types,
+                                   "list": str,
+                                   "status_list": str,
                                    "url": dict}[sg_type]
                 except KeyError:
                     raise ShotgunError(
-                        "Field %s.%s: Handling for ShotGrid type %s is not implemented" %
-                        (entity_type, field, sg_type)
+                        f"Field {entity_type}.{field}: Handling for ShotGrid type {sg_type} is not implemented"
                     )
 
                 if not isinstance(item, python_type):
                     raise ShotgunError(
-                        "%s.%s is of type %s, but data %s is not of type %s" %
-                        (entity_type, field, type(item), sg_type, python_type)
+                        f"{entity_type}.{field} is of type {type(item)}, but data {sg_type} is not of type {python_type}"
                     )
 
                 # TODO: add check for correct timezone
@@ -525,7 +511,7 @@ class Shotgun(object):
                     self._validate_entity_fields(entity_type2, [field3])
                 except ValueError:
                     if field not in valid_fields and field not in ("type", "id"):
-                        raise ShotgunError("%s is not a valid field for entity %s" % (field, entity_type))
+                        raise ShotgunError(f"{field} is not a valid field for entity {entity_type}")
 
     def _get_default_value(self, entity_type, field):
         field_info = self._schema[entity_type][field]
@@ -650,7 +636,7 @@ class Shotgun(object):
                     return len(lval) != 0
                 return rval["id"] not in (sub_lval["id"] for sub_lval in lval)
 
-        raise ShotgunError("The %s operator is not supported on the %s type" % (operator, field_type))
+        raise ShotgunError(f"The {operator} operator is not supported on the {field_type} type")
 
     def _get_field_from_row(self, entity_type, row, field):
         # split dotted form fields
@@ -668,7 +654,7 @@ class Shotgun(object):
                     for linked_row in field_value:
                         # Make sure we're actually iterating on links.
                         if not isinstance(linked_row, dict):
-                            raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
+                            raise ShotgunError(f"Invalid deep query field {entity_type}.{field}")
 
                         # Skips entities that are not of the requested type.
                         if linked_row["type"] != entity_type2:
@@ -684,12 +670,12 @@ class Shotgun(object):
                     return None
                 # not multi entity, must be entity.
                 elif not isinstance(field_value, dict):
-                    raise ShotgunError("Invalid deep query field %s.%s" % (entity_type, field))
+                    raise ShotgunError(f"Invalid deep query field {entity_type}.{field}")
 
                 # make sure that types in the query match type in the linked field
                 if entity_type2 != field_value["type"]:
-                    raise ShotgunError("Deep query field %s.%s does not match type "
-                                       "with data %s" % (entity_type, field, field_value))
+                    raise ShotgunError(f"Deep query field {entity_type}.{field} does not match type "
+                                       f"with data {field_value}")
 
                 # ok so looks like the value is an entity link
                 # e.g. db contains: {"sg_sequence": {"type":"Sequence", "id": 123 } }
@@ -728,7 +714,7 @@ class Shotgun(object):
             if operator in ["any", "all"]:
                 return self._row_matches_filters(entity_type, row, rval, operator, retired_only)
             else:
-                raise ShotgunError("Unknown filter_operator type: %s" % operator)
+                raise ShotgunError(f"Unknown filter_operator type: {operator}")
         else:
 
             lval = self._get_field_from_row(entity_type, row, field)
@@ -784,12 +770,12 @@ class Shotgun(object):
                 if "filter_operator" not in f or "filters" not in f:
                     raise ShotgunError(
                         "Bad filter operator, requires keys 'filter_operator' and 'filters', "
-                        "found %s" % ", ".join(f.keys())
+                        "found {}".format_map(", ".join(f.keys()))
                     )
                 new_filter = [None, f["filter_operator"], f["filters"]]
             else:
                 raise ShotgunError(
-                    "Filters can only be lists or dictionaries, not %s." % type(f).__name__
+                    f"Filters can only be lists or dictionaries, not {type(f).__name__}."
                 )
 
             rearranged_filters.append(new_filter)
@@ -808,7 +794,7 @@ class Shotgun(object):
         elif filter_operator == "any":
             return any(self._row_matches_filter(entity_type, row, filter, retired_only) for filter in filters)
         else:
-            raise ShotgunError("%s is not a valid filter operator" % filter_operator)
+            raise ShotgunError(f"{filter_operator} is not a valid filter operator")
 
     def _update_row(self, entity_type, row, data):
         for field in data:
@@ -822,4 +808,4 @@ class Shotgun(object):
 
     def _validate_entity_exists(self, entity_type, entity_id):
         if entity_id not in self._db[entity_type]:
-            raise ShotgunError("No entity of type %s exists with id %s" % (entity_type, entity_id))
+            raise ShotgunError(f"No entity of type {entity_type} exists with id {entity_id}")

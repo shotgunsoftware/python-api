@@ -14,8 +14,7 @@ import os
 import unittest
 from .mock import patch
 import shotgun_api3 as api
-from shotgun_api3.shotgun import _is_mimetypes_broken
-from shotgun_api3.lib.six.moves import range, urllib
+import urllib.error, urllib.request, urllib.parse
 from shotgun_api3.lib.httplib2 import Http, ssl_error_classes
 
 
@@ -50,7 +49,7 @@ class TestShotgunInit(unittest.TestCase):
     def test_http_proxy_server_and_port(self):
         proxy_server = "someserver.com"
         proxy_port = 1234
-        http_proxy = "%s:%d" % (proxy_server, proxy_port)
+        http_proxy = f"{proxy_server}:{proxy_port}"
         sg = api.Shotgun(self.server_path,
                          self.script_name,
                          self.api_key,
@@ -60,7 +59,7 @@ class TestShotgunInit(unittest.TestCase):
         self.assertEqual(sg.config.proxy_port, proxy_port)
         proxy_server = "123.456.789.012"
         proxy_port = 1234
-        http_proxy = "%s:%d" % (proxy_server, proxy_port)
+        http_proxy = f"{proxy_server}:{proxy_port}"
         sg = api.Shotgun(self.server_path,
                          self.script_name,
                          self.api_key,
@@ -74,8 +73,7 @@ class TestShotgunInit(unittest.TestCase):
         proxy_port = 1234
         proxy_user = "user"
         proxy_pass = "password"
-        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server,
-                                      proxy_port)
+        http_proxy = f"{proxy_user}:{proxy_pass}@{proxy_server}:{proxy_port}"
         sg = api.Shotgun(self.server_path,
                          self.script_name,
                          self.api_key,
@@ -89,8 +87,7 @@ class TestShotgunInit(unittest.TestCase):
         proxy_port = 1234
         proxy_user = "user"
         proxy_pass = "password"
-        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server,
-                                      proxy_port)
+        http_proxy = f"{proxy_user}:{proxy_pass}@{proxy_server}:{proxy_port}"
         sg = api.Shotgun(self.server_path,
                          self.script_name,
                          self.api_key,
@@ -106,8 +103,7 @@ class TestShotgunInit(unittest.TestCase):
         proxy_port = 1234
         proxy_user = "user"
         proxy_pass = "p@ssword"
-        http_proxy = "%s:%s@%s:%d" % (proxy_user, proxy_pass, proxy_server,
-                                      proxy_port)
+        http_proxy = f"{proxy_user}:{proxy_pass}@{proxy_server}:{proxy_port}"
         sg = api.Shotgun(self.server_path,
                          self.script_name,
                          self.api_key,
@@ -259,7 +255,7 @@ class TestClientCapabilities(unittest.TestCase):
         platform = api.shotgun.sys.platform
         try:
             api.shotgun.sys.platform = sys_ret_val
-            expected_local_path_field = "local_path_%s" % expected
+            expected_local_path_field = f"local_path_{expected}"
 
             client_caps = api.shotgun.ClientCapabilities()
             self.assertEqual(client_caps.platform, expected)
@@ -283,7 +279,7 @@ class TestClientCapabilities(unittest.TestCase):
         minor = 7
         micro = 3
         mock_sys.version_info = (major, minor, micro, 'final', 0)
-        expected_py_version = "%s.%s" % (major, minor)
+        expected_py_version = f"{major}.{minor}"
         client_caps = api.shotgun.ClientCapabilities()
         self.assertEqual(client_caps.py_version, expected_py_version)
 
@@ -490,21 +486,6 @@ class TestCerts(unittest.TestCase):
             response = self._check_url_with_urllib(url)
             assert (response is not None)
 
-
-class TestMimetypesFix(unittest.TestCase):
-    """
-    Makes sure that the mimetypes fix will be imported.
-    """
-
-    @patch('shotgun_api3.shotgun.sys')
-    def _test_mimetypes_import(self, platform, major, minor, patch_number, result, mock):
-        """
-        Mocks sys.platform and sys.version_info to test the mimetypes import code.
-        """
-
-        mock.version_info = [major, minor, patch_number]
-        mock.platform = platform
-        self.assertEqual(_is_mimetypes_broken(), result)
 
 if __name__ == '__main__':
     unittest.main()

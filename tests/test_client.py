@@ -16,15 +16,8 @@ import datetime
 import os
 import re
 
-from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib import six
-try:
-    import simplejson as json
-except ImportError:
-    try:
-        import json as json
-    except ImportError:
-        import shotgun_api3.lib.simplejson as json
+import urllib.parse
+import json as json
 
 import platform
 import sys
@@ -37,14 +30,11 @@ import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 from . import base
 
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
+from base64 import encodebytes as base64encode
 
 
 def b64encode(val):
-    return base64encode(six.ensure_binary(val)).decode("utf-8")
+    return base64encode(val.encode("utf8")).decode("utf-8")
 
 
 class TestShotgunClient(base.MockTestBase):
@@ -162,9 +152,9 @@ class TestShotgunClient(base.MockTestBase):
         self.assertEqual("/api3/json", self.sg.config.api_path)
 
         # support auth details in the url of the form
-        login_password = "%s:%s" % (login, password)
+        login_password = f"{login}:{password}"
         # login:password@domain
-        auth_url = "%s%s@%s" % (self.uri_prefix, login_password, self.domain)
+        auth_url = f"{self.uri_prefix}{login_password}@{self.domain}"
         sg = api.Shotgun(auth_url, None, None, connect=False)
         expected = "Basic " + b64encode(urllib.parse.unquote(login_password)).strip()
         self.assertEqual(expected, sg.config.authorization)
@@ -173,7 +163,7 @@ class TestShotgunClient(base.MockTestBase):
         """Parse value using the proper encoder."""
         login = "thelogin"
         password = "%thepassw0r#$"
-        login_password = "%s:%s" % (login, password)
+        login_password = f"{login}:{password}"
         expected = 'dGhlbG9naW46JXRoZXBhc3N3MHIjJA=='
         result = b64encode(urllib.parse.unquote(login_password)).strip()
         self.assertEqual(expected, result)
@@ -227,9 +217,9 @@ class TestShotgunClient(base.MockTestBase):
         """Authorization passed to server"""
         login = self.human_user['login']
         password = self.human_password
-        login_password = "%s:%s" % (login, password)
+        login_password = f"{login}:{password}"
         # login:password@domain
-        auth_url = "%s%s@%s" % (self.uri_prefix, login_password, self.domain)
+        auth_url = f"{self.uri_prefix}{login_password}@{self.domain}"
 
         self.sg = api.Shotgun(auth_url, "foo", "bar", connect=False)
         self._setup_mock()
@@ -274,13 +264,9 @@ class TestShotgunClient(base.MockTestBase):
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
         ssl_validate_lut = {True: "no-validate", False: "validate"}
-        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s)" % (
-            api.__version__,
-            client_caps.py_version,
-            client_caps.platform.capitalize(),
-            client_caps.ssl_version,
-            ssl_validate_lut[config.no_ssl_validation]
-        )
+        expected = (f"shotgun-json ({api.__version__}); "
+                    f"Python {client_caps.py_version} ({client_caps.platform.capitalize()}); "
+                    f"ssl {client_caps.ssl_version} ({ssl_validate_lut[config.no_ssl_validation]})")
         self.assertEqual(expected, headers.get("user-agent"))
 
         # test adding to user agent
@@ -288,13 +274,9 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.info()
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s); test-agent" % (
-            api.__version__,
-            client_caps.py_version,
-            client_caps.platform.capitalize(),
-            client_caps.ssl_version,
-            ssl_validate_lut[config.no_ssl_validation]
-        )
+        expected = (f"shotgun-json ({api.__version__});"
+                    f" Python {client_caps.py_version} ({client_caps.platform.capitalize()}); "
+                    f"ssl {client_caps.ssl_version} ({ssl_validate_lut[config.no_ssl_validation]}); test-agent")
         self.assertEqual(expected, headers.get("user-agent"))
 
         # test resetting user agent
@@ -302,13 +284,9 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.info()
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s)" % (
-            api.__version__,
-            client_caps.py_version,
-            client_caps.platform.capitalize(),
-            client_caps.ssl_version,
-            ssl_validate_lut[config.no_ssl_validation]
-        )
+        expected = (f"shotgun-json ({api.__version__}); "
+                    f"Python {client_caps.py_version} ({client_caps.platform.capitalize()}); "
+                    f"ssl {client_caps.ssl_version} ({ssl_validate_lut[config.no_ssl_validation]})")
         self.assertEqual(expected, headers.get("user-agent"))
 
     def test_connect_close(self):
@@ -424,7 +402,7 @@ class TestShotgunClient(base.MockTestBase):
 
         # Test unicode mixed with utf-8 as reported in Ticket #17959
         d = {"results": ["foo", "bar"]}
-        a = {"utf_str": "\xe2\x88\x9a", "unicode_str": six.ensure_text("\xe2\x88\x9a")}
+        a = {"utf_str": "\xe2\x88\x9a", "unicode_str": "\xe2\x88\x9a"}
         self._mock_http(d)
         rv = self.sg._call_rpc("list", a)
         expected = "rpc response with list result"
@@ -484,14 +462,14 @@ class TestShotgunClient(base.MockTestBase):
             return datetime.datetime(*time.strptime(s, f)[:6])
 
         def assert_wire(wire, match):
-            self.assertTrue(isinstance(wire["date"], six.string_types))
+            self.assertTrue(isinstance(wire["date"], str))
             d = _datetime(wire["date"], "%Y-%m-%d").date()
             d = wire['date']
             self.assertEqual(match["date"], d)
-            self.assertTrue(isinstance(wire["datetime"], six.string_types))
+            self.assertTrue(isinstance(wire["datetime"], str))
             d = _datetime(wire["datetime"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["datetime"], d)
-            self.assertTrue(isinstance(wire["time"], six.string_types))
+            self.assertTrue(isinstance(wire["time"], str))
             d = _datetime(wire["time"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["time"], d.time())
 
@@ -520,16 +498,16 @@ class TestShotgunClient(base.MockTestBase):
 
         d = {"this is ": u"my data \u00E0"}
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, six.binary_type))
+        self.assertTrue(isinstance(j, bytes))
 
         d = {
             "this is ": u"my data"
         }
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, six.binary_type))
+        self.assertTrue(isinstance(j, bytes))
 
     def test_decode_response_ascii(self):
-        self._assert_decode_resonse(True, six.ensure_str(u"my data \u00E0", encoding='utf8'))
+        self._assert_decode_resonse(True, u"my data \u00E0")
 
     def test_decode_response_unicode(self):
         self._assert_decode_resonse(False, u"my data \u00E0")
@@ -546,10 +524,7 @@ class TestShotgunClient(base.MockTestBase):
                          ensure_ascii=ensure_ascii,
                          connect=False)
 
-        if six.PY3:
-            j = json.dumps(d, ensure_ascii=ensure_ascii)
-        else:
-            j = json.dumps(d, ensure_ascii=ensure_ascii, encoding="utf-8")
+        j = json.dumps(d, ensure_ascii=ensure_ascii)
         self.assertEqual(d, sg._decode_response(headers, j))
 
         headers["content-type"] = "text/javascript"
@@ -630,8 +605,7 @@ class TestShotgunClientInterface(base.MockTestBase):
                                'server_caps']
         for expected_attribute in expected_attributes:
             if not hasattr(self.sg, expected_attribute):
-                assert False, '%s not found on %s' % (expected_attribute,
-                                                      self.sg)
+                assert False, f'{expected_attribute} not found on {self.sg}'
 
     def test_module_interface(self):
         import shotgun_api3
@@ -640,7 +614,7 @@ class TestShotgunClientInterface(base.MockTestBase):
                              'sg_timezone', '__version__']
         for expected_content in expected_contents:
             if not hasattr(shotgun_api3, expected_content):
-                assert False, '%s not found on module %s' % (expected_content, shotgun_api3)
+                assert False, f'{expected_content} not found on module {shotgun_api3}'
 
 
 if __name__ == '__main__':
