@@ -8,6 +8,7 @@
 # By accessing, using, copying or modifying this work you indicate your
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
+import sys
 
 from setuptools import setup, find_packages
 
@@ -17,6 +18,7 @@ readme = f.read().strip()
 f = open('LICENSE')
 license = f.read().strip()
 
+script_args = sys.argv[1:]
 
 setup(
     name='shotgun_api3',
