@@ -10,8 +10,8 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 import sys
+import httplib2
 from . import base
-import shotgun_api3 as api
 
 
 class ServerConnectionTest(base.TestBase):
@@ -29,8 +29,7 @@ class ServerConnectionTest(base.TestBase):
         self.sg.connect()
         if self.config.http_proxy:
             sys.stderr.write("[WITH PROXY] ")
-            self.assertTrue(isinstance(self.sg._connection.proxy_info,
-                                       api.lib.httplib2.ProxyInfo))
+            self.assertTrue(isinstance(self.sg._connection.proxy_info, httplib2.ProxyInfo))
         else:
             sys.stderr.write("[NO PROXY] ")
             self.assertEqual(self.sg._connection.proxy_info, None)

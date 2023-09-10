@@ -60,4 +60,4 @@ If you're using pip with `requirements.txt`, add the following line::
 Installing with ``setup.py``
 ****************************
 
-From a local copy of the repository, you can run ``python setup.py install`` to copy the package inside your python ``site-packages``. Note that while ``setuptools`` will complain about syntax errors when installing the library, the library is fully functional. However, it ships with both Python 2 and Python 3 copies of ``httplib2``, which will generate syntax errors when byte-compiling the Python modules.
+From a local copy of the repository, you can run ``python setup.py install`` to copy the package inside your python ``site-packages``. Note that while ``setuptools`` will complain about syntax errors when installing the library, the library is fully functional.

@@ -15,36 +15,23 @@ need a live server to run against."""
 import datetime
 import os
 import re
-
-from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib import six
-try:
-    import simplejson as json
-except ImportError:
-    try:
-        import json as json
-    except ImportError:
-        import shotgun_api3.lib.simplejson as json
-
+import json
+import urllib.parse
 import platform
 import sys
 import time
 import unittest
-from . import mock
+import mock
 
-import shotgun_api3.lib.httplib2 as httplib2
+import httplib2
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 from . import base
 
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
-
+from base64 import encodebytes as base64encode
 
 def b64encode(val):
-    return base64encode(six.ensure_binary(val)).decode("utf-8")
+    return base64encode(val.encode("utf8")).decode("utf-8")
 
 
 class TestShotgunClient(base.MockTestBase):
@@ -330,7 +317,7 @@ class TestShotgunClient(base.MockTestBase):
                 "Call is repeated")
             # Ensure that sleep was called with the retry interval between each attempt
             attempt_interval = self.sg.config.rpc_attempt_interval / 1000.0
-            calls = [mock.callargs(((attempt_interval,), {}))]
+            calls = [mock.call(attempt_interval)]
             calls *= (self.sg.config.max_rpc_attempts - 1)
             self.assertTrue(
                 mock_sleep.call_args_list == calls,
@@ -424,7 +411,7 @@ class TestShotgunClient(base.MockTestBase):
 
         # Test unicode mixed with utf-8 as reported in Ticket #17959
         d = {"results": ["foo", "bar"]}
-        a = {"utf_str": "\xe2\x88\x9a", "unicode_str": six.ensure_text("\xe2\x88\x9a")}
+        a = {"utf_str": "\xe2\x88\x9a", "unicode_str": "\xe2\x88\x9a"}
         self._mock_http(d)
         rv = self.sg._call_rpc("list", a)
         expected = "rpc response with list result"
@@ -484,14 +471,14 @@ class TestShotgunClient(base.MockTestBase):
             return datetime.datetime(*time.strptime(s, f)[:6])
 
         def assert_wire(wire, match):
-            self.assertTrue(isinstance(wire["date"], six.string_types))
+            self.assertTrue(isinstance(wire["date"], str))
             d = _datetime(wire["date"], "%Y-%m-%d").date()
             d = wire['date']
             self.assertEqual(match["date"], d)
-            self.assertTrue(isinstance(wire["datetime"], six.string_types))
+            self.assertTrue(isinstance(wire["datetime"], str))
             d = _datetime(wire["datetime"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["datetime"], d)
-            self.assertTrue(isinstance(wire["time"], six.string_types))
+            self.assertTrue(isinstance(wire["time"], str))
             d = _datetime(wire["time"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["time"], d.time())
 
@@ -520,19 +507,19 @@ class TestShotgunClient(base.MockTestBase):
 
         d = {"this is ": u"my data \u00E0"}
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, six.binary_type))
+        self.assertTrue(isinstance(j, bytes))
 
         d = {
             "this is ": u"my data"
         }
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, six.binary_type))
+        self.assertTrue(isinstance(j, bytes))
 
     def test_decode_response_ascii(self):
-        self._assert_decode_resonse(True, six.ensure_str(u"my data \u00E0", encoding='utf8'))
+        self._assert_decode_resonse(True, "my data \u00E0")
 
     def test_decode_response_unicode(self):
-        self._assert_decode_resonse(False, u"my data \u00E0")
+        self._assert_decode_resonse(False, "my data \u00E0")
 
     def _assert_decode_resonse(self, ensure_ascii, data):
         """HTTP Response is decoded as JSON or text"""
@@ -546,10 +533,8 @@ class TestShotgunClient(base.MockTestBase):
                          ensure_ascii=ensure_ascii,
                          connect=False)
 
-        if six.PY3:
-            j = json.dumps(d, ensure_ascii=ensure_ascii)
-        else:
-            j = json.dumps(d, ensure_ascii=ensure_ascii, encoding="utf-8")
+        j = json.dumps(d, ensure_ascii=ensure_ascii)
+
         self.assertEqual(d, sg._decode_response(headers, j))
 
         headers["content-type"] = "text/javascript"
