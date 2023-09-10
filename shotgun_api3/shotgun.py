@@ -47,6 +47,7 @@ import mimetypes
 
 from httplib2 import Http, ProxyInfo, socks
 from http import client as http_client
+from http import cookiejar as http_cookiejar
 
 from .lib.sgtimezone import SgTimezone
 
