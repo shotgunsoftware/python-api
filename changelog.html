@@ -10,7 +10,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ShotGrid Python API Changelog &mdash; python-api v3.3.5 documentation</title>
+  <title>ShotGrid Python API Changelog &mdash; python-api v3.3.6 documentation</title>
   
 
   
@@ -101,6 +101,7 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced/packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/iron_python.html">IronPython</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">ShotGrid Python API Changelog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v3-3-6-2023-aug-29">v3.3.6 (2023 Aug 29)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-3-5-2023-jan-5">v3.3.5 (2023 Jan 5)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-3-4-2022-june-9">v3.3.4 (2022 June 9)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-3-3-2021-december-1">v3.3.3 (2021 December 1)</a></li>
@@ -193,7 +194,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.3.5.<br>
+    <b>python-api</b> v3.3.6.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>The ShotGrid developer portal.</a>.
@@ -273,6 +274,20 @@
   <div class="section" id="shotgrid-python-api-changelog">
 <h1>ShotGrid Python API Changelog<a class="headerlink" href="#shotgrid-python-api-changelog" title="Permalink to this headline">¶</a></h1>
 <p>Here you can see the full list of changes between each Python API release.</p>
+<div class="section" id="v3-3-6-2023-aug-29">
+<h2>v3.3.6 (2023 Aug 29)<a class="headerlink" href="#v3-3-6-2023-aug-29" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Update docs for entity fields.</li>
+<li>Fix typo.</li>
+<li>Fix incorrect hint.</li>
+<li>Reformat code examples to prevent text overflow.</li>
+<li>Bump certifi from 2020.06.20 to 2022.12.7 in /shotgun_api3/lib.</li>
+<li>Skip SG-MIM entities.</li>
+<li>Replace shotgunsoftware references.</li>
+<li>Deprecation of Python 2.</li>
+<li>Security upgrade certifi to latest version 2023.07.22.</li>
+</ul>
+</div>
 <div class="section" id="v3-3-5-2023-jan-5">
 <h2>v3.3.5 (2023 Jan 5)<a class="headerlink" href="#v3-3-5-2023-jan-5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -500,7 +515,7 @@ API tests instead of just the unit and client tests.</li>
 <div class="section" id="v3-0-25-2016-jan-12">
 <h2>v3.0.25 (2016 Jan 12)<a class="headerlink" href="#v3-0-25-2016-jan-12" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Add handling for Python versions incompatible with SHA-2 (see <a class="reference external" href="http://blog.shotgunsoftware.com/2016/01/important-ssl-certificate-renewal-and.html">this blog post</a>).</li>
+<li>Add handling for Python versions incompatible with SHA-2 (see <a class="reference external" href="https://www.shotgridsoftware.com/blog/important-ssl-certificate-renewal-and-sha-2/">this blog post</a>).</li>
 <li>Add <code class="docutils literal notranslate"><span class="pre">SHOTGUN_FORCE_CERTIFICATE_VALIDATION</span></code> environment variable to prevent disabling certficate
 validation when SHA-2 validation is not available.</li>
 <li>Add SSL info to user-agent header.</li>
