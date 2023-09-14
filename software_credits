@@ -47,10 +47,12 @@ The ShotGrid Python API uses the following software. Thanks to their creators, l
 
 ============================== Certifi ==============================
 
-Certifi is licensed under the Mozilla Public License v.2.0,
-which can be found at http://www.mozilla.org/MPL/2.0/.
-A text copy of this license and the source code for Certifi 2020.06.20 (and modifications made by Autodesk, if any)
-can be found at the Autodesk website www.autodesk.com/lgplsource.
+This Autodesk software contains the unmodified python-certifi package.
+The use and distribution terms for this software are covered by the Mozilla
+Public License 2.0 (https://www.mozilla.org/en-US/MPL/2.0/).
+By using this software in any fashion, you are agreeing to be bound by the terms
+of this license.
+The source code for python-certifi is available from https://github.com/certifi/python-certifi.
 
 
 ============================== Httplib2 ==============================
