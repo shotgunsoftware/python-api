@@ -1702,11 +1702,14 @@ class TestFollow(base.LiveTestBase):
             return
 
         with self.gen_entity(
+            "Project",
+            name="Project unit tests {rnd}",
+        ) as project, self.gen_entity(
             "HumanUser",
-            projects=[self.project],
+            projects=[project],
         ) as human_user, self.gen_entity(
             "Shot",
-            project=self.project,
+            project=project,
         ) as shot:
             result = self.sg.follow(human_user, shot)
             assert(result['followed'])
@@ -1721,11 +1724,14 @@ class TestFollow(base.LiveTestBase):
             return
 
         with self.gen_entity(
+            "Project",
+            name="Project unit tests {rnd}",
+        ) as project, self.gen_entity(
             "HumanUser",
-            projects=[self.project],
+            projects=[project],
         ) as human_user, self.gen_entity(
             "Shot",
-            project=self.project,
+            project=project,
         ) as shot:
             result = self.sg.follow(human_user, shot)
             assert(result['followed'])
@@ -1743,14 +1749,17 @@ class TestFollow(base.LiveTestBase):
             return
 
         with self.gen_entity(
+            "Project",
+            name="Project unit tests {rnd}",
+        ) as project, self.gen_entity(
             "HumanUser",
-            projects=[self.project],
+            projects=[project],
         ) as human_user, self.gen_entity(
             "Shot",
-            project=self.project,
+            project=project,
         ) as shot, self.gen_entity(
             "Task",
-            project=self.project,
+            project=project,
         ) as task:
             result = self.sg.follow(human_user, shot)
             assert(result['followed'])
