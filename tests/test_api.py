@@ -1970,6 +1970,12 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
         super(TestScriptUserSudoAuth, self).setUp('ApiUser')
 
+        self.sg.update(
+            'HumanUser',
+            self.human_user['id'],
+            {'projects': [self.project]},
+        )
+
     def test_user_is_creator(self):
         """
         Test 'sudo_as_login' option: on create, ensure appropriate user is set in created-by
@@ -1977,10 +1983,6 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
 
         if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 3, 12):
             return
-
-        self.sg.update('HumanUser', self.human_user['id'], {'projects': [self.project]}) # Test fix issue
-        # CRUD ERROR #13: Invalid project: project [3337] can not be accessed by this user.
-
 
         x = shotgun_api3.Shotgun(self.config.server_url,
                                  self.config.script_name,
