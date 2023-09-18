@@ -4244,11 +4244,19 @@ class CACertsHTTPSConnection(http_client.HTTPConnection):
         "Connect to a host on a given (SSL) port."
         http_client.HTTPConnection.connect(self)
         # Now that the regular HTTP socket has been created, wrap it with our SSL certs.
-        self.sock = ssl.wrap_socket(
-            self.sock,
-            ca_certs=self.__ca_certs,
-            cert_reqs=ssl.CERT_REQUIRED
-        )
+        if six.PY38:
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            context.verify_mode = ssl.CERT_REQUIRED
+            context.check_hostname = False
+            if self.__ca_certs:
+                context.load_verify_locations(self.__ca_certs)
+            self.sock = context.wrap_socket(self.sock)
+        else:
+            self.sock = ssl.wrap_socket(
+                self.sock,
+                ca_certs=self.__ca_certs,
+                cert_reqs=ssl.CERT_REQUIRED
+            )
 
 
 class CACertsHTTPSHandler(urllib.request.HTTPSHandler):
