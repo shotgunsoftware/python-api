@@ -13,9 +13,10 @@ __contributors__ = [
     "Louis Nyffenegger",
     "Mark Pilgrim",
     "Alex Yu",
+    "Lai Han",
 ]
 __license__ = "MIT"
-__version__ = "0.19.1"
+__version__ = "0.22.0"
 
 import base64
 import calendar
@@ -128,8 +129,14 @@ CA_CERTS = certs.where()
 # Both PROTOCOL_TLS and PROTOCOL_SSLv23 are equivalent and means:
 # > Selects the highest protocol version that both the client and server support.
 # > Despite the name, this option can select “TLS” protocols as well as “SSL”.
-# source: https://docs.python.org/3.5/library/ssl.html#ssl.PROTOCOL_TLS
-DEFAULT_TLS_VERSION = getattr(ssl, "PROTOCOL_TLS", None) or getattr(ssl, "PROTOCOL_SSLv23")
+# source: https://docs.python.org/3.5/library/ssl.html#ssl.PROTOCOL_SSLv23
+
+# PROTOCOL_TLS_CLIENT is python 3.10.0+. PROTOCOL_TLS is deprecated.
+# > Auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.
+# > The protocol enables CERT_REQUIRED and check_hostname by default.
+# source: https://docs.python.org/3.10/library/ssl.html#ssl.PROTOCOL_TLS
+
+DEFAULT_TLS_VERSION = getattr(ssl, "PROTOCOL_TLS_CLIENT", None) or getattr(ssl, "PROTOCOL_TLS", None) or getattr(ssl, "PROTOCOL_SSLv23")
 
 
 def _build_ssl_context(
@@ -145,21 +152,28 @@ def _build_ssl_context(
         raise RuntimeError("httplib2 requires Python 3.2+ for ssl.SSLContext")
 
     context = ssl.SSLContext(DEFAULT_TLS_VERSION)
+    # check_hostname and verify_mode should be set in opposite order during disable
+    # https://bugs.python.org/issue31431
+    if disable_ssl_certificate_validation and hasattr(context, "check_hostname"):
+        context.check_hostname = not disable_ssl_certificate_validation
     context.verify_mode = ssl.CERT_NONE if disable_ssl_certificate_validation else ssl.CERT_REQUIRED
 
     # SSLContext.maximum_version and SSLContext.minimum_version are python 3.7+.
     # source: https://docs.python.org/3/library/ssl.html#ssl.SSLContext.maximum_version
     if maximum_version is not None:
         if hasattr(context, "maximum_version"):
-            context.maximum_version = getattr(ssl.TLSVersion, maximum_version)
+            if isinstance(maximum_version, str):
+                maximum_version = getattr(ssl.TLSVersion, maximum_version)
+            context.maximum_version = maximum_version
         else:
             raise RuntimeError("setting tls_maximum_version requires Python 3.7 and OpenSSL 1.1 or newer")
     if minimum_version is not None:
         if hasattr(context, "minimum_version"):
-            context.minimum_version = getattr(ssl.TLSVersion, minimum_version)
+            if isinstance(minimum_version, str):
+                minimum_version = getattr(ssl.TLSVersion, minimum_version)
+            context.minimum_version = minimum_version
         else:
             raise RuntimeError("setting tls_minimum_version requires Python 3.7 and OpenSSL 1.1 or newer")
-
     # check_hostname requires python 3.4+
     # we will perform the equivalent in HTTPSConnectionWithTimeout.connect() by calling ssl.match_hostname
     # if check_hostname is not supported.
@@ -178,6 +192,29 @@ def _get_end2end_headers(response):
     hopbyhop = list(HOP_BY_HOP)
     hopbyhop.extend([x.strip() for x in response.get("connection", "").split(",")])
     return [header for header in list(response.keys()) if header not in hopbyhop]
+
+
+_missing = object()
+
+
+def _errno_from_exception(e):
+    # TODO python 3.11+ cheap try: return e.errno except AttributeError: pass
+    errno = getattr(e, "errno", _missing)
+    if errno is not _missing:
+        return errno
+
+    # socket.error and common wrap in .args
+    args = getattr(e, "args", None)
+    if args:
+        return _errno_from_exception(args[0])
+
+    # pysocks.ProxyError wraps in .socket_err
+    # https://github.com/httplib2/httplib2/pull/202
+    socket_err = getattr(e, "socket_err", None)
+    if socket_err:
+        return _errno_from_exception(socket_err)
+
+    return None
 
 
 URI = re.compile(r"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?")
@@ -357,7 +394,10 @@ def _decompressContent(response, new_content):
             if encoding == "gzip":
                 content = gzip.GzipFile(fileobj=io.BytesIO(new_content)).read()
             if encoding == "deflate":
-                content = zlib.decompress(content, -zlib.MAX_WBITS)
+                try:
+                    content = zlib.decompress(content, zlib.MAX_WBITS)
+                except (IOError, zlib.error):
+                    content = zlib.decompress(content, -zlib.MAX_WBITS)
             response["content-length"] = str(len(content))
             # Record the historical presence of the encoding in a way the won't interfere.
             response["-content-encoding"] = response["content-encoding"]
@@ -913,34 +953,14 @@ def proxy_info_from_url(url, method="http", noproxy=None):
     """Construct a ProxyInfo from a URL (such as http_proxy env var)
     """
     url = urllib.parse.urlparse(url)
-    username = None
-    password = None
-    port = None
-    if "@" in url[1]:
-        ident, host_port = url[1].split("@", 1)
-        if ":" in ident:
-            username, password = ident.split(":", 1)
-        else:
-            password = ident
-    else:
-        host_port = url[1]
-    if ":" in host_port:
-        host, port = host_port.split(":", 1)
-    else:
-        host = host_port
-
-    if port:
-        port = int(port)
-    else:
-        port = dict(https=443, http=80)[method]
 
     proxy_type = 3  # socks.PROXY_TYPE_HTTP
     pi = ProxyInfo(
         proxy_type=proxy_type,
-        proxy_host=host,
-        proxy_port=port,
-        proxy_user=username or None,
-        proxy_pass=password or None,
+        proxy_host=url.hostname,
+        proxy_port=url.port or dict(https=443, http=80)[method],
+        proxy_user=url.username or None,
+        proxy_pass=url.password or None,
         proxy_headers=None,
     )
 
@@ -1238,7 +1258,7 @@ class Http(object):
 
         tls_maximum_version / tls_minimum_version require Python 3.7+ /
         OpenSSL 1.1.0g+. A value of "TLSv1_3" requires OpenSSL 1.1.1+.
-"""
+        """
         self.proxy_info = proxy_info
         self.ca_certs = ca_certs
         self.disable_ssl_certificate_validation = disable_ssl_certificate_validation
@@ -1352,7 +1372,7 @@ class Http(object):
                 conn.close()
                 raise ServerNotFoundError("Unable to find the server at %s" % conn.host)
             except socket.error as e:
-                errno_ = e.args[0].errno if isinstance(e.args[0], socket.error) else e.errno
+                errno_ = _errno_from_exception(e)
                 if errno_ in (errno.ENETUNREACH, errno.EADDRNOTAVAIL) and i < RETRIES:
                     continue  # retry on potentially transient errors
                 raise
@@ -1657,12 +1677,8 @@ a string that contains the response entity body.
                     entry_disposition = _entry_disposition(info, headers)
 
                     if entry_disposition == "FRESH":
-                        if not cached_value:
-                            info["status"] = "504"
-                            content = b""
                         response = Response(info)
-                        if cached_value:
-                            response.fromcache = True
+                        response.fromcache = True
                         return (response, content)
 
                     if entry_disposition == "STALE":
