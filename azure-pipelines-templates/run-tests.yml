@@ -52,6 +52,11 @@ jobs:
         python.version: '3.10'
       Python311:
         python.version: '3.11'
+      # Note for Python 3.11. This will raise hundres of warnings on a third party module
+      # pytest_nunit/nunit.py
+      # DeprecationWarning: Use setlocale(), getencoding() and getlocale() instead
+      # This is the current behavior on the latest 1.0.3 version of this module.
+
     maxParallel: 4
 
   # These are the steps that will be executed inside each job.
