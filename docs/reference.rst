@@ -919,7 +919,7 @@ usage.
 This **does not** mean your ShotGrid server performance will suffer in general, just any pages that 
 are specifically displaying EventLogEntries in the web application, or API queries on the event
 log that are run. We are always looking for ways to improve this in the future. If you have any
-immediate concerns, please `reach out to our support team <https://developer.shotgridsoftware.com>`_
+immediate concerns, please `reach out to our support team <https://www.autodesk.com/support/contact-support>`_
 
 *********************
 Environment Variables
