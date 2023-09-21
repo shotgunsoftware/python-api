@@ -55,7 +55,7 @@ jobs:
       # DeprecationWarning: Use setlocale(), getencoding() and getlocale() instead
       # This is the current behavior on the latest 1.0.3 version of this module.
 
-    maxParallel: 4
+    maxParallel: 3
 
   # These are the steps that will be executed inside each job.
   steps:
