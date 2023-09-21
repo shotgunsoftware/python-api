@@ -1,5 +1,7 @@
 """Base class for ShotGrid API tests."""
+import contextlib
 import os
+import random
 import re
 import unittest
 
@@ -338,6 +340,31 @@ class LiveTestBase(TestBase):
                 'windows_path': 'nowhere',
                 'linux_path': 'nowhere'}
         cls.local_storage = _find_or_create_entity(sg, 'LocalStorage', data, keys)
+
+    @contextlib.contextmanager
+    def gen_entity(self, entity_type, **kwargs):
+        # Helper creator
+        if entity_type == "HumanUser":
+            if "login" not in kwargs:
+                kwargs["login"] = "test-python-api-{rnd}"
+
+            if "sg_status_list" not in kwargs:
+                kwargs["sg_status_list"] = "dis"
+
+            if "password_proxy" not in kwargs:
+                kwargs["password_proxy"] = self.config.human_password
+
+        item_rnd = random.randrange(100,999)
+        for k in kwargs:
+            if isinstance(kwargs[k], str):
+                kwargs[k] = kwargs[k].format(rnd=item_rnd)
+
+        entity = self.sg.create(entity_type, kwargs, return_fields=list(kwargs.keys()))
+        try:
+            yield entity
+        finally:
+            rv = self.sg.delete(entity_type, entity["id"])
+            assert rv == True
 
 
 class HumanUserAuthLiveTestBase(LiveTestBase):

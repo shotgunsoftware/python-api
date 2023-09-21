@@ -1694,15 +1694,6 @@ class TestFind(base.LiveTestBase):
 
 
 class TestFollow(base.LiveTestBase):
-    def setUp(self):
-        super(TestFollow, self).setUp()
-        self.sg.update('HumanUser', self.human_user['id'], {'projects': [self.project]})
-
-        # As the Follow entity isn't exposed directly, we clear out existing
-        # follows for the user before running our tests.
-        if self.sg.server_caps.version and self.sg.server_caps.version >= (7, 0, 12):
-            for entity in self.sg.following(self.human_user):
-                self.sg.unfollow(self.human_user, entity)
 
     def test_follow_unfollow(self):
         '''Test follow method'''
@@ -1710,11 +1701,18 @@ class TestFollow(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
             return
 
-        result = self.sg.follow(self.human_user, self.shot)
-        assert(result['followed'])
+        with self.gen_entity(
+            "HumanUser",
+            projects=[self.project],
+        ) as human_user, self.gen_entity(
+            "Shot",
+            project=self.project,
+        ) as shot:
+            result = self.sg.follow(human_user, shot)
+            assert(result['followed'])
 
-        result = self.sg.unfollow(self.human_user, self.shot)
-        assert(result['unfollowed'])
+            result = self.sg.unfollow(human_user, shot)
+            assert(result['unfollowed'])
 
     def test_followers(self):
         '''Test followers method'''
@@ -1722,12 +1720,20 @@ class TestFollow(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
             return
 
-        result = self.sg.follow(self.human_user, self.shot)
-        assert(result['followed'])
+        with self.gen_entity(
+            "HumanUser",
+            projects=[self.project],
+        ) as human_user, self.gen_entity(
+            "Shot",
+            project=self.project,
+        ) as shot:
+            result = self.sg.follow(human_user, shot)
+            assert(result['followed'])
 
-        result = self.sg.followers(self.shot)
-        self.assertEqual(1, len(result))
-        self.assertEqual(self.human_user['id'], result[0]['id'])
+            result = self.sg.followers(shot)
+
+            self.assertEqual(1, len(result))
+            self.assertEqual(human_user['id'], result[0]['id'])
 
     def test_following(self):
         '''Test following method'''
@@ -1736,42 +1742,53 @@ class TestFollow(base.LiveTestBase):
             warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
             return
 
-        result = self.sg.follow(self.human_user, self.shot)
-        assert(result['followed'])
+        with self.gen_entity(
+            "HumanUser",
+            projects=[self.project],
+        ) as human_user, self.gen_entity(
+            "Shot",
+            project=self.project,
+        ) as shot, self.gen_entity(
+            "Task",
+            project=self.project,
+        ) as task:
+            result = self.sg.follow(human_user, shot)
+            assert(result['followed'])
 
-        result = self.sg.following(self.human_user)
-        self.assertEqual(1, len(result))
-        self.assertEqual(self.shot['id'], result[0]['id'])
+            result = self.sg.following(human_user)
 
-        result = self.sg.follow(self.human_user, self.task)
-        assert(result['followed'])
+            self.assertEqual(1, len(result))
 
-        result = self.sg.following(self.human_user)
-        self.assertEqual(2, len(result))
-        result = self.sg.following(self.human_user, entity_type="Task")
-        self.assertEqual(1, len(result))
-        result = self.sg.following(self.human_user, entity_type="Shot")
-        self.assertEqual(1, len(result))
+            result = self.sg.follow(human_user, task)
+            assert(result['followed'])
 
-        shot_project_id = self.sg.find_one("Shot",
-                                           [["id", "is", self.shot["id"]]],
-                                           ["project.Project.id"])["project.Project.id"]
-        task_project_id = self.sg.find_one("Task",
-                                           [["id", "is", self.task["id"]]],
-                                           ["project.Project.id"])["project.Project.id"]
-        project_count = 2 if shot_project_id == task_project_id else 1
-        result = self.sg.following(self.human_user, project={"type": "Project", "id": shot_project_id})
-        self.assertEqual(project_count, len(result))
-        result = self.sg.following(self.human_user, project={"type": "Project", "id": task_project_id})
-        self.assertEqual(project_count, len(result))
-        result = self.sg.following(self.human_user,
-                                   project={"type": "Project", "id": shot_project_id},
-                                   entity_type="Shot")
-        self.assertEqual(1, len(result))
-        result = self.sg.following(self.human_user,
-                                   project={"type": "Project", "id": task_project_id},
-                                   entity_type="Task")
-        self.assertEqual(1, len(result))
+            result = self.sg.following(human_user)
+
+            self.assertEqual(2, len(result))
+            result = self.sg.following(human_user, entity_type="Task")
+            self.assertEqual(1, len(result))
+            result = self.sg.following(human_user, entity_type="Shot")
+            self.assertEqual(1, len(result))
+
+            shot_project_id = self.sg.find_one("Shot",
+                                            [["id", "is", shot["id"]]],
+                                            ["project.Project.id"])["project.Project.id"]
+            task_project_id = self.sg.find_one("Task",
+                                            [["id", "is", task["id"]]],
+                                            ["project.Project.id"])["project.Project.id"]
+            project_count = 2 if shot_project_id == task_project_id else 1
+            result = self.sg.following(human_user, project={"type": "Project", "id": shot_project_id})
+            self.assertEqual(project_count, len(result))
+            result = self.sg.following(human_user, project={"type": "Project", "id": task_project_id})
+            self.assertEqual(project_count, len(result))
+            result = self.sg.following(human_user,
+                                    project={"type": "Project", "id": shot_project_id},
+                                    entity_type="Shot")
+            self.assertEqual(1, len(result))
+            result = self.sg.following(human_user,
+                                    project={"type": "Project", "id": task_project_id},
+                                    entity_type="Task")
+            self.assertEqual(1, len(result))
 
 
 class TestErrors(base.TestBase):
@@ -1943,6 +1960,12 @@ class TestErrors(base.TestBase):
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
         super(TestScriptUserSudoAuth, self).setUp('ApiUser')
+
+        self.sg.update(
+            'HumanUser',
+            self.human_user['id'],
+            {'projects': [self.project]},
+        )
 
     def test_user_is_creator(self):
         """
