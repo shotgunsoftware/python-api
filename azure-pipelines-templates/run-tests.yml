@@ -50,8 +50,6 @@ jobs:
         python.version: '3.9'
       Python310:
         python.version: '3.10'
-      Python311:
-        python.version: '3.11'
       # Note for Python 3.11. This will raise hundres of warnings on a third party module
       # pytest_nunit/nunit.py
       # DeprecationWarning: Use setlocale(), getencoding() and getlocale() instead
