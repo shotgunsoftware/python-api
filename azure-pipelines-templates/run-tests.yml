@@ -43,11 +43,19 @@ jobs:
   # matrix.
   strategy:
     matrix:
-      # We support these two versions of Python.
+      # We support these versions of Python.
       Python37:
         python.version: '3.7'
       Python39:
         python.version: '3.9'
+      Python310:
+        python.version: '3.10'
+      # Note for Python 3.11. This will raise hundres of warnings on a third party module
+      # pytest_nunit/nunit.py
+      # DeprecationWarning: Use setlocale(), getencoding() and getlocale() instead
+      # This is the current behavior on the latest 1.0.3 version of this module.
+
+    maxParallel: 3
 
   # These are the steps that will be executed inside each job.
   steps:
