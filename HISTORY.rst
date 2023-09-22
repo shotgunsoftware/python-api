@@ -4,6 +4,15 @@ ShotGrid Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.4.0 (2023 Sep 22)
+====================
+- Started support for Python 3.10 for CI.
+- Add documentation for PublishedFiles preset filters.
+- Upgrade httplib2 to 0.22.0.
+- Update licensing.
+- Updates Autodesk URLs.
+- Fix flaky tests.
+
 v3.3.6 (2023 Aug 29)
 ====================
 - Update docs for entity fields.
