@@ -2737,7 +2737,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
     def test_modify_visibility(self):
         """
-        Ensure the visibility of a field can be edited via the API.
+        Ensure the visibility of a field can be edited via the API
         """
         # If the version of Shotgun is too old, do not run this test.
         # TODO: Update this with the real version number once the feature is released.
