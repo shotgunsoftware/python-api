@@ -785,12 +785,13 @@ class TestShotgunApi(base.LiveTestBase):
         end_date_obj = datetime.datetime(2012, 1, 7)
 
         project = self.project
-        # We're going to be comparing this value with the value returned from the server, so extract only the type
-        # and id
+        # We're going to be comparing this value with the value returned from the server, so extract only the type, id
+        # and name
         user = {"type": self.human_user["type"], "id": self.human_user["id"], "name": self.human_user["name"]}
 
         work_schedule = self.sg.work_schedule_read(start_date, end_date, project, user)
-
+        # Test that the work_schedule_read api method is called with the 'start_date' and 'end_date' arguments
+        # in the 'YYYY-MM-DD' string format.
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.work_schedule_read,
                           start_date_obj, end_date_obj, project, user)
 
