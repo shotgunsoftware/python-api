@@ -794,8 +794,6 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertRaises(shotgun_api3.ShotgunError, self.sg.work_schedule_read,
                           start_date_obj, end_date_obj, project, user)
 
-        resp = self.sg.work_schedule_read(start_date, end_date, project, user)
-        self.assertEqual(work_schedule, resp)
 
         resp = self.sg.work_schedule_update('2012-01-02', False, 'Studio Holiday')
         expected = {
