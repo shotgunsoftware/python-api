@@ -1,56 +1,36 @@
 
 
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create A Shot &mdash; python-api v3.4.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Find a Shot" href="basic_find_shot.html" />
     <link rel="prev" title="Create a ShotGrid API instance" href="basic_sg_instance.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
     <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
@@ -64,35 +44,20 @@
     
 
           
-            <a href="../../index.html" class="icon icon-home"> python-api
           
-
-          
+          <a href="../../index.html" class="icon icon-home">
+            python-api
           </a>
-
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
 
-          
-
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authentication.html">Authentication</a></li>
@@ -122,8 +87,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../advanced.html">Advanced Topics</a></li>
 </ul>
 
-            
-          
 
     <a href='genindex.html'>Alphabetic Index</a>
 
@@ -164,74 +127,37 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="../../cookbook.html">API Cookbook</a> &raquo;</li>
-        
-          <li><a href="../tutorials.html">Examples</a> &raquo;</li>
-        
-      <li>Create A Shot</li>
-    
-    
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../cookbook.html">API Cookbook</a></li>
+          <li class="breadcrumb-item"><a href="../tutorials.html">Examples</a></li>
+      <li class="breadcrumb-item active">Create A Shot</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="create-a-shot">
-<span id="example-create-shot"></span><h1>Create A Shot<a class="headerlink" href="#create-a-shot" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="building-the-data-and-calling-create">
-<h2>Building the data and calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code><a class="headerlink" href="#building-the-data-and-calling-create" title="Permalink to this headline">¶</a></h2>
+             
+  <section id="create-a-shot">
+<span id="example-create-shot"></span><h1>Create A Shot<a class="headerlink" href="#create-a-shot" title="Permalink to this heading"></a></h1>
+<section id="building-the-data-and-calling-create">
+<h2>Building the data and calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code><a class="headerlink" href="#building-the-data-and-calling-create" title="Permalink to this heading"></a></h2>
 <p>To create a Shot, you need to provide the following values:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">project</span></code> is a link to the Project the Shot belongs to. It should be a dictionary like
-<code class="docutils literal notranslate"><span class="pre">{&quot;type&quot;:</span> <span class="pre">&quot;Project&quot;,</span> <span class="pre">&quot;id&quot;:</span> <span class="pre">123}</span></code> where <code class="docutils literal notranslate"><span class="pre">id</span></code> is the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the Project.</li>
-<li><code class="docutils literal notranslate"><span class="pre">code</span></code> (this is the field that stores the name Shot)</li>
-<li>optionally any other info you want to provide</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">project</span></code> is a link to the Project the Shot belongs to. It should be a dictionary like
+<code class="docutils literal notranslate"><span class="pre">{&quot;type&quot;:</span> <span class="pre">&quot;Project&quot;,</span> <span class="pre">&quot;id&quot;:</span> <span class="pre">123}</span></code> where <code class="docutils literal notranslate"><span class="pre">id</span></code> is the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the Project.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">code</span></code> (this is the field that stores the name Shot)</p></li>
+<li><p>optionally any other info you want to provide</p></li>
 </ul>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
@@ -245,11 +171,11 @@
 </div>
 <p>This will create a new Shot named “100_010” in the Project “Gunslinger” (which has an <code class="docutils literal notranslate"><span class="pre">id</span></code> of 4).</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value
-is the the value to set.</li>
-<li><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the ShotGrid API instance you created in <a class="reference internal" href="basic_sg_instance.html#example-sg-instance"><span class="std std-ref">Create a ShotGrid API instance</span></a>.</li>
-<li><code class="docutils literal notranslate"><span class="pre">create()</span></code> is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun.create()</span></code> API method we are calling. We pass in the
-entity type we’re searching for and the data we’re setting.</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value
+is the the value to set.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the ShotGrid API instance you created in <a class="reference internal" href="basic_sg_instance.html#example-sg-instance"><span class="std std-ref">Create a ShotGrid API instance</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">create()</span></code> is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun.create()</span></code> API method we are calling. We pass in the
+entity type we’re searching for and the data we’re setting.</p></li>
 </ul>
 <p class="rubric">Result</p>
 <p>The variable <code class="docutils literal notranslate"><span class="pre">result</span></code> now contains a dictionary hash with the Shot information you created.:</p>
@@ -268,9 +194,9 @@ entity type we’re searching for and the data we’re setting.</li>
 this dictionary represents. It does not correspond to any field in ShotGrid.</p>
 <p>ShotGrid will <em>always</em> return the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys in the dictionary when there are results
 representing an entity.</p>
-</div>
-<div class="section" id="the-complete-example">
-<h2>The Complete Example<a class="headerlink" href="#the-complete-example" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="the-complete-example">
+<h2>The Complete Example<a class="headerlink" href="#the-complete-example" title="Permalink to this heading"></a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
 <span class="c1"># --------------------------------------</span>
@@ -318,55 +244,35 @@ representing an entity.</p>
 <span class="n">The</span> <span class="nb">id</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Shot</span> <span class="ow">is</span> <span class="mf">40435.</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="basic_find_shot.html" class="btn btn-neutral float-right" title="Find a Shot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="basic_sg_instance.html" class="btn btn-neutral float-left" title="Create a ShotGrid API instance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="basic_sg_instance.html" class="btn btn-neutral float-left" title="Create a ShotGrid API instance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="basic_find_shot.html" class="btn btn-neutral float-right" title="Find a Shot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2023, Autodesk
+    <p>&#169; Copyright 2023, Autodesk.</p>
+  </div>
 
-    </p>
-  </div> 
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  
 
   <script type="text/javascript">

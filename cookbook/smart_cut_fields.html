@@ -1,56 +1,36 @@
 
 
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Cut Fields &mdash; python-api v3.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Advanced Topics" href="../advanced.html" />
     <link rel="prev" title="Split Tasks" href="tasks/split_tasks.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
     <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
@@ -64,35 +44,20 @@
     
 
           
-            <a href="../index.html" class="icon icon-home"> python-api
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            python-api
           </a>
-
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
 
-          
-
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
@@ -112,8 +77,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../advanced.html">Advanced Topics</a></li>
 </ul>
 
-            
-          
 
     <a href='genindex.html'>Alphabetic Index</a>
 
@@ -154,160 +117,104 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">python-api</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="../cookbook.html">API Cookbook</a> &raquo;</li>
-        
-      <li>Smart Cut Fields</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../cookbook.html">API Cookbook</a></li>
+      <li class="breadcrumb-item active">Smart Cut Fields</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="smart-cut-fields">
-<span id="id1"></span><h1>Smart Cut Fields<a class="headerlink" href="#smart-cut-fields" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="smart-cut-fields">
+<span id="id1"></span><h1>Smart Cut Fields<a class="headerlink" href="#smart-cut-fields" title="Permalink to this heading"></a></h1>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Smart Cut Fields should be considered deprecated. ShotGrid v7.0, introduced a new version of
+<p class="admonition-title">Warning</p>
+<p>Smart Cut Fields should be considered deprecated. ShotGrid v7.0, introduced a new version of
 cut support. <a class="reference external" href="https://knowledge.autodesk.com/support/shotgrid/learn-explore/caas/CloudHelp/cloudhelp/ENU/SG-Editorial/files/SG-Editorial-ed-cut-schema-html-html.html">Read the Cut Support Documentation here</a>.</p>
 </div>
 <p>If you want to work with ‘smart’ cut fields through the API, your script should use a corresponding
 ‘raw’ fields for all updates. The ‘smart_cut_fields’ are primarily for display in the UI, the real
 data is stored in a set of ‘raw’ fields that have different names.</p>
-<div class="section" id="smart-fields">
-<h2>Smart Fields<a class="headerlink" href="#smart-fields" title="Permalink to this headline">¶</a></h2>
+<section id="smart-fields">
+<h2>Smart Fields<a class="headerlink" href="#smart-fields" title="Permalink to this heading"></a></h2>
 <p>In the UI these fields attempt to calculate values based on data entered into the various fields.
 These fields can be queried via the API using the find() method, but not updated. Note that we are
 deprecating this feature and recommend creating your own cut fields from scratch, which will not
 contain any calculations which have proven to be too magical at times.</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">smart_cut_duration</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">smart_cut_in</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">smart_cut_out</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">smart_cut_summary_display</span></code> *</li>
-<li><code class="docutils literal notranslate"><span class="pre">smart_cut_duration_display</span></code> *</li>
-<li><code class="docutils literal notranslate"><span class="pre">smart_head_duration</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">smart_head_in</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">smart_head_out</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">smart_tail_duration</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">smart_tail_in</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">smart_tail_out</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">smart_working_duration</span></code> *</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smart_cut_duration</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smart_cut_in</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smart_cut_out</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smart_cut_summary_display</span></code> *</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smart_cut_duration_display</span></code> *</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smart_head_duration</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smart_head_in</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smart_head_out</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smart_tail_duration</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smart_tail_in</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smart_tail_out</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smart_working_duration</span></code> *</p></li>
 </ul>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">* these are special summary fields that have no corresponding “raw” field.</p>
+<p class="admonition-title">Note</p>
+<p>* these are special summary fields that have no corresponding “raw” field.</p>
 </div>
-</div>
-<div class="section" id="raw-fields">
-<h2>Raw Fields<a class="headerlink" href="#raw-fields" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="raw-fields">
+<h2>Raw Fields<a class="headerlink" href="#raw-fields" title="Permalink to this heading"></a></h2>
 <p>These are the “raw” fields that can be queried and updated through the API:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">cut_duration</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">cut_in</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">cut_out</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">head_duration</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">head_in</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">head_out</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">tail_duration</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">tail_in</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">tail_out</span></code></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cut_duration</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cut_in</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cut_out</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">head_duration</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">head_in</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">head_out</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tail_duration</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tail_in</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tail_out</span></code></p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../advanced.html" class="btn btn-neutral float-right" title="Advanced Topics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="tasks/split_tasks.html" class="btn btn-neutral float-left" title="Split Tasks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tasks/split_tasks.html" class="btn btn-neutral float-left" title="Split Tasks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../advanced.html" class="btn btn-neutral float-right" title="Advanced Topics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2023, Autodesk
+    <p>&#169; Copyright 2023, Autodesk.</p>
+  </div>
 
-    </p>
-  </div> 
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  
 
   <script type="text/javascript">

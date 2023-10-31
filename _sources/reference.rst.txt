@@ -289,7 +289,7 @@ Operators and Arguments
                                        # note that brackets are not literal (eg. ['start_date', 'in_last', 1, 'DAY'])
     'in_next'                   [[int], 'HOUR' | 'DAY' | 'WEEK' | 'MONTH' | 'YEAR']
                                        # note that brackets are not literal (eg. ['start_date', 'in_next', 1, 'DAY'])
-    'in'                        [[field_value], ...]        # Array of field values
+    'in'                        [[field_value] | None, ...] # Array of field values
     'type_is'                   [string] | None             # Shotgun entity type
     'type_is_not'               [string] | None             # Shotgun entity type
     'in_calendar_day'           [int]                       # Offset (e.g. 0 = today, 1 = tomorrow,

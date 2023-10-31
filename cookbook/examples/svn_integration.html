@@ -1,56 +1,36 @@
 
 
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Subversion (SVN) Integration &mdash; python-api v3.4.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Details About Working With Files" href="../attachments.html" />
     <link rel="prev" title="Using an ActionMenuItem to Package Versions for a Client" href="ami_version_packager.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
     <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
@@ -64,35 +44,20 @@
     
 
           
-            <a href="../../index.html" class="icon icon-home"> python-api
           
-
-          
+          <a href="../../index.html" class="icon icon-home">
+            python-api
           </a>
-
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
 
-          
-
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authentication.html">Authentication</a></li>
@@ -117,8 +82,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../advanced.html">Advanced Topics</a></li>
 </ul>
 
-            
-          
 
     <a href='genindex.html'>Alphabetic Index</a>
 
@@ -159,325 +122,208 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">python-api</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="../../cookbook.html">API Cookbook</a> &raquo;</li>
-        
-          <li><a href="../tutorials.html">Examples</a> &raquo;</li>
-        
-      <li>Subversion (SVN) Integration</li>
-    
-    
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../cookbook.html">API Cookbook</a></li>
+          <li class="breadcrumb-item"><a href="../tutorials.html">Examples</a></li>
+      <li class="breadcrumb-item active">Subversion (SVN) Integration</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="subversion-svn-integration">
-<span id="svn-integration"></span><h1>Subversion (SVN) Integration<a class="headerlink" href="#subversion-svn-integration" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="subversion-svn-integration">
+<span id="svn-integration"></span><h1>Subversion (SVN) Integration<a class="headerlink" href="#subversion-svn-integration" title="Permalink to this heading"></a></h1>
 <p>Integrating ShotGrid with Subversion consists of two basic parts:</p>
 <ul class="simple">
-<li>Setup a post-commit hook in Subversion.</li>
-<li>Create a ShotGrid API script to create the Revision in ShotGrid. This script will be called by
-the post-commit hook.</li>
+<li><p>Setup a post-commit hook in Subversion.</p></li>
+<li><p>Create a ShotGrid API script to create the Revision in ShotGrid. This script will be called by
+the post-commit hook.</p></li>
 </ul>
-<div class="section" id="post-commit-hook">
-<h2>Post-Commit Hook<a class="headerlink" href="#post-commit-hook" title="Permalink to this headline">¶</a></h2>
+<section id="post-commit-hook">
+<h2>Post-Commit Hook<a class="headerlink" href="#post-commit-hook" title="Permalink to this heading"></a></h2>
 <p>To setup the post-commit hook:</p>
 <ul class="simple">
-<li>Locate the <code class="docutils literal notranslate"><span class="pre">post-commit.tmpl</span></code> file, which is found inside the <code class="docutils literal notranslate"><span class="pre">hooks</span></code> folder in your
+<li><p>Locate the <code class="docutils literal notranslate"><span class="pre">post-commit.tmpl</span></code> file, which is found inside the <code class="docutils literal notranslate"><span class="pre">hooks</span></code> folder in your
 repository directory.  This is a template script that has lots of useful comments and can serve
-as a starting point for the real thing.</li>
-<li>Create your very own executable script, and save it in the same <code class="docutils literal notranslate"><span class="pre">hooks</span></code> folder, name it
-<code class="docutils literal notranslate"><span class="pre">post-commit</span></code>, and give it executable permission.</li>
-<li>In your <code class="docutils literal notranslate"><span class="pre">post-commit</span></code> script, invoke your ShotGrid API script.</li>
+as a starting point for the real thing.</p></li>
+<li><p>Create your very own executable script, and save it in the same <code class="docutils literal notranslate"><span class="pre">hooks</span></code> folder, name it
+<code class="docutils literal notranslate"><span class="pre">post-commit</span></code>, and give it executable permission.</p></li>
+<li><p>In your <code class="docutils literal notranslate"><span class="pre">post-commit</span></code> script, invoke your ShotGrid API script.</p></li>
 </ul>
 <p>If this is entirely new to you, we highly suggest reading up on the topic. O’Reilly has <a class="reference external" href="http://svnbook.red-bean.com/nightly/en/svn.reposadmin.create.html#svn.reposadmin.create.hooks">a free
 online guide for Subversion 1.5 and 1.6</a></p>
 <p>Here’s an example of a post-commit hook that we’ve made for Subversion 1.6 using an executable
 Unix shell script.  The last line invokes “shotgun_api_script.py” which is our Python script that
 will do all the heavy lifting.  Lines 4 thru 8 queue up some objects that we’ll use later on.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><span class="w"> </span><span class="c1">#!/bin/sh</span>
-<span class="w"> </span><span class="c1"># POST-COMMIT HOOK</span>
-
-<span class="w"> </span><span class="nv">REPOS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
-<span class="w"> </span><span class="nv">REV</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
-
-<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">AUTHOR</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook<span class="w"> </span>author<span class="w"> </span><span class="nv">$REPOS</span><span class="w"> </span>--revision<span class="w"> </span><span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
-<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">COMMENT</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook<span class="w"> </span>log<span class="w"> </span><span class="nv">$REPOS</span><span class="w"> </span>--revision<span class="w"> </span><span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
-
-<span class="w"> </span>/Absolute/path/to/shotgun_api_script.py
-</pre></div></td></tr></table></div>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w"> </span><span class="c1">#!/bin/sh</span>
+<span class="linenos"> 2</span><span class="w"> </span><span class="c1"># POST-COMMIT HOOK</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="w"> </span><span class="nv">REPOS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+<span class="linenos"> 5</span><span class="w"> </span><span class="nv">REV</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">AUTHOR</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook<span class="w"> </span>author<span class="w"> </span><span class="nv">$REPOS</span><span class="w"> </span>--revision<span class="w"> </span><span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
+<span class="linenos"> 8</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">COMMENT</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook<span class="w"> </span>log<span class="w"> </span><span class="nv">$REPOS</span><span class="w"> </span>--revision<span class="w"> </span><span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="w"> </span>/Absolute/path/to/shotgun_api_script.py
+</pre></div>
 </div>
-<div class="section" id="explanation-of-selected-lines">
-<h3>Explanation of selected lines<a class="headerlink" href="#explanation-of-selected-lines" title="Permalink to this headline">¶</a></h3>
+<section id="explanation-of-selected-lines">
+<h3>Explanation of selected lines<a class="headerlink" href="#explanation-of-selected-lines" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li>lines <code class="docutils literal notranslate"><span class="pre">4-5</span></code>: After the commit, Subversion leaves us two string objects in the environment:
-<code class="docutils literal notranslate"><span class="pre">REPOS</span></code> and <code class="docutils literal notranslate"><span class="pre">REV</span></code>  (the repository path and the revision number, respectively).</li>
-<li>lines <code class="docutils literal notranslate"><span class="pre">7-8</span></code>: Here we use the shell command <code class="docutils literal notranslate"><span class="pre">export</span></code> to create two more string objects in the
+<li><p>lines <code class="docutils literal notranslate"><span class="pre">4-5</span></code>: After the commit, Subversion leaves us two string objects in the environment:
+<code class="docutils literal notranslate"><span class="pre">REPOS</span></code> and <code class="docutils literal notranslate"><span class="pre">REV</span></code>  (the repository path and the revision number, respectively).</p></li>
+<li><p>lines <code class="docutils literal notranslate"><span class="pre">7-8</span></code>: Here we use the shell command <code class="docutils literal notranslate"><span class="pre">export</span></code> to create two more string objects in the
 environment:  <code class="docutils literal notranslate"><span class="pre">AUTHOR</span></code> and <code class="docutils literal notranslate"><span class="pre">COMMENT</span></code>. To get each value, we use the <code class="docutils literal notranslate"><span class="pre">svnlook</span></code> command with
 our <code class="docutils literal notranslate"><span class="pre">REPOS</span></code> and <code class="docutils literal notranslate"><span class="pre">REV</span></code> values, first with the <code class="docutils literal notranslate"><span class="pre">author</span></code>, and then with <code class="docutils literal notranslate"><span class="pre">log</span></code> subcommand.
 These are actually the first two original lines of code - everything else to this point was
-pre-written already in the <code class="docutils literal notranslate"><span class="pre">post-commit.tmpl</span></code> file. nice :)</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">10</span></code>: This is the absolute path to our ShotGrid API Script.</li>
+pre-written already in the <code class="docutils literal notranslate"><span class="pre">post-commit.tmpl</span></code> file. nice :)</p></li>
+<li><p>line <code class="docutils literal notranslate"><span class="pre">10</span></code>: This is the absolute path to our ShotGrid API Script.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="shotgrid-api-script">
-<h2>ShotGrid API Script<a class="headerlink" href="#shotgrid-api-script" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="shotgrid-api-script">
+<h2>ShotGrid API Script<a class="headerlink" href="#shotgrid-api-script" title="Permalink to this heading"></a></h2>
 <p>This script will create the Revision and populate it with some metadata using the ShotGrid Python
 API. It will create our Revision in ShotGrid along with the author, comment, and because we use
 Trac (a web-based interface for Subversion), it will also populate a URL field with a clickable
 link to the Revision.</p>
-<div class="highlight-python notranslate"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span> <span class="c1">#!/usr/bin/env python</span>
- <span class="c1"># ---------------------------------------------------------------------------------------------</span>
-
- <span class="c1"># ---------------------------------------------------------------------------------------------</span>
- <span class="c1"># Imports</span>
- <span class="c1"># ---------------------------------------------------------------------------------------------</span>
- <span class="kn">import</span> <span class="nn">sys</span>
- <span class="kn">from</span> <span class="nn">shotgun_api3_preview</span> <span class="kn">import</span> <span class="n">Shotgun</span>
- <span class="kn">import</span> <span class="nn">os</span>
-
- <span class="c1"># ---------------------------------------------------------------------------------------------</span>
- <span class="c1"># Globals - update all of these values to those of your studio</span>
- <span class="c1"># ---------------------------------------------------------------------------------------------</span>
- <span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s1">&#39;https ://my-site.shotgrid.autodesk.com&#39;</span> <span class="c1"># or http:</span>
- <span class="n">SCRIPT_USER</span> <span class="o">=</span> <span class="s1">&#39;script_name&#39;</span>
- <span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">&#39;3333333333333333333333333333333333333333&#39;</span>
- <span class="n">REVISIONS_PATH</span> <span class="o">=</span> <span class="s1">&#39;https ://serveraddress/trac/changeset/&#39;</span> <span class="c1"># or other web-based UI</span>
- <span class="n">PROJECT</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">27</span><span class="p">}</span>
-
- <span class="c1"># ---------------------------------------------------------------------------------------------</span>
- <span class="c1"># Main</span>
- <span class="c1"># ---------------------------------------------------------------------------------------------</span>
- <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-
-    <span class="n">sg</span> <span class="o">=</span> <span class="n">Shotgun</span><span class="p">(</span><span class="n">SERVER_PATH</span><span class="p">,</span> <span class="n">SCRIPT_USER</span><span class="p">,</span> <span class="n">SCRIPT_KEY</span><span class="p">)</span>
-
-    <span class="c1"># Set Python variables from the environment objects</span>
-    <span class="n">revision_code</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;REV&#39;</span><span class="p">]</span>
-    <span class="n">repository</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;REPOS&#39;</span><span class="p">]</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span>
-    <span class="n">author</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;AUTHOR&#39;</span><span class="p">]</span>
-
-    <span class="c1"># Set the Trac path for this specific revision</span>
-    <span class="n">revision_url</span> <span class="o">=</span> <span class="n">REVISIONS_PATH</span> <span class="o">+</span> <span class="n">revision_code</span>
-
-    <span class="c1"># Validate that author is a valid ShotGrid HumanUser</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s2">&quot;HumanUser&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">author</span><span class="p">]])</span>
-    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
-        <span class="c1"># Create Revision</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span><span class="s1">&#39;http_url&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">:</span><span class="n">revision_url</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;Trac&#39;</span><span class="p">}</span>
-        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;project&#39;</span><span class="p">:</span><span class="n">PROJECT</span><span class="p">,</span>
-                        <span class="s1">&#39;code&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">revision_code</span><span class="p">),</span>
-                        <span class="s1">&#39;description&#39;</span><span class="p">:</span><span class="n">description</span><span class="p">,</span>
-                        <span class="s1">&#39;attachment&#39;</span><span class="p">:</span><span class="n">url</span><span class="p">,</span>
-                        <span class="s1">&#39;created_by&#39;</span><span class="p">:{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;HumanUser&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]}</span>
-                        <span class="p">}</span>
-        <span class="n">revision</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;Revision&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;created Revision #&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">revision_code</span><span class="p">))</span>
-
-    <span class="c1"># Send error message if valid HumanUser is not found</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unable to find valid ShotGrid User with login: &quot;</span><span class="o">+</span><span class="n">author</span><span class="o">+</span><span class="s2">&quot;, Revision not created in ShotGrid.&quot;</span><span class="p">)</span>
-</pre></div></td></tr></table></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span> <span class="c1">#!/usr/bin/env python</span>
+<span class="linenos"> 2</span> <span class="c1"># ---------------------------------------------------------------------------------------------</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span> <span class="c1"># ---------------------------------------------------------------------------------------------</span>
+<span class="linenos"> 5</span> <span class="c1"># Imports</span>
+<span class="linenos"> 6</span> <span class="c1"># ---------------------------------------------------------------------------------------------</span>
+<span class="linenos"> 7</span> <span class="kn">import</span> <span class="nn">sys</span>
+<span class="linenos"> 8</span> <span class="kn">from</span> <span class="nn">shotgun_api3_preview</span> <span class="kn">import</span> <span class="n">Shotgun</span>
+<span class="linenos"> 9</span> <span class="kn">import</span> <span class="nn">os</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span> <span class="c1"># ---------------------------------------------------------------------------------------------</span>
+<span class="linenos">12</span> <span class="c1"># Globals - update all of these values to those of your studio</span>
+<span class="linenos">13</span> <span class="c1"># ---------------------------------------------------------------------------------------------</span>
+<span class="linenos">14</span> <span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s1">&#39;https ://my-site.shotgrid.autodesk.com&#39;</span> <span class="c1"># or http:</span>
+<span class="linenos">15</span> <span class="n">SCRIPT_USER</span> <span class="o">=</span> <span class="s1">&#39;script_name&#39;</span>
+<span class="linenos">16</span> <span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">&#39;3333333333333333333333333333333333333333&#39;</span>
+<span class="linenos">17</span> <span class="n">REVISIONS_PATH</span> <span class="o">=</span> <span class="s1">&#39;https ://serveraddress/trac/changeset/&#39;</span> <span class="c1"># or other web-based UI</span>
+<span class="linenos">18</span> <span class="n">PROJECT</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">27</span><span class="p">}</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span> <span class="c1"># ---------------------------------------------------------------------------------------------</span>
+<span class="linenos">21</span> <span class="c1"># Main</span>
+<span class="linenos">22</span> <span class="c1"># ---------------------------------------------------------------------------------------------</span>
+<span class="linenos">23</span> <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span>    <span class="n">sg</span> <span class="o">=</span> <span class="n">Shotgun</span><span class="p">(</span><span class="n">SERVER_PATH</span><span class="p">,</span> <span class="n">SCRIPT_USER</span><span class="p">,</span> <span class="n">SCRIPT_KEY</span><span class="p">)</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span>    <span class="c1"># Set Python variables from the environment objects</span>
+<span class="linenos">28</span>    <span class="n">revision_code</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;REV&#39;</span><span class="p">]</span>
+<span class="linenos">29</span>    <span class="n">repository</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;REPOS&#39;</span><span class="p">]</span>
+<span class="linenos">30</span>    <span class="n">description</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span>
+<span class="linenos">31</span>    <span class="n">author</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;AUTHOR&#39;</span><span class="p">]</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span>    <span class="c1"># Set the Trac path for this specific revision</span>
+<span class="linenos">34</span>    <span class="n">revision_url</span> <span class="o">=</span> <span class="n">REVISIONS_PATH</span> <span class="o">+</span> <span class="n">revision_code</span>
+<span class="linenos">35</span>
+<span class="linenos">36</span>    <span class="c1"># Validate that author is a valid ShotGrid HumanUser</span>
+<span class="linenos">37</span>    <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s2">&quot;HumanUser&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">author</span><span class="p">]])</span>
+<span class="linenos">38</span>    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+<span class="linenos">39</span>        <span class="c1"># Create Revision</span>
+<span class="linenos">40</span>        <span class="n">url</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span><span class="s1">&#39;http_url&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">:</span><span class="n">revision_url</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;Trac&#39;</span><span class="p">}</span>
+<span class="linenos">41</span>        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;project&#39;</span><span class="p">:</span><span class="n">PROJECT</span><span class="p">,</span>
+<span class="linenos">42</span>                        <span class="s1">&#39;code&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">revision_code</span><span class="p">),</span>
+<span class="linenos">43</span>                        <span class="s1">&#39;description&#39;</span><span class="p">:</span><span class="n">description</span><span class="p">,</span>
+<span class="linenos">44</span>                        <span class="s1">&#39;attachment&#39;</span><span class="p">:</span><span class="n">url</span><span class="p">,</span>
+<span class="linenos">45</span>                        <span class="s1">&#39;created_by&#39;</span><span class="p">:{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;HumanUser&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]}</span>
+<span class="linenos">46</span>                        <span class="p">}</span>
+<span class="linenos">47</span>        <span class="n">revision</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;Revision&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+<span class="linenos">48</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;created Revision #&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">revision_code</span><span class="p">))</span>
+<span class="linenos">49</span>
+<span class="linenos">50</span>    <span class="c1"># Send error message if valid HumanUser is not found</span>
+<span class="linenos">51</span>    <span class="k">else</span><span class="p">:</span>
+<span class="linenos">52</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unable to find valid ShotGrid User with login: &quot;</span><span class="o">+</span><span class="n">author</span><span class="o">+</span><span class="s2">&quot;, Revision not created in ShotGrid.&quot;</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="id1">
-<h3>Explanation of selected lines:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<section id="id1">
+<h3>Explanation of selected lines:<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li>line <code class="docutils literal notranslate"><span class="pre">14</span></code>: This should be the URL to your instance of ShotGrid.</li>
-<li>lines <code class="docutils literal notranslate"><span class="pre">15-16</span></code>: Make sure you get these values from the “Scripts” page in the Admin section of
-the ShotGrid web application. If you’re not sure how to do this, check out <a class="reference external" href="https://developer.shotgridsoftware.com/python-api/authentication.html" title="(in python-api vv3.3.6)"><span>Authentication</span></a>.</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">17</span></code>: This is the address of Trac, our web-based interface that we use with Subversion.
+<li><p>line <code class="docutils literal notranslate"><span class="pre">14</span></code>: This should be the URL to your instance of ShotGrid.</p></li>
+<li><p>lines <code class="docutils literal notranslate"><span class="pre">15-16</span></code>: Make sure you get these values from the “Scripts” page in the Admin section of
+the ShotGrid web application. If you’re not sure how to do this, check out <span class="xref std std-doc">authentication</span>.</p></li>
+<li><p>line <code class="docutils literal notranslate"><span class="pre">17</span></code>: This is the address of Trac, our web-based interface that we use with Subversion.
 You may use a different interface, or none at all, so feel free to adjust this line or ignore it
-as your case may be.</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">18</span></code>: Every Revision in ShotGrid must have a Project, which is passed to the API as a
+as your case may be.</p></li>
+<li><p>line <code class="docutils literal notranslate"><span class="pre">18</span></code>: Every Revision in ShotGrid must have a Project, which is passed to the API as a
 dictionary with two keys, the <code class="docutils literal notranslate"><span class="pre">type</span></code> and the <code class="docutils literal notranslate"><span class="pre">id</span></code>.  Of course the <code class="docutils literal notranslate"><span class="pre">type</span></code> value will always
 remain <code class="docutils literal notranslate"><span class="pre">Project</span></code> (case sensitive), but the <code class="docutils literal notranslate"><span class="pre">id</span></code> will change by Project.  To find out the
 <code class="docutils literal notranslate"><span class="pre">id</span></code> of your Project, go to the Projects page in the ShotGrid web application, locate the
 Project where you want your Revisions created, and then locate its <code class="docutils literal notranslate"><span class="pre">id</span></code> field (which you may
 need to display - if you don’t see it, right click on any column header then select
 “Insert Column” &gt; “Id”).  Note that for this example we assume that all Revisions in this
-Subversion repository will belong to the same Project.</li>
-<li>lines <code class="docutils literal notranslate"><span class="pre">28-31</span></code>: Grab the values from the objects that were left for us in the environment.</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">34</span></code>: Add the Revision number to complete the path of our Trac url.</li>
-<li>line <code class="docutils literal notranslate"><span class="pre">37</span></code>: Make sure that a valid User exists in ShotGrid.  In our example, we assume that our
+Subversion repository will belong to the same Project.</p></li>
+<li><p>lines <code class="docutils literal notranslate"><span class="pre">28-31</span></code>: Grab the values from the objects that were left for us in the environment.</p></li>
+<li><p>line <code class="docutils literal notranslate"><span class="pre">34</span></code>: Add the Revision number to complete the path of our Trac url.</p></li>
+<li><p>line <code class="docutils literal notranslate"><span class="pre">37</span></code>: Make sure that a valid User exists in ShotGrid.  In our example, we assume that our
 Users’ ShotGrid logins match their Subversion names.  If the user exists in ShotGrid, that
-user’s <code class="docutils literal notranslate"><span class="pre">id</span></code> will be returned as <code class="docutils literal notranslate"><span class="pre">result['id']</span></code>, which we will need later on in line 46.</li>
-<li>lines <code class="docutils literal notranslate"><span class="pre">40-48</span></code>: Use all the meta data we’ve gathered to create a Revision in ShotGrid. If none
+user’s <code class="docutils literal notranslate"><span class="pre">id</span></code> will be returned as <code class="docutils literal notranslate"><span class="pre">result['id']</span></code>, which we will need later on in line 46.</p></li>
+<li><p>lines <code class="docutils literal notranslate"><span class="pre">40-48</span></code>: Use all the meta data we’ve gathered to create a Revision in ShotGrid. If none
 of these lines make any sense, check out more on the <code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code> method
 here.   Line 41 deserves special mention: notice that we define a dictionary called <code class="docutils literal notranslate"><span class="pre">url</span></code> that
 has three important keys: <code class="docutils literal notranslate"><span class="pre">content_type</span></code>, <code class="docutils literal notranslate"><span class="pre">url</span></code>, and <code class="docutils literal notranslate"><span class="pre">name</span></code>, and we then pass this in as
 the value for the <code class="docutils literal notranslate"><span class="pre">attachment</span></code> field when we create the Revision.  If you’re even in doubt,
-double check the syntax and requirements for the different field types here.</li>
+double check the syntax and requirements for the different field types here.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="my-post-commit-script-is-simply-not-running-i-can-run-it-manually-but-commits-are-not-triggering-it">
-<h3>My post-commit script is simply not running. I can run it manually, but commits are not triggering it.<a class="headerlink" href="#my-post-commit-script-is-simply-not-running-i-can-run-it-manually-but-commits-are-not-triggering-it" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading"></a></h2>
+<section id="my-post-commit-script-is-simply-not-running-i-can-run-it-manually-but-commits-are-not-triggering-it">
+<h3>My post-commit script is simply not running. I can run it manually, but commits are not triggering it.<a class="headerlink" href="#my-post-commit-script-is-simply-not-running-i-can-run-it-manually-but-commits-are-not-triggering-it" title="Permalink to this heading"></a></h3>
 <p>Make sure that the script is has explicitly been made executable and that all users who will
 invoke it have appropriate permissions for the script and that folders going back to root.</p>
-</div>
-<div class="section" id="my-shotgrid-api-script-is-not-getting-called-by-the-post-commit-hook">
-<h3>My ShotGrid API script is not getting called by the post-commit hook.<a class="headerlink" href="#my-shotgrid-api-script-is-not-getting-called-by-the-post-commit-hook" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="my-shotgrid-api-script-is-not-getting-called-by-the-post-commit-hook">
+<h3>My ShotGrid API script is not getting called by the post-commit hook.<a class="headerlink" href="#my-shotgrid-api-script-is-not-getting-called-by-the-post-commit-hook" title="Permalink to this heading"></a></h3>
 <p>Make sure that the script is called using its absolute path.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../attachments.html" class="btn btn-neutral float-right" title="Details About Working With Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="ami_version_packager.html" class="btn btn-neutral float-left" title="Using an ActionMenuItem to Package Versions for a Client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ami_version_packager.html" class="btn btn-neutral float-left" title="Using an ActionMenuItem to Package Versions for a Client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../attachments.html" class="btn btn-neutral float-right" title="Details About Working With Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2023, Autodesk
+    <p>&#169; Copyright 2023, Autodesk.</p>
+  </div>
 
-    </p>
-  </div> 
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  
 
   <script type="text/javascript">

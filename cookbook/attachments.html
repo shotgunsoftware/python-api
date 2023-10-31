@@ -1,56 +1,36 @@
 
 
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Details About Working With Files &mdash; python-api v3.4.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Working With Tasks" href="tasks.html" />
     <link rel="prev" title="Subversion (SVN) Integration" href="examples/svn_integration.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
     <a href='http://developer.shotgridsoftware.com'>
     
         <img style='width: 191px;
@@ -64,35 +44,20 @@
     
 
           
-            <a href="../index.html" class="icon icon-home"> python-api
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            python-api
           </a>
-
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
 
-          
-
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../authentication.html">Authentication</a></li>
@@ -130,8 +95,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../advanced.html">Advanced Topics</a></li>
 </ul>
 
-            
-          
 
     <a href='genindex.html'>Alphabetic Index</a>
 
@@ -172,187 +135,150 @@
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">python-api</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="../cookbook.html">API Cookbook</a> &raquo;</li>
-        
-      <li>Details About Working With Files</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../cookbook.html">API Cookbook</a></li>
+      <li class="breadcrumb-item active">Details About Working With Files</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="details-about-working-with-files">
-<span id="attachments"></span><h1>Details About Working With Files<a class="headerlink" href="#details-about-working-with-files" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="details-about-working-with-files">
+<span id="attachments"></span><h1>Details About Working With Files<a class="headerlink" href="#details-about-working-with-files" title="Permalink to this heading"></a></h1>
 <p>The ShotGrid web application stores Files as Attachment entities. You can see these on a Files page,
 or a Files tab on a detail page, for example. You can access Attachments via the API to create and
 modify uploaded files, url links, and local files, and link them to other entities (Shots,
 Versions, etc). This entity works a lot like other entity types within ShotGrid with a few
 exceptions which are detailed below.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
+<p class="admonition-title">Note</p>
 <p>If you are simply looking for information about how to upload and link things in ShotGrid, this
 doc is not for you. Instead look at the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code> and
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code> methods.</p>
-<p class="last">This doc describes the detailed structure of the Attachment entities that represent files
+<p>This doc describes the detailed structure of the Attachment entities that represent files
 in ShotGrid and how to interact with them. If that sounds cool too, then read on!</p>
 </div>
 <div class="versionadded">
-<p><span class="versionmodified">New in version 3.0.3.</span></p>
+<p><span class="versionmodified added">New in version 3.0.3.</span></p>
 </div>
-<div class="section" id="default-structure">
-<h2>Default structure<a class="headerlink" href="#default-structure" title="Permalink to this headline">¶</a></h2>
+<section id="default-structure">
+<h2>Default structure<a class="headerlink" href="#default-structure" title="Permalink to this heading"></a></h2>
 <p>The following is a list of the default fields that ShotGrid creates for Attachments. Your server
 instance may look slightly different depending on your own customizations. Many of these fields are
 optional and some are automatically filled in. These exceptions are listed below in the
 descriptions of each field.</p>
 <ul class="simple">
-<li><dl class="first docutils">
-<dt><strong>description</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
-<dd>Optional field to provide descriptive text about the file.</dd>
+<li><dl class="simple">
+<dt><strong>description</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt><dd><p>Optional field to provide descriptive text about the file.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>this_file</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>):</dt>
-<dd>The actual file reference. Within the dictionary is a <code class="docutils literal notranslate"><span class="pre">link_type</span></code> key which designates the
+<li><dl class="simple">
+<dt><strong>this_file</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>):</dt><dd><p>The actual file reference. Within the dictionary is a <code class="docutils literal notranslate"><span class="pre">link_type</span></code> key which designates the
 Attachment as an uploaded file, a url link, or a local file. There are additional keys
 returned for <a class="reference internal" href="#id1"><span class="std std-ref">Working With Local File Types</span></a>. You cannot modify this field after you have created an
-Attachment. See below for examples of this field.</dd>
+Attachment. See below for examples of this field.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
-<dd>For uploaded files only. This is automatically assigned when the file is uploaded and stores
-the filename of the file.</dd>
+<li><dl class="simple">
+<dt><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt><dd><p>For uploaded files only. This is automatically assigned when the file is uploaded and stores
+the filename of the file.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>file_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt>
-<dd>For uploaded files only. This is automatically assigned when the file is uploaded and stores
-the size of the file in bytes.</dd>
+<li><dl class="simple">
+<dt><strong>file_size</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt><dd><p>For uploaded files only. This is automatically assigned when the file is uploaded and stores
+the size of the file in bytes.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>id</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt>
-<dd>The internal ShotGrid id for this Attachment entity.</dd>
+<li><dl class="simple">
+<dt><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt><dd><p>The internal ShotGrid id for this Attachment entity.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>attachment_links</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>):</dt>
-<dd>A list of entity dictionaries used for linking Attachments to multiple entities.</dd>
+<li><dl class="simple">
+<dt><strong>attachment_links</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>):</dt><dd><p>A list of entity dictionaries used for linking Attachments to multiple entities.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>open_notes</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>):</dt>
-<dd>A List of Note entities linked to the current Attachment that have a status that does not
-equal ‘clsd’. <em>Read-only</em></dd>
+<li><dl class="simple">
+<dt><strong>open_notes</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>):</dt><dd><p>A List of Note entities linked to the current Attachment that have a status that does not
+equal ‘clsd’. <em>Read-only</em></p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>open_notes_count</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt>
-<dd>An integer count of the list of Note entities linked to the current Attachment that have a
-status that does not equal ‘clsd’. <em>(Read-only)</em></dd>
+<li><dl class="simple">
+<dt><strong>open_notes_count</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt><dd><p>An integer count of the list of Note entities linked to the current Attachment that have a
+status that does not equal ‘clsd’. <em>(Read-only)</em></p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>project</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>):</dt>
-<dd><em>(Required)</em> The Project entity that this Attachment belongs to. This must be assigned when
-creating an Attachment.</dd>
+<li><dl class="simple">
+<dt><strong>project</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>):</dt><dd><p><em>(Required)</em> The Project entity that this Attachment belongs to. This must be assigned when
+creating an Attachment.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>attachment_reference_links</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>):</dt>
-<dd>Similar to <code class="docutils literal notranslate"><span class="pre">attachment_links</span></code> but used specifically for linking files to multiple entities as
-reference.</dd>
+<li><dl class="simple">
+<dt><strong>attachment_reference_links</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>):</dt><dd><p>Similar to <code class="docutils literal notranslate"><span class="pre">attachment_links</span></code> but used specifically for linking files to multiple entities as
+reference.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>sg_status_list</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
-<dd>Status value returned as the short code.</dd>
+<li><dl class="simple">
+<dt><strong>sg_status_list</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt><dd><p>Status value returned as the short code.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>tag_list</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code>):</dt>
-<dd>List of tags (as strings) that are currently assigned to the Attachment.</dd>
+<li><dl class="simple">
+<dt><strong>tag_list</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>):</dt><dd><p>List of tags (as strings) that are currently assigned to the Attachment.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>image</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
-<dd>The url location of the thumbnail image assigned to this Attachment. For uploads, ShotGrid
+<li><dl class="simple">
+<dt><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt><dd><p>The url location of the thumbnail image assigned to this Attachment. For uploads, ShotGrid
 automatically tries to create a thumbnail from the file.
 See <a class="reference internal" href="../reference.html#interpreting-image-field-strings"><span class="std std-ref">Interpreting Image Field Strings</span></a>. Alternatively, you can assign your
-own thumbnail to an Attachment using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code> method.</dd>
+own thumbnail to an Attachment using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code> method.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>sg_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
-<dd>An optional field for designating different types of Attachments</dd>
+<li><dl class="simple">
+<dt><strong>sg_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt><dd><p>An optional field for designating different types of Attachments</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>processing_status</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
-<dd>Reflects the status of the attachment (File entity).
-When processing the thumbnail, this field is set to ‘Thumbnail Pending’.</dd>
+<li><dl class="simple">
+<dt><strong>processing_status</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt><dd><p>Reflects the status of the attachment (File entity).
+When processing the thumbnail, this field is set to ‘Thumbnail Pending’.</p>
+</dd>
 </dl>
 </li>
 </ul>
-<div class="section" id="file-type-structures-this-file">
-<h3>File type structures (<code class="docutils literal notranslate"><span class="pre">this_file</span></code>)<a class="headerlink" href="#file-type-structures-this-file" title="Permalink to this headline">¶</a></h3>
+<section id="file-type-structures-this-file">
+<h3>File type structures (<code class="docutils literal notranslate"><span class="pre">this_file</span></code>)<a class="headerlink" href="#file-type-structures-this-file" title="Permalink to this heading"></a></h3>
 <p>Depending on the type of file the Attachment entity is representing, the value of <code class="docutils literal notranslate"><span class="pre">this_file</span></code>
 will vary.</p>
 <ul>
-<li><dl class="first docutils">
-<dt><strong>Uploads</strong></dt>
-<dd><p class="first">Designated by <code class="docutils literal notranslate"><span class="pre">link_type:</span> <span class="pre">'upload'</span></code>, this represents a file that was uploaded to ShotGrid.
+<li><dl>
+<dt><strong>Uploads</strong></dt><dd><p>Designated by <code class="docutils literal notranslate"><span class="pre">link_type:</span> <span class="pre">'upload'</span></code>, this represents a file that was uploaded to ShotGrid.
 Uploading files to ShotGrid can be done using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code> method.
 You cannot create an Attachment with an uploaded file directly.</p>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;image/jpeg&#39;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;image/jpeg&#39;</span><span class="p">,</span>
  <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;upload&#39;</span><span class="p">,</span>
  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;western1FULL.jpg&#39;</span><span class="p">,</span>
  <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;https://my-site.shotgrid.autodesk.com/file_serve/attachment/538&#39;</span><span class="p">}</span>
@@ -361,12 +287,11 @@ You cannot create an Attachment with an uploaded file directly.</p>
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>Web links</strong></dt>
-<dd><p class="first">Designated by <code class="docutils literal notranslate"><span class="pre">link_type:</span> <span class="pre">'web'</span></code>, this is represents a url link. Examples include an
+<li><dl>
+<dt><strong>Web links</strong></dt><dd><p>Designated by <code class="docutils literal notranslate"><span class="pre">link_type:</span> <span class="pre">'web'</span></code>, this is represents a url link. Examples include an
 <code class="docutils literal notranslate"><span class="pre">http://</span></code> link to another server or a custom protocol used to launch a local application
 like <code class="docutils literal notranslate"><span class="pre">rvlink://</span></code> or <code class="docutils literal notranslate"><span class="pre">cinesync://</span></code></p>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
  <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;web&#39;</span><span class="p">,</span>
  <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Join GUN12158&#39;</span><span class="p">,</span>
  <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;cinesync://session/GUN12158&#39;</span><span class="p">}</span>
@@ -375,15 +300,14 @@ like <code class="docutils literal notranslate"><span class="pre">rvlink://</spa
 </dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>Local Files</strong></dt>
-<dd><p class="first">Designated by <code class="docutils literal notranslate"><span class="pre">link_type:</span> <span class="pre">'local'</span></code>, this is represents a local file link. Additional keys
+<li><dl>
+<dt><strong>Local Files</strong></dt><dd><p>Designated by <code class="docutils literal notranslate"><span class="pre">link_type:</span> <span class="pre">'local'</span></code>, this is represents a local file link. Additional keys
 are provided in order to give access to the relative path information on other platforms.</p>
 <div class="admonition seealso">
-<p class="first admonition-title">See also</p>
-<p class="last"><a class="reference internal" href="#id1"><span class="std std-ref">Working With Local File Types</span></a></p>
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#id1"><span class="std std-ref">Working With Local File Types</span></a></p>
 </div>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;video/quicktime&#39;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;video/quicktime&#39;</span><span class="p">,</span>
   <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span>
   <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_test_movie.mov&#39;</span><span class="p">,</span>
   <span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
@@ -400,12 +324,12 @@ are provided in order to give access to the relative path information on other p
 </dl>
 </li>
 </ul>
-</div>
-</div>
-<div class="section" id="creating-attachments">
-<h2>Creating Attachments<a class="headerlink" href="#creating-attachments" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="web-links">
-<h3>Web Links<a class="headerlink" href="#web-links" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="creating-attachments">
+<h2>Creating Attachments<a class="headerlink" href="#creating-attachments" title="Permalink to this heading"></a></h2>
+<section id="web-links">
+<h3>Web Links<a class="headerlink" href="#web-links" title="Permalink to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">myurl</span> <span class="o">=</span> <span class="p">{</span>
   <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;http://apple.com/itunes&#39;</span><span class="p">,</span>
   <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Apple: iTunes&#39;</span>
@@ -417,104 +341,104 @@ are provided in order to give access to the relative path information on other p
 <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Attachment&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="uploads">
-<h3>Uploads<a class="headerlink" href="#uploads" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="uploads">
+<h3>Uploads<a class="headerlink" href="#uploads" title="Permalink to this heading"></a></h3>
 <p>Uploads cannot be created directly on Attachments. Instead, you need to use the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code> method.</p>
 <p>Make sure to have retries for file uploads. Failures when uploading will occasionally happen. When
 it does, immediately retrying to upload usually works.</p>
-</div>
-<div class="section" id="local-files">
-<h3>Local Files<a class="headerlink" href="#local-files" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="local-files">
+<h3>Local Files<a class="headerlink" href="#local-files" title="Permalink to this heading"></a></h3>
 <p>See <a class="reference internal" href="#creating-local-files"><span class="std std-ref">Creating &amp; Updating Local file Fields</span></a>.</p>
-</div>
-</div>
-<div class="section" id="updating-attachments">
-<h2>Updating Attachments<a class="headerlink" href="#updating-attachments" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="updating-attachments">
+<h2>Updating Attachments<a class="headerlink" href="#updating-attachments" title="Permalink to this heading"></a></h2>
 <p>You cannot modify the <code class="docutils literal notranslate"><span class="pre">this_file</span></code> field after you create an Attachment. If you need to provide a
 different file, you will have to create a new Attachment entity. Otherwise, the process for
 updating Attachments is exactly like updating other entity types in ShotGrid and is the same for all
 Attachment types. See <code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code> for more info.</p>
-</div>
-<div class="section" id="deleting-attachments">
-<h2>Deleting Attachments<a class="headerlink" href="#deleting-attachments" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="deleting-attachments">
+<h2>Deleting Attachments<a class="headerlink" href="#deleting-attachments" title="Permalink to this heading"></a></h2>
 <p>The process of deleting an Attachment is just like other entities in ShotGrid. See
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">delete()</span></code> for more info.</p>
-</div>
-<div class="section" id="working-with-local-file-types">
-<span id="id1"></span><h2>Working With Local File Types<a class="headerlink" href="#working-with-local-file-types" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="working-with-local-file-types">
+<span id="id1"></span><h2>Working With Local File Types<a class="headerlink" href="#working-with-local-file-types" title="Permalink to this heading"></a></h2>
 <p>We added support for linking to local files in the UI in ShotGrid Server v2.1. This doc covers how
 to work with these local file links using the API.</p>
-<div class="section" id="requirements">
-<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h3>
+<section id="requirements">
+<h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li>Python API v3.0.3+</li>
-<li>ShotGrid Server v2.1.10+</li>
+<li><p>Python API v3.0.3+</p></li>
+<li><p>ShotGrid Server v2.1.10+</p></li>
 </ul>
-</div>
-<div class="section" id="structure-of-local-file-values">
-<h3>Structure of Local File Values<a class="headerlink" href="#structure-of-local-file-values" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="structure-of-local-file-values">
+<h3>Structure of Local File Values<a class="headerlink" href="#structure-of-local-file-values" title="Permalink to this heading"></a></h3>
 <p>There is a key in the dictionary that represents file/link fields called <code class="docutils literal notranslate"><span class="pre">link_type</span></code> which can be
 one of <code class="docutils literal notranslate"><span class="pre">local</span></code>, <code class="docutils literal notranslate"><span class="pre">upload</span></code>, <code class="docutils literal notranslate"><span class="pre">web</span></code>. This is used to determine what type of link the field value
 contains. For local files this value is always <code class="docutils literal notranslate"><span class="pre">local</span></code> and there are additional keys that
 are available:</p>
 <ul class="simple">
-<li><dl class="first docutils">
-<dt><strong>content_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
-<dd>The mime-type of the associated local file. This is assigned
+<li><dl class="simple">
+<dt><strong>content_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt><dd><p>The mime-type of the associated local file. This is assigned
 automatically using a best-guess based on the file extension. You can override this by setting
-this explicitly.</dd>
+this explicitly.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>link_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
-<dd>Always ‘local’ for local files.</dd>
+<li><dl class="simple">
+<dt><strong>link_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt><dd><p>Always ‘local’ for local files.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
-<dd>the display name of the local file. This is set to the filename by
-default but can be overridden by setting this explicitly.</dd>
+<li><dl class="simple">
+<dt><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt><dd><p>the display name of the local file. This is set to the filename by
+default but can be overridden by setting this explicitly.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>local_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt>
-<dd>The full path to the file on the current platform. The Python API tries to determine the
+<li><dl class="simple">
+<dt><strong>local_path</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt><dd><p>The full path to the file on the current platform. The Python API tries to determine the
 platform it is currently running on and then copies the value from the corresponding key above
-to this field for convenience.</dd>
+to this field for convenience.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>local_path_linux</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
-<dd>Full path to file on Linux as defined by the LocalStorage (or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no Linux path is set)</dd>
+<li><dl class="simple">
+<dt><strong>local_path_linux</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt><dd><p>Full path to file on Linux as defined by the LocalStorage (or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no Linux path is set)</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>local_path_mac</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
-<dd>Full path to file on Mac OS X as defined by the LocalStorage (or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no Mac path is set)</dd>
+<li><dl class="simple">
+<dt><strong>local_path_mac</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt><dd><p>Full path to file on Mac OS X as defined by the LocalStorage (or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no Mac path is set)</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>local_path_windows</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
-<dd>Full path to file on Windows as defined by the LocalStorage (or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no Windows path
-is set)</dd>
+<li><dl class="simple">
+<dt><strong>local_path_windows</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt><dd><p>Full path to file on Windows as defined by the LocalStorage (or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no Windows path
+is set)</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>local_storage</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) <em>read-only</em>:</dt>
-<dd>A dictionary representing which LocalStorage entity is applied for this local file link.</dd>
+<li><dl class="simple">
+<dt><strong>local_storage</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>) <em>read-only</em>:</dt><dd><p>A dictionary representing which LocalStorage entity is applied for this local file link.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>url</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt>
-<dd>A <a class="reference external" href="file://">file://</a> link provided for convenience pointing to the value in the <code class="docutils literal notranslate"><span class="pre">local_path</span></code></dd>
+<li><dl class="simple">
+<dt><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt><dd><p>A <a class="reference external" href="file://">file://</a> link provided for convenience pointing to the value in the <code class="docutils literal notranslate"><span class="pre">local_path</span></code></p>
+</dd>
 </dl>
 </li>
 </ul>
-</div>
-<div class="section" id="reading-local-file-fields">
-<h3>Reading Local File Fields<a class="headerlink" href="#reading-local-file-fields" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="reading-local-file-fields">
+<h3>Reading Local File Fields<a class="headerlink" href="#reading-local-file-fields" title="Permalink to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">]</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">]],</span> <span class="n">fields</span><span class="p">)</span>
 </pre></div>
@@ -536,36 +460,36 @@ is set)</dd>
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">When viewing results that include file/link fields with local file link values, all of the
+<p class="admonition-title">Note</p>
+<p>When viewing results that include file/link fields with local file link values, all of the
 keys will be returned regardless of whether there are values in them. So in the above example,
 if there was no Windows path set for the local storage, <code class="docutils literal notranslate"><span class="pre">local_path_windows</span></code> would be
 <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </div>
-</div>
-<div class="section" id="creating-updating-local-file-fields">
-<span id="creating-local-files"></span><h3>Creating &amp; Updating Local file Fields<a class="headerlink" href="#creating-updating-local-file-fields" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="creating-updating-local-file-fields">
+<span id="creating-local-files"></span><h3>Creating &amp; Updating Local file Fields<a class="headerlink" href="#creating-updating-local-file-fields" title="Permalink to this heading"></a></h3>
 <p>When setting a file/link field value to a local file, only the <code class="docutils literal notranslate"><span class="pre">local_path</span></code> is mandatory. ShotGrid
 will automatically select the appropriate matching local storage for your file based on the path.
 You can optionally specify the <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">content_type</span></code> fields if you wish to override their
 defaults. Any other keys that are provided will be ignored.</p>
 <ul class="simple">
-<li><dl class="first docutils">
-<dt><strong>content_type</strong> <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt>
-<dd>Optionally set the mime-type of the associated local file. This is assigned automatically
-using a best-guess based on the file extension.</dd>
+<li><dl class="simple">
+<dt><strong>content_type</strong> <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt><dd><p>Optionally set the mime-type of the associated local file. This is assigned automatically
+using a best-guess based on the file extension.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>name</strong> <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt>
-<dd>Optional display name of the local file. This is set to the filename by default.</dd>
+<li><dl class="simple">
+<dt><strong>name</strong> <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt><dd><p>Optional display name of the local file. This is set to the filename by default.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt><strong>local_path</strong> <a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt>
-<dd>The full local path to the file. ShotGrid will find the LocalStorage
+<li><dl class="simple">
+<dt><strong>local_path</strong> <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt><dd><p>The full local path to the file. ShotGrid will find the LocalStorage
 that has the most specific match to this path and automatically assign that LocalStorage to
-the file.</dd>
+the file.</p>
+</dd>
 </dl>
 </li>
 </ul>
@@ -592,9 +516,9 @@ the file.</dd>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">content_type</span></code> was assigned a best-guess value based on the file extension. ShotGrid selected
 the most appropriate specific LocalStorage match and assigned it to local_storage automatically.</p>
-</div>
-<div class="section" id="un-setting-local-file-field-values">
-<h3>Un-setting local file field values<a class="headerlink" href="#un-setting-local-file-field-values" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="un-setting-local-file-field-values">
+<h3>Un-setting local file field values<a class="headerlink" href="#un-setting-local-file-field-values" title="Permalink to this heading"></a></h3>
 <p>Removing a a local file field value is simple. Just set the value to <code class="docutils literal notranslate"><span class="pre">None</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="mi">123</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
@@ -606,56 +530,36 @@ the most appropriate specific LocalStorage match and assigned it to local_storag
  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">}]</span>
 </pre></div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="tasks.html" class="btn btn-neutral float-right" title="Working With Tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="examples/svn_integration.html" class="btn btn-neutral float-left" title="Subversion (SVN) Integration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="examples/svn_integration.html" class="btn btn-neutral float-left" title="Subversion (SVN) Integration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tasks.html" class="btn btn-neutral float-right" title="Working With Tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2023, Autodesk
+    <p>&#169; Copyright 2023, Autodesk.</p>
+  </div>
 
-    </p>
-  </div> 
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
-
-  
-  
-    
-  
  
 
   <script type="text/javascript">
