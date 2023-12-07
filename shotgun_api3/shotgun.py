@@ -3281,9 +3281,9 @@ class Shotgun(object):
             Each subscription must be a dictionary with the ``humanUserId`` and
             ``subscription`` fields.
             The ``subscription`` is either ``None``, a single string, or an
-            array of strings with subscription info that the user.
+            array of strings with subscription information.
 
-        :returns: ``True`` if the request succedeed, ``False`` otherwise.
+        :returns: ``True`` if the request succedeed, ``False`` if otherwise.
         :rtype: bool
         """
 
