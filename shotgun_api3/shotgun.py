@@ -3261,6 +3261,42 @@ class Shotgun(object):
 
         return self._call_rpc("preferences_read", {"prefs": prefs})
 
+    def user_subscriptions_read(self):
+        """
+        Get the list of user subscriptions.
+
+        :returns: A list of user subscriptions where each subscription is a
+            dictionary containing the ``humanUserId`` and ``subscription``
+            fields.
+        :rtype: list
+        """
+
+        return self._call_rpc("user_subscriptions_read", None)
+
+    def user_subscriptions_create(self, users: list):
+        """
+        Assign subscriptions to users.
+
+        :param list users: list of user subscriptions to assign.
+            Each subscription must be a dictionary with the ``humanUserId`` and
+            ``subscription`` fields.
+            The ``subscription`` is either ``None``, a single string, or an
+            array of strings with subscription information.
+
+        :returns: ``True`` if the request succedeed, ``False`` if otherwise.
+        :rtype: bool
+        """
+
+        response = self._call_rpc(
+            "user_subscriptions_create",
+            {"users": users}
+        )
+
+        if not isinstance(response, dict):
+            return False
+
+        return response.get("status") == "success"
+
     def _build_opener(self, handler):
         """
         Build urllib2 opener with appropriate proxy handler.
