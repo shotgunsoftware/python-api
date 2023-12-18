@@ -433,13 +433,13 @@ class TestShotgunClient(base.MockTestBase):
         # Test that we raise on a 5xx. This is ensuring the retries behavior
         # in place specific to 5xx responses still eventually ends up raising.
         # 502
-        max_attempts = 4
         d = {"results": ["foo", "bar"]}
         a = {"some": "args"}
         self._mock_http(d, status=(502, "bad gateway"))
         self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
-        self.assertTrue(
-            max_attempts == self.sg._http_request.call_count,
+        self.assertEqual(
+            4,
+            self.sg._http_request.call_count,
             "Call is repeated up to 3 times",
         )
 
@@ -448,8 +448,9 @@ class TestShotgunClient(base.MockTestBase):
         a = {"some": "args"}
         self._mock_http(d, status=(504, "gateway timeout"))
         self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
-        self.assertTrue(
-            max_attempts == self.sg._http_request.call_count,
+        self.assertEqual(
+            4,
+            self.sg._http_request.call_count,
             "Call is repeated up to 3 times",
         )
 
