@@ -3443,8 +3443,8 @@ class Shotgun(object):
                 # We've seen some rare instances of SG returning 502 for issues that
                 # appear to be caused by something internal to SG. We're going to
                 # allow for limited retries for those specifically.
-                if attempt != max_attempts and e.errcode == 502:
-                    LOG.debug("Got a 502 response. Waiting and retrying...")
+                if attempt != max_attempts and e.errcode in [502, 504]:
+                    LOG.debug("Got a 502 or 504 response. Waiting and retrying...")
                     time.sleep(float(attempt) * backoff)
                     attempt += 1
                     continue

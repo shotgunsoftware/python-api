@@ -430,12 +430,29 @@ class TestShotgunClient(base.MockTestBase):
         expected = "rpc response with list result"
         self.assertEqual(d["results"], rv, expected)
 
-        # Test that we raise on a 502. This is ensuring the retries behavior
-        # in place specific to 502 responses still eventually ends up raising.
+        # Test that we raise on a 5xx. This is ensuring the retries behavior
+        # in place specific to 5xx responses still eventually ends up raising.
+        # 502
         d = {"results": ["foo", "bar"]}
         a = {"some": "args"}
         self._mock_http(d, status=(502, "bad gateway"))
         self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
+        self.assertEqual(
+            4,
+            self.sg._http_request.call_count,
+            "Call is repeated up to 3 times",
+        )
+
+        # 504
+        d = {"results": ["foo", "bar"]}
+        a = {"some": "args"}
+        self._mock_http(d, status=(504, "gateway timeout"))
+        self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
+        self.assertEqual(
+            4,
+            self.sg._http_request.call_count,
+            "Call is repeated up to 3 times",
+        )
 
     def test_upload_s3(self):
         """
