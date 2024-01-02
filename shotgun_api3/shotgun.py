@@ -725,7 +725,7 @@ class Shotgun(object):
         In python 3.8 `urllib.parse.splituser` was deprecated warning devs to
         use `urllib.parse.urlparse`.
         """
-        if six.PY38:
+        if sys.version_info[0:2] >= (3, 8):
             auth = None
             results = urllib.parse.urlparse(base_url)
             server = results.hostname
