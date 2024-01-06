@@ -495,6 +495,7 @@ class Shotgun(object):
                                    "checkbox": bool,
                                    "percent": int,
                                    "text": six.string_types,
+                                   "entity_type": six.string_types,
                                    "serializable": dict,
                                    "date": datetime.date,
                                    "date_time": datetime.datetime,
