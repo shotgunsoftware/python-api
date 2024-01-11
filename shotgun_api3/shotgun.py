@@ -3273,7 +3273,8 @@ class Shotgun(object):
 
         return self._call_rpc("user_subscriptions_read", None)
 
-    def user_subscriptions_create(self, users: list):
+    def user_subscriptions_create(self, users):
+        # type: (list[dict[str, Union[str, list[str], None]) -> bool
         """
         Assign subscriptions to users.
 
