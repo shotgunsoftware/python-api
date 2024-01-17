@@ -6,7 +6,7 @@
 
 # Flow Production Tracking Python API
 
-Flow Production Tracking provides a simple Python-based API for accessing Flow Production Tracking and integrating with other tools. This is the official API that is maintained by Flow Production Tracking Software (https://knowledge.autodesk.com/contact-support)
+Flow Production Tracking provides a simple Python-based API for accessing Flow Production Tracking and integrating with other tools. This is the official API that is maintained by Autodesk (https://knowledge.autodesk.com/contact-support)
 
 The latest version can always be found at http://github.com/shotgunsoftware/python-api
 
