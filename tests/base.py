@@ -1,4 +1,4 @@
-"""Base class for ShotGrid API tests."""
+"""Base class for Flow Production Tracking API tests."""
 import contextlib
 import os
 import random

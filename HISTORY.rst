@@ -1,6 +1,6 @@
-*****************************
-ShotGrid Python API Changelog
-*****************************
+*********************************************
+Flow Production Tracking Python API Changelog
+*********************************************
 
 Here you can see the full list of changes between each Python API release.
 
@@ -48,7 +48,7 @@ v3.3.5 (2023 Jan 5)
 - Add "Setting Up Your Environment with the Python API" to Python Docs (python-api docs).
 - [Python API Documentation] Update Python version requirements.
 - Rename Shotgun to Shotgrid in every about text like tk-multi-demo git repository.
-- Rename Shotgun servers to ShotGrid servers in the documentation.
+- Rename Shotgun servers to Flow Production Tracking servers in the documentation.
 
 v3.3.4 (2022 June 9)
 ====================
@@ -59,7 +59,7 @@ v3.3.4 (2022 June 9)
 
 v3.3.3 (2021 December 1)
 ==========================
-- Replaces shotgunsoftware urls with Autodesk Knowledge Network and ShotGrid Developer Documentation pages.
+- Replaces shotgunsoftware urls with Autodesk Knowledge Network and Flow Production Tracking Developer Documentation pages.
 
 v3.3.2 (2021 September 27)
 ==========================
@@ -71,7 +71,7 @@ v3.3.1 (2021 July 12)
 
 v3.3.0 (2021 Jun 7)
 ===================
-- Updates documentation and error messages to mention ShotGrid.
+- Updates documentation and error messages to mention Flow Production Tracking.
 
 v3.2.6 (2020 Nov 24)
 =====================

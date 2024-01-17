@@ -28,7 +28,7 @@ if (sys.version_info[0] <= 2) or (sys.version_info[0] == 2 and sys.version_info[
 setup(
     name='shotgun_api3',
     version='3.4.2',
-    description='ShotGrid Python API ',
+    description='Flow Production Tracking Python API ',
     long_description=readme,
     author='ShotGrid Software',
     author_email='https://www.autodesk.com/support/contact-support',

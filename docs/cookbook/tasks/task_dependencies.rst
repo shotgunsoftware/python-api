@@ -5,7 +5,7 @@ Task Dependencies
 #################
 
 Task dependencies work the same way in the API as they do in the UI. You can filter and sort on 
-any of the fields. For information about Task Dependencies in ShotGrid, check out the `main 
+any of the fields. For information about Task Dependencies in Flow Production Tracking, check out the `main
 documentation page on our support site 
 <https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Producer_pr_scheduling_tasks_pr_gantt_chart_tasks_html>`_
 
@@ -232,7 +232,7 @@ Our Tasks now look like this::
      ...  
 
 Because the "Anm" Task ``start_date`` depends on the ``due_date`` of the "Layout" Task, this 
-change creates a dependency violation. The update succeeds, but ShotGrid has also set the 
+change creates a dependency violation. The update succeeds, but Flow Production Tracking has also set the
 ``dependency_violation`` field to ``True`` and has also updated the ``pinned`` field to ``True``. 
 
 The ``pinned`` field simply means that if the upstream Task(s) are moved, the "Anm" Task will no 
@@ -315,7 +315,7 @@ Updating the ``pinned`` field on a Task with a Dependency Violation
 
 Let's go back a couple of steps to where our "Anm" Task had a Dependency Violation because we had 
 moved the Start Date up before the "Layout" Task End Date. Remember that the ``pinned`` field 
-was also ``True``. If we simply update the ``pinned`` field to be ``False``, ShotGrid will also 
+was also ``True``. If we simply update the ``pinned`` field to be ``False``, Flow Production Tracking will also
 automatically update the Task dates to satisfy the upstream dependencies and reset the 
 ``dependency_violation`` value to ``False``::
 
@@ -349,7 +349,7 @@ Our Tasks now look like this::
     ...  
 
 
-Notice by updating ``pinned`` to ``False``, ShotGrid also updated the ``start_date`` and 
+Notice by updating ``pinned`` to ``False``, Flow Production Tracking also updated the ``start_date`` and
 ``due_date`` fields of our "Anm" Task so it will satisfy the upstream Task dependencies. And since 
 that succeeded, the ``dependency_violation`` field has also been set to ``False``
 

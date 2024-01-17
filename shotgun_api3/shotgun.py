@@ -224,10 +224,10 @@ class ServerCapabilities(object):
         except AttributeError:
             self.version = None
         if not self.version:
-            raise ShotgunError("The ShotGrid Server didn't respond with a version number. "
+            raise ShotgunError("The Flow Production Tracking Server didn't respond with a version number. "
                                "This may be because you are running an older version of "
-                               "ShotGrid against a more recent version of the ShotGrid API. "
-                               "For more information, please contact ShotGrid Support.")
+                               "Flow Production Tracking against a more recent version of the Flow Production Tracking API. "
+                               "For more information, please contact Flow Production Tracking Support.")
 
         if len(self.version) > 3 and self.version[3] == "Dev":
             self.is_dev = True
@@ -3679,7 +3679,7 @@ class Shotgun(object):
         if status[0] >= 300:
             headers = "HTTP error from server"
             if status[0] == 503:
-                errmsg = "ShotGrid is currently down for maintenance or too busy to reply. Please try again later."
+                errmsg = "Flow Production Tracking is currently down for maintenance or too busy to reply. Please try again later."
             raise ProtocolError(self.config.server,
                                 error_code,
                                 errmsg,
@@ -3765,12 +3765,12 @@ class Shotgun(object):
                 raise UserCredentialsNotAllowedForSSOAuthenticationFault(
                     sg_response.get("message",
                                     "Authentication using username/password is not "
-                                    "allowed for an SSO-enabled ShotGrid site")
+                                    "allowed for an SSO-enabled Flow Production Tracking site")
                 )
             elif sg_response.get("error_code") == ERR_OXYG:
                 raise UserCredentialsNotAllowedForOxygenAuthenticationFault(
                     sg_response.get("message", "Authentication using username/password is not "
-                                    "allowed for an Autodesk Identity enabled ShotGrid site")
+                                    "allowed for an Autodesk Identity enabled Flow Production Tracking site")
                 )
             else:
                 # raise general Fault

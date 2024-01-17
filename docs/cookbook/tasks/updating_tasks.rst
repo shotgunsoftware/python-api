@@ -1,11 +1,11 @@
 .. _updating_tasks:
 
-#######################################
-Updating Task Dates: How ShotGrid Thinks
-#######################################
+########################################################
+Updating Task Dates: How Flow Production Tracking Thinks
+########################################################
 
 When updating Task dates in an API update() request, there is no specified order to the values that 
-are passed in. ShotGrid also does automatic calculation of the``start_date``,``due_date``, and ``duration`` fields for convenience. In order to clarify how updates are handled by ShotGrid we are 
+are passed in. Flow Production Tracking also does automatic calculation of the``start_date``,``due_date``, and ``duration`` fields for convenience. In order to clarify how updates are handled by Flow Production Tracking we are
 providing some general rules below and examples of what will happen when you make updates to your 
 Tasks.
 
@@ -16,12 +16,12 @@ General Rules
 - Updating the ``start_date`` automatically updates the ``due_date`` (``duration`` remains constant)
 - Updating the ``due_date`` automatically updates the ``duration`` (``start_date`` remains constant)
 - Updating the ``duration`` automatically updates the ``due_date`` (``start_date`` remains constant)
-- When updating Task values, ShotGrid sets schedule fields (``milestone``, ``duration``, 
+- When updating Task values, Flow Production Tracking sets schedule fields (``milestone``, ``duration``,
   ``start_date``, ``due_date``) after all other fields, because the Project and Task Assignees 
   affect schedule calculations.
 - If ``start_date`` and ``due_date`` are both set, ``duration`` is ignored (``duration`` can often 
   be wrong since it's easy to calculate scheduling incorrectly).
-- If both ``start_date`` and ``due_date`` are provided, ShotGrid sets ``start_date`` before 
+- If both ``start_date`` and ``due_date`` are provided, Flow Production Tracking sets ``start_date`` before
   ``due_date``.
 - Set ``milestone`` before other schedule fields (because ``start_date``, ``due_date``, and 
   ``duration`` get lost if ``milestone`` is not set to ``False`` first)
@@ -39,7 +39,7 @@ Examples
 The following examples show what the resulting Task object will look like after being run on the 
 initial Task object listed under the header of each section.
 
-The ``duration`` values in the following examples assume your ShotGrid instance is set to 
+The ``duration`` values in the following examples assume your Flow Production Tracking instance is set to
 10-hour work days. If your server is configured with a different setting, the ``duration`` values 
 will vary. 
 
