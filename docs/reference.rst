@@ -123,6 +123,14 @@ control, these methods are available.
 .. automethod:: Shotgun.set_session_uuid
 .. automethod:: Shotgun.info
 
+Subscription Management
+=======================
+
+These methods are used for reading and assigning user subscriptions.
+
+.. automethod:: Shotgun.user_subscriptions_read
+.. automethod:: Shotgun.user_subscriptions_create
+
 CRUD Methods
 ============
 
