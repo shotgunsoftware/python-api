@@ -4150,9 +4150,9 @@ class Shotgun(object):
                     time.sleep(float(attempt) * backoff)
                     attempt += 1
                     continue
+                elif e.code in [500, 503]:
+                    raise ShotgunError("Got a %s response when uploading to %s: %s" % (e.code, storage_url, e))
                 else:
-                    if e.code in [500, 503]:
-                        raise ShotgunError("Got a %s response when uploading to %s: %s" % (e.code, storage_url, e))
                     raise ShotgunError("Unanticipated error occurred uploading to %s: %s" % (storage_url, e))
 
             else:
