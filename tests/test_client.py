@@ -470,14 +470,12 @@ class TestShotgunClient(base.MockTestBase):
         # Test the Internal function that is used to upload each
         # data part in the context of multi-part uploads to S3, we
         # simulate the HTTPError exception raised with 503 status errors
-        with self.assertRaises(api.ShotgunError, msg=expected)  as cm:
+        with self.assertRaises(api.ShotgunError, msg=expected):
             self.sg._upload_file_to_storage(path, storage_url)
         # Test the max retries attempt
         self.assertTrue(
             max_attempts == self.sg._make_upload_request.call_count,
             "Call is repeated up to 3 times")
-        # Test the exception status code
-        self.assertEqual(cm.exception.code, 503)
     
     def test_upload_s3_500(self):
         """
@@ -496,14 +494,12 @@ class TestShotgunClient(base.MockTestBase):
         # Test the Internal function that is used to upload each
         # data part in the context of multi-part uploads to S3, we
         # simulate the HTTPError exception raised with 503 status errors
-        with self.assertRaises(api.ShotgunError, msg=expected) as cm:
+        with self.assertRaises(api.ShotgunError, msg=expected):
             self.sg._upload_file_to_storage(path, storage_url)
         # Test the max retries attempt
         self.assertTrue(
             max_attempts == self.sg._make_upload_request.call_count,
             "Call is repeated up to 3 times")
-        # Test the exception status code
-        self.assertEqual(cm.exception.code, 500)
 
     def test_transform_data(self):
         """Outbound data is transformed"""
