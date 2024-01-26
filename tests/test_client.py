@@ -454,7 +454,7 @@ class TestShotgunClient(base.MockTestBase):
             "Call is repeated up to 3 times",
         )
 
-    def test_upload_s3(self):
+    def test_upload_s3_503(self):
         """
         Test 503 response is retried when uploading to S3.
         """
@@ -470,12 +470,40 @@ class TestShotgunClient(base.MockTestBase):
         # Test the Internal function that is used to upload each
         # data part in the context of multi-part uploads to S3, we
         # simulate the HTTPError exception raised with 503 status errors
-        with self.assertRaises(api.ShotgunError, msg=expected):
+        with self.assertRaises(api.ShotgunError, msg=expected)  as cm:
             self.sg._upload_file_to_storage(path, storage_url)
         # Test the max retries attempt
         self.assertTrue(
             max_attempts == self.sg._make_upload_request.call_count,
             "Call is repeated up to 3 times")
+        # Test the exception status code
+        self.assertEqual(cm.exception.code, 503)
+    
+    def test_upload_s3_500(self):
+        """
+        Test 500 response is retried when uploading to S3.
+        """
+        self._setup_mock(s3_status_code_error=500)
+        this_dir, _ = os.path.split(__file__)
+        storage_url = "http://foo.com/"
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir, "sg_logo.jpg")))
+        max_attempts = 4  # Max retries to S3 server attempts
+        # Expected HTTPError exception error message
+        expected = "The server is currently down or to busy to reply." \
+                   "Please try again later."
+
+        # Test the Internal function that is used to upload each
+        # data part in the context of multi-part uploads to S3, we
+        # simulate the HTTPError exception raised with 503 status errors
+        with self.assertRaises(api.ShotgunError, msg=expected) as cm:
+            self.sg._upload_file_to_storage(path, storage_url)
+        # Test the max retries attempt
+        self.assertTrue(
+            max_attempts == self.sg._make_upload_request.call_count,
+            "Call is repeated up to 3 times")
+        # Test the exception status code
+        self.assertEqual(cm.exception.code, 500)
 
     def test_transform_data(self):
         """Outbound data is transformed"""
