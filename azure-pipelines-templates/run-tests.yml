@@ -31,6 +31,9 @@ parameters:
   name: ''
   vm_image: ''
 
+variables:
+  group: sg-credentials
+
 jobs:
   # The job will be named after the OS and Azure will suffix the strategy to make it unique
   # so we'll have a job name "Windows Python27" for example. What's a strategy? Strategies are the
