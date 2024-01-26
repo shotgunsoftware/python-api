@@ -57,6 +57,9 @@ jobs:
 
     maxParallel: 3
 
+  variables:
+    group: sg-credentials
+
   # These are the steps that will be executed inside each job.
   steps:
   # Specifies which version of Python we want to use. That's where the strategy comes in.
@@ -101,9 +104,9 @@ jobs:
       # Pass the values needed to authenticate with the Shotgun site and create some entities.
       # Remember, on a pull request from a client or on forked repos, those variables
       # will be empty!
-      SG_SERVER_URL: ${{ variables.ci_site }}
-      SG_SCRIPT_NAME: ${{ variables.ci_site_script_name }}
-      SG_API_KEY: ${{ variables.ci_site_script_key }}
+      SG_SERVER_URL: $(ci_site)
+      SG_SCRIPT_NAME: $(ci_site_script_name)
+      SG_API_KEY: $(ci_site_script_key)
       # The unit tests manipulate the user and project during the tests, which can cause collisions,
       # so sandbox each build variant.
       # Ideally, we would use the agent name here. The problem is that the agent name is in a build
