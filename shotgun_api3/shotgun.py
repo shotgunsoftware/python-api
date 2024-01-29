@@ -4145,16 +4145,14 @@ class Shotgun(object):
                 LOG.debug("Completed request to %s" % request.get_method())
 
             except urllib.error.HTTPError as e:
-                if e.code == 500:
-                    raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (storage_url, e))
-                elif attempt != max_attempts and e.code == 503:
-                    LOG.debug("Got a 503 response. Waiting and retrying...")
+                if attempt != max_attempts and e.code in [500, 503]:
+                    LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
                     time.sleep(float(attempt) * backoff)
                     attempt += 1
                     continue
+                elif e.code in [500, 503]:
+                    raise ShotgunError("Got a %s response when uploading to %s: %s" % (e.code, storage_url, e))
                 else:
-                    if e.code == 503:
-                        raise ShotgunError("Got a 503 response when uploading to %s: %s" % (storage_url, e))
                     raise ShotgunError("Unanticipated error occurred uploading to %s: %s" % (storage_url, e))
 
             else:

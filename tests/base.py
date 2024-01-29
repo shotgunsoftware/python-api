@@ -119,7 +119,7 @@ class MockTestBase(TestBase):
         self._setup_mock()
         self._setup_mock_data()
 
-    def _setup_mock(self):
+    def _setup_mock(self, s3_status_code_error=503):
         """Setup mocking on the ShotgunClient to stop it calling a live server
         """
         # Replace the function used to make the final call to the server
@@ -131,7 +131,7 @@ class MockTestBase(TestBase):
         self.sg._make_upload_request = mock.Mock(spec=api.Shotgun._make_upload_request,
                                                  side_effect = urllib.error.HTTPError(
                                                      "url",
-                                                     503,
+                                                     s3_status_code_error,
                                                      "The server is currently down or to busy to reply."
                                                      "Please try again later.",
                                                      {},
