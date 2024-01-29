@@ -4,6 +4,20 @@ ShotGrid Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.4.1 (2023 Jan 29)
+====================
+- Flaky Tests
+- Documentation: Fix issue regarding "in" filter prototype 
+- Documentation: Travis badge image is no working anymore
+- Documentation: Add ``user_subscription_read`` and ``user_subscription_create`` methods
+- Update Python Certifi license block
+- Add methods for the user_subscriptions API end points
+- Retry ShotGrid request also on error 504
+- Retry S3 uploads on error 500
+- Comment typing annotation breaks Python 2 compatibility
+- Add field type ``entity_type`` to mockgun
+
+
 v3.4.0 (2023 Sep 22)
 ====================
 - Started support for Python 3.10 for CI.

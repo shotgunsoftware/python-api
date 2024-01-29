@@ -27,7 +27,7 @@ if (sys.version_info[0] <= 2) or (sys.version_info[0] == 2 and sys.version_info[
 
 setup(
     name='shotgun_api3',
-    version='3.4.0',
+    version='3.4.1',
     description='ShotGrid Python API ',
     long_description=readme,
     author='ShotGrid Software',
