@@ -227,7 +227,7 @@ class ServerCapabilities(object):
             raise ShotgunError("The Flow Production Tracking Server didn't respond with a version number. "
                                "This may be because you are running an older version of "
                                "Flow Production Tracking against a more recent version of the Flow Production Tracking API. "
-                               "For more information, please contact Flow Production Tracking Support.")
+                               "For more information, please contact the Autodesk support.")
 
         if len(self.version) > 3 and self.version[3] == "Dev":
             self.is_dev = True

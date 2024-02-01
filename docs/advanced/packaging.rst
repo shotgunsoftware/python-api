@@ -14,8 +14,8 @@ There are caveats you need to be aware of when creating such an app.
 ********************************
 HTTPS Validation and cacerts.txt
 ********************************
-When creating the connection to Flow Production Tracking a file is used to validate the Flow Production Tracking certificate. This
-file is located at ``shotgun_api3/lib/httplib2/cacerts.txt``. Because this file is not a Python
+When creating the connection to Flow Production Tracking, a file is used to validate the Flow Production Tracking
+certificate. This file is located at ``shotgun_api3/lib/httplib2/cacerts.txt``. Because this file is not a Python
 file imported by your application, py2app will not know to include it in your package, it will
 need to be explicitly specified in your ``setup.py`` file (edit the path based on the location
 where your ``shotgun_api3`` package is located)::

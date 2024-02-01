@@ -2,7 +2,7 @@
 Authentication
 ##############
 
-In order to communicate with your Flow Production Tracking server via the API, you must provide valid authentication credentials. The API allows you to authenticate with user-based, or script-based credentials.
+In order to communicate with your server via the API, you must provide valid authentication credentials. The API allows you to authenticate with user-based, or script-based credentials.
 
 *************************
 User-based Authentication

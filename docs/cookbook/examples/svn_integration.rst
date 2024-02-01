@@ -121,7 +121,7 @@ link to the Revision.
        
        # Send error message if valid HumanUser is not found
        else:
-           print("Unable to find valid Flow Production Tracking User with login: "+author+", Revision not created in Flow Production Tracking.")
+           print("Unable to find a valid Flow Production Tracking User with login: {}, Revision not created in Flow Production Tracking.".format(author))
 
 
 
