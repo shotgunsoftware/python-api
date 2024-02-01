@@ -244,7 +244,7 @@ class TestShotgunClient(base.MockTestBase):
         self.assertEqual(expected, headers.get("Authorization"))
 
     def test_localization_header_default(self):
-        """Localization header not passed to server without explicitly setting SG localization config to True"""
+        """Localization header not passed to server without explicitly settingPTRlocalization config to True"""
         self.sg.info()
 
         args, _ = self.sg._http_request.call_args
@@ -254,7 +254,7 @@ class TestShotgunClient(base.MockTestBase):
         self.assertEqual(None, headers.get("locale"))
 
     def test_localization_header_when_localized(self):
-        """Localization header passed to server when setting SG localization config to True"""
+        """Localization header passed to server when settingPTRlocalization config to True"""
         self.sg.config.localized = True
 
         self.sg.info()

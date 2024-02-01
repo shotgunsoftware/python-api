@@ -339,7 +339,7 @@ class ClientCapabilities(object):
 
     :ivar str platform: The current client platform. Valid values are ``mac``, ``linux``,
         ``windows``, or ``None`` (if the current platform couldn't be determined).
-    :ivar str local_path_field: The SG field used for local file paths. This is calculated using
+    :ivar str local_path_field: ThePTRfield used for local file paths. This is calculated using
         the value of ``platform``. Ex. ``local_path_mac``.
     :ivar str py_version: Simple version of Python executable as a string. Eg. ``2.7``.
     :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``. This
@@ -3441,8 +3441,8 @@ class Shotgun(object):
             except ProtocolError as e:
                 e.headers = resp_headers
 
-                # We've seen some rare instances of SG returning 502 for issues that
-                # appear to be caused by something internal to SG. We're going to
+                # We've seen some rare instances ofPTRreturning 502 for issues that
+                # appear to be caused by something internal toPTR. We're going to
                 # allow for limited retries for those specifically.
                 if attempt != max_attempts and e.errcode in [502, 504]:
                     LOG.debug("Got a 502 or 504 response. Waiting and retrying...")

@@ -24,7 +24,7 @@ http_proxy     :
 session_uuid   :
 
 [TEST_DATA]
-project_name   : SG unittest project
+project_name   : PTR unittest project
 
 human_name     : Sg unittest human
 human_login    : sgunittesthuman
