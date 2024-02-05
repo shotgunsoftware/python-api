@@ -152,7 +152,7 @@ class MockTestBase(TestBase):
                                                   {"version": [2, 4, 0]})
 
     def _mock_http(self, data, headers=None, status=None):
-        """Setup a mock response from thePTRserver.
+        """Setup a mock response from the PTR server.
 
         Only has an affect if the server has been mocked.
         """
