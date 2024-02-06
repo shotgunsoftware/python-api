@@ -226,6 +226,10 @@ class Shotgun(object):
     def get_session_token(self):
         return "bogus_session_token"
 
+    def set_session_uuid(self, session_uuid):
+        """Set the browser session_uuid. This has no real effect in mockgun."""
+        self.config.session_uuid = session_uuid
+
     def schema_read(self):
         return self._schema
 
