@@ -4,7 +4,11 @@ ShotGrid Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
-v3.4.1 (2023 Jan 29)
+v3.4.2 (2024 Feb 6)
+===================
+- Add support for Python 3.11
+
+v3.4.1 (2024 Jan 29)
 ====================
 - Flaky Tests
 - Documentation: Fix issue regarding "in" filter prototype 
