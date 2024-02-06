@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ShotGrid Python API Changelog &mdash; python-api v3.4.0 documentation</title>
+  <title>ShotGrid Python API Changelog &mdash; python-api v3.4.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -30,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-    <a href='http://developer.shotgridsoftware.com'>
+    <a href='https://help.autodesk.com/view/SGDEV/ENU/'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -66,6 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced/packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/iron_python.html">IronPython</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">ShotGrid Python API Changelog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v3-4-1-2023-jan-29">v3.4.1 (2023 Jan 29)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-4-0-2023-sep-22">v3.4.0 (2023 Sep 22)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-3-6-2023-aug-29">v3.3.6 (2023 Aug 29)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-3-5-2023-jan-5">v3.3.5 (2023 Jan 5)</a></li>
@@ -158,10 +159,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.0.<br>
+    <b>python-api</b> v3.4.1.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -202,6 +203,21 @@
   <section id="shotgrid-python-api-changelog">
 <h1>ShotGrid Python API Changelog<a class="headerlink" href="#shotgrid-python-api-changelog" title="Permalink to this heading"></a></h1>
 <p>Here you can see the full list of changes between each Python API release.</p>
+<section id="v3-4-1-2023-jan-29">
+<h2>v3.4.1 (2023 Jan 29)<a class="headerlink" href="#v3-4-1-2023-jan-29" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Flaky Tests</p></li>
+<li><p>Documentation: Fix issue regarding “in” filter prototype</p></li>
+<li><p>Documentation: Travis badge image is no working anymore</p></li>
+<li><p>Documentation: Add <code class="docutils literal notranslate"><span class="pre">user_subscription_read</span></code> and <code class="docutils literal notranslate"><span class="pre">user_subscription_create</span></code> methods</p></li>
+<li><p>Update Python Certifi license block</p></li>
+<li><p>Add methods for the user_subscriptions API end points</p></li>
+<li><p>Retry ShotGrid request also on error 504</p></li>
+<li><p>Retry S3 uploads on error 500</p></li>
+<li><p>Comment typing annotation breaks Python 2 compatibility</p></li>
+<li><p>Add field type <code class="docutils literal notranslate"><span class="pre">entity_type</span></code> to mockgun</p></li>
+</ul>
+</section>
 <section id="v3-4-0-2023-sep-22">
 <h2>v3.4.0 (2023 Sep 22)<a class="headerlink" href="#v3-4-0-2023-sep-22" title="Permalink to this heading"></a></h2>
 <ul class="simple">
@@ -759,7 +775,7 @@ after initializing it).</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Autodesk.</p>
+    <p>&#169; Copyright 2024, Autodesk.</p>
   </div>
 
    

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; python-api v3.4.0 documentation</title>
+  <title>API Reference &mdash; python-api v3.4.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-    <a href='http://developer.shotgridsoftware.com'>
+    <a href='https://help.autodesk.com/view/SGDEV/ENU/'>
     
         <img style='width: 191px;
                 height: 60px;
@@ -82,6 +82,11 @@
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.reset_user_agent"><code class="docutils literal notranslate"><span class="pre">Shotgun.reset_user_agent()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.set_session_uuid"><code class="docutils literal notranslate"><span class="pre">Shotgun.set_session_uuid()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.info"><code class="docutils literal notranslate"><span class="pre">Shotgun.info()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#subscription-management">Subscription Management</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.user_subscriptions_read"><code class="docutils literal notranslate"><span class="pre">Shotgun.user_subscriptions_read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.user_subscriptions_create"><code class="docutils literal notranslate"><span class="pre">Shotgun.user_subscriptions_create()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#crud-methods">CRUD Methods</a><ul>
@@ -242,10 +247,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.0.<br>
+    <b>python-api</b> v3.4.1.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://developer.shotgridsoftware.com'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -735,6 +740,47 @@ the other values to be unsupported and for internal use only.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="subscription-management">
+<h3>Subscription Management<a class="headerlink" href="#subscription-management" title="Permalink to this heading"></a></h3>
+<p>These methods are used for reading and assigning user subscriptions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="shotgun_api3.shotgun.Shotgun.user_subscriptions_read">
+<span class="sig-prename descclassname"><span class="pre">Shotgun.</span></span><span class="sig-name descname"><span class="pre">user_subscriptions_read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.user_subscriptions_read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.user_subscriptions_read" title="Permalink to this definition"></a></dt>
+<dd><p>Get the list of user subscriptions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of user subscriptions where each subscription is a
+dictionary containing the <code class="docutils literal notranslate"><span class="pre">humanUserId</span></code> and <code class="docutils literal notranslate"><span class="pre">subscription</span></code>
+fields.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="shotgun_api3.shotgun.Shotgun.user_subscriptions_create">
+<span class="sig-prename descclassname"><span class="pre">Shotgun.</span></span><span class="sig-name descname"><span class="pre">user_subscriptions_create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.user_subscriptions_create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.user_subscriptions_create" title="Permalink to this definition"></a></dt>
+<dd><p>Assign subscriptions to users.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>users</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list of user subscriptions to assign.
+Each subscription must be a dictionary with the <code class="docutils literal notranslate"><span class="pre">humanUserId</span></code> and
+<code class="docutils literal notranslate"><span class="pre">subscription</span></code> fields.
+The <code class="docutils literal notranslate"><span class="pre">subscription</span></code> is either <code class="docutils literal notranslate"><span class="pre">None</span></code>, a single string, or an
+array of strings with subscription information.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the request succedeed, <code class="docutils literal notranslate"><span class="pre">False</span></code> if otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2567,7 +2613,7 @@ is “ip” AND is linked to either Asset #9 OR Asset #23:</p>
                                    <span class="c1"># note that brackets are not literal (eg. [&#39;start_date&#39;, &#39;in_last&#39;, 1, &#39;DAY&#39;])</span>
 <span class="s1">&#39;in_next&#39;</span>                   <span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="s1">&#39;HOUR&#39;</span> <span class="o">|</span> <span class="s1">&#39;DAY&#39;</span> <span class="o">|</span> <span class="s1">&#39;WEEK&#39;</span> <span class="o">|</span> <span class="s1">&#39;MONTH&#39;</span> <span class="o">|</span> <span class="s1">&#39;YEAR&#39;</span><span class="p">]</span>
                                    <span class="c1"># note that brackets are not literal (eg. [&#39;start_date&#39;, &#39;in_next&#39;, 1, &#39;DAY&#39;])</span>
-<span class="s1">&#39;in&#39;</span>                        <span class="p">[[</span><span class="n">field_value</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="c1"># Array of field values</span>
+<span class="s1">&#39;in&#39;</span>                        <span class="p">[[</span><span class="n">field_value</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>        <span class="c1"># Array of field values</span>
 <span class="s1">&#39;type_is&#39;</span>                   <span class="p">[</span><span class="n">string</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>             <span class="c1"># Shotgun entity type</span>
 <span class="s1">&#39;type_is_not&#39;</span>               <span class="p">[</span><span class="n">string</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>             <span class="c1"># Shotgun entity type</span>
 <span class="s1">&#39;in_calendar_day&#39;</span>           <span class="p">[</span><span class="nb">int</span><span class="p">]</span>                       <span class="c1"># Offset (e.g. 0 = today, 1 = tomorrow,</span>
@@ -3339,7 +3385,7 @@ Requests made from script/API users are localized in the site settings.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Autodesk.</p>
+    <p>&#169; Copyright 2024, Autodesk.</p>
   </div>
 
    
