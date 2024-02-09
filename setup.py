@@ -30,7 +30,7 @@ setup(
     version='3.4.2',
     description='Flow Production Tracking Python API ',
     long_description=readme,
-    author='ShotGrid Software',
+    author='Autodesk',
     author_email='https://www.autodesk.com/support/contact-support',
     url='https://github.com/shotgunsoftware/python-api',
     license=license,
