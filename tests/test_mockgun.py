@@ -270,6 +270,106 @@ class TestMultiEntityFieldComparison(unittest.TestCase):
         for item in items:
             self.assertTrue(len(item["users"]) > 0)
 
+            
+class TestMultiEntityFieldUpdate(unittest.TestCase):
+    """
+    Ensures multi entity field update modes work.
+    """
+
+    def setUp(self):
+        """
+        Creates test data.
+        """
+
+        self._mockgun = Mockgun("https://test.shotgunstudio.com", login="user", password="1234")
+
+        # Create two versions to assign to the shot.
+        self._version1 = self._mockgun.create("Version", {"code": "version1"})
+        self._version2 = self._mockgun.create("Version", {"code": "version2"})
+        self._version3 = self._mockgun.create("Version", {"code": "version3"})
+        
+        # remove 'code' field for later comparisons
+        del self._version1["code"]
+        del self._version2["code"]
+        del self._version3["code"]
+
+        # Create playlists
+        self._add_playlist = self._mockgun.create(
+            "Playlist",
+            {"code": "playlist1", "versions": [self._version1, self._version2]}
+        )
+        self._remove_playlist = self._mockgun.create(
+            "Playlist",
+            {"code": "playlist1", "versions": [self._version1, self._version2, self._version3]}
+        )
+        self._set_playlist = self._mockgun.create(
+            "Playlist",
+            {"code": "playlist1", "versions": [self._version1, self._version2]}
+        )
+
+    def test_update_add(self):
+        """
+        Ensures that "add" multi_entity_update_mode works.
+        """
+        self._mockgun.update(
+            "Playlist", self._add_playlist["id"], {"versions": [self._version3]},
+            multi_entity_update_modes={"versions": "add"}
+        )
+
+        playlist = self._mockgun.find_one(
+            "Playlist", [["id", "is", self._add_playlist["id"]]], ["versions"]
+        )
+        self.assertEqual(
+            playlist["versions"], [self._version1, self._version2, self._version3]
+        )
+
+    def test_update_remove(self):
+        """
+        Ensures that "remove" multi_entity_update_mode works.
+        """
+        self._mockgun.update(
+            "Playlist", self._remove_playlist["id"], {"versions": [self._version2]},
+            multi_entity_update_modes={"versions": "remove"}
+        )
+
+        playlist = self._mockgun.find_one(
+            "Playlist", [["id", "is", self._remove_playlist["id"]]], ["versions"]
+        )
+        self.assertEqual(playlist["versions"], [self._version1, self._version3])
+
+    def test_update_set(self):
+        """
+        Ensures that "set" multi_entity_update_mode works.
+        """
+        self._mockgun.update(
+            "Playlist",
+            self._set_playlist["id"],
+            {"versions": [self._version2, self._version3]},
+            multi_entity_update_modes={"versions": "set"}
+        )
+
+        playlist = self._mockgun.find_one(
+            "Playlist", [["id", "is", self._set_playlist["id"]]], ["versions"]
+        )
+        self.assertEqual(playlist["versions"], [self._version2, self._version3])
+    
+    def test_batch_update(self):
+        self._mockgun.batch(
+            [
+                {
+                    "request_type": "update",
+                    "entity_type": "Playlist",
+                    "entity_id": self._set_playlist["id"],
+                    "data": {"versions": [self._version1, self._version2]},
+                    "multi_entity_update_modes": {"versions": "set"}
+                }
+            ]
+        )
+        playlist = self._mockgun.find_one(
+            "Playlist", [["id", "is", self._set_playlist["id"]]], ["versions"]
+        )
+        self.assertEqual(playlist["versions"], [self._version1, self._version2])
+
 
 class TestFilterOperator(unittest.TestCase):
     """
