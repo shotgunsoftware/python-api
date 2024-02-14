@@ -19,7 +19,3 @@ pytest
 pytest-azurepipelines
 coverage
 pytest-coverage
-# Note for Python 3.11: This will raise a lot of warnings on this third party module
-# `DeprecationWarning: Use setlocale(), getencoding() and getlocale()`
-# Using this PR until it gets merged
-pytest-nunit @ git+https://github.com/pytest-dev/pytest-nunit.git@refs/pull/73/merge
