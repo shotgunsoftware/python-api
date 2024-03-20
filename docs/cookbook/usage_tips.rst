@@ -2,7 +2,7 @@
 API Usage Tips
 ##############
 
-Below is a list of helpful tips when using the ShotGrid API. We have tried to make the API very 
+Below is a list of helpful tips when using the Flow Production Tracking API. We have tried to make the API very
 simple to use with predictable results while remaining a powerful tool to integrate with your 
 pipeline. However, there's always a couple of things that crop up that our users might not be 
 aware of. Those are the types of things you'll find below. We'll be adding to this document over 
@@ -28,7 +28,7 @@ Don't::
 ***************
 Multi-threading
 ***************
-The ShotGrid API is not thread-safe. If you want to do threading we strongly suggest that you use 
+The Flow Production Tracking API is not thread-safe. If you want to do threading we strongly suggest that you use
 one connection object per thread and not share the connection.
 
 .. _entity-fields:
@@ -105,7 +105,7 @@ example of a field that resides on the connection entity between Playlists and V
 connection entity is appropriately called `PlaylistVersionConnection`. Because any Version can 
 exist in multiple Playlists, the sort order isn't specific to the Version, it's specific to 
 each _instance_ of the Version in a Playlist. These instances are tracked using connection 
-entities in Shtogun and are accessible just like any other entity type in ShotGrid.
+entities in Shtogun and are accessible just like any other entity type in Flow Production Tracking.
 
 To find information about your Versions in the Playlist "Director Review" (let's say it has an 
 ``id`` of 4). We'd run a query like so::
@@ -175,9 +175,9 @@ We can pull in field values from the linked Playlist and Version entities using 
 entity. The field we are interested on the Version is ``code``. Put those together with our f
 riend the dot and we have ``version.Version.code``.
 
-*******************************************
-ShotGrid UI fields not available via the API
-*******************************************
+************************************************************
+Flow Production Tracking UI fields not available via the API
+************************************************************
 
 Summary type fields like Query Fields and Pipeline Step summary fields are currently only available 
 via the UI. Some other fields may not work as expected through the API because they are "display 
@@ -244,14 +244,14 @@ To see the logging output in stdout, define a streamhandler in your script::
     import shotgun_api3 as shotgun
     logging.basicConfig(level=logging.DEBUG)
 
-To write logging output from the ShotGrid API to a file, define a file handler in your script::
+To write logging output from the Flow Production Tracking API to a file, define a file handler in your script::
 
     import logging
     import shotgun_api3 as shotgun
     logging.basicConfig(level=logging.DEBUG, filename='/path/to/your/log')
 
 To suppress the logging output from the API in a script which uses logging, set the level of the 
-ShotGrid logger to a higher level::
+Flow Production Tracking logger to a higher level::
 
     import logging
     import shotgun_api3 as shotgun
@@ -267,7 +267,7 @@ Optimizations
 Combining Related Queries
 =========================
 Reducing round-trips for data via the API can significantly improve the speed of your application.
-Much like "Bubble Fields" / "Field Hopping" in the UI, we can poll ShotGrid for data on the fields
+Much like "Bubble Fields" / "Field Hopping" in the UI, we can poll Flow Production Tracking for data on the fields
 of entities linked to our main query, both as a part of the query parameters as well as in the
 data returned.
 

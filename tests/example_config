@@ -13,7 +13,7 @@
 
 [SERVER_INFO]
 
-# Full url to the ShotGrid server server
+# Full url to the Flow Production Tracking server
 # e.g. https://my-site.shotgrid.autodesk.com
 # be careful to not end server_url with a "/", or some tests may fail
 server_url     : http://0.0.0.0:3000
@@ -24,7 +24,7 @@ http_proxy     :
 session_uuid   :
 
 [TEST_DATA]
-project_name   : SG unittest project
+project_name   : PTR unittest project
 
 human_name     : Sg unittest human
 human_login    : sgunittesthuman

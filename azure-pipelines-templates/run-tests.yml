@@ -99,7 +99,7 @@ jobs:
       pytest -v --cov shotgun_api3 --cov-report xml --test-run-title="${{parameters.name}}-$(python.version)"
     displayName: Running tests
     env:
-      # Pass the values needed to authenticate with the Shotgun site and create some entities.
+      # Pass the values needed to authenticate with the Flow Production Tracking site and create some entities.
       # Remember, on a pull request from a client or on forked repos, those variables
       # will be empty!
       SG_SERVER_URL: $(ci_site)

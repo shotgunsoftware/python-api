@@ -1,6 +1,6 @@
-*****************************
-ShotGrid Python API Changelog
-*****************************
+*********************************************
+Flow Production Tracking Python API Changelog
+*********************************************
 
 Here you can see the full list of changes between each Python API release.
 
@@ -173,7 +173,7 @@ v3.0.32 (2016 Sep 22)
 
 - Optimized import speed of the API on Python 2.7.
 - Integrated the latest fixes to the ``mimetypes`` module.
-- Added ``nav_expand()`` method as an experimental, internal method for querying SG hierarchy. 
+- Added ``nav_expand()`` method as an experimental, internal method for querying SG hierarchy.
 - Ported all documentation to sphinx. See http://developer.shotgridsoftware.com/python-api.
 - Moved Changelog to dedicated HISTORY file.
 

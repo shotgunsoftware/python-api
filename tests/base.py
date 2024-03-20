@@ -1,4 +1,4 @@
-"""Base class for ShotGrid API tests."""
+"""Base class for Flow Production Tracking API tests."""
 import contextlib
 import os
 import random
@@ -152,7 +152,7 @@ class MockTestBase(TestBase):
                                                   {"version": [2, 4, 0]})
 
     def _mock_http(self, data, headers=None, status=None):
-        """Setup a mock response from the SG server.
+        """Setup a mock response from the PTR server.
 
         Only has an affect if the server has been mocked.
         """

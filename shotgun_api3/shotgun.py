@@ -224,10 +224,10 @@ class ServerCapabilities(object):
         except AttributeError:
             self.version = None
         if not self.version:
-            raise ShotgunError("The ShotGrid Server didn't respond with a version number. "
+            raise ShotgunError("The Flow Production Tracking Server didn't respond with a version number. "
                                "This may be because you are running an older version of "
-                               "ShotGrid against a more recent version of the ShotGrid API. "
-                               "For more information, please contact ShotGrid Support.")
+                               "Flow Production Tracking against a more recent version of the Flow Production Tracking API. "
+                               "For more information, please contact the Autodesk support.")
 
         if len(self.version) > 3 and self.version[3] == "Dev":
             self.is_dev = True
@@ -339,7 +339,7 @@ class ClientCapabilities(object):
 
     :ivar str platform: The current client platform. Valid values are ``mac``, ``linux``,
         ``windows``, or ``None`` (if the current platform couldn't be determined).
-    :ivar str local_path_field: The SG field used for local file paths. This is calculated using
+    :ivar str local_path_field: The PTR field used for local file paths. This is calculated using
         the value of ``platform``. Ex. ``local_path_mac``.
     :ivar str py_version: Simple version of Python executable as a string. Eg. ``2.7``.
     :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``. This
@@ -3441,8 +3441,8 @@ class Shotgun(object):
             except ProtocolError as e:
                 e.headers = resp_headers
 
-                # We've seen some rare instances of SG returning 502 for issues that
-                # appear to be caused by something internal to SG. We're going to
+                # We've seen some rare instances of PTR returning 502 for issues that
+                # appear to be caused by something internal to PTR. We're going to
                 # allow for limited retries for those specifically.
                 if attempt != max_attempts and e.errcode in [502, 504]:
                     LOG.debug("Got a 502 or 504 response. Waiting and retrying...")
@@ -3679,7 +3679,7 @@ class Shotgun(object):
         if status[0] >= 300:
             headers = "HTTP error from server"
             if status[0] == 503:
-                errmsg = "ShotGrid is currently down for maintenance or too busy to reply. Please try again later."
+                errmsg = "Flow Production Tracking is currently down for maintenance or too busy to reply. Please try again later."
             raise ProtocolError(self.config.server,
                                 error_code,
                                 errmsg,
@@ -3765,12 +3765,12 @@ class Shotgun(object):
                 raise UserCredentialsNotAllowedForSSOAuthenticationFault(
                     sg_response.get("message",
                                     "Authentication using username/password is not "
-                                    "allowed for an SSO-enabled ShotGrid site")
+                                    "allowed for an SSO-enabled Flow Production Tracking site")
                 )
             elif sg_response.get("error_code") == ERR_OXYG:
                 raise UserCredentialsNotAllowedForOxygenAuthenticationFault(
                     sg_response.get("message", "Authentication using username/password is not "
-                                    "allowed for an Autodesk Identity enabled ShotGrid site")
+                                    "allowed for an Autodesk Identity enabled Flow Production Tracking site")
                 )
             else:
                 # raise general Fault

@@ -4,9 +4,9 @@
 [![Build Status](https://dev.azure.com/shotgun-ecosystem/Python%20API/_apis/build/status/shotgunsoftware.python-api?branchName=master)](https://dev.azure.com/shotgun-ecosystem/Python%20API/_build/latest?definitionId=108&branchName=master)
 [![Coverage Status](https://coveralls.io/repos/github/shotgunsoftware/python-api/badge.svg?branch=master)](https://coveralls.io/github/shotgunsoftware/python-api?branch=master)
 
-# ShotGrid Python API
+# Flow Production Tracking Python API
 
-ShotGrid provides a simple Python-based API for accessing ShotGrid and integrating with other tools. This is the official API that is maintained by ShotGrid Software (https://knowledge.autodesk.com/contact-support)
+Autodesk provides a simple Python-based API for accessing Flow Production Tracking and integrating with other tools. This is the official API that is maintained by Autodesk (https://knowledge.autodesk.com/contact-support)
 
 The latest version can always be found at http://github.com/shotgunsoftware/python-api
 
@@ -48,8 +48,8 @@ Integration and unit tests are provided.
 - A `tests/config` file (you can copy an example from `tests/example_config`).
 - Tests can be run individually like this: `nosetests --config="nose.cfg" tests/test_client.py`
     - Make sure to not forget the `--config="nose.cfg"` option. This option tells nose to use our config file.  This will exclude python 2- and 3-specific files in the `/lib` directory, preventing a failure from being reported by nose for compilation due to incompatible syntax in those files.
-- `test_client` and `tests_unit` use mock server interaction and do not require a ShotGrid instance to be available (no modifications to `tests/config` are necessary).
-- `test_api` and `test_api_long` *do* require a ShotGrid instance, with a script key available for the tests. The server and script user values must be supplied in the `tests/config` file. The tests will add test data to your server based on information in your config. This data will be manipulated by the tests, and should not be used for other purposes.
+- `test_client` and `tests_unit` use mock server interaction and do not require a Flow Production Tracking instance to be available (no modifications to `tests/config` are necessary).
+- `test_api` and `test_api_long` *do* require a Flow Production Tracking instance, with a script key available for the tests. The server and script user values must be supplied in the `tests/config` file. The tests will add test data to your server based on information in your config. This data will be manipulated by the tests, and should not be used for other purposes.
 - To run all of the tests, use the shell script `run-tests`.
 
 ## Release process

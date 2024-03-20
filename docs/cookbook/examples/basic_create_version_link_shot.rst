@@ -1,6 +1,6 @@
 Create a Version Linked to a Shot
 =================================
-You've just created a sweet new Version of your shot. Now you want to update ShotGrid and create a 
+You've just created a sweet new Version of your shot. Now you want to update Flow Production Tracking and create a
 new ``Version`` entity linked to the Shot.
 
 Find the Shot
@@ -28,7 +28,7 @@ variable from the previous search) and the Task Name, which maps to the ``conten
 
 .. note:: Linking a Task to the Version is good practice. By doing so it is easy for users to see
     at what stage a particular Version was created, and opens up other possibilities for tracking 
-    in ShotGrid. We highly recommend doing this whenever possible.
+    in Flow Production Tracking. We highly recommend doing this whenever possible.
 
 Create the Version
 ------------------

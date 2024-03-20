@@ -1737,7 +1737,7 @@ class TestFollow(base.LiveTestBase):
         '''Test following method'''
 
         if not self.sg.server_caps.version or self.sg.server_caps.version < (7, 0, 12):
-            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            warnings.warn("Test bypassed because PTR server used does not support this feature.", FutureWarning)
             return
 
         with self.gen_entity(
@@ -2607,7 +2607,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
     def test_simple_case(self):
         if self.sg_version < (7, 0, 0):
-            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            warnings.warn("Test bypassed because PTR server used does not support this feature.", FutureWarning)
             return
 
         filters = [
@@ -2626,7 +2626,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
     def test_find_one(self):
         if self.sg_version < (7, 0, 0):
-            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            warnings.warn("Test bypassed because PTR server used does not support this feature.", FutureWarning)
             return
 
         filters = [
@@ -2644,7 +2644,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
     def test_filter_with_no_name(self):
         if self.sg_version < (7, 0, 0):
-            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            warnings.warn("Test bypassed because PTR server used does not support this feature.", FutureWarning)
             return
 
         filters = [
@@ -2662,7 +2662,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
     def test_invalid_filter(self):
         if self.sg_version < (7, 0, 0):
-            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            warnings.warn("Test bypassed because PTR server used does not support this feature.", FutureWarning)
             return
 
         filters = [
@@ -2680,7 +2680,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
     def test_filter_not_iterable(self):
         if self.sg_version < (7, 0, 0):
-            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            warnings.warn("Test bypassed because PTR server used does not support this feature.", FutureWarning)
             return
 
         filters = [
@@ -2698,7 +2698,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
     def test_filter_not_list_of_iterable(self):
         if self.sg_version < (7, 0, 0):
-            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            warnings.warn("Test bypassed because PTR server used does not support this feature.", FutureWarning)
             return
 
         filters = [
@@ -2716,7 +2716,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
     def test_multiple_latest_filters(self):
         if self.sg_version < (7, 0, 0):
-            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            warnings.warn("Test bypassed because PTR server used does not support this feature.", FutureWarning)
             return
 
         filters = [
@@ -2740,7 +2740,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
         # If the version of Shotgun is too old, do not run this test.
         # TODO: Update this with the real version number once the feature is released.
         if self.sg_version < (8, 5, 0):
-            warnings.warn("Test bypassed because SG server used does not support this feature.", FutureWarning)
+            warnings.warn("Test bypassed because PTR server used does not support this feature.", FutureWarning)
             return
 
         field_display_name = "Project Visibility Test"

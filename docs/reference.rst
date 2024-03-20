@@ -26,9 +26,9 @@ Shotgun()
 .. autoclass:: Shotgun
     :show-inheritance:
 
-***************
-ShotGrid Methods
-***************
+********************************
+Flow Production Tracking Methods
+********************************
 
 The majority of functionality is contained within the :class:`~shotgun_api3.Shotgun` class. 
 The documentation for all of the methods you'll need in your scripts lives in here.
@@ -91,7 +91,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.followers
     Shotgun.following
 
-.. rubric:: Working with the ShotGrid Schema and Preferences
+.. rubric:: Working with the Flow Production Tracking Schema and Preferences
 
 .. autosummary:: 
     :nosignatures:
@@ -109,7 +109,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
 Connection & Authentication
 ===========================
 
-These methods are used for connecting and authenticating with your ShotGrid server. Most of 
+These methods are used for connecting and authenticating with your Flow Production Tracking server. Most of
 this is done automatically when you instantiate your instance. But if you need finer-grain
 control, these methods are available.
 
@@ -169,7 +169,7 @@ Methods that handle uploading and downloading files including thumbnails.
 Activity Stream
 ===============
 
-Methods that relate to the activity stream and following of entities in ShotGrid.
+Methods that relate to the activity stream and following of entities in Flow Production Tracking.
 
 .. automethod:: Shotgun.activity_stream_read
 .. automethod:: Shotgun.follow
@@ -177,10 +177,10 @@ Methods that relate to the activity stream and following of entities in ShotGrid
 .. automethod:: Shotgun.followers
 .. automethod:: Shotgun.following
 
-Working with the ShotGrid Schema
-===============================
+Working with the Flow Production Tracking Schema
+================================================
 
-Methods allow you to introspect and modify the ShotGrid schema.
+Methods allow you to introspect and modify the Flow Production Tracking schema.
 
 .. automethod:: Shotgun.schema_entity_read
 .. automethod:: Shotgun.schema_field_read
@@ -195,7 +195,7 @@ Methods allow you to introspect and modify the ShotGrid schema.
 Exceptions
 **********
 
-These are the various exceptions that the ShotGrid API will raise. 
+These are the various exceptions that the Flow Production Tracking API will raise.
 
 .. autoclass:: shotgun_api3.ShotgunError
     :show-inheritance:
@@ -479,7 +479,7 @@ Valid Operators By Data Type
 Additional Filter Presets
 =========================
 
-As of ShotGrid version 7.0 it is possible to also use filter presets. These presets provide a simple 
+As of Flow Production Tracking version 7.0 it is possible to also use filter presets. These presets provide a simple
 way to specify powerful query filters that would otherwise be costly and difficult to craft using 
 traditional filters.
 
@@ -651,7 +651,7 @@ date_time
 :range: Year must be >= 1970
 
     .. note::
-        Datetimes are stored as UTC on the server. The ShotGrid API is configured to automatically
+        Datetimes are stored as UTC on the server. The Flow Production Tracking API is configured to automatically
         convert between client local time and UTC. This can be overridden.
 
 duration
@@ -852,15 +852,15 @@ There are three possible states for values returned by an ``image`` field:
 Event Types
 ***********
 
-Whenever a user makes a change to any data in ShotGrid, an event log entry record is created, 
-capturing the value before and after. ShotGrid also logs some additional useful events that help keep 
-track of various activity on your ShotGrid instance.
+Whenever a user makes a change to any data in Flow Production Tracking, an event log entry record is created,
+capturing the value before and after. Flow Production Tracking also logs some additional useful events that help keep
+track of various activity on your Flow Production Tracking instance.
 
 Event-based Triggers
 ====================
 
 Events are particularlly useful when used in conjunction with a trigger framework like the
-`ShotGrid Event Daemon <https://github.com/shotgunsoftware/shotgunEvents>`_. This allows you to 
+`Flow Production Tracking Event Daemon <https://github.com/shotgunsoftware/shotgunEvents>`_. This allows you to
 write plug-ins that watch for certain types of events and then run code when they occur.
    
 Structure of Event Types
@@ -870,11 +870,11 @@ The basic structure of event types is broken into 3 parts:
 
 ``Application_EntityType_Action``
 
-- ``Application``: Is always "Shotgun" for events automatically created by the ShotGrid server. 
-  Other ShotGrid products may use their name in here, for example, Toolkit has its own events
+- ``Application``: Is always "Shotgun" for events automatically created by the Flow Production Tracking server.
+  Other Flow Production Tracking products may use their name in here, for example, Toolkit has its own events
   that it logs and the application portion is identified by "Toolkit". If you decide to use the 
   EventLogEntry entity to log events for your scripts or tools, you would use your tool name here.
-- ``EntityType``: This is the entity type in ShotGrid that was acted upon (eg. Shot, Asset, etc.)
+- ``EntityType``: This is the entity type in Flow Production Tracking that was acted upon (eg. Shot, Asset, etc.)
 - ``Action``: The general action that was taken. (eg. New, Change, Retirement, Revival)   
    
 
@@ -892,14 +892,14 @@ deleted, and revived. They follow this pattern:
 Additional Event Types
 ======================
 
-These are _some_ of the additional event types that are logged by ShotGrid:
+These are _some_ of the additional event types that are logged by Flow Production Tracking:
  
 - ``Shotgun_Attachment_View``: an Attachment (file) was viewed by a user.
 - ``Shotgun_Reading_Change``: a threaded entity has been marked read or unread. For example, a 
   Note was read by a user. The readings are unique to the entity<->user connection so when a 
   Note is read by user "joe" it may still be unread by user "jane".
-- ``Shotgun_User_Login``: a user logged in to ShotGrid.
-- ``Shotgun_User_Logout``: a user logged out of ShotGrid. 
+- ``Shotgun_User_Login``: a user logged in to Flow Production Tracking.
+- ``Shotgun_User_Logout``: a user logged out of Flow Production Tracking.
    
 
 Custom Event Types
@@ -907,10 +907,10 @@ Custom Event Types
 
 Since ``EventLogEntries`` are entities themselves, you can create them using the API just like any 
 other entity type. As mentioned previously, if you'd like to have your scripts or tools log to 
-the ShotGrid event log, simply devise a thoughtful naming structure for your event types and 
+the Flow Production Tracking event log, simply devise a thoughtful naming structure for your event types and
 create the EventLogEntry as needed following the usual methods for creating entities via the API.
 
-Again, other ShotGrid products like Toolkit use event logs this way.
+Again, other Flow Production Tracking products like Toolkit use event logs this way.
 
 .. note:: 
     EventLogEntries cannot be updated or deleted (that would defeat the purpose of course).   
@@ -918,13 +918,13 @@ Again, other ShotGrid products like Toolkit use event logs this way.
 Performance
 ===========
 
-Event log database tables can get large very quickly. While ShotGrid does very well with event logs 
+Event log database tables can get large very quickly. While Flow Production Tracking does very well with event logs
 that get into the millions of records, there's an inevitable degradation of performance for pages 
 that display them in the web application as well as any API queries for events when they get too 
 big. This volume of events is not the norm, but can be reached if your server expereinces high 
 usage. 
 
-This **does not** mean your ShotGrid server performance will suffer in general, just any pages that 
+This **does not** mean your Flow Production Tracking server performance will suffer in general, just any pages that
 are specifically displaying EventLogEntries in the web application, or API queries on the event
 log that are run. We are always looking for ways to improve this in the future. If you have any
 immediate concerns, please `reach out to our support team <https://www.autodesk.com/support/contact-support>`_
@@ -953,7 +953,7 @@ In the case that both this environment variable and the config's ``rpc_attempt_i
 Localization
 ************
 
-The ShotGrid API offers the ability to return localized display names in the current user's language.
+The Flow Production Tracking API offers the ability to return localized display names in the current user's language.
 Requests made from script/API users are localized in the site settings.
 
 This functionality is currently supported by the methods ``Shotgun.schema_entity_read``, ``Shotgun.schema_field_read``, and ``Shotgun.schema_read``.

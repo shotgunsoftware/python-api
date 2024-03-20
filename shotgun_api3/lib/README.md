@@ -6,7 +6,7 @@ Some third-party modules are bundled with `python-api` inside lib.
 
 ### httplib2
 
-`httplib2` is used to make http connections to the ShotGrid server.  We bundle both python2 and python3 compatible versions since httplib2 chose to maintain parallel versions of the module for python 2 and 3 compatibility.
+`httplib2` is used to make http connections to the Flow Production Tracking server.  We bundle both python2 and python3 compatible versions since httplib2 chose to maintain parallel versions of the module for python 2 and 3 compatibility.
 
 The version of `httplib2` bundled should be updated manually, however its version is included in the unused `shotgun_api3/lib/requirements.txt` to allow Github's automated CVE notifications to work.
 
@@ -29,7 +29,7 @@ Six is a Python 2/3 compatibility library.  In python-api, it's used to make sim
 
 The version of `six` bundled should be updated manually, however its version is included in the unused `shotgun_api3/lib/requirements.txt` to allow Github's automated CVE notifications to work.
 
-## ShotGrid Modules
+## Flow Production Tracking Modules
 
 ### sgsix
 
@@ -41,15 +41,15 @@ The version of `six` bundled should be updated manually, however its version is 
 
 ### mockgun
 
-Mockgun is a ShotGrid API mocker. It's a class that has got *most* of the same
-methods and parameters that the ShotGrid API has got. Mockgun is essentially a
-ShotGrid *emulator* that (for basic operations) looks and feels like ShotGrid.
+Mockgun is a Flow Production Tracking API mocker. It's a class that has got *most* of the same
+methods and parameters that the Flow Production Tracking API has got. Mockgun is essentially a
+Flow Production Tracking *emulator* that (for basic operations) looks and feels like Flow Production Tracking.
 
 The primary purpose of Mockgun is to drive unit test rigs where it becomes
-too slow, cumbersome or non-practical to connect to a real ShotGrid. Using a
+too slow, cumbersome or non-practical to connect to a real Flow Production Tracking. Using a
 Mockgun for unit tests means that a test can be rerun over and over again
 from exactly the same database state. This can be hard to do if you connect
-to a live ShotGrid instance.
+to a live Flow Production Tracking instance.
 
 ## Lib `requirements.txt`
 

@@ -9,10 +9,10 @@ Minimum Requirements
 - Python 3.7
 
 .. note::
-    Some features of the API are only supported by more recent versions of the ShotGrid server.
+    Some features of the API are only supported by more recent versions of the Flow Production Tracking server.
     These features are added to the Python API in a backwards compatible way so that existing
     scripts will continue to function as expected. Accessing a method that is not supported for
-    your version of ShotGrid will raise an appropriate exception. In general, we attempt to
+    your version of Flow Production Tracking will raise an appropriate exception. In general, we attempt to
     document these where possible.
 
 ******************************
