@@ -79,9 +79,38 @@ class SchemaFactory(object):
         return cls._schema_cache, cls._schema_entity_cache
 
     @classmethod
+    def set_schemas(cls, schema, schema_path, schema_entity, schema_entity_path):
+        """
+        Retrieves the schemas from disk.
+
+        :param str schema: Schema data.
+        :param str schema_path: Path to the schema on disk.
+        :param str schema_entity: Entities schema data.
+        :param str schema_entity_path: Path to the entities schema on disk.
+        """
+
+        if schema_path != cls._schema_cache_path:
+            cls._schema_cache_path = schema_path
+        cls._schema_cache = schema
+        cls._write_file(schema, schema_path)
+
+        if schema_entity_path != cls._schema_entity_cache_path:
+            cls._schema_entity_cache_path = schema_entity_path
+        cls._schema_entity_cache = schema_entity
+        cls._write_file(schema_entity, schema_entity_path)
+
+    @classmethod
     def _read_file(cls, path):
         with open(path, "rb") as fh:
             return pickle.load(fh)
+
+    @classmethod
+    def _write_file(cls, data, path):
+        fh = open(path, "wb")
+        try:
+            return pickle.dump(data, fh, protocol=_HIGHEST_24_PICKLE_PROTOCOL)
+        finally:
+            fh.close()
 
 
 # Highest protocol that Python 2.4 supports, which is the earliest version of Python we support.
@@ -98,23 +127,11 @@ def generate_schema(shotgun, schema_file_path, schema_entity_file_path):
     and downloading the schema information for that site. Once the generated schema
     files are being passed to mockgun, it will mimic the site's schema structure.
 
-    :param sg_url: Shotgun site url
-    :param sg_script: Script name to connect with
-    :param sg_key: Script key to connect with
+    :param shotgun: Shotgun instance
     :param schema_file_path: Path where to write the main schema file to
     :param schema_entity_file_path: Path where to write the entity schema file to
     """
 
     schema = shotgun.schema_read()
-    fh = open(schema_file_path, "wb")
-    try:
-        pickle.dump(schema, fh, protocol=_HIGHEST_24_PICKLE_PROTOCOL)
-    finally:
-        fh.close()
-
     schema_entity = shotgun.schema_entity_read()
-    fh = open(schema_entity_file_path, "wb")
-    try:
-        pickle.dump(schema_entity, fh, protocol=_HIGHEST_24_PICKLE_PROTOCOL)
-    finally:
-        fh.close()
+    SchemaFactory.set_schemas(schema, schema_file_path, schema_entity, schema_entity_file_path)
