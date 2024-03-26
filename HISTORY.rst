@@ -4,6 +4,10 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.5.0 (2024 Mar 26)
+===================
+- Rebranding component for Flow Production Tracking
+
 v3.4.2 (2024 Feb 6)
 ===================
 - Add support for Python 3.11
