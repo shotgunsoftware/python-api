@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Subversion (SVN) Integration &mdash; python-api v3.4.1 documentation</title>
+  <title>Subversion (SVN) Integration &mdash; python-api v3.5.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -101,10 +101,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.1.<br>
+    <b>python-api</b> v3.5.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -145,10 +145,10 @@
              
   <section id="subversion-svn-integration">
 <span id="svn-integration"></span><h1>Subversion (SVN) Integration<a class="headerlink" href="#subversion-svn-integration" title="Permalink to this heading"></a></h1>
-<p>Integrating ShotGrid with Subversion consists of two basic parts:</p>
+<p>Integrating Flow Production Tracking with Subversion consists of two basic parts:</p>
 <ul class="simple">
 <li><p>Setup a post-commit hook in Subversion.</p></li>
-<li><p>Create a ShotGrid API script to create the Revision in ShotGrid. This script will be called by
+<li><p>Create a Flow Production Tracking API script to create the Revision in Flow Production Tracking. This script will be called by
 the post-commit hook.</p></li>
 </ul>
 <section id="post-commit-hook">
@@ -160,7 +160,7 @@ repository directory.  This is a template script that has lots of useful comment
 as a starting point for the real thing.</p></li>
 <li><p>Create your very own executable script, and save it in the same <code class="docutils literal notranslate"><span class="pre">hooks</span></code> folder, name it
 <code class="docutils literal notranslate"><span class="pre">post-commit</span></code>, and give it executable permission.</p></li>
-<li><p>In your <code class="docutils literal notranslate"><span class="pre">post-commit</span></code> script, invoke your ShotGrid API script.</p></li>
+<li><p>In your <code class="docutils literal notranslate"><span class="pre">post-commit</span></code> script, invoke your Flow Production Tracking API script.</p></li>
 </ul>
 <p>If this is entirely new to you, we highly suggest reading up on the topic. O’Reilly has <a class="reference external" href="http://svnbook.red-bean.com/nightly/en/svn.reposadmin.create.html#svn.reposadmin.create.hooks">a free
 online guide for Subversion 1.5 and 1.6</a></p>
@@ -189,14 +189,14 @@ environment:  <code class="docutils literal notranslate"><span class="pre">AUTHO
 our <code class="docutils literal notranslate"><span class="pre">REPOS</span></code> and <code class="docutils literal notranslate"><span class="pre">REV</span></code> values, first with the <code class="docutils literal notranslate"><span class="pre">author</span></code>, and then with <code class="docutils literal notranslate"><span class="pre">log</span></code> subcommand.
 These are actually the first two original lines of code - everything else to this point was
 pre-written already in the <code class="docutils literal notranslate"><span class="pre">post-commit.tmpl</span></code> file. nice :)</p></li>
-<li><p>line <code class="docutils literal notranslate"><span class="pre">10</span></code>: This is the absolute path to our ShotGrid API Script.</p></li>
+<li><p>line <code class="docutils literal notranslate"><span class="pre">10</span></code>: This is the absolute path to our Flow Production Tracking API Script.</p></li>
 </ul>
 </section>
 </section>
-<section id="shotgrid-api-script">
-<h2>ShotGrid API Script<a class="headerlink" href="#shotgrid-api-script" title="Permalink to this heading"></a></h2>
-<p>This script will create the Revision and populate it with some metadata using the ShotGrid Python
-API. It will create our Revision in ShotGrid along with the author, comment, and because we use
+<section id="flow-production-tracking-api-script">
+<h2>Flow Production Tracking API Script<a class="headerlink" href="#flow-production-tracking-api-script" title="Permalink to this heading"></a></h2>
+<p>This script will create the Revision and populate it with some metadata using the Flow Production Tracking Python
+API. It will create our Revision in Flow Production Tracking along with the author, comment, and because we use
 Trac (a web-based interface for Subversion), it will also populate a URL field with a clickable
 link to the Revision.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span> <span class="c1">#!/usr/bin/env python</span>
@@ -234,7 +234,7 @@ link to the Revision.</p>
 <span class="linenos">33</span>    <span class="c1"># Set the Trac path for this specific revision</span>
 <span class="linenos">34</span>    <span class="n">revision_url</span> <span class="o">=</span> <span class="n">REVISIONS_PATH</span> <span class="o">+</span> <span class="n">revision_code</span>
 <span class="linenos">35</span>
-<span class="linenos">36</span>    <span class="c1"># Validate that author is a valid ShotGrid HumanUser</span>
+<span class="linenos">36</span>    <span class="c1"># Validate that author is a valid Flow Production Tracking HumanUser</span>
 <span class="linenos">37</span>    <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s2">&quot;HumanUser&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">author</span><span class="p">]])</span>
 <span class="linenos">38</span>    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
 <span class="linenos">39</span>        <span class="c1"># Create Revision</span>
@@ -250,32 +250,32 @@ link to the Revision.</p>
 <span class="linenos">49</span>
 <span class="linenos">50</span>    <span class="c1"># Send error message if valid HumanUser is not found</span>
 <span class="linenos">51</span>    <span class="k">else</span><span class="p">:</span>
-<span class="linenos">52</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unable to find valid ShotGrid User with login: &quot;</span><span class="o">+</span><span class="n">author</span><span class="o">+</span><span class="s2">&quot;, Revision not created in ShotGrid.&quot;</span><span class="p">)</span>
+<span class="linenos">52</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unable to find a valid Flow Production Tracking User with login: </span><span class="si">{}</span><span class="s2">, Revision not created in Flow Production Tracking.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">author</span><span class="p">))</span>
 </pre></div>
 </div>
 <section id="id1">
 <h3>Explanation of selected lines:<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p>line <code class="docutils literal notranslate"><span class="pre">14</span></code>: This should be the URL to your instance of ShotGrid.</p></li>
+<li><p>line <code class="docutils literal notranslate"><span class="pre">14</span></code>: This should be the URL to your instance of Flow Production Tracking.</p></li>
 <li><p>lines <code class="docutils literal notranslate"><span class="pre">15-16</span></code>: Make sure you get these values from the “Scripts” page in the Admin section of
-the ShotGrid web application. If you’re not sure how to do this, check out <span class="xref std std-doc">authentication</span>.</p></li>
+the Flow Production Tracking web application. If you’re not sure how to do this, check out <span class="xref std std-doc">authentication</span>.</p></li>
 <li><p>line <code class="docutils literal notranslate"><span class="pre">17</span></code>: This is the address of Trac, our web-based interface that we use with Subversion.
 You may use a different interface, or none at all, so feel free to adjust this line or ignore it
 as your case may be.</p></li>
-<li><p>line <code class="docutils literal notranslate"><span class="pre">18</span></code>: Every Revision in ShotGrid must have a Project, which is passed to the API as a
+<li><p>line <code class="docutils literal notranslate"><span class="pre">18</span></code>: Every Revision in Flow Production Tracking must have a Project, which is passed to the API as a
 dictionary with two keys, the <code class="docutils literal notranslate"><span class="pre">type</span></code> and the <code class="docutils literal notranslate"><span class="pre">id</span></code>.  Of course the <code class="docutils literal notranslate"><span class="pre">type</span></code> value will always
 remain <code class="docutils literal notranslate"><span class="pre">Project</span></code> (case sensitive), but the <code class="docutils literal notranslate"><span class="pre">id</span></code> will change by Project.  To find out the
-<code class="docutils literal notranslate"><span class="pre">id</span></code> of your Project, go to the Projects page in the ShotGrid web application, locate the
+<code class="docutils literal notranslate"><span class="pre">id</span></code> of your Project, go to the Projects page in the Flow Production Tracking web application, locate the
 Project where you want your Revisions created, and then locate its <code class="docutils literal notranslate"><span class="pre">id</span></code> field (which you may
 need to display - if you don’t see it, right click on any column header then select
 “Insert Column” &gt; “Id”).  Note that for this example we assume that all Revisions in this
 Subversion repository will belong to the same Project.</p></li>
 <li><p>lines <code class="docutils literal notranslate"><span class="pre">28-31</span></code>: Grab the values from the objects that were left for us in the environment.</p></li>
 <li><p>line <code class="docutils literal notranslate"><span class="pre">34</span></code>: Add the Revision number to complete the path of our Trac url.</p></li>
-<li><p>line <code class="docutils literal notranslate"><span class="pre">37</span></code>: Make sure that a valid User exists in ShotGrid.  In our example, we assume that our
-Users’ ShotGrid logins match their Subversion names.  If the user exists in ShotGrid, that
+<li><p>line <code class="docutils literal notranslate"><span class="pre">37</span></code>: Make sure that a valid User exists in Flow Production Tracking.  In our example, we assume that our
+Users’ Flow Production Tracking logins match their Subversion names.  If the user exists in Flow Production Tracking, that
 user’s <code class="docutils literal notranslate"><span class="pre">id</span></code> will be returned as <code class="docutils literal notranslate"><span class="pre">result['id']</span></code>, which we will need later on in line 46.</p></li>
-<li><p>lines <code class="docutils literal notranslate"><span class="pre">40-48</span></code>: Use all the meta data we’ve gathered to create a Revision in ShotGrid. If none
+<li><p>lines <code class="docutils literal notranslate"><span class="pre">40-48</span></code>: Use all the meta data we’ve gathered to create a Revision in Flow Production Tracking. If none
 of these lines make any sense, check out more on the <code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code> method
 here.   Line 41 deserves special mention: notice that we define a dictionary called <code class="docutils literal notranslate"><span class="pre">url</span></code> that
 has three important keys: <code class="docutils literal notranslate"><span class="pre">content_type</span></code>, <code class="docutils literal notranslate"><span class="pre">url</span></code>, and <code class="docutils literal notranslate"><span class="pre">name</span></code>, and we then pass this in as
@@ -291,8 +291,8 @@ double check the syntax and requirements for the different field types here.</p>
 <p>Make sure that the script is has explicitly been made executable and that all users who will
 invoke it have appropriate permissions for the script and that folders going back to root.</p>
 </section>
-<section id="my-shotgrid-api-script-is-not-getting-called-by-the-post-commit-hook">
-<h3>My ShotGrid API script is not getting called by the post-commit hook.<a class="headerlink" href="#my-shotgrid-api-script-is-not-getting-called-by-the-post-commit-hook" title="Permalink to this heading"></a></h3>
+<section id="my-flow-production-tracking-api-script-is-not-getting-called-by-the-post-commit-hook">
+<h3>My Flow Production Tracking API script is not getting called by the post-commit hook.<a class="headerlink" href="#my-flow-production-tracking-api-script-is-not-getting-called-by-the-post-commit-hook" title="Permalink to this heading"></a></h3>
 <p>Make sure that the script is called using its absolute path.</p>
 </section>
 </section>

@@ -29,7 +29,7 @@ and paste any of these into your own scripts.
 .. rubric:: Working With Files
 
 You'll probably be doing some work with files at your studio. This is a deep dive into some of 
-the inners of how ShotGrid handles files (also called Attachments) and the different ways to link
+the inners of how Flow Production Tracking handles files (also called Attachments) and the different ways to link
 to them.
 
 .. toctree::
@@ -39,9 +39,9 @@ to them.
 
 .. rubric:: Working With Tasks
 
-Scheduling is a complex beast. ShotGrid can handle lots of different types of functionality around
+Scheduling is a complex beast. Flow Production Tracking can handle lots of different types of functionality around
 scheduling like split tasks, dependencies, and more. These docs walk you through the details of
-how ShotGrid thinks when it's handling Task changes and how you can make your scripts do what you
+how Flow Production Tracking thinks when it's handling Task changes and how you can make your scripts do what you
 need to do.
 
 .. toctree::
@@ -52,7 +52,7 @@ need to do.
 .. rubric:: Smart Cut Fields
 
 Smart Cut Fields are deprecated in favor of the 
-`new cut support added in ShotGrid v7.0 <https://knowledge.autodesk.com/support/shotgrid/learn-explore/caas/CloudHelp/cloudhelp/ENU/SG-Editorial/files/SG-Editorial-ed-cut-schema-html-html.html>`_. 
+`new cut support added in ShotGrid v7.0 <https://knowledge.autodesk.com/support/shotgrid/learn-explore/caas/CloudHelp/cloudhelp/ENU/SG-Editorial/files/SG-Editorial-ed-cut-schema-html-html.html>`_.
 This documentation remains only to support studios who may not have upgraded to the new cut support
 features. 
 

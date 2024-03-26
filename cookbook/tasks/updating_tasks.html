@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Updating Task Dates: How ShotGrid Thinks &mdash; python-api v3.4.1 documentation</title>
+  <title>Updating Task Dates: How Flow Production Tracking Thinks &mdash; python-api v3.5.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -67,7 +67,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials.html">Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../attachments.html">Details About Working With Files</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tasks.html">Working With Tasks</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Updating Task Dates: How ShotGrid Thinks</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Updating Task Dates: How Flow Production Tracking Thinks</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#general-rules">General Rules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
@@ -101,10 +101,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.1.<br>
+    <b>python-api</b> v3.5.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -134,7 +134,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../cookbook.html">API Cookbook</a></li>
           <li class="breadcrumb-item"><a href="../tasks.html">Working With Tasks</a></li>
-      <li class="breadcrumb-item active">Updating Task Dates: How ShotGrid Thinks</li>
+      <li class="breadcrumb-item active">Updating Task Dates: How Flow Production Tracking Thinks</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -143,10 +143,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="updating-task-dates-how-shotgrid-thinks">
-<span id="updating-tasks"></span><h1>Updating Task Dates: How ShotGrid Thinks<a class="headerlink" href="#updating-task-dates-how-shotgrid-thinks" title="Permalink to this heading"></a></h1>
+  <section id="updating-task-dates-how-flow-production-tracking-thinks">
+<span id="updating-tasks"></span><h1>Updating Task Dates: How Flow Production Tracking Thinks<a class="headerlink" href="#updating-task-dates-how-flow-production-tracking-thinks" title="Permalink to this heading"></a></h1>
 <p>When updating Task dates in an API update() request, there is no specified order to the values that
-are passed in. ShotGrid also does automatic calculation of the``start_date``,``due_date``, and <code class="docutils literal notranslate"><span class="pre">duration</span></code> fields for convenience. In order to clarify how updates are handled by ShotGrid we are
+are passed in. Flow Production Tracking also does automatic calculation of the``start_date``,``due_date``, and <code class="docutils literal notranslate"><span class="pre">duration</span></code> fields for convenience. In order to clarify how updates are handled by Flow Production Tracking we are
 providing some general rules below and examples of what will happen when you make updates to your
 Tasks.</p>
 <section id="general-rules">
@@ -155,12 +155,12 @@ Tasks.</p>
 <li><p>Updating the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> automatically updates the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> (<code class="docutils literal notranslate"><span class="pre">duration</span></code> remains constant)</p></li>
 <li><p>Updating the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> automatically updates the <code class="docutils literal notranslate"><span class="pre">duration</span></code> (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> remains constant)</p></li>
 <li><p>Updating the <code class="docutils literal notranslate"><span class="pre">duration</span></code> automatically updates the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> (<code class="docutils literal notranslate"><span class="pre">start_date</span></code> remains constant)</p></li>
-<li><p>When updating Task values, ShotGrid sets schedule fields (<code class="docutils literal notranslate"><span class="pre">milestone</span></code>, <code class="docutils literal notranslate"><span class="pre">duration</span></code>,
+<li><p>When updating Task values, Flow Production Tracking sets schedule fields (<code class="docutils literal notranslate"><span class="pre">milestone</span></code>, <code class="docutils literal notranslate"><span class="pre">duration</span></code>,
 <code class="docutils literal notranslate"><span class="pre">start_date</span></code>, <code class="docutils literal notranslate"><span class="pre">due_date</span></code>) after all other fields, because the Project and Task Assignees
 affect schedule calculations.</p></li>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">due_date</span></code> are both set, <code class="docutils literal notranslate"><span class="pre">duration</span></code> is ignored (<code class="docutils literal notranslate"><span class="pre">duration</span></code> can often
 be wrong since it’s easy to calculate scheduling incorrectly).</p></li>
-<li><p>If both <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">due_date</span></code> are provided, ShotGrid sets <code class="docutils literal notranslate"><span class="pre">start_date</span></code> before
+<li><p>If both <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">due_date</span></code> are provided, Flow Production Tracking sets <code class="docutils literal notranslate"><span class="pre">start_date</span></code> before
 <code class="docutils literal notranslate"><span class="pre">due_date</span></code>.</p></li>
 <li><p>Set <code class="docutils literal notranslate"><span class="pre">milestone</span></code> before other schedule fields (because <code class="docutils literal notranslate"><span class="pre">start_date</span></code>, <code class="docutils literal notranslate"><span class="pre">due_date</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">duration</span></code> get lost if <code class="docutils literal notranslate"><span class="pre">milestone</span></code> is not set to <code class="docutils literal notranslate"><span class="pre">False</span></code> first)</p></li>
@@ -176,7 +176,7 @@ set).</p></li>
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
 <p>The following examples show what the resulting Task object will look like after being run on the
 initial Task object listed under the header of each section.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">duration</span></code> values in the following examples assume your ShotGrid instance is set to
+<p>The <code class="docutils literal notranslate"><span class="pre">duration</span></code> values in the following examples assume your Flow Production Tracking instance is set to
 10-hour work days. If your server is configured with a different setting, the <code class="docutils literal notranslate"><span class="pre">duration</span></code> values
 will vary.</p>
 <div class="admonition note">

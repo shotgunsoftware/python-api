@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Upload a Thumbnail for a Version &mdash; python-api v3.4.1 documentation</title>
+  <title>Upload a Thumbnail for a Version &mdash; python-api v3.5.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -66,7 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../usage_tips.html">API Usage Tips</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tutorials.html">Examples</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../tutorials.html#basic">Basic</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a ShotGrid API instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a Flow Production Tracking API instance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_create_shot.html">Create A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_find_shot.html">Find a Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_update_shot.html">Update A Shot</a></li>
@@ -106,10 +106,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.1.<br>
+    <b>python-api</b> v3.5.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -150,10 +150,10 @@
              
   <section id="upload-a-thumbnail-for-a-version">
 <h1>Upload a Thumbnail for a Version<a class="headerlink" href="#upload-a-thumbnail-for-a-version" title="Permalink to this heading"></a></h1>
-<p>So you’ve created a new Version of a Shot, and you’ve updated ShotGrid, but now you want to upload a
+<p>So you’ve created a new Version of a Shot, and you’ve updated Flow Production Tracking, but now you want to upload a
 beauty frame to display as the thumbnail for your Version. We’ll assume you already have the image
 made (located on your machine at <code class="docutils literal notranslate"><span class="pre">/v1/gun/s100/010/beauties/anim/100_010_animv1.jpg</span></code>) . And since
-you’ve just created your Version in ShotGrid, you know its <code class="docutils literal notranslate"><span class="pre">id</span></code> is <strong>214</strong>.</p>
+you’ve just created your Version in Flow Production Tracking, you know its <code class="docutils literal notranslate"><span class="pre">id</span></code> is <strong>214</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you upload a movie file or image to the <code class="docutils literal notranslate"><span class="pre">sg_uploaded_movie</span></code> field and you have
@@ -166,12 +166,12 @@ This is a basic example of how to manually provide or replace a thumbnail image.
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">upload_thumbnail</span><span class="p">(</span><span class="s2">&quot;Version&quot;</span><span class="p">,</span> <span class="mi">214</span><span class="p">,</span> <span class="s2">&quot;/v1/gun/s100/010/beauties/anim/100_010_animv1.jpg&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>ShotGrid will take care of resizing the thumbnail for you. If something does go wrong, an exception
+<p>Flow Production Tracking will take care of resizing the thumbnail for you. If something does go wrong, an exception
 will be thrown and you’ll see the error details.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The result returned by <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code> is an integer
-representing the id of a special <code class="docutils literal notranslate"><span class="pre">Attachment</span></code> entity in ShotGrid. Working with Attachments
+representing the id of a special <code class="docutils literal notranslate"><span class="pre">Attachment</span></code> entity in Flow Production Tracking. Working with Attachments
 is beyond the scope of this example. :)</p>
 </div>
 </section>

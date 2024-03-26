@@ -5,7 +5,7 @@ Smart Cut Fields
 ################
 
 .. warning::
-    Smart Cut Fields should be considered deprecated. ShotGrid v7.0, introduced a new version of 
+    Smart Cut Fields should be considered deprecated. ShotGrid v7.0, introduced a new version of
     cut support. `Read the Cut Support Documentation here <https://knowledge.autodesk.com/support/shotgrid/learn-explore/caas/CloudHelp/cloudhelp/ENU/SG-Editorial/files/SG-Editorial-ed-cut-schema-html-html.html>`_.
 
 If you want to work with 'smart' cut fields through the API, your script should use a corresponding

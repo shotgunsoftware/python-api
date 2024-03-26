@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create A Shot &mdash; python-api v3.4.1 documentation</title>
+  <title>Create A Shot &mdash; python-api v3.5.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Find a Shot" href="basic_find_shot.html" />
-    <link rel="prev" title="Create a ShotGrid API instance" href="basic_sg_instance.html" /> 
+    <link rel="prev" title="Create a Flow Production Tracking API instance" href="basic_sg_instance.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -66,7 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../usage_tips.html">API Usage Tips</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tutorials.html">Examples</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../tutorials.html#basic">Basic</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a ShotGrid API instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a Flow Production Tracking API instance</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Create A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_find_shot.html">Find a Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_update_shot.html">Update A Shot</a></li>
@@ -106,10 +106,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.1.<br>
+    <b>python-api</b> v3.5.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -173,7 +173,7 @@
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value
 is the the value to set.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the ShotGrid API instance you created in <a class="reference internal" href="basic_sg_instance.html#example-sg-instance"><span class="std std-ref">Create a ShotGrid API instance</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the Flow Production Tracking API instance you created in <a class="reference internal" href="basic_sg_instance.html#example-sg-instance"><span class="std std-ref">Create a Flow Production Tracking API instance</span></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">create()</span></code> is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun.create()</span></code> API method we are calling. We pass in the
 entity type we’re searching for and the data we’re setting.</p></li>
 </ul>
@@ -189,10 +189,10 @@ entity type we’re searching for and the data we’re setting.</p></li>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>In addition, ShotGrid has returned the <code class="docutils literal notranslate"><span class="pre">id</span></code> that it has assigned to the Shot, as well as a
+<p>In addition, Flow Production Tracking has returned the <code class="docutils literal notranslate"><span class="pre">id</span></code> that it has assigned to the Shot, as well as a
 <code class="docutils literal notranslate"><span class="pre">type</span></code> value. <code class="docutils literal notranslate"><span class="pre">type</span></code> is provided for convenience simply to help you identify what entity type
-this dictionary represents. It does not correspond to any field in ShotGrid.</p>
-<p>ShotGrid will <em>always</em> return the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys in the dictionary when there are results
+this dictionary represents. It does not correspond to any field in Flow Production Tracking.</p>
+<p>Flow Production Tracking will <em>always</em> return the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys in the dictionary when there are results
 representing an entity.</p>
 </section>
 <section id="the-complete-example">
@@ -208,7 +208,7 @@ representing an entity.</p>
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Globals</span>
 <span class="c1"># --------------------------------------</span>
-<span class="c1"># make sure to change this to match your ShotGrid server and auth credentials.</span>
+<span class="c1"># make sure to change this to match your Flow Production Tracking server and auth credentials.</span>
 <span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span>
 <span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="s1">&#39;my_script&#39;</span>
 <span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">&#39;27b65d7063f46b82e670fe807bd2b6f3fd1676c1&#39;</span>
@@ -251,7 +251,7 @@ representing an entity.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="basic_sg_instance.html" class="btn btn-neutral float-left" title="Create a ShotGrid API instance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="basic_sg_instance.html" class="btn btn-neutral float-left" title="Create a Flow Production Tracking API instance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="basic_find_shot.html" class="btn btn-neutral float-right" title="Find a Shot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

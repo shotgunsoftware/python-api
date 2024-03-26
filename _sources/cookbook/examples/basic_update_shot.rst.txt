@@ -17,7 +17,7 @@ This will update the ``description`` and the ``sg_status_list`` fields for the S
 
 - ``data`` is a list of key/value pairs where the key is the field name to update and the value to
   update it to.
-- ``sg`` is the ShotGrid API instance. 
+- ``sg`` is the Flow Production Tracking API instance.
 - ``update()`` is the :meth:`shotgun_api3.Shotgun.update` API method we are calling. We provide it 
   with the entity type we're updating, the ``id`` of the entity, and the data we're updating it 
   with.
@@ -33,11 +33,11 @@ The variable ``result`` now contains the Shot object that with the updated value
         'id': 40435
     }
 
-In addition, ShotGrid has returned the ``id`` for the Shot, as well as a ``type`` value. ``type`` 
+In addition, Flow Production Tracking has returned the ``id`` for the Shot, as well as a ``type`` value. ``type``
 is provided for convenience simply to help you identify what entity type this dictionary represents. 
-It does not correspond to any field in ShotGrid. 
+It does not correspond to any field in Flow Production Tracking.
 
-ShotGrid will *always* return the ``id`` and ``type`` keys in the dictionary when there are results
+Flow Production Tracking will *always* return the ``id`` and ``type`` keys in the dictionary when there are results
 representing an entity.
 
 The Complete Example
@@ -55,7 +55,7 @@ The Complete Example
     # --------------------------------------
     # Globals
     # --------------------------------------
-    # make sure to change this to match your ShotGrid server and auth credentials.
+    # make sure to change this to match your Flow Production Tracking server and auth credentials.
     SERVER_PATH = "https://my-site.shotgrid.autodesk.com"
     SCRIPT_NAME = 'my_script'     
     SCRIPT_KEY = '27b65d7063f46b82e670fe807bd2b6f3fd1676c1'

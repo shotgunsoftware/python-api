@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Usage Tips &mdash; python-api v3.4.1 documentation</title>
+  <title>API Usage Tips &mdash; python-api v3.5.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -69,7 +69,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#entity-fields">Entity Fields</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#customentities">CustomEntities</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#connectionentities">ConnectionEntities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#shotgrid-ui-fields-not-available-via-the-api">ShotGrid UI fields not available via the API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#flow-production-tracking-ui-fields-not-available-via-the-api">Flow Production Tracking UI fields not available via the API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#humanuser">HumanUser</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shot">Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pipeline-step-summary-fields-on-entities">Pipeline Step summary fields on entities</a></li>
@@ -112,10 +112,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.1.<br>
+    <b>python-api</b> v3.5.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -155,7 +155,7 @@
              
   <section id="api-usage-tips">
 <h1>API Usage Tips<a class="headerlink" href="#api-usage-tips" title="Permalink to this heading"></a></h1>
-<p>Below is a list of helpful tips when using the ShotGrid API. We have tried to make the API very
+<p>Below is a list of helpful tips when using the Flow Production Tracking API. We have tried to make the API very
 simple to use with predictable results while remaining a powerful tool to integrate with your
 pipeline. However, there’s always a couple of things that crop up that our users might not be
 aware of. Those are the types of things you’ll find below. We’ll be adding to this document over
@@ -177,7 +177,7 @@ is managed at the module level which may not work as expected if you only import
 </section>
 <section id="multi-threading">
 <h2>Multi-threading<a class="headerlink" href="#multi-threading" title="Permalink to this heading"></a></h2>
-<p>The ShotGrid API is not thread-safe. If you want to do threading we strongly suggest that you use
+<p>The Flow Production Tracking API is not thread-safe. If you want to do threading we strongly suggest that you use
 one connection object per thread and not share the connection.</p>
 </section>
 <section id="entity-fields">
@@ -243,7 +243,7 @@ example of a field that resides on the connection entity between Playlists and V
 connection entity is appropriately called <cite>PlaylistVersionConnection</cite>. Because any Version can
 exist in multiple Playlists, the sort order isn’t specific to the Version, it’s specific to
 each _instance_ of the Version in a Playlist. These instances are tracked using connection
-entities in Shtogun and are accessible just like any other entity type in ShotGrid.</p>
+entities in Shtogun and are accessible just like any other entity type in Flow Production Tracking.</p>
 <p>To find information about your Versions in the Playlist “Director Review” (let’s say it has an
 <code class="docutils literal notranslate"><span class="pre">id</span></code> of 4). We’d run a query like so:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;playlist&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Playlist&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">}]]</span>
@@ -311,8 +311,8 @@ entities in Shtogun and are accessible just like any other entity type in ShotGr
 entity. The field we are interested on the Version is <code class="docutils literal notranslate"><span class="pre">code</span></code>. Put those together with our f
 riend the dot and we have <code class="docutils literal notranslate"><span class="pre">version.Version.code</span></code>.</p>
 </section>
-<section id="shotgrid-ui-fields-not-available-via-the-api">
-<h2>ShotGrid UI fields not available via the API<a class="headerlink" href="#shotgrid-ui-fields-not-available-via-the-api" title="Permalink to this heading"></a></h2>
+<section id="flow-production-tracking-ui-fields-not-available-via-the-api">
+<h2>Flow Production Tracking UI fields not available via the API<a class="headerlink" href="#flow-production-tracking-ui-fields-not-available-via-the-api" title="Permalink to this heading"></a></h2>
 <p>Summary type fields like Query Fields and Pipeline Step summary fields are currently only available
 via the UI. Some other fields may not work as expected through the API because they are “display
 only” fields made available for convenience and are only available in the browser UI.</p>
@@ -370,14 +370,14 @@ automatically set whenever an entity is created or updated.</p>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To write logging output from the ShotGrid API to a file, define a file handler in your script:</p>
+<p>To write logging output from the Flow Production Tracking API to a file, define a file handler in your script:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">shotgun_api3</span> <span class="k">as</span> <span class="nn">shotgun</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;/path/to/your/log&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To suppress the logging output from the API in a script which uses logging, set the level of the
-ShotGrid logger to a higher level:</p>
+Flow Production Tracking logger to a higher level:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">shotgun_api3</span> <span class="k">as</span> <span class="nn">shotgun</span>
 <span class="n">sg_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;shotgun_api3&#39;</span><span class="p">)</span>
@@ -390,7 +390,7 @@ ShotGrid logger to a higher level:</p>
 <section id="combining-related-queries">
 <span id="id2"></span><h3>Combining Related Queries<a class="headerlink" href="#combining-related-queries" title="Permalink to this heading"></a></h3>
 <p>Reducing round-trips for data via the API can significantly improve the speed of your application.
-Much like “Bubble Fields” / “Field Hopping” in the UI, we can poll ShotGrid for data on the fields
+Much like “Bubble Fields” / “Field Hopping” in the UI, we can poll Flow Production Tracking for data on the fields
 of entities linked to our main query, both as a part of the query parameters as well as in the
 data returned.</p>
 <p>Starting with a simple and common example, many queries require knowing what project your data is

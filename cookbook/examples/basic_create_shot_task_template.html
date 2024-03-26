@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create a Shot with a Task Template &mdash; python-api v3.4.1 documentation</title>
+  <title>Create a Shot with a Task Template &mdash; python-api v3.5.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -66,7 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../usage_tips.html">API Usage Tips</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tutorials.html">Examples</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../tutorials.html#basic">Basic</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a ShotGrid API instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a Flow Production Tracking API instance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_create_shot.html">Create A Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_find_shot.html">Find a Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_update_shot.html">Update A Shot</a></li>
@@ -106,10 +106,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.1.<br>
+    <b>python-api</b> v3.5.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -150,7 +150,7 @@
              
   <section id="create-a-shot-with-a-task-template">
 <h1>Create a Shot with a Task Template<a class="headerlink" href="#create-a-shot-with-a-task-template" title="Permalink to this heading"></a></h1>
-<p>Creating a new Shot with a Task Template is just like linking it to another entity, but ShotGrid will apply the Task Template in the background and create the appropriate Tasks on the Shot for you.</p>
+<p>Creating a new Shot with a Task Template is just like linking it to another entity, but Flow Production Tracking will apply the Task Template in the background and create the appropriate Tasks on the Shot for you.</p>
 <section id="find-the-task-template">
 <h2>Find the Task Template<a class="headerlink" href="#find-the-task-template" title="Permalink to this heading"></a></h2>
 <p>First we need to find the Task Template we’re going to apply. We’ll assume you know the name of the Task Template you want to use.</p>
@@ -178,7 +178,7 @@ variable:</p>
 </pre></div>
 </div>
 <p>This will create a new Shot named “100_010” linked to the TaskTemplate “3D Shot Template” and
-ShotGrid will then create the Tasks defined in the template and link them to the Shot you just
+Flow Production Tracking will then create the Tasks defined in the template and link them to the Shot you just
 created.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is a list of key/value pairs where the key is the column name to update and the value is
@@ -213,7 +213,7 @@ previous block by searching</p></li>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>You can use an entity dictionary that was returned from the API in a filter as we have
-done above. ShotGrid will only look at the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys and will ignore the rest.
+done above. Flow Production Tracking will only look at the <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">type</span></code> keys and will ignore the rest.
 This is a handy way to pass around entity dictionaries without having to reformat them.</p>
 </div>
 <p>Now the <code class="docutils literal notranslate"><span class="pre">tasks</span></code> variable contains the following:</p>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Task Dependencies &mdash; python-api v3.4.1 documentation</title>
+  <title>Task Dependencies &mdash; python-api v3.5.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Split Tasks" href="split_tasks.html" />
-    <link rel="prev" title="Updating Task Dates: How ShotGrid Thinks" href="updating_tasks.html" /> 
+    <link rel="prev" title="Updating Task Dates: How Flow Production Tracking Thinks" href="updating_tasks.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -67,7 +67,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials.html">Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../attachments.html">Details About Working With Files</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tasks.html">Working With Tasks</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="updating_tasks.html">Updating Task Dates: How ShotGrid Thinks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="updating_tasks.html">Updating Task Dates: How Flow Production Tracking Thinks</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Task Dependencies</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#create-tasks">Create Tasks</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#create-a-dependency">Create A Dependency</a></li>
@@ -109,10 +109,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.1.<br>
+    <b>python-api</b> v3.5.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -154,7 +154,7 @@
   <section id="task-dependencies">
 <span id="id1"></span><h1>Task Dependencies<a class="headerlink" href="#task-dependencies" title="Permalink to this heading"></a></h1>
 <p>Task dependencies work the same way in the API as they do in the UI. You can filter and sort on
-any of the fields. For information about Task Dependencies in ShotGrid, check out the <a class="reference external" href="https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Producer_pr_scheduling_tasks_pr_gantt_chart_tasks_html">main
+any of the fields. For information about Task Dependencies in Flow Production Tracking, check out the <a class="reference external" href="https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Producer_pr_scheduling_tasks_pr_gantt_chart_tasks_html">main
 documentation page on our support site</a></p>
 <section id="create-tasks">
 <h2>Create Tasks<a class="headerlink" href="#create-tasks" title="Permalink to this heading"></a></h2>
@@ -363,7 +363,7 @@ recalculate the dates for all of the dependent Tasks. But what if we push up the
 </pre></div>
 </div>
 <p>Because the “Anm” Task <code class="docutils literal notranslate"><span class="pre">start_date</span></code> depends on the <code class="docutils literal notranslate"><span class="pre">due_date</span></code> of the “Layout” Task, this
-change creates a dependency violation. The update succeeds, but ShotGrid has also set the
+change creates a dependency violation. The update succeeds, but Flow Production Tracking has also set the
 <code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> field to <code class="docutils literal notranslate"><span class="pre">True</span></code> and has also updated the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field simply means that if the upstream Task(s) are moved, the “Anm” Task will no
 longer get moved with it. The dependency is still there (in <code class="docutils literal notranslate"><span class="pre">upstream_tasks</span></code>) but the Task is
@@ -441,7 +441,7 @@ it automatically gets updated so that the Start Date is after its dependent Task
 <h2>Updating the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field on a Task with a Dependency Violation<a class="headerlink" href="#updating-the-pinned-field-on-a-task-with-a-dependency-violation" title="Permalink to this heading"></a></h2>
 <p>Let’s go back a couple of steps to where our “Anm” Task had a Dependency Violation because we had
 moved the Start Date up before the “Layout” Task End Date. Remember that the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field
-was also <code class="docutils literal notranslate"><span class="pre">True</span></code>. If we simply update the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field to be <code class="docutils literal notranslate"><span class="pre">False</span></code>, ShotGrid will also
+was also <code class="docutils literal notranslate"><span class="pre">True</span></code>. If we simply update the <code class="docutils literal notranslate"><span class="pre">pinned</span></code> field to be <code class="docutils literal notranslate"><span class="pre">False</span></code>, Flow Production Tracking will also
 automatically update the Task dates to satisfy the upstream dependencies and reset the
 <code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> value to <code class="docutils literal notranslate"><span class="pre">False</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">557</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;pinned&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
@@ -473,7 +473,7 @@ automatically update the Task dates to satisfy the upstream dependencies and res
 <span class="o">...</span>
 </pre></div>
 </div>
-<p>Notice by updating <code class="docutils literal notranslate"><span class="pre">pinned</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>, ShotGrid also updated the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and
+<p>Notice by updating <code class="docutils literal notranslate"><span class="pre">pinned</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>, Flow Production Tracking also updated the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and
 <code class="docutils literal notranslate"><span class="pre">due_date</span></code> fields of our “Anm” Task so it will satisfy the upstream Task dependencies. And since
 that succeeded, the <code class="docutils literal notranslate"><span class="pre">dependency_violation</span></code> field has also been set to <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </section>
@@ -501,7 +501,7 @@ to modify it will generate a Fault:</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="updating_tasks.html" class="btn btn-neutral float-left" title="Updating Task Dates: How ShotGrid Thinks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="updating_tasks.html" class="btn btn-neutral float-left" title="Updating Task Dates: How Flow Production Tracking Thinks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="split_tasks.html" class="btn btn-neutral float-right" title="Split Tasks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

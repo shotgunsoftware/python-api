@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Packaging an application with py2app (or py2exe) &mdash; python-api v3.4.1 documentation</title>
+  <title>Packaging an application with py2app (or py2exe) &mdash; python-api v3.5.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -69,7 +69,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="iron_python.html">IronPython</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../changelog.html">ShotGrid Python API Changelog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../changelog.html">Flow Production Tracking Python API Changelog</a></li>
 </ul>
 </li>
 </ul>
@@ -93,10 +93,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.1.<br>
+    <b>python-api</b> v3.5.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -143,8 +143,8 @@ toolkits like Tk, Qt or others.</p>
 <p>There are caveats you need to be aware of when creating such an app.</p>
 <section id="https-validation-and-cacerts-txt">
 <h2>HTTPS Validation and cacerts.txt<a class="headerlink" href="#https-validation-and-cacerts-txt" title="Permalink to this heading"></a></h2>
-<p>When creating the connection to ShotGrid a file is used to validate the ShotGrid certificate. This
-file is located at <code class="docutils literal notranslate"><span class="pre">shotgun_api3/lib/httplib2/cacerts.txt</span></code>. Because this file is not a Python
+<p>When creating the connection to Flow Production Tracking, a file is used to validate the Flow Production Tracking
+certificate. This file is located at <code class="docutils literal notranslate"><span class="pre">shotgun_api3/lib/httplib2/cacerts.txt</span></code>. Because this file is not a Python
 file imported by your application, py2app will not know to include it in your package, it will
 need to be explicitly specified in your <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file (edit the path based on the location
 where your <code class="docutils literal notranslate"><span class="pre">shotgun_api3</span></code> package is located):</p>
@@ -160,7 +160,7 @@ following structure:</p>
 </pre></div>
 </div>
 <p>Where in <code class="docutils literal notranslate"><span class="pre">my_script.py</span></code> you can access the <code class="docutils literal notranslate"><span class="pre">cacerts.txt</span></code> file using a relative path to pass it
-into the ShotGrid connection’s constructor:</p>
+into the Flow Production Tracking connection’s constructor:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ca_certs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;shotgun_api3&#39;</span><span class="p">,</span> <span class="s1">&#39;cacerts.txt&#39;</span><span class="p">)</span>
 <span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s1">&#39;https://my-site.shotgrid.autodesk.com&#39;</span><span class="p">,</span> <span class="s1">&#39;script_name&#39;</span><span class="p">,</span> <span class="s1">&#39;script_key&#39;</span><span class="p">,</span>
                           <span class="n">ca_certs</span><span class="o">=</span><span class="n">ca_certs</span><span class="p">)</span>

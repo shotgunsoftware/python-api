@@ -1,11 +1,11 @@
 .. _example_sg_instance:
 
-Create a ShotGrid API instance
-=============================
+Create a Flow Production Tracking API instance
+==============================================
 
-This example shows you how to establish your initial connection to ShotGrid using script-based 
-authentication. ``sg`` represents your ShotGrid API instance. Be sure you've read 
-:ref:`Setting Up ShotGrid for API Access <setting_up_shotgrid>`.
+This example shows you how to establish your initial connection to Flow Production Tracking using script-based
+authentication. ``sg`` represents your Flow Production Tracking API instance. Be sure you've read
+:ref:`Setting Up Flow Production Tracking for API Access <setting_up_shotgrid>`.
 ::
 
     import pprint # Useful for debugging
@@ -22,5 +22,5 @@ authentication. ``sg`` represents your ShotGrid API instance. Be sure you've rea
     # sg connection object
     pprint.pprint([symbol for symbol in sorted(dir(sg)) if not symbol.startswith('_')])
 
-For further information on what you can do with this ShotGrid object you can read the 
+For further information on what you can do with this Flow Production Tracking object you can read the
 :ref:`API reference <apireference>`.

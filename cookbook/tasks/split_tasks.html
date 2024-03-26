@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Split Tasks &mdash; python-api v3.4.1 documentation</title>
+  <title>Split Tasks &mdash; python-api v3.5.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -67,7 +67,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../tutorials.html">Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../attachments.html">Details About Working With Files</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tasks.html">Working With Tasks</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="updating_tasks.html">Updating Task Dates: How ShotGrid Thinks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="updating_tasks.html">Updating Task Dates: How Flow Production Tracking Thinks</a></li>
 <li class="toctree-l3"><a class="reference internal" href="task_dependencies.html">Task Dependencies</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Split Tasks</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
@@ -101,10 +101,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.1.<br>
+    <b>python-api</b> v3.5.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -146,7 +146,7 @@
   <section id="split-tasks">
 <span id="id1"></span><h1>Split Tasks<a class="headerlink" href="#split-tasks" title="Permalink to this heading"></a></h1>
 <p>Split tasks can be created and edited via the API but must comply to some rules. Before going
-further, a good understanding of <a class="reference internal" href="updating_tasks.html#updating-tasks"><span class="std std-ref">how ShotGrid handles task dates is useful</span></a>.</p>
+further, a good understanding of <a class="reference internal" href="updating_tasks.html#updating-tasks"><span class="std std-ref">how Flow Production Tracking handles task dates is useful</span></a>.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h2>
 <p>The Task entity has a field called <code class="docutils literal notranslate"><span class="pre">splits</span></code> which is a list of dictionaries. Each dictionary

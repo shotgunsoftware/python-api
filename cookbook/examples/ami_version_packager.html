@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Using an ActionMenuItem to Package Versions for a Client &mdash; python-api v3.4.1 documentation</title>
+  <title>Using an ActionMenuItem to Package Versions for a Client &mdash; python-api v3.5.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -101,10 +101,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.1.<br>
+    <b>python-api</b> v3.5.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -158,7 +158,7 @@ script to package up files for a client. It performs the following:</p>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">version_packager.py</span>
 
-<span class="sd">This example script is meant to be run from an ActionMenuItem in ShotGrid. The menu item uses a custom</span>
+<span class="sd">This example script is meant to be run from an ActionMenuItem in Flow Production Tracking. The menu item uses a custom</span>
 <span class="sd">protocol in order to launch this script, and is followed by the action &#39;package4client&#39;. So the full</span>
 <span class="sd">url would be something like launchme://package4client?.... See:</span>
 <span class="sd">https://developer.shotgridsoftware.com/python-api/cookbook/examples/ami_handler.html</span>
@@ -167,9 +167,9 @@ script to package up files for a client. It performs the following:</p>
 <span class="sd">POST variables. For more information about it and accessing the variables in the ActionMenuItem POST request,</span>
 <span class="sd">See: http://developer.shotgridsoftware.com/python-api/examples/ami_handler</span>
 
-<span class="sd">The purpose of this script is to download attachment files from ShotGrid, create an archive of them</span>
+<span class="sd">The purpose of this script is to download attachment files from Flow Production Tracking, create an archive of them</span>
 <span class="sd">and copy them to a specified directory. You can invoke it with the following minimal example to connect</span>
-<span class="sd">to ShotGrid, download any file that exists in the specified field (&#39;sg_qt&#39;) for each selected_id passed from the</span>
+<span class="sd">to Flow Production Tracking, download any file that exists in the specified field (&#39;sg_qt&#39;) for each selected_id passed from the</span>
 <span class="sd">ActionMenu. Then it will create a single archive of the files and move it to the specified directory</span>
 <span class="sd">(&#39;/path/where/i/want/to/put/the/archive/&#39;). The archive is named with the Project Name, timestamp, and user</span>
 <span class="sd">login who ran the ActionMenuItem (&#39;Demo_Project_2010-04-29-172210_kp.tar.gz&#39;):</span>
@@ -197,7 +197,7 @@ script to package up files for a client. It performs the following:</p>
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
 <span class="c1"># Variables</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
-<span class="c1"># ShotGrid server auth info</span>
+<span class="c1"># Flow Production Tracking server auth info</span>
 <span class="n">shotgun_conf</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;url&#39;</span><span class="p">:</span><span class="s1">&#39;https://my-site.shotgrid.autodesk.com&#39;</span><span class="p">,</span>
     <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;YOUR_SCRIPT_NAME_HERE&#39;</span><span class="p">,</span>
@@ -217,7 +217,7 @@ script to package up files for a client. It performs the following:</p>
 
 
 <span class="c1"># ----------------------------------------------</span>
-<span class="c1"># Generic ShotGrid Exception Class</span>
+<span class="c1"># Generic Flow Production Tracking Exception Class</span>
 <span class="c1"># ----------------------------------------------</span>
 <span class="k">class</span> <span class="nc">ShotgunException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span>
@@ -263,7 +263,7 @@ script to package up files for a client. It performs the following:</p>
     <span class="n">attachment_id</span> <span class="o">=</span> <span class="n">extract_attachment_id</span><span class="p">(</span><span class="n">attachment</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">attachment_id</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
-    <span class="c1"># download the attachment file from ShotGrid and write it to local disk</span>
+    <span class="c1"># download the attachment file from Flow Production Tracking and write it to local disk</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Downloading Attachment #</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attachment_id</span><span class="p">))</span>
     <span class="n">stream</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">download_attachment</span><span class="p">(</span><span class="n">attachment_id</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>

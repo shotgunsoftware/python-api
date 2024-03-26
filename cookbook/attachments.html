@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Details About Working With Files &mdash; python-api v3.4.1 documentation</title>
+  <title>Details About Working With Files &mdash; python-api v3.5.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -114,10 +114,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.1.<br>
+    <b>python-api</b> v3.5.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -157,25 +157,25 @@
              
   <section id="details-about-working-with-files">
 <span id="attachments"></span><h1>Details About Working With Files<a class="headerlink" href="#details-about-working-with-files" title="Permalink to this heading"></a></h1>
-<p>The ShotGrid web application stores Files as Attachment entities. You can see these on a Files page,
+<p>The Flow Production Tracking web application stores Files as Attachment entities. You can see these on a Files page,
 or a Files tab on a detail page, for example. You can access Attachments via the API to create and
 modify uploaded files, url links, and local files, and link them to other entities (Shots,
-Versions, etc). This entity works a lot like other entity types within ShotGrid with a few
+Versions, etc). This entity works a lot like other entity types within Flow Production Tracking with a few
 exceptions which are detailed below.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you are simply looking for information about how to upload and link things in ShotGrid, this
+<p>If you are simply looking for information about how to upload and link things in Flow Production Tracking, this
 doc is not for you. Instead look at the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code> and
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code> methods.</p>
 <p>This doc describes the detailed structure of the Attachment entities that represent files
-in ShotGrid and how to interact with them. If that sounds cool too, then read on!</p>
+in Flow Production Tracking and how to interact with them. If that sounds cool too, then read on!</p>
 </div>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 3.0.3.</span></p>
 </div>
 <section id="default-structure">
 <h2>Default structure<a class="headerlink" href="#default-structure" title="Permalink to this heading"></a></h2>
-<p>The following is a list of the default fields that ShotGrid creates for Attachments. Your server
+<p>The following is a list of the default fields that Flow Production Tracking creates for Attachments. Your server
 instance may look slightly different depending on your own customizations. Many of these fields are
 optional and some are automatically filled in. These exceptions are listed below in the
 descriptions of each field.</p>
@@ -206,7 +206,7 @@ the size of the file in bytes.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt><dd><p>The internal ShotGrid id for this Attachment entity.</p>
+<dt><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>):</dt><dd><p>The internal Flow Production Tracking id for this Attachment entity.</p>
 </dd>
 </dl>
 </li>
@@ -250,7 +250,7 @@ reference.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt><dd><p>The url location of the thumbnail image assigned to this Attachment. For uploads, ShotGrid
+<dt><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>):</dt><dd><p>The url location of the thumbnail image assigned to this Attachment. For uploads, Flow Production Tracking
 automatically tries to create a thumbnail from the file.
 See <a class="reference internal" href="../reference.html#interpreting-image-field-strings"><span class="std std-ref">Interpreting Image Field Strings</span></a>. Alternatively, you can assign your
 own thumbnail to an Attachment using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload_thumbnail()</span></code> method.</p>
@@ -275,8 +275,8 @@ When processing the thumbnail, this field is set to ‘Thumbnail Pending’.</p>
 will vary.</p>
 <ul>
 <li><dl>
-<dt><strong>Uploads</strong></dt><dd><p>Designated by <code class="docutils literal notranslate"><span class="pre">link_type:</span> <span class="pre">'upload'</span></code>, this represents a file that was uploaded to ShotGrid.
-Uploading files to ShotGrid can be done using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code> method.
+<dt><strong>Uploads</strong></dt><dd><p>Designated by <code class="docutils literal notranslate"><span class="pre">link_type:</span> <span class="pre">'upload'</span></code>, this represents a file that was uploaded to Flow Production Tracking.
+Uploading files to Flow Production Tracking can be done using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code> method.
 You cannot create an Attachment with an uploaded file directly.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;image/jpeg&#39;</span><span class="p">,</span>
  <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;upload&#39;</span><span class="p">,</span>
@@ -358,23 +358,23 @@ it does, immediately retrying to upload usually works.</p>
 <h2>Updating Attachments<a class="headerlink" href="#updating-attachments" title="Permalink to this heading"></a></h2>
 <p>You cannot modify the <code class="docutils literal notranslate"><span class="pre">this_file</span></code> field after you create an Attachment. If you need to provide a
 different file, you will have to create a new Attachment entity. Otherwise, the process for
-updating Attachments is exactly like updating other entity types in ShotGrid and is the same for all
+updating Attachments is exactly like updating other entity types in Flow Production Tracking and is the same for all
 Attachment types. See <code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code> for more info.</p>
 </section>
 <section id="deleting-attachments">
 <h2>Deleting Attachments<a class="headerlink" href="#deleting-attachments" title="Permalink to this heading"></a></h2>
-<p>The process of deleting an Attachment is just like other entities in ShotGrid. See
+<p>The process of deleting an Attachment is just like other entities in Flow Production Tracking. See
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">delete()</span></code> for more info.</p>
 </section>
 <section id="working-with-local-file-types">
 <span id="id1"></span><h2>Working With Local File Types<a class="headerlink" href="#working-with-local-file-types" title="Permalink to this heading"></a></h2>
-<p>We added support for linking to local files in the UI in ShotGrid Server v2.1. This doc covers how
+<p>We added support for linking to local files in the UI in Flow Production Tracking Server v2.1. This doc covers how
 to work with these local file links using the API.</p>
 <section id="requirements">
 <h3>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Python API v3.0.3+</p></li>
-<li><p>ShotGrid Server v2.1.10+</p></li>
+<li><p>Flow Production Tracking Server v2.1.10+</p></li>
 </ul>
 </section>
 <section id="structure-of-local-file-values">
@@ -469,7 +469,7 @@ if there was no Windows path set for the local storage, <code class="docutils li
 </section>
 <section id="creating-updating-local-file-fields">
 <span id="creating-local-files"></span><h3>Creating &amp; Updating Local file Fields<a class="headerlink" href="#creating-updating-local-file-fields" title="Permalink to this heading"></a></h3>
-<p>When setting a file/link field value to a local file, only the <code class="docutils literal notranslate"><span class="pre">local_path</span></code> is mandatory. ShotGrid
+<p>When setting a file/link field value to a local file, only the <code class="docutils literal notranslate"><span class="pre">local_path</span></code> is mandatory. Flow Production Tracking
 will automatically select the appropriate matching local storage for your file based on the path.
 You can optionally specify the <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">content_type</span></code> fields if you wish to override their
 defaults. Any other keys that are provided will be ignored.</p>
@@ -486,7 +486,7 @@ using a best-guess based on the file extension.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><strong>local_path</strong> <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt><dd><p>The full local path to the file. ShotGrid will find the LocalStorage
+<dt><strong>local_path</strong> <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>:</dt><dd><p>The full local path to the file. Flow Production Tracking will find the LocalStorage
 that has the most specific match to this path and automatically assign that LocalStorage to
 the file.</p>
 </dd>
@@ -514,7 +514,7 @@ the file.</p>
  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">}]</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">content_type</span></code> was assigned a best-guess value based on the file extension. ShotGrid selected
+<p>The <code class="docutils literal notranslate"><span class="pre">content_type</span></code> was assigned a best-guess value based on the file extension. Flow Production Tracking selected
 the most appropriate specific LocalStorage match and assigned it to local_storage automatically.</p>
 </section>
 <section id="un-setting-local-file-field-values">

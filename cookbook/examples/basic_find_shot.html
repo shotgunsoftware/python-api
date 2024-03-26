@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Find a Shot &mdash; python-api v3.4.1 documentation</title>
+  <title>Find a Shot &mdash; python-api v3.5.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -66,7 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../usage_tips.html">API Usage Tips</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../tutorials.html">Examples</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../tutorials.html#basic">Basic</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a ShotGrid API instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="basic_sg_instance.html">Create a Flow Production Tracking API instance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_create_shot.html">Create A Shot</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Find a Shot</a></li>
 <li class="toctree-l4"><a class="reference internal" href="basic_update_shot.html">Update A Shot</a></li>
@@ -106,10 +106,10 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.4.1.<br>
+    <b>python-api</b> v3.5.0.<br>
     
     For more information, please visit
-    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The ShotGrid developer portal.</a>.
+    <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
     The code associated with this documentation can be found
     <a class=custom_post_menu href='https://github.com/shotgunsoftware/python-api'>here</a>.
 
@@ -161,7 +161,7 @@
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code> is an list of filter conditions. In this example we are filtering for Shots where
 the <code class="docutils literal notranslate"><span class="pre">id</span></code> column is <strong>40435</strong>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the ShotGrid API instance.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sg</span></code> is the Flow Production Tracking API instance.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">find_one()</span></code> is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one()</span></code> API method we are calling. We
 provide it with the entity type we’re searching for and our filters.</p></li>
 </ul>
@@ -173,7 +173,7 @@ provide it with the entity type we’re searching for and our filters.</p></li>
 </pre></div>
 </div>
 <p>By default, <code class="xref py py-meth docutils literal notranslate"><span class="pre">find_one()</span></code> returns a single dictionary object with
-the <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">id</span></code> fields. So in this example, we found a Shot matching that id, and ShotGrid
+the <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">id</span></code> fields. So in this example, we found a Shot matching that id, and Flow Production Tracking
 returned it as a dictionary object with <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">id</span></code> keys .</p>
 <p>How do we know that result contains the Shot dictionary object? You can trust us… but just to be
 sure, the <a class="reference external" href="https://docs.python.org/3.9/library/pprint.html#module-pprint" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pprint</span></code></a> (PrettyPrint) module from the Python standard library is a really good tool
@@ -197,7 +197,7 @@ easier to read. So we’ll add that to the import section of our script.:</p>
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Globals</span>
 <span class="c1"># --------------------------------------</span>
-<span class="c1"># make sure to change this to match your ShotGrid server and auth credentials.</span>
+<span class="c1"># make sure to change this to match your Flow Production Tracking server and auth credentials.</span>
 <span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span>
 <span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="s1">&#39;my_script&#39;</span>
 <span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">&#39;27b65d7063f46b82e670fe807bd2b6f3fd1676c1&#39;</span>

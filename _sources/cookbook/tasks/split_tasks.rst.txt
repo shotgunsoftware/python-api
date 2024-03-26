@@ -5,7 +5,7 @@ Split Tasks
 ###########
 
 Split tasks can be created and edited via the API but must comply to some rules. Before going 
-further, a good understanding of :ref:`how ShotGrid handles task dates is useful <updating_tasks>`.
+further, a good understanding of :ref:`how Flow Production Tracking handles task dates is useful <updating_tasks>`.
 
 ********
 Overview
