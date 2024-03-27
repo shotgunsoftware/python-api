@@ -26,9 +26,9 @@ Shotgun()
 .. autoclass:: Shotgun
     :show-inheritance:
 
-********************************
-Flow Production Tracking Methods
-********************************
+***************
+Shotgun Methods
+***************
 
 The majority of functionality is contained within the :class:`~shotgun_api3.Shotgun` class. 
 The documentation for all of the methods you'll need in your scripts lives in here.
@@ -91,7 +91,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.followers
     Shotgun.following
 
-.. rubric:: Working with the Flow Production Tracking Schema and Preferences
+.. rubric:: Working with the Shotgun Schema and Preferences
 
 .. autosummary:: 
     :nosignatures:
@@ -177,10 +177,10 @@ Methods that relate to the activity stream and following of entities in Flow Pro
 .. automethod:: Shotgun.followers
 .. automethod:: Shotgun.following
 
-Working with the Flow Production Tracking Schema
-================================================
+Working with the Shotgun Schema
+===============================
 
-Methods allow you to introspect and modify the Flow Production Tracking schema.
+Methods allow you to introspect and modify the Shotgun schema.
 
 .. automethod:: Shotgun.schema_entity_read
 .. automethod:: Shotgun.schema_field_read
