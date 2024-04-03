@@ -4,6 +4,12 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.5.1 (2024 Apr 3)
+===================
+- Documentation: Revert to Shotgun in the API Reference headers to keep consistency with the API methods
+- Mockgun: fix entity data type
+- Mockgun: add support for ``add_user_agent`` and ``set_session_uuid`` methods
+
 v3.5.0 (2024 Mar 26)
 ===================
 - Rebranding component for Flow Production Tracking
