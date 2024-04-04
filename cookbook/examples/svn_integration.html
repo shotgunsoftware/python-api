@@ -3,10 +3,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Subversion (SVN) Integration &mdash; python-api v3.5.0 documentation</title>
+  <title>Subversion (SVN) Integration &mdash; python-api v3.5.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -14,9 +14,10 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -101,7 +102,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.5.0.<br>
+    <b>python-api</b> v3.5.1.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -167,16 +168,16 @@ online guide for Subversion 1.5 and 1.6</a></p>
 <p>Here’s an example of a post-commit hook that we’ve made for Subversion 1.6 using an executable
 Unix shell script.  The last line invokes “shotgun_api_script.py” which is our Python script that
 will do all the heavy lifting.  Lines 4 thru 8 queue up some objects that we’ll use later on.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w"> </span><span class="c1">#!/bin/sh</span>
-<span class="linenos"> 2</span><span class="w"> </span><span class="c1"># POST-COMMIT HOOK</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span> <span class="c1">#!/bin/sh</span>
+<span class="linenos"> 2</span> <span class="c1"># POST-COMMIT HOOK</span>
 <span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="w"> </span><span class="nv">REPOS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
-<span class="linenos"> 5</span><span class="w"> </span><span class="nv">REV</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+<span class="linenos"> 4</span> <span class="nv">REPOS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+<span class="linenos"> 5</span> <span class="nv">REV</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">AUTHOR</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook<span class="w"> </span>author<span class="w"> </span><span class="nv">$REPOS</span><span class="w"> </span>--revision<span class="w"> </span><span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
-<span class="linenos"> 8</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">COMMENT</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook<span class="w"> </span>log<span class="w"> </span><span class="nv">$REPOS</span><span class="w"> </span>--revision<span class="w"> </span><span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
+<span class="linenos"> 7</span> <span class="nb">export</span> <span class="nv">AUTHOR</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook author <span class="nv">$REPOS</span> --revision <span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
+<span class="linenos"> 8</span> <span class="nb">export</span> <span class="nv">COMMENT</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook log <span class="nv">$REPOS</span> --revision <span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
 <span class="linenos"> 9</span>
-<span class="linenos">10</span><span class="w"> </span>/Absolute/path/to/shotgun_api_script.py
+<span class="linenos">10</span> /Absolute/path/to/shotgun_api_script.py
 </pre></div>
 </div>
 <section id="explanation-of-selected-lines">

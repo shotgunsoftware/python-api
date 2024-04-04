@@ -3,10 +3,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; python-api v3.5.0 documentation</title>
+  <title>API Reference &mdash; python-api v3.5.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -14,9 +14,10 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -71,7 +72,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun"><code class="docutils literal notranslate"><span class="pre">Shotgun</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#flow-production-tracking-methods">Flow Production Tracking Methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#shotgun-methods">Shotgun Methods</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#connection-authentication">Connection &amp; Authentication</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.connect"><code class="docutils literal notranslate"><span class="pre">Shotgun.connect()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.close"><code class="docutils literal notranslate"><span class="pre">Shotgun.close()</span></code></a></li>
@@ -123,7 +124,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.following"><code class="docutils literal notranslate"><span class="pre">Shotgun.following()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#working-with-the-flow-production-tracking-schema">Working with the Flow Production Tracking Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-the-shotgun-schema">Working with the Shotgun Schema</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.schema_entity_read"><code class="docutils literal notranslate"><span class="pre">Shotgun.schema_entity_read()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.schema_field_read"><code class="docutils literal notranslate"><span class="pre">Shotgun.schema_field_read()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.schema_field_create"><code class="docutils literal notranslate"><span class="pre">Shotgun.schema_field_create()</span></code></a></li>
@@ -247,7 +248,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.5.0.<br>
+    <b>python-api</b> v3.5.1.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -324,7 +325,7 @@ not require the added security provided by enforcing this.</p>
 <p>Shotgun Client connection.</p>
 <p>Initializes a new instance of the Shotgun client.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_url</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – <p>http or https url of the Shotgun server. Do not include the trailing
 slash:</p>
@@ -424,12 +425,16 @@ are other patches that were proposed in the bug report that may help you as well
 </dd></dl>
 
 </section>
-<section id="flow-production-tracking-methods">
-<h2>Flow Production Tracking Methods<a class="headerlink" href="#flow-production-tracking-methods" title="Permalink to this heading"></a></h2>
+<section id="shotgun-methods">
+<h2>Shotgun Methods<a class="headerlink" href="#shotgun-methods" title="Permalink to this heading"></a></h2>
 <p>The majority of functionality is contained within the <code class="xref py py-class docutils literal notranslate"><span class="pre">Shotgun</span></code> class.
 The documentation for all of the methods you’ll need in your scripts lives in here.</p>
 <p class="rubric">Connection &amp; Authentication</p>
 <table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.connect" title="shotgun_api3.shotgun.Shotgun.connect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.connect</span></code></a></p></td>
 <td><p>Connect client to the server if it is not already connected.</p></td>
@@ -462,6 +467,10 @@ The documentation for all of the methods you’ll need in your scripts lives in 
 </table>
 <p class="rubric">CRUD Methods</p>
 <table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.create" title="shotgun_api3.shotgun.Shotgun.create"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.create</span></code></a></p></td>
 <td><p>Create a new entity of the specified <code class="docutils literal notranslate"><span class="pre">entity_type</span></code>.</p></td>
@@ -509,6 +518,10 @@ The documentation for all of the methods you’ll need in your scripts lives in 
 </table>
 <p class="rubric">Working With Files</p>
 <table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.upload" title="shotgun_api3.shotgun.Shotgun.upload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.upload</span></code></a></p></td>
 <td><p>Upload a file to the specified entity.</p></td>
@@ -532,6 +545,10 @@ The documentation for all of the methods you’ll need in your scripts lives in 
 </table>
 <p class="rubric">Activity Stream</p>
 <table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.activity_stream_read" title="shotgun_api3.shotgun.Shotgun.activity_stream_read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.activity_stream_read</span></code></a></p></td>
 <td><p>Retrieve activity stream data from Shotgun.</p></td>
@@ -550,8 +567,12 @@ The documentation for all of the methods you’ll need in your scripts lives in 
 </tr>
 </tbody>
 </table>
-<p class="rubric">Working with the Flow Production Tracking Schema and Preferences</p>
+<p class="rubric">Working with the Shotgun Schema and Preferences</p>
 <table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.schema_entity_read" title="shotgun_api3.shotgun.Shotgun.schema_entity_read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.schema_entity_read</span></code></a></p></td>
 <td><p>Return all active entity types, their display names, and their visibility.</p></td>
@@ -620,7 +641,7 @@ account must be active.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>user_login</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Login name of Shotgun HumanUser</p></li>
 <li><p><strong>user_password</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Password for Shotgun HumanUser</p></li>
@@ -628,11 +649,11 @@ account must be active.</p>
 when two-factor authentication is turned on.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Standard Shotgun dictionary representing the HumanUser if authentication
 succeeded. <code class="docutils literal notranslate"><span class="pre">None</span></code> if authentication failed for any reason.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -649,10 +670,10 @@ generated on the server and returned.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>String containing a session token.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </dd>
 </dl>
@@ -675,7 +696,7 @@ used internally for downloading attachments from the Shotgun server.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>agent</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – string to append to user-agent.</p>
 </dd>
 </dl>
@@ -702,7 +723,7 @@ this <code class="docutils literal notranslate"><span class="pre">session_uuid</
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>session_uuid</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The uuid of the browser session to be updated.</p>
 </dd>
 </dl>
@@ -735,10 +756,10 @@ this <code class="docutils literal notranslate"><span class="pre">session_uuid</
 the other values to be unsupported and for internal use only.</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>dict of the server metadata.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -753,12 +774,12 @@ the other values to be unsupported and for internal use only.</p>
 <span class="sig-prename descclassname"><span class="pre">Shotgun.</span></span><span class="sig-name descname"><span class="pre">user_subscriptions_read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.user_subscriptions_read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.user_subscriptions_read" title="Permalink to this definition"></a></dt>
 <dd><p>Get the list of user subscriptions.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A list of user subscriptions where each subscription is a
 dictionary containing the <code class="docutils literal notranslate"><span class="pre">humanUserId</span></code> and <code class="docutils literal notranslate"><span class="pre">subscription</span></code>
 fields.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
 </dd>
 </dl>
@@ -769,17 +790,17 @@ fields.</p>
 <span class="sig-prename descclassname"><span class="pre">Shotgun.</span></span><span class="sig-name descname"><span class="pre">user_subscriptions_create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">users</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.user_subscriptions_create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.user_subscriptions_create" title="Permalink to this definition"></a></dt>
 <dd><p>Assign subscriptions to users.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>users</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list of user subscriptions to assign.
 Each subscription must be a dictionary with the <code class="docutils literal notranslate"><span class="pre">humanUserId</span></code> and
 <code class="docutils literal notranslate"><span class="pre">subscription</span></code> fields.
 The <code class="docutils literal notranslate"><span class="pre">subscription</span></code> is either <code class="docutils literal notranslate"><span class="pre">None</span></code>, a single string, or an
 array of strings with subscription information.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the request succedeed, <code class="docutils literal notranslate"><span class="pre">False</span></code> if otherwise.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
 </dd>
 </dl>
@@ -810,7 +831,7 @@ also some specialized convenience methods for accessing particular types of info
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Shotgun entity type to create.</p></li>
 <li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Dictionary of fields and corresponding values to set on the new entity. If
@@ -825,7 +846,7 @@ entity. Defaults to <code class="docutils literal notranslate"><span class="pre"
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>Shotgun entity dictionary containing the field/value pairs of all of the fields
 set from the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter as well as the defaults <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">id</span></code>. If any
 additional fields were provided using the <code class="docutils literal notranslate"><span class="pre">return_fields</span></code> parameter, these would be
@@ -836,7 +857,7 @@ included as well.</p>
 </div>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -892,7 +913,7 @@ This is often called “deep linking” or using “dot notation”.</p>
 </div>
 </div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Shotgun entity type to find.</p></li>
 <li><p><strong>filters</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – <p>list of filters to apply to the query.</p>
@@ -949,7 +970,7 @@ argument.</p>
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>list of dictionaries representing each entity with the requested fields, and the
 defaults <code class="docutils literal notranslate"><span class="pre">&quot;id&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;</span></code> which are always included.</p>
 <div class="admonition seealso">
@@ -958,7 +979,7 @@ defaults <code class="docutils literal notranslate"><span class="pre">&quot;id&q
 </div>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
 </dd>
 </dl>
@@ -974,7 +995,7 @@ result.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Shotgun entity type as a string to find.</p></li>
 <li><p><strong>filters</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – <p>list of filters to apply to the query.</p>
@@ -1019,7 +1040,7 @@ argument.</p>
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>Dictionary representing a single matching entity with the requested fields,
 and the defaults <code class="docutils literal notranslate"><span class="pre">&quot;id&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;</span></code> which are always included.</p>
 <div class="admonition seealso">
@@ -1028,7 +1049,7 @@ and the defaults <code class="docutils literal notranslate"><span class="pre">&q
 </div>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -1056,7 +1077,7 @@ and the defaults <code class="docutils literal notranslate"><span class="pre">&q
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Entity type to update.</p></li>
 <li><p><strong>entity_id</strong> (<em>id</em>) – id of the entity to update.</p></li>
@@ -1073,10 +1094,10 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">set</sp
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Dictionary of the fields updated, with the default keys <cite>type</cite> and <cite>id</cite> added as well.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -1094,20 +1115,20 @@ means they are placed in the trash where they are no longer accessible to users.
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Shotgun entity type to delete.</p></li>
 <li><p><strong>entity_id</strong> (<em>id</em>) – <code class="docutils literal notranslate"><span class="pre">id</span></code> of the entity to delete.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the entity was deleted, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise (for example, if the
 entity was already deleted).</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dt class="field-even">Raises</dt>
 <dd class="field-even"><p><a class="reference internal" href="#shotgun_api3.Fault" title="shotgun_api3.shotgun.Fault"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fault</span></code></a> if entity does not exist (deleted or not).</p>
 </dd>
 </dl>
@@ -1122,17 +1143,17 @@ entity was already deleted).</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Shotgun entity type to revive.</p></li>
 <li><p><strong>entity_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – id of the entity to revive.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the entity was revived, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise (e.g. if the
 entity is not currently retired).</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
 </dd>
 </dl>
@@ -1186,7 +1207,7 @@ entity is not currently retired).</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>requests</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – <p>A list of dict’s of the form which have a request_type key and also
 specifies:</p>
 <ul class="simple">
@@ -1200,11 +1221,11 @@ specifies:</p>
 </ul>
 </p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of values for each operation. Create and update requests return a dict of
 the fields updated. Delete requests return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the entity was deleted.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
 </dd>
 </dl>
@@ -1357,17 +1378,17 @@ Pipeline Step</strong></p>
 <p>When grouping my more than one field, the grouping structure is repeated for each sub-group
 and summary values are returned for each group on each level.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The entity type to summarize</p></li>
 <li><p><strong>filters</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – A list of conditions used to filter the find query. Uses the same
 syntax as <code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code> method.</p></li>
 <li><p><strong>summary_fields</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – <p>A list of dictionaries with the following keys:</p>
 <dl class="field-list simple">
-<dt class="field-odd">field<span class="colon">:</span></dt>
+<dt class="field-odd">field</dt>
 <dd class="field-odd"><p>The internal Shotgun field name you are summarizing.</p>
 </dd>
-<dt class="field-even">type<span class="colon">:</span></dt>
+<dt class="field-even">type</dt>
 <dd class="field-even"><p>The type of summary you are performing on the field. Summary types can be any of
 <code class="docutils literal notranslate"><span class="pre">record_count</span></code>, <code class="docutils literal notranslate"><span class="pre">count</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">maximum</span></code>, <code class="docutils literal notranslate"><span class="pre">minimum</span></code>, <code class="docutils literal notranslate"><span class="pre">average</span></code>,
 <code class="docutils literal notranslate"><span class="pre">earliest</span></code>, <code class="docutils literal notranslate"><span class="pre">latest</span></code>, <code class="docutils literal notranslate"><span class="pre">percentage</span></code>, <code class="docutils literal notranslate"><span class="pre">status_percentage</span></code>, <code class="docutils literal notranslate"><span class="pre">status_list</span></code>,
@@ -1380,11 +1401,11 @@ and <code class="docutils literal notranslate"><span class="pre">&quot;any&quot;
 query. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>.</p></li>
 <li><p><strong>grouping</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – <p>Optional list of dicts with the following keys:</p>
 <dl class="field-list simple">
-<dt class="field-odd">field<span class="colon">:</span></dt>
+<dt class="field-odd">field</dt>
 <dd class="field-odd"><p>a string indicating the internal Shotgun field name on <code class="docutils literal notranslate"><span class="pre">entity_type</span></code> to
 group results by.</p>
 </dd>
-<dt class="field-even">type<span class="colon">:</span></dt>
+<dt class="field-even">type</dt>
 <dd class="field-even"><p>A string indicating the type of grouping to perform for each group.
 Valid types depend on the type of field you are grouping on and can be one of
 <code class="docutils literal notranslate"><span class="pre">exact</span></code>, <code class="docutils literal notranslate"><span class="pre">tens</span></code>, <code class="docutils literal notranslate"><span class="pre">hundreds</span></code>, <code class="docutils literal notranslate"><span class="pre">thousands</span></code>, <code class="docutils literal notranslate"><span class="pre">tensofthousands</span></code>,
@@ -1392,7 +1413,7 @@ Valid types depend on the type of field you are grouping on and can be one of
 <code class="docutils literal notranslate"><span class="pre">quarter</span></code>,``year``, <code class="docutils literal notranslate"><span class="pre">clustered_date</span></code>, <code class="docutils literal notranslate"><span class="pre">oneday</span></code>, <code class="docutils literal notranslate"><span class="pre">fivedays</span></code>,
 <code class="docutils literal notranslate"><span class="pre">entitytype</span></code>, <code class="docutils literal notranslate"><span class="pre">firstletter</span></code>.</p>
 </dd>
-<dt class="field-odd">direction<span class="colon">:</span></dt>
+<dt class="field-odd">direction</dt>
 <dd class="field-odd"><p>A string that sets the order to display the grouped results. Valid
 options are <code class="docutils literal notranslate"><span class="pre">asc</span></code> and  <code class="docutils literal notranslate"><span class="pre">desc</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">asc</span></code>.</p>
 </dd>
@@ -1400,10 +1421,10 @@ options are <code class="docutils literal notranslate"><span class="pre">asc</sp
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>dictionary containing grouping and summaries keys.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -1460,17 +1481,17 @@ key should contain a list of fields to retrieve, for example:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>note_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The id for the note to be retrieved</p></li>
 <li><p><strong>entity_fields</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Additional fields to retrieve as part of the request.
 See above for details.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of dictionaries. See above for example.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
 </dd>
 </dl>
@@ -1520,7 +1541,7 @@ for example the <code class="xref py py-meth docutils literal notranslate"><span
 example, presenting Tasks and you want to display what Shot or Asset the Task is associated
 with.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Text to search for. This must be at least three characters long, or an
 exception will be raised.</p></li>
@@ -1531,10 +1552,10 @@ searched.</p></li>
 <li><p><strong>limit</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Specify the maximum number of matches to return.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A complex dictionary structure, see above for example.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -1554,7 +1575,7 @@ and apps to use this information to display “Recent Projects” for users as a
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>project</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Standard Project entity dictionary</p></li>
 <li><p><strong>user</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Standard user entity dictionary. This is optional if the current API
@@ -1578,10 +1599,10 @@ as a dict where the key is the date and the value is another dict describing the
 that date.</p>
 <p>Rules are represented by a dict with the following keys:</p>
 <dl class="field-list simple">
-<dt class="field-odd">Description<span class="colon">:</span></dt>
+<dt class="field-odd">Description</dt>
 <dd class="field-odd"><p>the description entered into the work day rule exception if applicable.</p>
 </dd>
-<dt class="field-even">Reason<span class="colon">:</span></dt>
+<dt class="field-even">Reason</dt>
 <dd class="field-even"><p>one of six options:</p>
 <ul class="simple">
 <li><p>STUDIO_WORK_WEEK: standard studio schedule applies</p></li>
@@ -1592,7 +1613,7 @@ that date.</p>
 <li><p>USER_EXCEPTION: user-specific exception applies</p></li>
 </ul>
 </dd>
-<dt class="field-odd">Working<span class="colon">:</span></dt>
+<dt class="field-odd">Working</dt>
 <dd class="field-odd"><p>boolean indicating whether it is a “working” day or not.</p>
 </dd>
 </dl>
@@ -1615,7 +1636,7 @@ that date.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>start_date</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Start date of date range. <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD</span></code></p></li>
 <li><p><strong>end_date</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – End date of date range. <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD</span></code></p></li>
@@ -1623,11 +1644,11 @@ that date.</p>
 <li><p><strong>user</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Optional HumanUser entity to query WorkDayRules for.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Complex dict containing each date and the WorkDayRule defined for that date
 between the <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span> <span class="pre">date</span></code> inclusive. See above for details.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -1653,7 +1674,7 @@ between the <code class="docutils literal notranslate"><span class="pre">start_d
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Date of WorkDayRule to update. <code class="docutils literal notranslate"><span class="pre">YYY-MM-DD</span></code></p></li>
 <li><p><strong>working</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Indicates whether the day is a working day or not.</p></li>
@@ -1668,10 +1689,10 @@ when they are affected by a change in working schedule. Options are <code class=
 Preferences.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>dict containing key/value pairs for each value of the work day rule updated.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -1688,13 +1709,13 @@ Preferences.</p></li>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>prefs</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – An optional list of preference names to return.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Dictionary of preferences and their values.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -1727,7 +1748,7 @@ When it does, immediately retrying to upload usually works</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Entity type to link the upload to.</p></li>
 <li><p><strong>entity_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Id of the entity to link the upload to.</p></li>
@@ -1738,13 +1759,13 @@ This field must be a File/Link field type.</p></li>
 <li><p><strong>tag_list</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – comma-separated string of tags to assign to the file.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Id of the Attachment entity that was created for the image.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)">int</a></p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dt class="field-even">Raises</dt>
 <dd class="field-even"><p><a class="reference internal" href="#shotgun_api3.ShotgunError" title="shotgun_api3.shotgun.ShotgunError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotgunError</span></code></a> on upload failure.</p>
 </dd>
 </dl>
@@ -1770,14 +1791,14 @@ This will also unset the <code class="docutils literal notranslate"><span class=
 <p>This method wraps over <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code>. Additional keyword arguments
 passed to this method will be forwarded to the <code class="xref py py-meth docutils literal notranslate"><span class="pre">upload()</span></code> method.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Entity type to set the thumbnail for.</p></li>
 <li><p><strong>entity_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Id of the entity to set the thumbnail for.</p></li>
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Full path to the thumbnail file on disk.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Id of the new attachment</p>
 </dd>
 </dl>
@@ -1813,17 +1834,17 @@ passed to this method will be forwarded to the <code class="xref py py-meth docu
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Entity type to set the filmstrip thumbnail for.</p></li>
 <li><p><strong>entity_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Id of the entity to set the filmstrip thumbnail for.</p></li>
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Full path to the filmstrip thumbnail file on disk.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Id of the new Attachment entity created for the filmstrip thumbnail</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)">int</a></p>
 </dd>
 </dl>
@@ -1846,7 +1867,7 @@ on Shotgun don’t raise exceptions, they cause a server error which
 returns a 200 with the page content.</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>attachment</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – <p>Usually a dictionary representing an Attachment entity.
 The dictionary should have a <code class="docutils literal notranslate"><span class="pre">url</span></code> key that specifies the download url.
@@ -1863,12 +1884,12 @@ download.</p>
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>If <code class="docutils literal notranslate"><span class="pre">file_path</span></code> is provided, returns the path to the file on disk.  If
 <code class="docutils literal notranslate"><span class="pre">file_path</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, returns the actual data of the file, as str in Python 2 or
 bytes in Python 3.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)">str</a> | <a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#bytes" title="(in Python v3.9)">bytes</a></p>
 </dd>
 </dl>
@@ -1879,7 +1900,7 @@ bytes in Python 3.</p>
 <span class="sig-prename descclassname"><span class="pre">Shotgun.</span></span><span class="sig-name descname"><span class="pre">get_attachment_download_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attachment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.get_attachment_download_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.get_attachment_download_url" title="Permalink to this definition"></a></dt>
 <dd><p>Return the URL for downloading provided Attachment.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>attachment</strong> (<em>mixed</em>) – <p>Usually a dict representing An Attachment entity in Shotgun to
 return the download url for. If the <code class="docutils literal notranslate"><span class="pre">url</span></code> key is present, it will be used as-is for
 the download url. If the <code class="docutils literal notranslate"><span class="pre">url</span></code> key is not present, a url will be constructed pointing
@@ -1895,11 +1916,11 @@ results from a <code class="xref py py-meth docutils literal notranslate"><span 
 <p>Support for passing in an int representing the Attachment <code class="docutils literal notranslate"><span class="pre">id</span></code> is deprecated</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>the download URL for the Attachment or <code class="docutils literal notranslate"><span class="pre">None</span></code> if <code class="docutils literal notranslate"><span class="pre">None</span></code> was passed to
 <code class="docutils literal notranslate"><span class="pre">attachment</span></code> parameter.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </dd>
 </dl>
@@ -1937,7 +1958,7 @@ If the <a class="reference internal" href="#interpreting-image-field-strings"><s
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entities</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – <p>The entities to update to point to the shared  thumbnail provided in
 standard entity dict format:</p>
@@ -1954,13 +1975,13 @@ Required if <code class="docutils literal notranslate"><span class="pre">source_
 share the static thumbnail. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">id</span></code> of the Attachment entity representing the source thumbnail that is shared.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)">int</a></p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dt class="field-even">Raises</dt>
 <dd class="field-even"><p><a class="reference internal" href="#shotgun_api3.ShotgunError" title="shotgun_api3.shotgun.ShotgunError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotgunError</span></code></a> if not supported by server version or improperly called, 
 or <code class="xref py py-class docutils literal notranslate"><span class="pre">ShotgunThumbnailNotReady</span></code> if thumbnail is still pending.</p>
 </dd>
@@ -2020,7 +2041,7 @@ following entity_fields:</p>
 <p>Deep queries can be used in this syntax if you want to
 traverse into connected data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Entity type to retrieve activity stream for</p></li>
 <li><p><strong>entity_id</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Entity id to retrieve activity stream for</p></li>
@@ -2036,10 +2057,10 @@ the event stream data and you want to
 the system default will be used.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A complex activity stream data structure. See above for details.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -2057,17 +2078,17 @@ changed on the server-side.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>user</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – User entity that will follow the entity.</p></li>
 <li><p><strong>entity</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Shotgun entity to be followed.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>dict with <code class="docutils literal notranslate"><span class="pre">&quot;followed&quot;:</span> <span class="pre">True</span></code> as well as key/values for the params that were
 passed in.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -2084,17 +2105,17 @@ passed in.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>user</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – User entity that will unfollow the entity.</p></li>
 <li><p><strong>entity</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Entity to be unfollowed</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>dict with <code class="docutils literal notranslate"><span class="pre">&quot;unfollowed&quot;:</span> <span class="pre">True</span></code> as well as key/values for the params that were
 passed in.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -2114,16 +2135,16 @@ passed in.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>entity</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Entity to find followers of.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of dicts representing each user following the entity</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
 </dd>
-<dt class="field-even">Versionadded<span class="colon">:</span></dt>
+<dt class="field-even">Versionadded</dt>
 <dd class="field-even"><p></p></dd>
 </dl>
 </dd></dl>
@@ -2143,26 +2164,26 @@ passed in.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>user</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Find what this person is following.</p></li>
 <li><p><strong>project</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Optional filter to only return results from a specific project.</p></li>
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Optional filter to only return results from one entity type.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of dictionaries, each containing entity type &amp; id’s being followed.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 </section>
-<section id="working-with-the-flow-production-tracking-schema">
-<h3>Working with the Flow Production Tracking Schema<a class="headerlink" href="#working-with-the-flow-production-tracking-schema" title="Permalink to this heading"></a></h3>
-<p>Methods allow you to introspect and modify the Flow Production Tracking schema.</p>
+<section id="working-with-the-shotgun-schema">
+<h3>Working with the Shotgun Schema<a class="headerlink" href="#working-with-the-shotgun-schema" title="Permalink to this heading"></a></h3>
+<p>Methods allow you to introspect and modify the Shotgun schema.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="shotgun_api3.shotgun.Shotgun.schema_entity_read">
 <span class="sig-prename descclassname"><span class="pre">Shotgun.</span></span><span class="sig-name descname"><span class="pre">schema_entity_read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_entity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.schema_entity_read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.schema_entity_read" title="Permalink to this definition"></a></dt>
@@ -2188,16 +2209,16 @@ returned where per-project entity type visibility settings are not considered.</
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>project_entity</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Optional Project entity specifying which project to return
 the listing for. If omitted or set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, per-project visibility settings are
 not taken into consideration and the global list is returned. Example:
 <code class="docutils literal notranslate"><span class="pre">{'type':</span> <span class="pre">'Project',</span> <span class="pre">'id':</span> <span class="pre">3}</span></code></p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>dict of Entity Type to dict containing the display name.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -2250,7 +2271,7 @@ data in your script.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Entity type to get the schema for.</p></li>
 <li><p><strong>field_name</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Optional internal Shotgun name of the field to get the schema
@@ -2262,13 +2283,13 @@ not taken into consideration and the global list is returned. Example:
 <code class="docutils literal notranslate"><span class="pre">{'type':</span> <span class="pre">'Project',</span> <span class="pre">'id':</span> <span class="pre">3}</span></code></p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>a nested dict object containing a key/value pair for the <code class="docutils literal notranslate"><span class="pre">field_name</span></code> specified
 and its properties, or if no field_name is specified, for all the fields of the
 <code class="docutils literal notranslate"><span class="pre">entity_type</span></code>. Properties that are <code class="docutils literal notranslate"><span class="pre">'editable':</span> <span class="pre">True</span></code>, can be updated using the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">schema_field_update()</span></code> method.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -2291,7 +2312,7 @@ unique name is found.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Entity type to add the field to.</p></li>
 <li><p><strong>data_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Shotgun data type for the new field.</p></li>
@@ -2302,11 +2323,11 @@ creation.</p></li>
 other field properties such as the ‘description’ or ‘summary_default’.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The internal Shotgun name for the new field, this is different to the
 <code class="docutils literal notranslate"><span class="pre">display_name</span></code> parameter passed in.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </dd>
 </dl>
@@ -2329,7 +2350,7 @@ one level, like ‘description’.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> – Entity type of field to update.</p></li>
 <li><p><strong>field_name</strong> – Internal Shotgun name of the field to update.</p></li>
@@ -2341,7 +2362,7 @@ updated and the value is the new value.</p></li>
 <code class="docutils literal notranslate"><span class="pre">{'type':</span> <span class="pre">'Project',</span> <span class="pre">'id':</span> <span class="pre">3}</span></code></p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the field was updated.</p>
 </dd>
 </dl>
@@ -2351,7 +2372,7 @@ updated and the value is the new value.</p></li>
 and has no impact on other properties.</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
 </dd>
 </dl>
@@ -2366,16 +2387,16 @@ and has no impact on other properties.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entity_type</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Entity type to delete the field from.</p></li>
 <li><p><strong>field_name</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Internal Shotgun name of the field to delete.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the field was deleted.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
 </dd>
 </dl>
@@ -2434,18 +2455,18 @@ and has no impact on other properties.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>project_entity</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Optional, Project entity specifying which project to return
 the listing for. If omitted or set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, per-project visibility settings are
 not taken into consideration and the global list is returned. Example:
 <code class="docutils literal notranslate"><span class="pre">{'type':</span> <span class="pre">'Project',</span> <span class="pre">'id':</span> <span class="pre">3}</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A nested dict object containing a key/value pair for all fields of all entity
 types. Properties that are <code class="docutils literal notranslate"><span class="pre">'editable':</span> <span class="pre">True</span></code>, can be updated using the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">schema_field_update()</span></code> method.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
 </dd>
 </dl>
@@ -2908,7 +2929,7 @@ with which parameters.</p>
 <section id="addressing">
 <h3>addressing<a class="headerlink" href="#addressing" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a></p>
 </dd>
 </dl>
@@ -2927,7 +2948,7 @@ with which parameters.</p>
 <section id="checkbox">
 <h3>checkbox<a class="headerlink" href="#checkbox" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a> (<code class="docutils literal notranslate"><span class="pre">True</span></code> | <code class="docutils literal notranslate"><span class="pre">False</span></code>)</p>
 </dd>
 </dl>
@@ -2935,10 +2956,10 @@ with which parameters.</p>
 <section id="color">
 <h3>color<a class="headerlink" href="#color" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
-<dt class="field-even">example<span class="colon">:</span></dt>
+<dt class="field-even">example</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">255,0,0</span></code> | <code class="docutils literal notranslate"><span class="pre">pipeline_step</span></code></p>
 </dd>
 </dl>
@@ -2947,10 +2968,10 @@ with which parameters.</p>
 <section id="currency">
 <h3>currency<a class="headerlink" href="#currency" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
-<dt class="field-even">range<span class="colon">:</span></dt>
+<dt class="field-even">range</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">-9999999999999.99</span></code>, <code class="docutils literal notranslate"><span class="pre">9999999999999.99</span></code></p>
 </dd>
 </dl>
@@ -2958,13 +2979,13 @@ with which parameters.</p>
 <section id="date">
 <h3>date<a class="headerlink" href="#date" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
-<dt class="field-even">range<span class="colon">:</span></dt>
+<dt class="field-even">range</dt>
 <dd class="field-even"><p>Year must be &gt;= 1970</p>
 </dd>
-<dt class="field-odd">example<span class="colon">:</span></dt>
+<dt class="field-odd">example</dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD</span></code></p>
 </dd>
 </dl>
@@ -2972,10 +2993,10 @@ with which parameters.</p>
 <section id="date-time">
 <h3>date_time<a class="headerlink" href="#date-time" title="Permalink to this heading"></a></h3>
 <dl class="field-list">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/datetime.html#module-datetime" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">datetime</span></code></a> | <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
-<dt class="field-even">range<span class="colon">:</span></dt>
+<dt class="field-even">range</dt>
 <dd class="field-even"><p>Year must be &gt;= 1970</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2988,10 +3009,10 @@ convert between client local time and UTC. This can be overridden.</p>
 <section id="duration">
 <h3>duration<a class="headerlink" href="#duration" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
-<dt class="field-even">range<span class="colon">:</span></dt>
+<dt class="field-even">range</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">-2147483648</span></code>, <code class="docutils literal notranslate"><span class="pre">2147483647</span></code></p>
 </dd>
 </dl>
@@ -3000,7 +3021,7 @@ convert between client local time and UTC. This can be overridden.</p>
 <section id="entity">
 <h3>entity<a class="headerlink" href="#entity" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
@@ -3015,10 +3036,10 @@ convert between client local time and UTC. This can be overridden.</p>
 <section id="float">
 <h3>float<a class="headerlink" href="#float" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a> | <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
-<dt class="field-even">range<span class="colon">:</span></dt>
+<dt class="field-even">range</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">-999999999.999999</span></code>, <code class="docutils literal notranslate"><span class="pre">999999999.999999</span></code></p>
 </dd>
 </dl>
@@ -3026,10 +3047,10 @@ convert between client local time and UTC. This can be overridden.</p>
 <section id="footage">
 <h3>footage<a class="headerlink" href="#footage" title="Permalink to this heading"></a></h3>
 <dl class="field-list">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> <code class="docutils literal notranslate"><span class="pre">FF-ff</span></code></p>
 </dd>
-<dt class="field-even">range<span class="colon">:</span></dt>
+<dt class="field-even">range</dt>
 <dd class="field-even"><p>Frames must be &lt; Preferences value for “Advanced &gt; Number of frames per foot of film”</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3042,7 +3063,7 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="image-read-only">
 <h3>image (read-only)<a class="headerlink" href="#image-read-only" title="Permalink to this heading"></a></h3>
 <dl class="field-list">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3054,7 +3075,7 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="list">
 <h3>list<a class="headerlink" href="#list" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3.9/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
@@ -3062,7 +3083,7 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="multi-entity">
 <h3>multi_entity<a class="headerlink" href="#multi-entity" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a></p>
 </dd>
 </dl>
@@ -3081,10 +3102,10 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="number">
 <h3>number<a class="headerlink" href="#number" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
-<dt class="field-even">range<span class="colon">:</span></dt>
+<dt class="field-even">range</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">-2147483648</span></code>, <code class="docutils literal notranslate"><span class="pre">2147483647</span></code></p>
 </dd>
 </dl>
@@ -3092,7 +3113,7 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="password">
 <h3>password<a class="headerlink" href="#password" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/string.html#module-string" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">string</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -3101,10 +3122,10 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="percent">
 <h3>percent<a class="headerlink" href="#percent" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
-<dt class="field-even">range<span class="colon">:</span></dt>
+<dt class="field-even">range</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">-2147483648</span></code>, <code class="docutils literal notranslate"><span class="pre">2147483647</span></code></p>
 </dd>
 </dl>
@@ -3112,7 +3133,7 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="serializable">
 <h3>serializable<a class="headerlink" href="#serializable" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -3120,7 +3141,7 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="status-list">
 <h3>status_list<a class="headerlink" href="#status-list" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -3128,7 +3149,7 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="system-task-type-deprecated">
 <h3>system_task_type (deprecated)<a class="headerlink" href="#system-task-type-deprecated" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -3136,7 +3157,7 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="tag-list">
 <h3>tag_list<a class="headerlink" href="#tag-list" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a></p>
 </dd>
 </dl>
@@ -3144,7 +3165,7 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="text">
 <h3>text<a class="headerlink" href="#text" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -3152,10 +3173,10 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="timecode">
 <h3>timecode<a class="headerlink" href="#timecode" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
-<dt class="field-even">range<span class="colon">:</span></dt>
+<dt class="field-even">range</dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">-2147483648</span></code>, <code class="docutils literal notranslate"><span class="pre">2147483647</span></code></p>
 </dd>
 </dl>
@@ -3164,7 +3185,7 @@ Example above is default.F=Feet f=Frames.</p>
 <section id="url-file-link-field">
 <h3>url (file/link field)<a class="headerlink" href="#url-file-link-field" title="Permalink to this heading"></a></h3>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -3180,7 +3201,7 @@ Example above is default.F=Feet f=Frames.</p>
 <h4>Local File Links<a class="headerlink" href="#local-file-links" title="Permalink to this heading"></a></h4>
 <p>Additional keys exist for local file links</p>
 <dl class="field-list simple">
-<dt class="field-odd">value<span class="colon">:</span></dt>
+<dt class="field-odd">value</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -3211,6 +3232,10 @@ Example above is default.F=Feet f=Frames.</p>
 <span id="id4"></span><h2>Interpreting Image Field Strings<a class="headerlink" href="#interpreting-image-field-strings" title="Permalink to this heading"></a></h2>
 <p>There are three possible states for values returned by an <code class="docutils literal notranslate"><span class="pre">image</span></code> field:</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Type</p></th>
 <th class="head"><p>Value - Description</p></th>
