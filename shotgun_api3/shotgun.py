@@ -4154,6 +4154,13 @@ class Shotgun(object):
                     raise ShotgunError("Got a %s response when uploading to %s: %s" % (e.code, storage_url, e))
                 else:
                     raise ShotgunError("Unanticipated error occurred uploading to %s: %s" % (storage_url, e))
+            except urllib.error.URLError as e:
+                if attempt != max_attempts:
+                    # Retry "connection reset by peer" error
+                    LOG.debug("Got a '%s' response. Waiting and retrying..." % e.reason.strerror)
+                    time.sleep(float(attempt) * backoff)
+                    attempt += 1
+                    continue
 
             else:
                 break
