@@ -2587,7 +2587,10 @@ class Shotgun(object):
             url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                                            "/upload/upload_file", None, None, None))
             if display_name is None:
-                display_name = os.path.basename(path)
+                if six.PY3:
+                    display_name = os.path.basename(path.decode("utf-8"))
+                else:
+                    display_name = os.path.basename(path)
             # we allow linking to nothing for generic reference use cases
             if field_name is not None:
                 params["field_name"] = field_name
