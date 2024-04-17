@@ -243,7 +243,7 @@ class TestShotgunApi(base.LiveTestBase):
         # test upload of non-ascii, unicode path
         u_path = os.path.abspath(
             os.path.expanduser(
-                glob.glob(os.path.join(six.text_type(this_dir), u'No*l.jpg'))[0]
+                glob.glob(os.path.join(six.text_type(this_dir), "'Noëlご.jpg"))[0]
             )
         )
 
