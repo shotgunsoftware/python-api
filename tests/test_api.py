@@ -24,6 +24,7 @@ import types
 import uuid
 import unittest
 from shotgun_api3.lib.six.moves import range, urllib
+import pytest
 import warnings
 import glob
 
@@ -243,7 +244,7 @@ class TestShotgunApi(base.LiveTestBase):
         # test upload of non-ascii, unicode path
         u_path = os.path.abspath(
             os.path.expanduser(
-                glob.glob(os.path.join(six.text_type(this_dir), "'Noëlご.jpg"))[0]
+                glob.glob(os.path.join(six.text_type(this_dir), "Noëlご.jpg"))[0]
             )
         )
 
@@ -309,6 +310,54 @@ class TestShotgunApi(base.LiveTestBase):
 
         # cleanup
         os.remove(file_path)
+
+    @patch('shotgun_api3.Shotgun._send_form')
+    def test_upload_to_sg(self, mock_send_form):
+        """
+        Upload an attachment tests for _upload_to_sg()
+        """
+        mock_send_form.method.assert_called_once()
+        mock_send_form.return_value = "1\n:123\nasd"
+        if 'localhost' in self.server_url:
+            print("upload / down tests skipped for localhost")
+            return
+        self.sg.server_info["s3_direct_uploads_enabled"] = False
+        this_dir, _ = os.path.split(__file__)
+        u_path = os.path.abspath(
+            os.path.expanduser(
+                glob.glob(os.path.join(six.text_type(this_dir), "Noëlご.jpg"))[0]
+            )
+        )
+        upload_id = self.sg.upload(
+            "Ticket",
+            self.ticket['id'],
+            u_path,
+            'attachments',
+            tag_list="monkeys, everywhere, send, help"
+        )
+        self.assertTrue(isinstance(upload_id, int))
+
+        upload_id = self.sg.upload(
+            "Ticket",
+            self.ticket['id'],
+            u_path,
+            'filmstrip_image',
+            tag_list="monkeys, everywhere, send, help",
+        )
+        self.assertTrue(isinstance(upload_id, int))
+
+        mock_send_form.method.assert_called_once()
+        mock_send_form.return_value = "2\nIt can't be upload"
+        self.assertRaises(
+            shotgun_api3.ShotgunError,
+            self.sg.upload,
+            "Ticket",
+            self.ticket['id'],
+            u_path,
+            'attachments',
+            tag_list="monkeys, everywhere, send, help"
+        )
+        self.sg.server_info["s3_direct_uploads_enabled"] = True
 
     def test_upload_thumbnail_in_create(self):
         """Upload a thumbnail via the create method"""
