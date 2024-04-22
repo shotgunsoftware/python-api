@@ -24,7 +24,6 @@ import types
 import uuid
 import unittest
 from shotgun_api3.lib.six.moves import range, urllib
-import pytest
 import warnings
 import glob
 
@@ -316,12 +315,12 @@ class TestShotgunApi(base.LiveTestBase):
         """
         Upload an attachment tests for _upload_to_sg()
         """
+        if "localhost" in self.server_url:
+            self.skipTest("upload / down tests skipped for localhost")
+
+        self.sg.server_info["s3_direct_uploads_enabled"] = False
         mock_send_form.method.assert_called_once()
         mock_send_form.return_value = "1\n:123\nasd"
-        if 'localhost' in self.server_url:
-            print("upload / down tests skipped for localhost")
-            return
-        self.sg.server_info["s3_direct_uploads_enabled"] = False
         this_dir, _ = os.path.split(__file__)
         u_path = os.path.abspath(
             os.path.expanduser(
@@ -335,7 +334,13 @@ class TestShotgunApi(base.LiveTestBase):
             'attachments',
             tag_list="monkeys, everywhere, send, help"
         )
+        mock_send_form_args, _ = mock_send_form.call_args
+        display_name_to_send = mock_send_form_args[1].get("display_name", "")
         self.assertTrue(isinstance(upload_id, int))
+        self.assertFalse(
+            display_name_to_send.startswith("b'") and
+            display_name_to_send.endswith("'")
+        )
 
         upload_id = self.sg.upload(
             "Ticket",
@@ -345,6 +350,13 @@ class TestShotgunApi(base.LiveTestBase):
             tag_list="monkeys, everywhere, send, help",
         )
         self.assertTrue(isinstance(upload_id, int))
+        mock_send_form_args, _ = mock_send_form.call_args
+        display_name_to_send = mock_send_form_args[1].get("display_name", "")
+        self.assertTrue(isinstance(upload_id, int))
+        self.assertFalse(
+            display_name_to_send.startswith("b'") and
+            display_name_to_send.endswith("'")
+        )
 
         mock_send_form.method.assert_called_once()
         mock_send_form.return_value = "2\nIt can't be upload"
