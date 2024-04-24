@@ -30,5 +30,5 @@
 # released for our dependencies.
 httplib2==0.22.0
 six==1.13.0
-certifi==2023.7.22
+certifi==2024.2.2
 pyparsing==2.4.7
