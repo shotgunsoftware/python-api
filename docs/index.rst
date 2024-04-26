@@ -1,5 +1,5 @@
 ####################################
-Flow Production Tracking Python API3
+Flow Production Tracking Python API
 ####################################
 Release |version|. (:ref:`Installation <installation>`)
 
