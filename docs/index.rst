@@ -1,6 +1,6 @@
-###################################
-Flow Production Tracking Python API
-###################################
+###########################################
+Flow Production Tracking Python API library
+###########################################
 Release |version|. (:ref:`Installation <installation>`)
 
 .. image:: https://img.shields.io/badge/shotgun-api-blue.svg
