@@ -17,6 +17,9 @@ Because the needs of every studio can prove to be very different, we don't inclu
 decisions to you. The API is powerful enough you can write your own "smarts" in a wrapper on top
 of the Flow Production Tracking API.
 
+.. note::
+   It's very important to know that Python API is also known as Flow Production Tracking API 3 (FPTR API 3).
+
 .. _pythonoverviewvideo:
 
 Overview Video of Setting Up Your Environment with the Python API
