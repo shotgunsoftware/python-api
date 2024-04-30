@@ -2559,38 +2559,17 @@ class Shotgun(object):
 
         params.update(self._auth_params())
 
-        # If we ended up with a unicode string path, we need to encode it
-        # as a utf-8 string. If we don't, there's a chance that there will
-        # will be an attempt later on to encode it as an ascii string, and
-        # that will fail ungracefully if the path contains any non-ascii
-        # characters.
-        #
-        # On Windows, if the path contains non-ascii characters, the calls
-        # to open later in this method will fail to find the file if given
-        # a non-ascii-encoded string path. In that case, we're going to have
-        # to call open on the unicode path, but we'll use the encoded string
-        # for everything else.
-        path_to_open = path
-        if isinstance(path, six.text_type):
-            path = path.encode("utf-8")
-            if sys.platform != "win32":
-                path_to_open = path
-
         if is_thumbnail:
             url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                                            "/upload/publish_thumbnail", None, None, None))
-            params["thumb_image"] = open(path_to_open, "rb")
+            params["thumb_image"] = open(path, "rb")
             if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
                 params["filmstrip"] = True
-
         else:
             url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                                            "/upload/upload_file", None, None, None))
             if display_name is None:
-                if six.PY2:
-                    display_name = os.path.basename(path)
-                else:
-                    display_name = os.path.basename(path.decode("utf-8"))
+                display_name = os.path.basename(path)
             # we allow linking to nothing for generic reference use cases
             if field_name is not None:
                 params["field_name"] = field_name
@@ -2599,7 +2578,7 @@ class Shotgun(object):
             if tag_list:
                 params["tag_list"] = tag_list
 
-            params["file"] = open(path_to_open, "rb")
+            params["file"] = open(path, "rb")
 
         result = self._send_form(url, params)
 
