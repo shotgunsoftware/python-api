@@ -2,7 +2,7 @@
 API Usage Tips
 ##############
 
-Below is a list of helpful tips when using the FPTR API3. We have tried to make the API very
+Below is a list of helpful tips when using the Flow Production Tracking API3. We have tried to make the API very
 simple to use with predictable results while remaining a powerful tool to integrate with your 
 pipeline. However, there's always a couple of things that crop up that our users might not be 
 aware of. Those are the types of things you'll find below. We'll be adding to this document over 
