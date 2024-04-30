@@ -1,21 +1,21 @@
-####################################
-Flow Production Tracking Python API3
-####################################
+###########################################
+Flow Production Tracking Python API library
+###########################################
 Release |version|. (:ref:`Installation <installation>`)
 
 .. image:: https://img.shields.io/badge/shotgun-api-blue.svg
 
 
 
-Flow Production Tracking provides a simple Python-based API for accessing Flow Production Tracking and integrating with other tools.
-The Flow Production Tracking API allows users to integrate their tools with Flow Production Tracking very easily. Using this simple
-but powerful python module , you can quickly get your scripts integrated with Flow Production Tracking's CRUD-based
+Flow Production Tracking (FPTR) provides a simple Python-based API for accessing FPTR and integrating with other tools.
+The Flow Production Tracking API3, also known as "Python API", allows users to integrate their tools with Flow Production Tracking very easily. Using this simple
+but powerful python module, you can quickly get your scripts integrated with Flow Production Tracking's CRUD-based
 API.
 
 Because the needs of every studio can prove to be very different, we don't include a lot of
 "automation" or "smarts" in our API. We have kept it pretty low-level and leave most of those
 decisions to you. The API is powerful enough you can write your own "smarts" in a wrapper on top
-of the Flow Production Tracking API.
+of the of the FPTR API3.
 
 .. _pythonoverviewvideo:
 
