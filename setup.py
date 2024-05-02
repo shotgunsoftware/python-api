@@ -27,8 +27,8 @@ if (sys.version_info[0] <= 2) or (sys.version_info[0] == 2 and sys.version_info[
 
 setup(
     name='shotgun_api3',
-    version='3.5.1',
-    description='Flow Production Tracking Python API ',
+    version='3.6.0',
+    description='Flow Production Tracking Python API',
     long_description=readme,
     author='Autodesk',
     author_email='https://www.autodesk.com/support/contact-support',
@@ -39,4 +39,15 @@ setup(
     include_package_data=True,
     package_data={'': ['cacerts.txt', 'cacert.pem']},
     zip_safe=False,
+    python_requires=">=3.7.0",
+    classifiers=[
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Developers",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Operating System :: OS Independent",
+    ],
 )
