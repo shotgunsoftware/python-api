@@ -213,6 +213,7 @@ class ServerCapabilities(object):
         :ivar bool is_dev: ``True`` if server is running a development version of the Shotgun
             codebase.
         """
+        self._ensure_python_version_supported()
         # Server host name
         self.host = host
         self.server_info = meta
@@ -236,6 +237,13 @@ class ServerCapabilities(object):
 
         self.version = tuple(self.version[:3])
         self._ensure_json_supported()
+
+    def _ensure_python_version_supported(self):
+        """
+        Checks the if current Python version is supported.
+        """
+        if sys.version_info < (3, 7):
+            raise ShotgunError("This module requires Python version 3.7 or higher.")
 
     def _ensure_support(self, feature, raise_hell=True):
         """
