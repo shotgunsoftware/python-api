@@ -4,6 +4,12 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.6.0 (2024 May 1)
+===================
+- Drop support for Python 2.7
+- certifi version changed to 2024.2.2
+- Documentation update
+
 v3.5.1 (2024 Apr 3)
 ===================
 - Documentation: Revert to Shotgun in the API Reference headers to keep consistency with the API methods
