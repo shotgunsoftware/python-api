@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>shotgun_api3.shotgun &mdash; python-api v3.5.1 documentation</title>
+  <title>shotgun_api3.shotgun &mdash; python-api v3.6.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -13,10 +13,9 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -83,7 +82,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.5.1.<br>
+    <b>python-api</b> v3.6.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -202,7 +201,7 @@
 
 
 <span class="k">def</span> <span class="nf">_is_mimetypes_broken</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if this version of Python ships with a broken version of mimetypes</span>
 
 <span class="sd">    :returns: True if the version of mimetypes is broken, False otherwise.</span>
@@ -249,49 +248,49 @@
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.5.1&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.6.0&quot;</span>
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Errors</span>
 
 
 <div class="viewcode-block" id="ShotgunError"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.ShotgunError">[docs]</a><span class="k">class</span> <span class="nc">ShotgunError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base for all Shotgun API Errors.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="ShotgunFileDownloadError"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.ShotgunFileDownloadError">[docs]</a><span class="k">class</span> <span class="nc">ShotgunFileDownloadError</span><span class="p">(</span><span class="n">ShotgunError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception for file download-related errors.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 
 
 <span class="k">class</span> <span class="nc">ShotgunThumbnailNotReady</span><span class="p">(</span><span class="n">ShotgunError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception for when trying to use a &#39;pending thumbnail&#39; (aka transient thumbnail) in an operation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span>
 
 
 <div class="viewcode-block" id="Fault"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Fault">[docs]</a><span class="k">class</span> <span class="nc">Fault</span><span class="p">(</span><span class="n">ShotgunError</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception when server-side exception detected.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="AuthenticationFault"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.AuthenticationFault">[docs]</a><span class="k">class</span> <span class="nc">AuthenticationFault</span><span class="p">(</span><span class="n">Fault</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception when the server side reports an error related to authentication.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="MissingTwoFactorAuthenticationFault"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.MissingTwoFactorAuthenticationFault">[docs]</a><span class="k">class</span> <span class="nc">MissingTwoFactorAuthenticationFault</span><span class="p">(</span><span class="n">Fault</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception when the server side reports an error related to missing two-factor authentication</span>
 <span class="sd">    credentials.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -299,7 +298,7 @@
 
 
 <span class="k">class</span> <span class="nc">UserCredentialsNotAllowedForSSOAuthenticationFault</span><span class="p">(</span><span class="n">Fault</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception when the server is configured to use SSO. It is not possible to use</span>
 <span class="sd">    a username/password pair to authenticate on such server.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -307,7 +306,7 @@
 
 
 <span class="k">class</span> <span class="nc">UserCredentialsNotAllowedForOxygenAuthenticationFault</span><span class="p">(</span><span class="n">Fault</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception when the server is configured to use Oxygen. It is not possible to use</span>
 <span class="sd">    a username/password pair to authenticate on such server.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -318,7 +317,7 @@
 
 
 <span class="k">class</span> <span class="nc">ServerCapabilities</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Container for the servers capabilities, such as version enabled features.</span>
 
 <span class="sd">    .. warning::</span>
@@ -328,7 +327,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">meta</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ServerCapabilities.__init__</span>
 
 <span class="sd">        :param str host: Host name for the server excluding protocol.</span>
@@ -340,6 +339,7 @@
 <span class="sd">        :ivar bool is_dev: ``True`` if server is running a development version of the Shotgun</span>
 <span class="sd">            codebase.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_python_version_supported</span><span class="p">()</span>
         <span class="c1"># Server host name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_info</span> <span class="o">=</span> <span class="n">meta</span>
@@ -364,8 +364,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_json_supported</span><span class="p">()</span>
 
+    <span class="k">def</span> <span class="nf">_ensure_python_version_supported</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks the if current Python version is supported.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;This module requires Python version 3.7 or higher.&quot;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_ensure_support</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="p">,</span> <span class="n">raise_hell</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks the server version supports a given feature, raises an exception if it does not.</span>
 
 <span class="sd">        :param dict feature: dict where **version** key contains a 3 integer tuple indicating the</span>
@@ -388,7 +395,7 @@
             <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">_ensure_json_supported</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures server has support for JSON API endpoint added in v2.4.0.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
@@ -397,7 +404,7 @@
         <span class="p">})</span>
 
     <span class="k">def</span> <span class="nf">ensure_include_archived_projects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures server has support for archived Projects feature added in v5.3.14.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
@@ -406,7 +413,7 @@
         <span class="p">})</span>
 
     <span class="k">def</span> <span class="nf">ensure_per_project_customization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures server has support for per-project customization feature added in v5.4.4.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
@@ -415,7 +422,7 @@
         <span class="p">},</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">ensure_support_for_additional_filter_presets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures server has support for additional filter presets feature added in v7.0.0.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
@@ -424,7 +431,7 @@
         <span class="p">},</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">ensure_user_following_support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures server has support for listing items a user is following, added in v7.0.12.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
@@ -433,7 +440,7 @@
         <span class="p">},</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">ensure_paging_info_without_counts_support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures server has support for optimized pagination, added in v7.4.0.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
@@ -442,7 +449,7 @@
         <span class="p">},</span> <span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">ensure_return_image_urls_support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensures server has support for returning thumbnail URLs without additional round-trips, added in v3.3.0.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_support</span><span class="p">({</span>
@@ -456,7 +463,7 @@
 
 
 <span class="k">class</span> <span class="nc">ClientCapabilities</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Container for the client capabilities.</span>
 
 <span class="sd">    .. warning::</span>
@@ -508,12 +515,12 @@
 
 
 <span class="k">class</span> <span class="nc">_Config</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Container for the client configuration.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param sg: Shotgun connection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sg</span> <span class="o">=</span> <span class="n">sg</span>
@@ -569,7 +576,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">localized</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">set_server_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the different server related fields based on the passed in URL.</span>
 
 <span class="sd">        This will impact the following attributes:</span>
@@ -594,7 +601,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">records_per_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The records per page value from the server.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_records_per_page</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -605,7 +612,7 @@
 
 
 <div class="viewcode-block" id="Shotgun"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun">[docs]</a><span class="k">class</span> <span class="nc">Shotgun</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shotgun Client connection.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -634,7 +641,7 @@
                  <span class="n">sudo_as_login</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">session_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">auth_token</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a new instance of the Shotgun client.</span>
 
 <span class="sd">        :param str base_url: http or https url of the Shotgun server. Do not include the trailing</span>
@@ -845,7 +852,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">auth_token</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_split_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract the hostname:port and username/password/token from base_url</span>
 <span class="sd">        sent when connect to the API.</span>
 
@@ -876,7 +883,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">server_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property containing server information.</span>
 
 <span class="sd">        &gt;&gt;&gt; sg.server_info</span>
@@ -894,7 +901,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">server_caps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property containing :class:`ServerCapabilities` object.</span>
 
 <span class="sd">        &gt;&gt;&gt; sg.server_caps</span>
@@ -909,7 +916,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server_caps</span>
 
 <div class="viewcode-block" id="Shotgun.connect"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Connect client to the server if it is not already connected.</span>
 
 <span class="sd">        .. note:: The client will automatically connect to the server on demand. You only need to</span>
@@ -920,7 +927,7 @@
         <span class="k">return</span></div>
 
 <div class="viewcode-block" id="Shotgun.close"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Close the current connection to the server.</span>
 
 <span class="sd">        If the client needs to connect again it will do so automatically.</span>
@@ -929,7 +936,7 @@
         <span class="k">return</span></div>
 
 <div class="viewcode-block" id="Shotgun.info"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get API-related metadata from the Shotgun server.</span>
 
 <span class="sd">        &gt;&gt;&gt; sg.info()</span>
@@ -961,7 +968,7 @@
 
 <div class="viewcode-block" id="Shotgun.find_one"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.find_one">[docs]</a>    <span class="k">def</span> <span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_operator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">retired_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                  <span class="n">include_archived_projects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">additional_filter_presets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shortcut for :meth:`~shotgun_api3.Shotgun.find` with ``limit=1`` so it returns a single</span>
 <span class="sd">        result.</span>
 
@@ -1024,7 +1031,7 @@
 
 <div class="viewcode-block" id="Shotgun.find"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.find">[docs]</a>    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_operator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
              <span class="n">retired_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">include_archived_projects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">additional_filter_presets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find entities matching the given filters.</span>
 
 <span class="sd">            &gt;&gt;&gt; # Find Character Assets in Sequence 100_FOO</span>
@@ -1257,7 +1264,7 @@
                   <span class="n">filter_operator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">grouping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">include_archived_projects</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Summarize field data returned by a query.</span>
 
 <span class="sd">        This provides the same functionality as the summaries in the UI. You can specify one or</span>
@@ -1459,7 +1466,7 @@
         <span class="k">return</span> <span class="n">records</span></div>
 
 <div class="viewcode-block" id="Shotgun.create"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">return_fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new entity of the specified ``entity_type``.</span>
 
 <span class="sd">            &gt;&gt;&gt; data = {</span>
@@ -1532,7 +1539,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="Shotgun.update"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">multi_entity_update_modes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the specified entity with the supplied data.</span>
 
 <span class="sd">        &gt;&gt;&gt; shots = [</span>
@@ -1606,7 +1613,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="Shotgun.delete"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retire the specified entity.</span>
 
 <span class="sd">        Entities in Shotgun are not &quot;deleted&quot; destructively, they are instead, &quot;retired&quot;. This</span>
@@ -1633,7 +1640,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;delete&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.revive"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.revive">[docs]</a>    <span class="k">def</span> <span class="nf">revive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Revive an entity that has previously been deleted.</span>
 
 <span class="sd">        &gt;&gt;&gt; sg.revive(&quot;Shot&quot;, 860)</span>
@@ -1654,7 +1661,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;revive&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.batch"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.batch">[docs]</a>    <span class="k">def</span> <span class="nf">batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make a batch request of several :meth:`~shotgun_api3.Shotgun.create`,</span>
 <span class="sd">        :meth:`~shotgun_api3.Shotgun.update`, and :meth:`~shotgun_api3.Shotgun.delete` calls.</span>
 
@@ -1764,7 +1771,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_records</span><span class="p">(</span><span class="n">records</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.work_schedule_read"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.work_schedule_read">[docs]</a>    <span class="k">def</span> <span class="nf">work_schedule_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the work day rules for a given date range.</span>
 
 <span class="sd">        .. versionadded:: 3.0.9</span>
@@ -1833,7 +1840,7 @@
 
 <div class="viewcode-block" id="Shotgun.work_schedule_update"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.work_schedule_update">[docs]</a>    <span class="k">def</span> <span class="nf">work_schedule_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">working</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">recalculate_field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the work schedule for a given date.</span>
 
 <span class="sd">        .. versionadded:: 3.0.9</span>
@@ -1885,7 +1892,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;work_schedule_update&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.follow"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.follow">[docs]</a>    <span class="k">def</span> <span class="nf">follow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add the entity to the user&#39;s followed entities.</span>
 
 <span class="sd">        If the user is already following the entity, the method will succeed but nothing will be</span>
@@ -1914,7 +1921,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;follow&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.unfollow"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.unfollow">[docs]</a>    <span class="k">def</span> <span class="nf">unfollow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove entity from the user&#39;s followed entities.</span>
 
 <span class="sd">        This does nothing if the user is not following the entity.</span>
@@ -1942,7 +1949,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;unfollow&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.followers"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.followers">[docs]</a>    <span class="k">def</span> <span class="nf">followers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all followers for an entity.</span>
 
 <span class="sd">            &gt;&gt;&gt; sg.followers({&quot;type&quot;: &quot;Shot&quot;, &quot;id&quot;: 2050})</span>
@@ -1970,7 +1977,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;followers&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.following"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.following">[docs]</a>    <span class="k">def</span> <span class="nf">following</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">entity_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all entity instances a user is following.</span>
 
 <span class="sd">        Optionally, a project and/or entity_type can be supplied to restrict returned results.</span>
@@ -2003,7 +2010,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;following&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.schema_entity_read"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.schema_entity_read">[docs]</a>    <span class="k">def</span> <span class="nf">schema_entity_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_entity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return all active entity types, their display names, and their visibility.</span>
 
 <span class="sd">        If the project parameter is specified, the schema visibility for the given project is</span>
@@ -2047,7 +2054,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;schema_entity_read&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.schema_read"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.schema_read">[docs]</a>    <span class="k">def</span> <span class="nf">schema_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_entity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the schema for all fields on all entities.</span>
 
 <span class="sd">        .. note::</span>
@@ -2119,7 +2126,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;schema_read&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.schema_field_read"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.schema_field_read">[docs]</a>    <span class="k">def</span> <span class="nf">schema_field_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project_entity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get schema for all fields on the specified entity type or just the field name specified</span>
 <span class="sd">        if provided.</span>
 
@@ -2183,7 +2190,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;schema_field_read&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.schema_field_create"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.schema_field_create">[docs]</a>    <span class="k">def</span> <span class="nf">schema_field_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">display_name</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a field for the specified entity type.</span>
 
 <span class="sd">        .. note::</span>
@@ -2220,7 +2227,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;schema_field_create&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.schema_field_update"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.schema_field_update">[docs]</a>    <span class="k">def</span> <span class="nf">schema_field_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">project_entity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the properties for the specified field on an entity.</span>
 
 <span class="sd">        .. note::</span>
@@ -2262,7 +2269,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;schema_field_update&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.schema_field_delete"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.schema_field_delete">[docs]</a>    <span class="k">def</span> <span class="nf">schema_field_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete the specified field from the entity type.</span>
 
 <span class="sd">        &gt;&gt;&gt; sg.schema_field_delete(&quot;Asset&quot;, &quot;sg_temp_field&quot;)</span>
@@ -2282,7 +2289,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;schema_field_delete&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.add_user_agent"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.add_user_agent">[docs]</a>    <span class="k">def</span> <span class="nf">add_user_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add agent to the user-agent header.</span>
 
 <span class="sd">        Appends agent to the user-agent string sent with every API request.</span>
@@ -2294,7 +2301,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_user_agents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.reset_user_agent"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.reset_user_agent">[docs]</a>    <span class="k">def</span> <span class="nf">reset_user_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reset user agent to the default value.</span>
 
 <span class="sd">        Example default user-agent::</span>
@@ -2316,7 +2323,7 @@
                              <span class="s2">&quot;ssl </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client_caps</span><span class="o">.</span><span class="n">ssl_version</span><span class="p">,</span> <span class="n">validation_str</span><span class="p">)]</span></div>
 
 <div class="viewcode-block" id="Shotgun.set_session_uuid"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.set_session_uuid">[docs]</a>    <span class="k">def</span> <span class="nf">set_session_uuid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_uuid</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the browser session_uuid in the current Shotgun API instance.</span>
 
 <span class="sd">        When this is set, any events generated by the API will include the ``session_uuid`` value</span>
@@ -2333,7 +2340,7 @@
 
 <div class="viewcode-block" id="Shotgun.share_thumbnail"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.share_thumbnail">[docs]</a>    <span class="k">def</span> <span class="nf">share_thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entities</span><span class="p">,</span> <span class="n">thumbnail_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_entity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">filmstrip_thumbnail</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Associate a thumbnail with more than one Shotgun entity.</span>
 
 <span class="sd">        .. versionadded:: 3.0.9</span>
@@ -2454,7 +2461,7 @@
         <span class="k">return</span> <span class="n">attachment_id</span></div>
 
 <div class="viewcode-block" id="Shotgun.upload_thumbnail"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.upload_thumbnail">[docs]</a>    <span class="k">def</span> <span class="nf">upload_thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upload a file from a local path and assign it as the thumbnail for the specified entity.</span>
 
 <span class="sd">        .. note::</span>
@@ -2482,7 +2489,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;thumb_image&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.upload_filmstrip_thumbnail"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.upload_filmstrip_thumbnail">[docs]</a>    <span class="k">def</span> <span class="nf">upload_filmstrip_thumbnail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upload filmstrip thumbnail to specified entity.</span>
 
 <span class="sd">        .. versionadded:: 3.0.9</span>
@@ -2528,7 +2535,7 @@
 
 <div class="viewcode-block" id="Shotgun.upload"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.upload">[docs]</a>    <span class="k">def</span> <span class="nf">upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">display_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">tag_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upload a file to the specified entity.</span>
 
 <span class="sd">        Creates an Attachment entity for the file in Shotgun and links it to the specified entity.</span>
@@ -2592,7 +2599,7 @@
 
     <span class="k">def</span> <span class="nf">_upload_to_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">display_name</span><span class="p">,</span>
                            <span class="n">tag_list</span><span class="p">,</span> <span class="n">is_thumbnail</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal function to upload a file to the Cloud storage and link it to the specified entity.</span>
 
 <span class="sd">        :param str entity_type: Entity type to link the upload to.</span>
@@ -2663,7 +2670,7 @@
 
     <span class="k">def</span> <span class="nf">_upload_to_sg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">display_name</span><span class="p">,</span>
                       <span class="n">tag_list</span><span class="p">,</span> <span class="n">is_thumbnail</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal function to upload a file to Shotgun and link it to the specified entity.</span>
 
 <span class="sd">        :param str entity_type: Entity type to link the upload to.</span>
@@ -2736,7 +2743,7 @@
         <span class="k">return</span> <span class="n">attachment_id</span>
 
     <span class="k">def</span> <span class="nf">_get_attachment_upload_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_thumbnail</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">is_multipart_upload</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal function to get the information needed to upload a file to Cloud storage.</span>
 
 <span class="sd">        :param bool is_thumbnail: indicates if the attachment is a thumbnail.</span>
@@ -2782,7 +2789,7 @@
         <span class="p">}</span>
 
 <div class="viewcode-block" id="Shotgun.download_attachment"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.download_attachment">[docs]</a>    <span class="k">def</span> <span class="nf">download_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attachment</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attachment_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Download the file associated with a Shotgun Attachment.</span>
 
 <span class="sd">            &gt;&gt;&gt; version = sg.find_one(&quot;Version&quot;, [[&quot;id&quot;, &quot;is&quot;, 7115]], [&quot;sg_uploaded_movie&quot;])</span>
@@ -2886,7 +2893,7 @@
                 <span class="k">return</span> <span class="n">attachment</span></div>
 
 <div class="viewcode-block" id="Shotgun.set_up_auth_cookie"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.set_up_auth_cookie">[docs]</a>    <span class="k">def</span> <span class="nf">set_up_auth_cookie</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up urllib2 with a cookie for authentication on the Shotgun instance.</span>
 
 <span class="sd">        Looks up session token and sets that in a cookie in the :mod:`urllib2` handler. This is</span>
@@ -2902,7 +2909,7 @@
         <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">install_opener</span><span class="p">(</span><span class="n">opener</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.get_attachment_download_url"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.get_attachment_download_url">[docs]</a>    <span class="k">def</span> <span class="nf">get_attachment_download_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attachment</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the URL for downloading provided Attachment.</span>
 
 <span class="sd">        :param mixed attachment: Usually a dict representing An Attachment entity in Shotgun to</span>
@@ -2946,7 +2953,7 @@
         <span class="k">return</span> <span class="n">url</span></div>
 
 <div class="viewcode-block" id="Shotgun.authenticate_human_user"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.authenticate_human_user">[docs]</a>    <span class="k">def</span> <span class="nf">authenticate_human_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_login</span><span class="p">,</span> <span class="n">user_password</span><span class="p">,</span> <span class="n">auth_token</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Authenticate Shotgun HumanUser.</span>
 
 <span class="sd">        Authenticates a user given the login, password, and optionally, one-time auth token (when</span>
@@ -3001,7 +3008,7 @@
             <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="Shotgun.update_project_last_accessed"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.update_project_last_accessed">[docs]</a>    <span class="k">def</span> <span class="nf">update_project_last_accessed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update a Project&#39;s ``last_accessed_by_current_user`` field to the current timestamp.</span>
 
 <span class="sd">        This helps keep track of the recent Projects each user has worked on and enables scripts</span>
@@ -3039,7 +3046,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_parse_records</span><span class="p">(</span><span class="n">record</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Shotgun.note_thread_read"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.note_thread_read">[docs]</a>    <span class="k">def</span> <span class="nf">note_thread_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">note_id</span><span class="p">,</span> <span class="n">entity_fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the full conversation for a given note, including Replies and Attachments.</span>
 
 <span class="sd">        Returns a complex data structure on the following form::</span>
@@ -3112,7 +3119,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="Shotgun.text_search"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.text_search">[docs]</a>    <span class="k">def</span> <span class="nf">text_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">entity_types</span><span class="p">,</span> <span class="n">project_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search across the specified entity types for the given text.</span>
 
 <span class="sd">        This method can be used to implement auto completion or a Shotgun global search. The method</span>
@@ -3199,7 +3206,7 @@
 
 <div class="viewcode-block" id="Shotgun.activity_stream_read"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.activity_stream_read">[docs]</a>    <span class="k">def</span> <span class="nf">activity_stream_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">,</span> <span class="n">entity_fields</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">max_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve activity stream data from Shotgun.</span>
 
 <span class="sd">        This data corresponds to the data that is displayed in the</span>
@@ -3285,7 +3292,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="k">def</span> <span class="nf">nav_expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">seed_entity_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">entity_fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Expand the navigation hierarchy for the supplied path.</span>
 
 <span class="sd">        .. warning::</span>
@@ -3305,7 +3312,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">nav_search_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_path</span><span class="p">,</span> <span class="n">search_string</span><span class="p">,</span> <span class="n">seed_entity_field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search function adapted to work with the navigation hierarchy.</span>
 
 <span class="sd">        .. warning::</span>
@@ -3324,7 +3331,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">nav_search_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_path</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">seed_entity_field</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Search function adapted to work with the navigation hierarchy.</span>
 
 <span class="sd">        .. warning::</span>
@@ -3344,7 +3351,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Shotgun.get_session_token"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.get_session_token">[docs]</a>    <span class="k">def</span> <span class="nf">get_session_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the session token associated with the current session.</span>
 
 <span class="sd">        If a session token has already been established, this is returned, otherwise a new one is</span>
@@ -3368,7 +3375,7 @@
         <span class="k">return</span> <span class="n">session_token</span></div>
 
 <div class="viewcode-block" id="Shotgun.preferences_read"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.preferences_read">[docs]</a>    <span class="k">def</span> <span class="nf">preferences_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a subset of the site preferences.</span>
 
 <span class="sd">        &gt;&gt;&gt; sg.preferences_read()</span>
@@ -3389,7 +3396,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;preferences_read&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;prefs&quot;</span><span class="p">:</span> <span class="n">prefs</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="Shotgun.user_subscriptions_read"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.user_subscriptions_read">[docs]</a>    <span class="k">def</span> <span class="nf">user_subscriptions_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the list of user subscriptions.</span>
 
 <span class="sd">        :returns: A list of user subscriptions where each subscription is a</span>
@@ -3402,7 +3409,7 @@
 
 <div class="viewcode-block" id="Shotgun.user_subscriptions_create"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.user_subscriptions_create">[docs]</a>    <span class="k">def</span> <span class="nf">user_subscriptions_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users</span><span class="p">):</span>
         <span class="c1"># type: (list[dict[str, Union[str, list[str], None]) -&gt; bool</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Assign subscriptions to users.</span>
 
 <span class="sd">        :param list users: list of user subscriptions to assign.</span>
@@ -3426,7 +3433,7 @@
         <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;success&quot;</span></div>
 
     <span class="k">def</span> <span class="nf">_build_opener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build urllib2 opener with appropriate proxy handler.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">handlers</span> <span class="o">=</span> <span class="p">[]</span>
@@ -3442,7 +3449,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_get_certs_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ca_certs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The following method tells the API where to look for</span>
 <span class="sd">        certificate authorities certificates (we will be referring to these</span>
 <span class="sd">        as CAC from now on). Here&#39;s how the Python API interacts with those.</span>
@@ -3501,7 +3508,7 @@
             <span class="k">return</span> <span class="n">cert_file</span>
 
     <span class="k">def</span> <span class="nf">_turn_off_ssl_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Turn off SSL certificate validation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">global</span> <span class="n">NO_SSL_VALIDATION</span>
@@ -3514,14 +3521,14 @@
 
     <span class="c1"># Deprecated methods from old wrapper</span>
 <div class="viewcode-block" id="Shotgun.schema"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.schema">[docs]</a>    <span class="k">def</span> <span class="nf">schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        .. deprecated:: 3.0.0</span>
 <span class="sd">           Use :meth:`~shotgun_api3.Shotgun.schema_field_read` instead.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Deprecated: use schema_field_read(&#39;</span><span class="si">%s</span><span class="s2">&#39;) instead&quot;</span> <span class="o">%</span> <span class="n">entity_type</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.entity_types"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.entity_types">[docs]</a>    <span class="k">def</span> <span class="nf">entity_types</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        .. deprecated:: 3.0.0</span>
 <span class="sd">           Use :meth:`~shotgun_api3.Shotgun.schema_entity_read` instead.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3530,7 +3537,7 @@
     <span class="c1"># RPC Functions</span>
 
     <span class="k">def</span> <span class="nf">_call_rpc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">include_auth_params</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">first</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Call the specified method on the Shotgun Server sending the supplied payload.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3596,7 +3603,7 @@
         <span class="k">return</span> <span class="n">results</span>
 
     <span class="k">def</span> <span class="nf">_auth_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a dictionary of the authentication parameters being used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Used to authenticate HumanUser credentials</span>
@@ -3647,7 +3654,7 @@
         <span class="k">return</span> <span class="n">auth_params</span>
 
     <span class="k">def</span> <span class="nf">_sanitize_auth_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Given an authentication parameter dictionary, sanitize any sensitive</span>
 <span class="sd">        information and return the sanitized dict copy.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3658,7 +3665,7 @@
         <span class="k">return</span> <span class="n">sanitized_params</span>
 
     <span class="k">def</span> <span class="nf">_build_payload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">include_auth_params</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build the payload to be send to the rpc endpoint.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">method</span><span class="p">:</span>
@@ -3679,7 +3686,7 @@
         <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">_encode_payload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payload</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Encode the payload to a string to be passed to the rpc endpoint.</span>
 
 <span class="sd">        The payload is json encoded as a unicode string if the content</span>
@@ -3691,7 +3698,7 @@
         <span class="k">return</span> <span class="n">six</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="n">wire</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_make_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">headers</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make an HTTP call to the server.</span>
 
 <span class="sd">        Handles retry and failure.</span>
@@ -3757,7 +3764,7 @@
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">rpc_attempt_interval</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_http_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">headers</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make the actual HTTP request.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlunparse</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
@@ -3782,7 +3789,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">http_status</span><span class="p">,</span> <span class="n">resp_headers</span><span class="p">,</span> <span class="n">resp_body</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_make_upload_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">opener</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Open the given request object, return the</span>
 <span class="sd">        response, raises URLError on protocol errors.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3794,7 +3801,7 @@
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span> <span class="nf">_parse_http_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse the status returned from the http request.</span>
 
 <span class="sd">        :param tuple status: Tuple of (code, reason).</span>
@@ -3815,7 +3822,7 @@
         <span class="k">return</span>
 
     <span class="k">def</span> <span class="nf">_decode_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decode the response from the server from the wire format to</span>
 <span class="sd">        a python data structure.</span>
 
@@ -3839,7 +3846,7 @@
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_json_loads_ascii</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        See http://stackoverflow.com/questions/956867</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">_decode_list</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
@@ -3866,7 +3873,7 @@
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="n">_decode_dict</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_response_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_response</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Raise any API errors specified in the response.</span>
 
 <span class="sd">        :raises ShotgunError: If the server response contains an exception.</span>
@@ -3905,7 +3912,7 @@
         <span class="k">return</span>
 
     <span class="k">def</span> <span class="nf">_visit_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">visitor</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Walk the data (simple python types) and call the visitor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -3928,7 +3935,7 @@
         <span class="k">return</span> <span class="n">visitor</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_transform_outbound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Transform data types or values before they are sent by the client.</span>
 
 <span class="sd">        - changes timezones</span>
@@ -3977,7 +3984,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visit_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">_outbound_visitor</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_transform_inbound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Transforms data types or values after they are received from the server.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># NOTE: The time zone is removed from the time after it is transformed</span>
@@ -4010,7 +4017,7 @@
     <span class="c1"># Connection Functions</span>
 
     <span class="k">def</span> <span class="nf">_get_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the current connection or creates a new connection to the current server.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -4029,7 +4036,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span>
 
     <span class="k">def</span> <span class="nf">_close_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Close the current connection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -4047,7 +4054,7 @@
     <span class="c1"># Utility</span>
 
     <span class="k">def</span> <span class="nf">_parse_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">records</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse &#39;records&#39; returned from the api to do local modifications:</span>
 
 <span class="sd">        - Insert thumbnail urls</span>
@@ -4093,7 +4100,7 @@
         <span class="k">return</span> <span class="n">records</span>
 
     <span class="k">def</span> <span class="nf">_build_thumb_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">entity_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the URL for the thumbnail of an entity given the entity type and the entity id.</span>
 
 <span class="sd">        Note: This makes a call to the server for every thumbnail.</span>
@@ -4130,7 +4137,7 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Unknown code </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">thumb_url</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_dict_to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;field_name&quot;</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">extra_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Utility function to convert a dict into a list dicts using the key_name and value_name keys.</span>
 
 <span class="sd">        e.g. d {&#39;foo&#39; : &#39;bar&#39;} changed to [{&#39;field_name&#39;:&#39;foo&#39;, &#39;value&#39;:&#39;bar&#39;}]</span>
@@ -4147,7 +4154,7 @@
         <span class="k">return</span> <span class="n">ret</span>
 
     <span class="k">def</span> <span class="nf">_dict_to_extra_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">key_name</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Utility function to convert a dict into a dict compatible with the extra_data arg</span>
 <span class="sd">        of _dict_to_list.</span>
 
@@ -4156,7 +4163,7 @@
         <span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">k</span><span class="p">,</span> <span class="p">{</span><span class="n">key_name</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">((</span><span class="n">d</span> <span class="ow">or</span> <span class="p">{}))])</span>
 
     <span class="k">def</span> <span class="nf">_upload_file_to_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">storage_url</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal function to upload an entire file to the Cloud storage.</span>
 
 <span class="sd">        :param str path: Full path to an existing non-empty file on disk to upload.</span>
@@ -4176,7 +4183,7 @@
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;File uploaded to Cloud storage: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_multipart_upload_file_to_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">upload_info</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal function to upload a file to the Cloud storage in multiple parts.</span>
 
 <span class="sd">        :param str path: Full path to an existing non-empty file on disk to upload.</span>
@@ -4212,7 +4219,7 @@
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;File uploaded in multiple parts to Cloud storage: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_upload_part_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">upload_info</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">part_number</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal function to get the url to upload the next part of a file to the</span>
 <span class="sd">        Cloud storage, in a multi-part upload process.</span>
 
@@ -4244,7 +4251,7 @@
         <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_upload_data_to_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">content_type</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">storage_url</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal function to upload data to Cloud storage.</span>
 
 <span class="sd">        :param stream data: Contains details received from the server, about the upload.</span>
@@ -4290,7 +4297,7 @@
         <span class="k">return</span> <span class="n">etag</span>
 
     <span class="k">def</span> <span class="nf">_complete_multipart_upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">upload_info</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">etags</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal function to complete a multi-part upload to the Cloud storage.</span>
 
 <span class="sd">        :param dict upload_info: Contains details received from the server, about the upload.</span>
@@ -4315,7 +4322,7 @@
             <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Unable get upload part link: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">result</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_requires_direct_s3_upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">field_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal function that determines if an entity_type + field_name combination</span>
 <span class="sd">        should be uploaded to cloud storage.</span>
 
@@ -4356,7 +4363,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_send_form</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Utility function to send a Form to Shotgun and process any HTTP errors that</span>
 <span class="sd">        could occur.</span>
 
@@ -4385,7 +4392,7 @@
 
 
 <span class="k">class</span> <span class="nc">CACertsHTTPSConnection</span><span class="p">(</span><span class="n">http_client</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;</span>
 <span class="sd">    This class allows to create an HTTPS connection that uses the custom certificates</span>
 <span class="sd">    passed in.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4393,7 +4400,7 @@
     <span class="n">default_port</span> <span class="o">=</span> <span class="n">http_client</span><span class="o">.</span><span class="n">HTTPS_PORT</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param args: Positional arguments passed down to the base class.</span>
 <span class="sd">        :param ca_certs: Path to the custom CA certs file.</span>
 <span class="sd">        :param kwargs: Keyword arguments passed down to the bas class</span>
@@ -4422,7 +4429,7 @@
 
 
 <span class="k">class</span> <span class="nc">CACertsHTTPSHandler</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">HTTPSHandler</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handler that ensures https connections are created with the custom CA certs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -4440,7 +4447,7 @@
 <span class="c1"># Helpers from the previous API, left as is.</span>
 <span class="c1"># Based on http://code.activestate.com/recipes/146306/</span>
 <span class="k">class</span> <span class="nc">FormPostHandler</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">BaseHandler</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handler for multipart form data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">handler_order</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">HTTPHandler</span><span class="o">.</span><span class="n">handler_order</span> <span class="o">-</span> <span class="mi">10</span>  <span class="c1"># needs to run first</span>
@@ -4526,7 +4533,7 @@
 
 
 <span class="k">def</span> <span class="nf">_translate_filters</span><span class="p">(</span><span class="n">filters</span><span class="p">,</span> <span class="n">filter_operator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Translate filters params into data structure expected by rpc call.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">wrapped_filters</span> <span class="o">=</span> <span class="p">{</span>
@@ -4588,7 +4595,7 @@
 
 
 <span class="k">def</span> <span class="nf">_version_str</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a tuple of int&#39;s to a &#39;.&#39; separated str.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">))</span>
