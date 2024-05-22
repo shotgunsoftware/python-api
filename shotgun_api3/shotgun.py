@@ -73,9 +73,6 @@ handler associated with it.
 """
 LOG.setLevel(logging.WARN)
 
-MAX_ATTEMPTS = 4    # Three retries on failure
-BACKOFF = 0.75      # Seconds to wait before retry, times the attempt number
-
 
 def _is_mimetypes_broken():
     """
@@ -503,6 +500,8 @@ class Shotgun(object):
         r"(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?)?$")
 
     _MULTIPART_UPLOAD_CHUNK_SIZE = 20000000
+    MAX_ATTEMPTS = 4    # Three retries on failure
+    BACKOFF = 0.75      # Seconds to wait before retry, times the attempt number
 
     def __init__(self,
                  base_url,
@@ -3434,7 +3433,7 @@ class Shotgun(object):
             req_headers["locale"] = "auto"
 
         attempt = 1
-        while attempt <= MAX_ATTEMPTS:
+        while attempt <= self.MAX_ATTEMPTS:
             http_status, resp_headers, body = self._make_call(
                 "POST",
                 self.config.api_path,
@@ -3452,9 +3451,9 @@ class Shotgun(object):
                 # We've seen some rare instances of PTR returning 502 for issues that
                 # appear to be caused by something internal to PTR. We're going to
                 # allow for limited retries for those specifically.
-                if attempt != MAX_ATTEMPTS and e.errcode in [502, 504]:
+                if attempt != self.MAX_ATTEMPTS and e.errcode in [502, 504]:
                     LOG.debug("Got a 502 or 504 response. Waiting and retrying...")
-                    time.sleep(float(attempt) * BACKOFF)
+                    time.sleep(float(attempt) * self.BACKOFF)
                     attempt += 1
                     continue
                 elif e.errcode == 403:
@@ -4143,16 +4142,16 @@ class Shotgun(object):
         request.get_method = lambda: "PUT"
 
         attempt = 1
-        while attempt <= MAX_ATTEMPTS:
+        while attempt <= self.MAX_ATTEMPTS:
             try:
                 result = self._make_upload_request(request, opener)
 
                 LOG.debug("Completed request to %s" % request.get_method())
 
             except urllib.error.HTTPError as e:
-                if attempt != MAX_ATTEMPTS and e.code in [500, 503]:
+                if attempt != self.MAX_ATTEMPTS and e.code in [500, 503]:
                     LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
-                    time.sleep(float(attempt) * BACKOFF)
+                    time.sleep(float(attempt) * self.BACKOFF)
                     attempt += 1
                     continue
                 elif e.code in [500, 503]:
@@ -4161,7 +4160,7 @@ class Shotgun(object):
                     raise ShotgunError("Unanticipated error occurred uploading to %s: %s" % (storage_url, e))
             except urllib.error.URLError as e:
                 LOG.debug("Got a '%s' response. Waiting and retrying..." % e)
-                time.sleep(float(attempt) * BACKOFF)
+                time.sleep(float(attempt) * self.BACKOFF)
                 attempt += 1
                 continue
             else:
@@ -4254,7 +4253,7 @@ class Shotgun(object):
         opener = self._build_opener(FormPostHandler)
 
         attempt = 1
-        while attempt <= MAX_ATTEMPTS:
+        while attempt <= self.MAX_ATTEMPTS:
             # Perform the request
             try:
                 resp = opener.open(url, params)
@@ -4262,7 +4261,7 @@ class Shotgun(object):
                 # response headers are in str(resp.info()).splitlines()
             except urllib.error.URLError as e:
                 LOG.debug("Got a %s response. Waiting and retrying..." % e)
-                time.sleep(float(attempt) * BACKOFF)
+                time.sleep(float(attempt) * self.BACKOFF)
                 attempt += 1
                 continue
             except urllib.error.HTTPError as e:

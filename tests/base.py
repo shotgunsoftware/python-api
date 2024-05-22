@@ -150,6 +150,8 @@ class MockTestBase(TestBase):
         # create the server caps directly to say we have the correct version
         self.sg._server_caps = ServerCapabilities(self.sg.config.server,
                                                   {"version": [2, 4, 0]})
+        # prevent waiting for backoff
+        self.sg.BACKOFF = 0
 
     def _mock_http(self, data, headers=None, status=None):
         """Setup a mock response from the PTR server.
