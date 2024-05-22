@@ -438,7 +438,7 @@ class TestShotgunClient(base.MockTestBase):
         self._mock_http(d, status=(502, "bad gateway"))
         self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
         self.assertEqual(
-            4,
+            3,
             self.sg._http_request.call_count,
             "Call is repeated up to 3 times",
         )
@@ -449,7 +449,7 @@ class TestShotgunClient(base.MockTestBase):
         self._mock_http(d, status=(504, "gateway timeout"))
         self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
         self.assertEqual(
-            4,
+            3,
             self.sg._http_request.call_count,
             "Call is repeated up to 3 times",
         )
@@ -462,7 +462,6 @@ class TestShotgunClient(base.MockTestBase):
         storage_url = "http://foo.com/"
         path = os.path.abspath(os.path.expanduser(
             os.path.join(this_dir, "sg_logo.jpg")))
-        max_attempts = 4  # Max retries to S3 server attempts
         # Expected HTTPError exception error message
         expected = "The server is currently down or to busy to reply." \
                    "Please try again later."
@@ -474,7 +473,7 @@ class TestShotgunClient(base.MockTestBase):
             self.sg._upload_file_to_storage(path, storage_url)
         # Test the max retries attempt
         self.assertTrue(
-            max_attempts == self.sg._make_upload_request.call_count,
+            3 == self.sg._make_upload_request.call_count,
             "Call is repeated up to 3 times")
     
     def test_upload_s3_500(self):
@@ -486,7 +485,6 @@ class TestShotgunClient(base.MockTestBase):
         storage_url = "http://foo.com/"
         path = os.path.abspath(os.path.expanduser(
             os.path.join(this_dir, "sg_logo.jpg")))
-        max_attempts = 4  # Max retries to S3 server attempts
         # Expected HTTPError exception error message
         expected = "The server is currently down or to busy to reply." \
                    "Please try again later."
@@ -498,7 +496,7 @@ class TestShotgunClient(base.MockTestBase):
             self.sg._upload_file_to_storage(path, storage_url)
         # Test the max retries attempt
         self.assertTrue(
-            max_attempts == self.sg._make_upload_request.call_count,
+            3 == self.sg._make_upload_request.call_count,
             "Call is repeated up to 3 times")
     
     def test_upload_s3_urlerror__get_attachment_upload_info(self):
@@ -520,7 +518,7 @@ class TestShotgunClient(base.MockTestBase):
 
         # Test the max retries attempt
         self.assertEqual(
-            4, mock_opener.return_value.open.call_count, "Call is repeated up to 4 times"
+            3, mock_opener.return_value.open.call_count, "Call is repeated up to 3 times"
         )
 
         # Test the exception message
@@ -552,7 +550,7 @@ class TestShotgunClient(base.MockTestBase):
 
         # Test the max retries attempt
         self.assertEqual(
-            4, self.sg._make_upload_request.call_count, "Call is repeated up to 3 times"
+            3, self.sg._make_upload_request.call_count, "Call is repeated up to 3 times"
         )
 
         # Test the exception message

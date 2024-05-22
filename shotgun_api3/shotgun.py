@@ -500,7 +500,7 @@ class Shotgun(object):
         r"(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?)?$")
 
     _MULTIPART_UPLOAD_CHUNK_SIZE = 20000000
-    MAX_ATTEMPTS = 4    # Three retries on failure
+    MAX_ATTEMPTS = 3    # Retries on failure
     BACKOFF = 0.75      # Seconds to wait before retry, times the attempt number
 
     def __init__(self,
