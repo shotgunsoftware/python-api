@@ -500,6 +500,62 @@ class TestShotgunClient(base.MockTestBase):
         self.assertTrue(
             max_attempts == self.sg._make_upload_request.call_count,
             "Call is repeated up to 3 times")
+    
+    @mock.patch("urllib.request.build_opener")
+    def test_upload_s3_urlerror__get_attachment_upload_info(self, mock_opener):
+        """
+        Test URLError response is retried when uploading to S3.
+        """
+        mock_opener.return_value.open.side_effect = urllib.error.URLError(
+            "[WinError 10054] An existing connection was forcibly closed by the remote host"
+        )
+        self.sg._requires_direct_s3_upload = mock.Mock(spec=api.Shotgun._requires_direct_s3_upload,
+                                                       return_value=True)
+        
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir, "sg_logo.jpg")))
+        
+        with self.assertRaises(api.ShotgunError) as cm:
+            self.sg.upload("Shot", 1234, path)
+
+        # Test the max retries attempt
+        self.assertTrue(
+            4 == mock_opener().open.call_count,
+            "Call is repeated up to 4 times")
+        
+        # Test the exception message
+        the_exception = cm.exception
+        self.assertTrue(str(the_exception) == "Max attemps limit reached.")
+
+    def test_upload_s3_urlerror__upload_to_storage(self):
+        """
+        Test URLError response is retried when uploading to S3.
+        """
+        self.sg._make_upload_request = mock.Mock(spec=api.Shotgun._make_upload_request,
+                                                 side_effect = urllib.error.URLError(
+                                                     "[Errno 104] Connection reset by peer",
+                                                 ))
+
+        this_dir, _ = os.path.split(__file__)
+        storage_url = "http://foo.com/"
+        path = os.path.abspath(os.path.expanduser(
+            os.path.join(this_dir, "sg_logo.jpg")))
+
+        # Test the Internal function that is used to upload each
+        # data part in the context of multi-part uploads to S3, we
+        # simulate the HTTPError exception raised with 503 status errors
+        with self.assertRaises(api.ShotgunError) as cm:
+            self.sg._upload_file_to_storage(path, storage_url)
+
+        # Test the max retries attempt
+        self.assertTrue(
+            4 == self.sg._make_upload_request.call_count,
+            "Call is repeated up to 3 times")
+        
+        # Test the exception message
+        the_exception = cm.exception
+        self.assertTrue(str(the_exception) == "Max attemps limit reached.")
 
     def test_transform_data(self):
         """Outbound data is transformed"""
