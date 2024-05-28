@@ -438,9 +438,9 @@ class TestShotgunClient(base.MockTestBase):
         self._mock_http(d, status=(502, "bad gateway"))
         self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
         self.assertEqual(
-            3,
+            self.sg.MAX_ATTEMPTS,
             self.sg._http_request.call_count,
-            "Call is repeated up to 3 times",
+            f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times",
         )
 
         # 504
@@ -449,9 +449,9 @@ class TestShotgunClient(base.MockTestBase):
         self._mock_http(d, status=(504, "gateway timeout"))
         self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
         self.assertEqual(
-            3,
+            self.sg.MAX_ATTEMPTS,
             self.sg._http_request.call_count,
-            "Call is repeated up to 3 times",
+            f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times",
         )
 
     def test_upload_s3_503(self):
@@ -473,8 +473,8 @@ class TestShotgunClient(base.MockTestBase):
             self.sg._upload_file_to_storage(path, storage_url)
         # Test the max retries attempt
         self.assertTrue(
-            3 == self.sg._make_upload_request.call_count,
-            "Call is repeated up to 3 times")
+            self.sg.MAX_ATTEMPTS == self.sg._make_upload_request.call_count,
+            f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times")
     
     def test_upload_s3_500(self):
         """
@@ -496,8 +496,8 @@ class TestShotgunClient(base.MockTestBase):
             self.sg._upload_file_to_storage(path, storage_url)
         # Test the max retries attempt
         self.assertTrue(
-            3 == self.sg._make_upload_request.call_count,
-            "Call is repeated up to 3 times")
+            self.sg.MAX_ATTEMPTS == self.sg._make_upload_request.call_count,
+            f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times")
     
     def test_upload_s3_urlerror__get_attachment_upload_info(self):
         """
@@ -518,7 +518,9 @@ class TestShotgunClient(base.MockTestBase):
 
         # Test the max retries attempt
         self.assertEqual(
-            3, mock_opener.return_value.open.call_count, "Call is repeated up to 3 times"
+            self.sg.MAX_ATTEMPTS,
+            mock_opener.return_value.open.call_count,
+            f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times"
         )
 
         # Test the exception message
@@ -550,7 +552,9 @@ class TestShotgunClient(base.MockTestBase):
 
         # Test the max retries attempt
         self.assertEqual(
-            3, self.sg._make_upload_request.call_count, "Call is repeated up to 3 times"
+            self.sg.MAX_ATTEMPTS,
+            self.sg._make_upload_request.call_count,
+            f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times"
         )
 
         # Test the exception message
