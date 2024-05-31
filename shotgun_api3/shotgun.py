@@ -2718,14 +2718,16 @@ class Shotgun(object):
         if url is None:
             return None
 
+        cookie_handler = None
         # We only need to set the auth cookie for downloads from Shotgun server
         if self.config.server in url:
-            self.set_up_auth_cookie()
+            cookie_handler = self.get_auth_cookie_handler()
 
         try:
+            opener = self._build_opener(cookie_handler)
             request = urllib.request.Request(url)
             request.add_header("user-agent", "; ".join(self._user_agents))
-            req = urllib.request.urlopen(request)
+            req = opener.open(request)
             if file_path:
                 shutil.copyfileobj(req, fp)
             else:
@@ -2766,7 +2768,7 @@ class Shotgun(object):
             else:
                 return attachment
 
-    def set_up_auth_cookie(self):
+    def get_auth_cookie_handler(self):
         """
         Set up urllib2 with a cookie for authentication on the Shotgun instance.
 
@@ -2778,9 +2780,7 @@ class Shotgun(object):
         c = http_cookiejar.Cookie("0", "_session_id", sid, None, False, self.config.server, False,
                                   False, "/", True, False, None, True, None, None, {})
         cj.set_cookie(c)
-        cookie_handler = urllib.request.HTTPCookieProcessor(cj)
-        opener = self._build_opener(cookie_handler)
-        urllib.request.install_opener(opener)
+        return urllib.request.HTTPCookieProcessor(cj)
 
     def get_attachment_download_url(self, attachment):
         """
