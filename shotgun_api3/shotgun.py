@@ -2719,12 +2719,12 @@ class Shotgun(object):
             return None
 
         cookie_handler = None
-        # We only need to set the auth cookie for downloads from Shotgun server
         if self.config.server in url:
+            # We only need to set the auth cookie for downloads from Shotgun server
             cookie_handler = self.get_auth_cookie_handler()
 
+        opener = self._build_opener(cookie_handler)
         try:
-            opener = self._build_opener(cookie_handler)
             request = urllib.request.Request(url)
             request.add_header("user-agent", "; ".join(self._user_agents))
             req = opener.open(request)
@@ -2770,10 +2770,12 @@ class Shotgun(object):
 
     def get_auth_cookie_handler(self):
         """
-        Set up urllib2 with a cookie for authentication on the Shotgun instance.
+        Return an urllib cookie handler containing a cookie for FPTR
+        authentication.
 
-        Looks up session token and sets that in a cookie in the :mod:`urllib2` handler. This is
-        used internally for downloading attachments from the Shotgun server.
+        Looks up session token and sets that in a cookie in the :mod:`urllib2`
+        handler.
+        This is used internally for downloading attachments from FPTR.
         """
         sid = self.get_session_token()
         cj = http_cookiejar.LWPCookieJar()

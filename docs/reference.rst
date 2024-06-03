@@ -117,7 +117,7 @@ control, these methods are available.
 .. automethod:: Shotgun.close
 .. automethod:: Shotgun.authenticate_human_user
 .. automethod:: Shotgun.get_session_token
-.. automethod:: Shotgun.set_up_auth_cookie
+.. automethod:: Shotgun.get_auth_cookie_handler
 .. automethod:: Shotgun.add_user_agent
 .. automethod:: Shotgun.reset_user_agent
 .. automethod:: Shotgun.set_session_uuid
