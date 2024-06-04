@@ -10,7 +10,6 @@ from . import mock
 import shotgun_api3 as api
 from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
-from shotgun_api3.lib import six
 from shotgun_api3.lib.six.moves import urllib
 from shotgun_api3.lib.six.moves.configparser import ConfigParser
 
@@ -161,18 +160,11 @@ class MockTestBase(TestBase):
         if not isinstance(self.sg._http_request, mock.Mock):
             return
 
-        if not isinstance(data, six.string_types):
-            if six.PY2:
-                data = json.dumps(
-                    data,
-                    ensure_ascii=False,
-                    encoding="utf-8"
-                )
-            else:
-                data = json.dumps(
-                    data,
-                    ensure_ascii=False,
-                )
+        if not isinstance(data, str):
+            data = json.dumps(
+                data,
+                ensure_ascii=False,
+            )
 
         resp_headers = {'cache-control': 'no-cache',
                         'connection': 'close',
@@ -194,7 +186,7 @@ class MockTestBase(TestBase):
         """Asserts _http_request is called with the method and params."""
         args, _ = self.sg._http_request.call_args
         arg_body = args[2]
-        assert isinstance(arg_body, six.binary_type)
+        assert isinstance(arg_body, bytes)
         arg_body = json.loads(arg_body)
 
         arg_params = arg_body.get("params")

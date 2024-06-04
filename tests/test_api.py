@@ -243,7 +243,7 @@ class TestShotgunApi(base.LiveTestBase):
         # test upload of non-ascii, unicode path
         u_path = os.path.abspath(
             os.path.expanduser(
-                glob.glob(os.path.join(six.text_type(this_dir), u'No*l.jpg'))[0]
+                glob.glob(os.path.join(str(this_dir), u'No*l.jpg'))[0]
             )
         )
 
@@ -270,42 +270,6 @@ class TestShotgunApi(base.LiveTestBase):
             'attachments',
             tag_list="monkeys, everywhere, send, help"
         )
-        if six.PY2:
-            # In Python2, make sure that non-utf-8 encoded paths raise when they
-            # can't be converted to utf-8.  For Python3, we'll skip these tests
-            # since string encoding is handled differently.
-
-            # We need to touch the file we're going to test with first. We can't
-            # bundle a file with this filename in the repo due to some pip install
-            # problems on Windows. Note that the path below is utf-8 encoding of
-            # what we'll eventually encode as shift-jis.
-            file_path_s = os.path.join(this_dir, "./\xe3\x81\x94.shift-jis")
-            file_path_u = file_path_s.decode("utf-8")
-
-            with open(file_path_u if sys.platform.startswith("win") else file_path_s, "w") as fh:
-                fh.write("This is just a test file with some random data in it.")
-
-            self.assertRaises(
-                shotgun_api3.ShotgunError,
-                self.sg.upload,
-                "Ticket",
-                self.ticket['id'],
-                file_path_u.encode("shift-jis"),
-                'attachments',
-                tag_list="monkeys, everywhere, send, help"
-            )
-
-            # But it should work in all cases if a unicode string is used.
-            self.sg.upload(
-                "Ticket",
-                self.ticket['id'],
-                file_path_u,
-                'attachments',
-                tag_list="monkeys, everywhere, send, help"
-            )
-
-            # cleanup
-            os.remove(file_path_u)
 
         # cleanup
         os.remove(file_path)
@@ -354,7 +318,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         url = new_version.get('filmstrip_image')
         data = self.sg.download_attachment({'url': url})
-        self.assertTrue(isinstance(data, six.binary_type))
+        self.assertTrue(isinstance(data, bytes))
 
         self.sg.delete("Version", new_version['id'])
     # end test_upload_thumbnail_in_create
@@ -753,18 +717,6 @@ class TestShotgunApi(base.LiveTestBase):
             ),
             groups
         )
-
-    def test_ensure_ascii(self):
-        '''test_ensure_ascii tests ensure_unicode flag.'''
-        sg_ascii = shotgun_api3.Shotgun(self.config.server_url,
-                                        self.config.script_name,
-                                        self.config.api_key,
-                                        ensure_ascii=True)
-
-        result = sg_ascii.find_one('Note', [['id', 'is', self.note['id']]], fields=['content'])
-        if six.PY2:
-            # In Python3 there isn't a separate unicode type.
-            self.assertFalse(_has_unicode(result))
 
     def test_ensure_unicode(self):
         '''test_ensure_unicode tests ensure_unicode flag.'''
@@ -2822,14 +2774,9 @@ class TestLibImports(base.LiveTestBase):
 
         # Ensure that the version of httplib2 compatible with the current Python
         # version was imported.
-        # (The last module name for __module__ should be either python2 or
-        # python3, depending on what has been imported.  Make sure we got the
-        # right one.)
+        # (The last module name for __module__ should be either python3)
         httplib2_compat_version = httplib2.Http.__module__.split(".")[-1]
-        if six.PY2:
-            self.assertEqual(httplib2_compat_version, "python2")
-        elif six.PY3:
-            self.assertTrue(httplib2_compat_version, "python3")
+        self.assertTrue(httplib2_compat_version, "python3")
 
         # Ensure that socks submodule is present and importable using a from
         # import -- this is a good indication that external httplib2 imports
@@ -2842,9 +2789,9 @@ class TestLibImports(base.LiveTestBase):
 
 def _has_unicode(data):
     for k, v in data.items():
-        if isinstance(k, six.text_type):
+        if isinstance(k, str):
             return True
-        if isinstance(v, six.text_type):
+        if isinstance(v, str):
             return True
     return False
 

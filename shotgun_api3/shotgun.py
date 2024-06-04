@@ -29,13 +29,6 @@
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-# Python 2/3 compatibility
-from .lib import six
-from .lib import sgsix
-from .lib.six import BytesIO               # used for attachment upload
-from .lib.six.moves import map
-
-from .lib.six.moves import http_cookiejar  # used for attachment upload
 import datetime
 import logging
 import uuid                                # used for attachment upload
@@ -46,21 +39,18 @@ import stat                                # used for attachment upload
 import sys
 import time
 import json
-from .lib.six.moves import urllib
+import urllib
 import shutil       # used for attachment download
-from .lib.six.moves import http_client      # Used for secure file upload.
+
+from io import BytesIO
+from http import cookiejar
+from http import client as http_client
+from xmlrpc.client import Error, ProtocolError, ResponseError
+from base64 import encodebytes as base64encode
+
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib.sgtimezone import SgTimezone
-
-# Import Error and ResponseError (even though they're unused in this file) since they need
-# to be exposed as part of the API.
-from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError  # noqa
-
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
-
+from .lib import sgsix
 
 LOG = logging.getLogger("shotgun_api3")
 """
@@ -670,7 +660,7 @@ class Shotgun(object):
         # the lowercase version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64encode(six.ensure_binary(
+            auth = base64encode(sgsix.ensure_binary(
                 urllib.parse.unquote(auth))).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
 
@@ -733,7 +723,7 @@ class Shotgun(object):
         In python 3.8 `urllib.parse.splituser` was deprecated warning devs to
         use `urllib.parse.urlparse`.
         """
-        if six.PY38:
+        if sys.version_info[0:2] >= (3, 8):
             auth = None
             results = urllib.parse.urlparse(base_url)
             server = results.hostname
@@ -2136,7 +2126,7 @@ class Shotgun(object):
             "field_name": field_name,
             "properties": [
                 {"property_name": k, "value": v}
-                for k, v in six.iteritems((properties or {}))
+                for k, v in (properties.items() if isinstance(properties, dict)  else {})
             ]
         }
         params = self._add_project_param(params, project_entity)
@@ -2445,7 +2435,7 @@ class Shotgun(object):
         # have to raise a sane exception. This will always work for ascii and utf-8
         # encoded strings, but will fail on some others if the string includes non
         # ascii characters.
-        if not isinstance(path, six.text_type):
+        if not isinstance(path, str):
             try:
                 path = path.decode("utf-8")
             except UnicodeDecodeError:
@@ -2579,7 +2569,7 @@ class Shotgun(object):
         # to call open on the unicode path, but we'll use the encoded string
         # for everything else.
         path_to_open = path
-        if isinstance(path, six.text_type):
+        if isinstance(path, str):
             path = path.encode("utf-8")
             if sys.platform != "win32":
                 path_to_open = path
@@ -2742,7 +2732,7 @@ class Shotgun(object):
                 elif e.code == 403:
                     # Only parse the body if it is an Amazon S3 url.
                     if url.find("s3.amazonaws.com") != -1 and e.headers["content-type"] == "application/xml":
-                        body = [six.ensure_text(line) for line in e.readlines()]
+                        body = [sgsix.ensure_text(line) for line in e.readlines()]
                         if body:
                             xml = "".join(body)
                             # Once python 2.4 support is not needed we can think about using
@@ -2774,8 +2764,8 @@ class Shotgun(object):
         used internally for downloading attachments from the Shotgun server.
         """
         sid = self.get_session_token()
-        cj = http_cookiejar.LWPCookieJar()
-        c = http_cookiejar.Cookie("0", "_session_id", sid, None, False, self.config.server, False,
+        cj = cookiejar.LWPCookieJar()
+        c = cookiejar.Cookie("0", "_session_id", sid, None, False, self.config.server, False,
                                   False, "/", True, False, None, True, None, None, {})
         cj.set_cookie(c)
         cookie_handler = urllib.request.HTTPCookieProcessor(cj)
@@ -3058,7 +3048,7 @@ class Shotgun(object):
             raise ValueError("entity_types parameter must be a dictionary")
 
         api_entity_types = {}
-        for (entity_type, filter_list) in six.iteritems(entity_types):
+        for (entity_type, filter_list) in entity_types.items():
 
             if isinstance(filter_list, (list, tuple)):
                 resolved_filters = _translate_filters(filter_list, filter_operator=None)
@@ -3569,7 +3559,7 @@ class Shotgun(object):
         """
 
         wire = json.dumps(payload, ensure_ascii=False)
-        return six.ensure_binary(wire)
+        return sgsix.ensure_binary(wire)
 
     def _make_call(self, verb, path, body, headers):
         """
@@ -3652,7 +3642,7 @@ class Shotgun(object):
         http_status = (resp.status, resp.reason)
         resp_headers = dict(
             (k.lower(), v)
-            for k, v in six.iteritems(resp)
+            for k, v in resp.items()
         )
         resp_body = content
 
@@ -3726,8 +3716,8 @@ class Shotgun(object):
         def _decode_list(lst):
             newlist = []
             for i in lst:
-                if isinstance(i, six.text_type):
-                    i = six.ensure_str(i)
+                if isinstance(i, str):
+                    i = sgsix.ensure_str(i)
                 elif isinstance(i, list):
                     i = _decode_list(i)
                 newlist.append(i)
@@ -3735,11 +3725,11 @@ class Shotgun(object):
 
         def _decode_dict(dct):
             newdict = {}
-            for k, v in six.iteritems(dct):
-                if isinstance(k, six.text_type):
-                    k = six.ensure_str(k)
-                if isinstance(v, six.text_type):
-                    v = six.ensure_str(v)
+            for k, v in dct.items():
+                if isinstance(k, str):
+                    k = sgsix.ensure_str(k)
+                if isinstance(v, str):
+                    v = sgsix.ensure_str(v)
                 elif isinstance(v, list):
                     v = _decode_list(v)
                 newdict[k] = v
@@ -3803,7 +3793,7 @@ class Shotgun(object):
         if isinstance(data, dict):
             return dict(
                 (k, recursive(v, visitor))
-                for k, v in six.iteritems(data)
+                for k, v in data.items()
             )
 
         return visitor(data)
@@ -3849,9 +3839,8 @@ class Shotgun(object):
                     value = _change_tz(value)
                 return value.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-            # ensure return is six.text_type
-            if isinstance(value, six.string_types):
-                return six.ensure_text(value)
+            if isinstance(value, str):
+                return sgsix.ensure_text(value)
 
             return value
 
@@ -3871,7 +3860,7 @@ class Shotgun(object):
             _change_tz = None
 
         def _inbound_visitor(value):
-            if isinstance(value, six.string_types):
+            if isinstance(value, str):
                 if len(value) == 20 and self._DATE_TIME_PATTERN.match(value):
                     try:
                         # strptime was not on datetime in python2.4
@@ -3953,7 +3942,7 @@ class Shotgun(object):
                 continue
 
             # iterate over each item and check each field for possible injection
-            for k, v in six.iteritems(rec):
+            for k, v in rec.items():
                 if not v:
                     continue
 
@@ -4021,7 +4010,7 @@ class Shotgun(object):
         [{'field_name': 'foo', 'value': 'bar', 'thing1': 'value1'}]
         """
         ret = []
-        for k, v in six.iteritems((d or {})):
+        for k, v in (d.items() or {}):
             d = {key_name: k, value_name: v}
             d.update((extra_data or {}).get(k, {}))
             ret.append(d)
@@ -4034,7 +4023,7 @@ class Shotgun(object):
 
         e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
         """
-        return dict([(k, {key_name: v}) for (k, v) in six.iteritems((d or {}))])
+        return dict([(k, {key_name: v}) for (k, v) in (d.items() if isinstance(d, dict)  else {})])
 
     def _upload_file_to_storage(self, path, storage_url):
         """
@@ -4262,7 +4251,7 @@ class Shotgun(object):
             else:
                 raise ShotgunError("Unanticipated error occurred %s" % (e))
 
-        return six.ensure_text(result)
+        return sgsix.ensure_text(result)
 
 
 class CACertsHTTPSConnection(http_client.HTTPConnection):
@@ -4287,7 +4276,7 @@ class CACertsHTTPSConnection(http_client.HTTPConnection):
         "Connect to a host on a given (SSL) port."
         http_client.HTTPConnection.connect(self)
         # Now that the regular HTTP socket has been created, wrap it with our SSL certs.
-        if six.PY38:
+        if sys.version_info[0:2] >= (3, 8):
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
             context.verify_mode = ssl.CERT_REQUIRED
             context.check_hostname = False
@@ -4327,13 +4316,8 @@ class FormPostHandler(urllib.request.BaseHandler):
     handler_order = urllib.request.HTTPHandler.handler_order - 10  # needs to run first
 
     def http_request(self, request):
-        # get_data was removed in 3.4. since we're testing against 3.6 and
-        # 3.7, this should be sufficient.
-        if six.PY3:
-            data = request.data
-        else:
-            data = request.get_data()
-        if data is not None and not isinstance(data, six.string_types):
+        data = request.data
+        if data is not None and not isinstance(data, str):
             files = []
             params = []
             for key, value in data.items():
@@ -4342,17 +4326,13 @@ class FormPostHandler(urllib.request.BaseHandler):
                 else:
                     params.append((key, value))
             if not files:
-                data = six.ensure_binary(urllib.parse.urlencode(params, True))  # sequencing on
+                data = sgsix.ensure_binary(urllib.parse.urlencode(params, True))  # sequencing on
             else:
                 boundary, data = self.encode(params, files)
                 content_type = "multipart/form-data; boundary=%s" % boundary
                 request.add_unredirected_header("Content-Type", content_type)
-            # add_data was removed in 3.4. since we're testing against 3.6 and
-            # 3.7, this should be sufficient.
-            if six.PY3:
-                request.data = data
-            else:
-                request.add_data(data)
+            request.data = data
+
         return request
 
     def encode(self, params, files, boundary=None, buffer=None):
@@ -4365,15 +4345,15 @@ class FormPostHandler(urllib.request.BaseHandler):
         if buffer is None:
             buffer = BytesIO()
         for (key, value) in params:
-            if not isinstance(value, six.string_types):
+            if not isinstance(value, str):
                 # If value is not a string (e.g. int) cast to text
-                value = six.text_type(value)
-            value = six.ensure_text(value)
-            key = six.ensure_text(key)
+                value = str(value)
+            value = sgsix.ensure_text(value)
+            key = sgsix.ensure_text(key)
 
-            buffer.write(six.ensure_binary("--%s\r\n" % boundary))
-            buffer.write(six.ensure_binary("Content-Disposition: form-data; name=\"%s\"" % key))
-            buffer.write(six.ensure_binary("\r\n\r\n%s\r\n" % value))
+            buffer.write(sgsix.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(sgsix.ensure_binary("Content-Disposition: form-data; name=\"%s\"" % key))
+            buffer.write(sgsix.ensure_binary("\r\n\r\n%s\r\n" % value))
         for (key, fd) in files:
             # On Windows, it's possible that we were forced to open a file
             # with non-ascii characters as unicode. In that case, we need to
@@ -4381,24 +4361,24 @@ class FormPostHandler(urllib.request.BaseHandler):
             # If we don't, the mix of unicode and strings going into the
             # buffer can cause UnicodeEncodeErrors to be raised.
             filename = fd.name
-            filename = six.ensure_text(filename)
+            filename = sgsix.ensure_text(filename)
             filename = filename.split("/")[-1]
-            key = six.ensure_text(key)
+            key = sgsix.ensure_text(key)
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or "application/octet-stream"
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-            buffer.write(six.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(sgsix.ensure_binary("--%s\r\n" % boundary))
             c_dis = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"%s"
             content_disposition = c_dis % (key, filename, "\r\n")
-            buffer.write(six.ensure_binary(content_disposition))
-            buffer.write(six.ensure_binary("Content-Type: %s\r\n" % content_type))
-            buffer.write(six.ensure_binary("Content-Length: %s\r\n" % file_size))
+            buffer.write(sgsix.ensure_binary(content_disposition))
+            buffer.write(sgsix.ensure_binary("Content-Type: %s\r\n" % content_type))
+            buffer.write(sgsix.ensure_binary("Content-Length: %s\r\n" % file_size))
 
-            buffer.write(six.ensure_binary("\r\n"))
+            buffer.write(sgsix.ensure_binary("\r\n"))
             fd.seek(0)
             shutil.copyfileobj(fd, buffer)
-            buffer.write(six.ensure_binary("\r\n"))
-        buffer.write(six.ensure_binary("--%s--\r\n\r\n" % boundary))
+            buffer.write(sgsix.ensure_binary("\r\n"))
+        buffer.write(sgsix.ensure_binary("--%s--\r\n\r\n" % boundary))
         buffer = buffer.getvalue()
         return boundary, buffer
 

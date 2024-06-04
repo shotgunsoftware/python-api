@@ -29,9 +29,8 @@
 """
 
 # This module contains addtional functions and variables to supplement the six
-# module for python 2/3 compatibility.
+# module.
 
-from . import six
 import io
 import sys
 
@@ -39,23 +38,15 @@ import sys
 # io.IOBase instance. We add file_types to allow comparison across python
 # versions.  See https://stackoverflow.com/questions/36321030#36321030
 #
-# This means that to test if a variable contains a file in both Python 2 and 3
-# you can use an isinstance test like:
-#     isinstance(value, sgsix.file_types)
-if six.PY3:
-    file_types = (io.IOBase, )
-else:
-    file_types = (file, io.IOBase)  # noqa warning for undefined `file` in python 3
+# This means that to test if a variable contains a file in Python3
+
+file_types = (io.IOBase, )
 
 # For python-api calls that result in an SSL error, the exception raised is
-# different on Python 2 and 3. Store the approriate exception class in a
-# variable to allow easier exception handling across Python 2/3.
-if six.PY3:
-    import ssl
-    ShotgunSSLError = ssl.SSLError
-else:
-    from .httplib2 import SSLHandshakeError
-    ShotgunSSLError = SSLHandshakeError
+# different on Python 3. Store the approriate exception class in a
+# variable to allow easier exception handling across Python 3.
+import ssl
+ShotgunSSLError = ssl.SSLError
 
 
 def normalize_platform(platform, python2=True):
@@ -85,3 +76,48 @@ def normalize_platform(platform, python2=True):
 # sgsix.platform will mimick the python2 sys.platform behavior to ensure
 # compatibility with existing comparisons and dict keys.
 platform = normalize_platform(sys.platform)
+
+
+def ensure_binary(s, encoding='utf-8', errors='strict'):
+    """
+    Coerce **s** to bytes.
+
+    For Python 3:
+      - `str` -> encoded to `bytes`
+      - `bytes` -> `bytes`
+    """
+    if isinstance(s, str):
+        return s.encode(encoding, errors)
+    elif isinstance(s, bytes):
+        return s
+    else:
+        raise TypeError(f"not expecting type '{type(s)}'")
+    
+
+def ensure_text(s, encoding='utf-8', errors='strict'):
+    """Coerce *s* to str.
+
+    For Python 3:
+      - `str` -> `str`
+      - `bytes` -> decoded to `str`
+    """
+    if isinstance(s, bytes):
+        return s.decode(encoding, errors)
+    elif isinstance(s, str):
+        return s
+    else:
+        raise TypeError(f"not expecting type '{type(s)}'")
+    
+
+def ensure_str(s, encoding='utf-8', errors='strict'):
+    """Coerce *s* to `str`.
+
+    For Python 3:
+      - `str` -> `str`
+      - `bytes` -> decoded to `str`
+    """
+    if not isinstance(s, (str, bytes)):
+        raise TypeError(f"not expecting type '{type(s)}'")
+    if isinstance(s, bytes):
+        s = s.decode(encoding, errors)
+    return s
