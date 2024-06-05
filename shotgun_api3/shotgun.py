@@ -3631,11 +3631,12 @@ class Shotgun(object):
                 if attempt == max_rpc_attempts:
                     LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
-                LOG.debug(
-                    "Request failed, attempt %d of %d.  Retrying in %.2f seconds..." %
-                    (attempt, max_rpc_attempts, rpc_attempt_interval)
-                )
-                time.sleep(rpc_attempt_interval)
+
+            LOG.debug(
+                "Request failed, attempt %d of %d.  Retrying in %.2f seconds..." %
+                (attempt, max_rpc_attempts, rpc_attempt_interval)
+            )
+            time.sleep(rpc_attempt_interval)
 
     def _http_request(self, verb, path, body, headers):
         """
