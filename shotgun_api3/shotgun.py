@@ -3625,6 +3625,7 @@ class Shotgun(object):
 
                 self._close_connection()
                 if attempt == max_rpc_attempts:
+                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
             except Exception:
                 self._close_connection()
