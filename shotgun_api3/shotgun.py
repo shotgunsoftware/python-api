@@ -112,14 +112,6 @@ Sometimes there are cases where certificate validation should be disabled. For e
 have a self-signed internal certificate that isn't included in our certificate bundle, you may
 not require the added security provided by enforcing this.
 """
-try:
-    import ssl
-except ImportError as e:
-    if "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
-        raise ImportError("%s. SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable prevents "
-                          "disabling SSL certificate validation." % e)
-    LOG.debug("ssl not found, disabling certificate validation")
-    NO_SSL_VALIDATION = True
 
 # ----------------------------------------------------------------------------
 # Version
