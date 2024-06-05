@@ -42,6 +42,7 @@ import uuid                                # used for attachment upload
 import os
 import re
 import copy
+import ssl
 import stat                                # used for attachment upload
 import sys
 import time
@@ -3594,6 +3595,22 @@ class Shotgun(object):
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
+            except ssl.SSLEOFError as e:
+                # SG-34910 - EOF occurred in violation of protocol (_ssl.c:2426)
+                # This issue seems to be related to proxy and keep alive.
+                # It looks like, sometimes, the proxy drops the connection on
+                # the TCP/TLS level despites the keep-alive. So we need to close
+                # the connection and make a new attempt.
+                LOG.debug("SSLEOFError: {}".format(e))
+                self._close_connection()
+                if attempt == max_rpc_attempts:
+                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
+                    raise
+                # This is the exact same block as the "except Exception" bellow.
+                # We need to do it here because the next except will match it
+                # otherwise and will not re-attempt.
+                # When we drop support of Python 2 and we will probably drop the
+                # next except, we might want to remove this except too.
             except ssl_error_classes as e:
                 # Test whether the exception is due to the fact that this is an older version of
                 # Python that cannot validate certificates encrypted with SHA-2. If it is, then
