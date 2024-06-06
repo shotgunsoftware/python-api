@@ -2702,14 +2702,16 @@ class Shotgun(object):
         if url is None:
             return None
 
-        # We only need to set the auth cookie for downloads from Shotgun server
+        cookie_handler = None
         if self.config.server in url:
-            self.set_up_auth_cookie()
+            # We only need to set the auth cookie for downloads from Shotgun server
+            cookie_handler = self.get_auth_cookie_handler()
 
+        opener = self._build_opener(cookie_handler)
         try:
             request = urllib.request.Request(url)
             request.add_header("user-agent", "; ".join(self._user_agents))
-            req = urllib.request.urlopen(request)
+            req = opener.open(request)
             if file_path:
                 shutil.copyfileobj(req, fp)
             else:
@@ -2750,21 +2752,21 @@ class Shotgun(object):
             else:
                 return attachment
 
-    def set_up_auth_cookie(self):
+    def get_auth_cookie_handler(self):
         """
-        Set up urllib2 with a cookie for authentication on the Shotgun instance.
+        Return an urllib cookie handler containing a cookie for FPTR
+        authentication.
 
-        Looks up session token and sets that in a cookie in the :mod:`urllib2` handler. This is
-        used internally for downloading attachments from the Shotgun server.
+        Looks up session token and sets that in a cookie in the :mod:`urllib2`
+        handler.
+        This is used internally for downloading attachments from FPTR.
         """
         sid = self.get_session_token()
         cj = http_cookiejar.LWPCookieJar()
         c = http_cookiejar.Cookie("0", "_session_id", sid, None, False, self.config.server, False,
                                   False, "/", True, False, None, True, None, None, {})
         cj.set_cookie(c)
-        cookie_handler = urllib.request.HTTPCookieProcessor(cj)
-        opener = self._build_opener(cookie_handler)
-        urllib.request.install_opener(opener)
+        return urllib.request.HTTPCookieProcessor(cj)
 
     def get_attachment_download_url(self, attachment):
         """
