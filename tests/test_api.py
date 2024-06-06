@@ -242,7 +242,7 @@ class TestShotgunApi(base.LiveTestBase):
         # test upload of non-ascii, unicode path
         u_path = os.path.abspath(
             os.path.expanduser(
-                glob.glob(os.path.join(str(this_dir), u'No*l.jpg'))[0]
+                glob.glob(os.path.join(str(this_dir), 'Noëlご.jpg'))[0]
             )
         )
 
@@ -1841,6 +1841,7 @@ class TestErrors(base.TestBase):
 
         # This may trigger an account lockdown. Make sure it is not locked anymore.
         user = self.sg.find_one("HumanUser", [["login", "is", login]])
+        print("user: ", user)
         self.sg.update("HumanUser", user["id"], {"locked_until": None})
 
     @patch('shotgun_api3.shotgun.Http.request')
