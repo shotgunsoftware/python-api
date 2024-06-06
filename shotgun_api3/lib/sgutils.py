@@ -73,8 +73,6 @@ def normalize_platform(platform, python2=True):
     return "linux" if platform.startswith("linux") else platform
 
 
-# sgsix.platform will mimick the python2 sys.platform behavior to ensure
-# compatibility with existing comparisons and dict keys.
 platform = normalize_platform(sys.platform)
 
 

@@ -23,18 +23,17 @@ import time
 import types
 import uuid
 import unittest
-from shotgun_api3.lib.six.moves import range, urllib
+import urllib
 import warnings
 import glob
 
 import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http
-from shotgun_api3.lib import six
 
 # To mock the correct exception when testion on Python 2 and 3, use the
-# ShotgunSSLError variable from sgsix that contains the appropriate exception
+# ShotgunSSLError variable from sgutils that contains the appropriate exception
 # class for the current Python version.
-from shotgun_api3.lib.sgsix import ShotgunSSLError
+from shotgun_api3.lib.sgutils import ShotgunSSLError
 
 from . import base
 

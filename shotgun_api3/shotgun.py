@@ -41,6 +41,7 @@ import time
 import json
 import urllib
 import shutil       # used for attachment download
+import ssl as __ssl
 
 from io import BytesIO
 from http import cookiejar
@@ -48,9 +49,9 @@ from http import client as http_client
 from xmlrpc.client import Error, ProtocolError, ResponseError
 from base64 import encodebytes as base64encode
 
-from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
+from .lib.httplib2 import Http, ProxyInfo, socks
 from .lib.sgtimezone import SgTimezone
-from .lib import sgsix
+from .lib import sgutils
 
 LOG = logging.getLogger("shotgun_api3")
 """
@@ -660,7 +661,7 @@ class Shotgun(object):
         # the lowercase version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64encode(sgsix.ensure_binary(
+            auth = base64encode(sgutils.ensure_binary(
                 urllib.parse.unquote(auth))).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
 
@@ -2120,13 +2121,13 @@ class Shotgun(object):
 
         :rtype: bool
         """
-
+        properties = properties if isinstance(properties, dict)  else {}
         params = {
             "type": entity_type,
             "field_name": field_name,
             "properties": [
                 {"property_name": k, "value": v}
-                for k, v in (properties.items() if isinstance(properties, dict)  else {})
+                for k, v in properties.items()
             ]
         }
         params = self._add_project_param(params, project_entity)
@@ -2732,7 +2733,7 @@ class Shotgun(object):
                 elif e.code == 403:
                     # Only parse the body if it is an Amazon S3 url.
                     if url.find("s3.amazonaws.com") != -1 and e.headers["content-type"] == "application/xml":
-                        body = [sgsix.ensure_text(line) for line in e.readlines()]
+                        body = [sgutils.ensure_text(line) for line in e.readlines()]
                         if body:
                             xml = "".join(body)
                             # Once python 2.4 support is not needed we can think about using
@@ -3559,7 +3560,7 @@ class Shotgun(object):
         """
 
         wire = json.dumps(payload, ensure_ascii=False)
-        return sgsix.ensure_binary(wire)
+        return sgutils.ensure_binary(wire)
 
     def _make_call(self, verb, path, body, headers):
         """
@@ -3584,7 +3585,7 @@ class Shotgun(object):
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
-            except ssl_error_classes as e:
+            except (__ssl.SSLError, __ssl.CertificateError) as e:
                 # Test whether the exception is due to the fact that this is an older version of
                 # Python that cannot validate certificates encrypted with SHA-2. If it is, then
                 # fall back on disabling the certificate validation and try again - unless the
@@ -3717,7 +3718,7 @@ class Shotgun(object):
             newlist = []
             for i in lst:
                 if isinstance(i, str):
-                    i = sgsix.ensure_str(i)
+                    i = sgutils.ensure_str(i)
                 elif isinstance(i, list):
                     i = _decode_list(i)
                 newlist.append(i)
@@ -3727,9 +3728,9 @@ class Shotgun(object):
             newdict = {}
             for k, v in dct.items():
                 if isinstance(k, str):
-                    k = sgsix.ensure_str(k)
+                    k = sgutils.ensure_str(k)
                 if isinstance(v, str):
-                    v = sgsix.ensure_str(v)
+                    v = sgutils.ensure_str(v)
                 elif isinstance(v, list):
                     v = _decode_list(v)
                 newdict[k] = v
@@ -3840,7 +3841,7 @@ class Shotgun(object):
                 return value.strftime("%Y-%m-%dT%H:%M:%SZ")
 
             if isinstance(value, str):
-                return sgsix.ensure_text(value)
+                return sgutils.ensure_text(value)
 
             return value
 
@@ -4023,7 +4024,8 @@ class Shotgun(object):
 
         e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
         """
-        return dict([(k, {key_name: v}) for (k, v) in (d.items() if isinstance(d, dict)  else {})])
+        d = d if isinstance(d, dict) else {}
+        return dict([(k, {key_name: v}) for (k, v) in d.items()])
 
     def _upload_file_to_storage(self, path, storage_url):
         """
@@ -4251,7 +4253,7 @@ class Shotgun(object):
             else:
                 raise ShotgunError("Unanticipated error occurred %s" % (e))
 
-        return sgsix.ensure_text(result)
+        return sgutils.ensure_text(result)
 
 
 class CACertsHTTPSConnection(http_client.HTTPConnection):
@@ -4321,12 +4323,12 @@ class FormPostHandler(urllib.request.BaseHandler):
             files = []
             params = []
             for key, value in data.items():
-                if isinstance(value, sgsix.file_types):
+                if isinstance(value, sgutils.file_types):
                     files.append((key, value))
                 else:
                     params.append((key, value))
             if not files:
-                data = sgsix.ensure_binary(urllib.parse.urlencode(params, True))  # sequencing on
+                data = sgutils.ensure_binary(urllib.parse.urlencode(params, True))  # sequencing on
             else:
                 boundary, data = self.encode(params, files)
                 content_type = "multipart/form-data; boundary=%s" % boundary
@@ -4348,12 +4350,12 @@ class FormPostHandler(urllib.request.BaseHandler):
             if not isinstance(value, str):
                 # If value is not a string (e.g. int) cast to text
                 value = str(value)
-            value = sgsix.ensure_text(value)
-            key = sgsix.ensure_text(key)
+            value = sgutils.ensure_text(value)
+            key = sgutils.ensure_text(key)
 
-            buffer.write(sgsix.ensure_binary("--%s\r\n" % boundary))
-            buffer.write(sgsix.ensure_binary("Content-Disposition: form-data; name=\"%s\"" % key))
-            buffer.write(sgsix.ensure_binary("\r\n\r\n%s\r\n" % value))
+            buffer.write(sgutils.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(sgutils.ensure_binary("Content-Disposition: form-data; name=\"%s\"" % key))
+            buffer.write(sgutils.ensure_binary("\r\n\r\n%s\r\n" % value))
         for (key, fd) in files:
             # On Windows, it's possible that we were forced to open a file
             # with non-ascii characters as unicode. In that case, we need to
@@ -4361,24 +4363,24 @@ class FormPostHandler(urllib.request.BaseHandler):
             # If we don't, the mix of unicode and strings going into the
             # buffer can cause UnicodeEncodeErrors to be raised.
             filename = fd.name
-            filename = sgsix.ensure_text(filename)
+            filename = sgutils.ensure_text(filename)
             filename = filename.split("/")[-1]
-            key = sgsix.ensure_text(key)
+            key = sgutils.ensure_text(key)
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or "application/octet-stream"
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-            buffer.write(sgsix.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(sgutils.ensure_binary("--%s\r\n" % boundary))
             c_dis = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"%s"
             content_disposition = c_dis % (key, filename, "\r\n")
-            buffer.write(sgsix.ensure_binary(content_disposition))
-            buffer.write(sgsix.ensure_binary("Content-Type: %s\r\n" % content_type))
-            buffer.write(sgsix.ensure_binary("Content-Length: %s\r\n" % file_size))
+            buffer.write(sgutils.ensure_binary(content_disposition))
+            buffer.write(sgutils.ensure_binary("Content-Type: %s\r\n" % content_type))
+            buffer.write(sgutils.ensure_binary("Content-Length: %s\r\n" % file_size))
 
-            buffer.write(sgsix.ensure_binary("\r\n"))
+            buffer.write(sgutils.ensure_binary("\r\n"))
             fd.seek(0)
             shutil.copyfileobj(fd, buffer)
-            buffer.write(sgsix.ensure_binary("\r\n"))
-        buffer.write(sgsix.ensure_binary("--%s--\r\n\r\n" % boundary))
+            buffer.write(sgutils.ensure_binary("\r\n"))
+        buffer.write(sgutils.ensure_binary("--%s--\r\n\r\n" % boundary))
         buffer = buffer.getvalue()
         return boundary, buffer
 

@@ -23,17 +23,11 @@ See bugs:
 
 The version of `mimetypes` bundled should be updated manually if necessary, however it is unlikely this will be needed, as it is only used for Python versions 2.7.0 - 2.7.9, and newer Python versions simply use the native `mimetypes` module.
 
-### six
-
-Six is a Python 2/3 compatibility library.  In python-api, it's used to make simultaneous support for Python on 2 and 3 easier to maintain and more readable, but allowing the use of common helper functions, unified interfaces for modules that changed, and variables to ease type comparisons.  For more on six, see the [documentation](https://six.readthedocs.io/).
-
-The version of `six` bundled should be updated manually, however its version is included in the unused `shotgun_api3/lib/requirements.txt` to allow Github's automated CVE notifications to work.
-
 ## Flow Production Tracking Modules
 
 ### sgsix
 
-`sgsix` is a module that contains extensions to `six`.  These might be additional helper functions, variables, etc. that supplement six's functionality.  It is intended that `sgsix` can be used within other packages that include or depend on the `python-api` package as well.
+`sgutils` is a module that contains additional helper functions, variables, etc. that supplement six's functionality.  It is intended that `sgutils` can be used within other packages that include or depend on the `python-api` package as well.
 
 ### sgtimezone
 
