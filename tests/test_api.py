@@ -1841,7 +1841,6 @@ class TestErrors(base.TestBase):
 
         # This may trigger an account lockdown. Make sure it is not locked anymore.
         user = self.sg.find_one("HumanUser", [["login", "is", login]])
-        print("user: ", user)
         self.sg.update("HumanUser", user["id"], {"locked_until": None})
 
     @patch('shotgun_api3.shotgun.Http.request')
