@@ -4,6 +4,12 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.7.0 (2024 Jun 10)
+===================
+- Drop support for Python 2.x.x
+- Drop use of six package
+- Documentation update
+
 v3.6.0 (2024 May 1)
 ===================
 - Drop support for Python 2.7
