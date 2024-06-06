@@ -41,7 +41,7 @@ import time
 import json
 import urllib
 import shutil       # used for attachment download
-import ssl as __ssl
+import mimetypes
 
 from io import BytesIO
 from http import cookiejar
@@ -65,29 +65,6 @@ handler associated with it.
 LOG.setLevel(logging.WARN)
 
 
-def _is_mimetypes_broken():
-    """
-    Checks if this version of Python ships with a broken version of mimetypes
-
-    :returns: True if the version of mimetypes is broken, False otherwise.
-    """
-    # mimetypes is broken on Windows only and for Python 2.7.0 to 2.7.9 inclusively.
-    # We're bundling the version from 2.7.10.
-    # See bugs :
-    # http://bugs.python.org/issue9291  <- Fixed in 2.7.7
-    # http://bugs.python.org/issue21652 <- Fixed in 2.7.8
-    # http://bugs.python.org/issue22028 <- Fixed in 2.7.10
-    return (sys.platform == "win32" and
-            sys.version_info[0] == 2 and sys.version_info[1] == 7 and
-            sys.version_info[2] >= 0 and sys.version_info[2] <= 9)
-
-
-if _is_mimetypes_broken():
-    from .lib import mimetypes as mimetypes
-else:
-    import mimetypes
-
-
 # mimetypes imported in version specific imports
 mimetypes.add_type("video/webm", ".webm")  # webm and mp4 seem to be missing
 mimetypes.add_type("video/mp4", ".mp4")    # from some OS/distros
@@ -104,11 +81,15 @@ not require the added security provided by enforcing this.
 """
 try:
     import ssl
+    SSLError = ssl.SSLError
+    CertificateError = ssl.CertificateError
 except ImportError as e:
     if "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
         raise ImportError("%s. SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable prevents "
                           "disabling SSL certificate validation." % e)
     LOG.debug("ssl not found, disabling certificate validation")
+    SSLError = Exception
+    CertificateError = Exception
     NO_SSL_VALIDATION = True
 
 # ----------------------------------------------------------------------------
@@ -491,6 +472,8 @@ class Shotgun(object):
         r"(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?)?$")
 
     _MULTIPART_UPLOAD_CHUNK_SIZE = 20000000
+    MAX_ATTEMPTS = 3    # Retries on failure
+    BACKOFF = 0.75      # Seconds to wait before retry, times the attempt number
 
     def __init__(self,
                  base_url,
@@ -618,7 +601,6 @@ class Shotgun(object):
             if script_name is not None or api_key is not None:
                 raise ValueError("cannot provide an auth_code with script_name/api_key")
 
-        # Can't use 'all' with python 2.4
         if len([x for x in [session_token, script_name, api_key, login, password] if x]) == 0:
             if connect:
                 raise ValueError("must provide login/password, session_token or script_name/api_key")
@@ -2558,30 +2540,12 @@ class Shotgun(object):
 
         params.update(self._auth_params())
 
-        # If we ended up with a unicode string path, we need to encode it
-        # as a utf-8 string. If we don't, there's a chance that there will
-        # will be an attempt later on to encode it as an ascii string, and
-        # that will fail ungracefully if the path contains any non-ascii
-        # characters.
-        #
-        # On Windows, if the path contains non-ascii characters, the calls
-        # to open later in this method will fail to find the file if given
-        # a non-ascii-encoded string path. In that case, we're going to have
-        # to call open on the unicode path, but we'll use the encoded string
-        # for everything else.
-        path_to_open = path
-        if isinstance(path, str):
-            path = path.encode("utf-8")
-            if sys.platform != "win32":
-                path_to_open = path
-
         if is_thumbnail:
             url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                                            "/upload/publish_thumbnail", None, None, None))
-            params["thumb_image"] = open(path_to_open, "rb")
+            params["thumb_image"] = open(path, "rb")
             if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
                 params["filmstrip"] = True
-
         else:
             url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
                                            "/upload/upload_file", None, None, None))
@@ -2595,7 +2559,7 @@ class Shotgun(object):
             if tag_list:
                 params["tag_list"] = tag_list
 
-            params["file"] = open(path_to_open, "rb")
+            params["file"] = open(path, "rb")
 
         result = self._send_form(url, params)
 
@@ -3422,10 +3386,7 @@ class Shotgun(object):
             req_headers["locale"] = "auto"
 
         attempt = 1
-        max_attempts = 4 # Three retries on failure
-        backoff = 0.75 # Seconds to wait before retry, times the attempt number
-
-        while attempt <= max_attempts:
+        while attempt <= self.MAX_ATTEMPTS:
             http_status, resp_headers, body = self._make_call(
                 "POST",
                 self.config.api_path,
@@ -3443,9 +3404,9 @@ class Shotgun(object):
                 # We've seen some rare instances of PTR returning 502 for issues that
                 # appear to be caused by something internal to PTR. We're going to
                 # allow for limited retries for those specifically.
-                if attempt != max_attempts and e.errcode in [502, 504]:
+                if attempt != self.MAX_ATTEMPTS and e.errcode in [502, 504]:
                     LOG.debug("Got a 502 or 504 response. Waiting and retrying...")
-                    time.sleep(float(attempt) * backoff)
+                    time.sleep(float(attempt) * self.BACKOFF)
                     attempt += 1
                     continue
                 elif e.errcode == 403:
@@ -3585,7 +3546,7 @@ class Shotgun(object):
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
-            except (__ssl.SSLError, __ssl.CertificateError) as e:
+            except (SSLError, CertificateError) as e:
                 # Test whether the exception is due to the fact that this is an older version of
                 # Python that cannot validate certificates encrypted with SHA-2. If it is, then
                 # fall back on disabling the certificate validation and try again - unless the
@@ -4134,28 +4095,31 @@ class Shotgun(object):
         request.get_method = lambda: "PUT"
 
         attempt = 1
-        max_attempts = 4  # Three retries on failure
-        backoff = 0.75  # Seconds to wait before retry, times the attempt number
-
-        while attempt <= max_attempts:
+        while attempt <= self.MAX_ATTEMPTS:
             try:
                 result = self._make_upload_request(request, opener)
 
                 LOG.debug("Completed request to %s" % request.get_method())
 
             except urllib.error.HTTPError as e:
-                if attempt != max_attempts and e.code in [500, 503]:
+                if attempt != self.MAX_ATTEMPTS and e.code in [500, 503]:
                     LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
-                    time.sleep(float(attempt) * backoff)
+                    time.sleep(float(attempt) * self.BACKOFF)
                     attempt += 1
                     continue
                 elif e.code in [500, 503]:
                     raise ShotgunError("Got a %s response when uploading to %s: %s" % (e.code, storage_url, e))
                 else:
                     raise ShotgunError("Unanticipated error occurred uploading to %s: %s" % (storage_url, e))
-
+            except urllib.error.URLError as e:
+                LOG.debug("Got a '%s' response. Waiting and retrying..." % e)
+                time.sleep(float(attempt) * self.BACKOFF)
+                attempt += 1
+                continue
             else:
                 break
+        else:
+            raise ShotgunError("Max attemps limit reached.")
 
         etag = result.info()["Etag"]
         LOG.debug("Part upload completed successfully.")
@@ -4241,19 +4205,28 @@ class Shotgun(object):
 
         opener = self._build_opener(FormPostHandler)
 
-        # Perform the request
-        try:
-            resp = opener.open(url, params)
-            result = resp.read()
-            # response headers are in str(resp.info()).splitlines()
-        except urllib.error.HTTPError as e:
-            if e.code == 500:
-                raise ShotgunError("Server encountered an internal error. "
-                                   "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
-            else:
-                raise ShotgunError("Unanticipated error occurred %s" % (e))
+        attempt = 1
+        while attempt <= self.MAX_ATTEMPTS:
+            # Perform the request
+            try:
+                resp = opener.open(url, params)
+                result = resp.read()
+                # response headers are in str(resp.info()).splitlines()
+            except urllib.error.URLError as e:
+                LOG.debug("Got a %s response. Waiting and retrying..." % e)
+                time.sleep(float(attempt) * self.BACKOFF)
+                attempt += 1
+                continue
+            except urllib.error.HTTPError as e:
+                if e.code == 500:
+                    raise ShotgunError("Server encountered an internal error. "
+                                    "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
+                else:
+                    raise ShotgunError("Unanticipated error occurred %s" % (e))
 
-        return sgutils.ensure_text(result)
+            return sgutils.ensure_text(result)
+        else:
+            raise ShotgunError("Max attemps limit reached.")
 
 
 class CACertsHTTPSConnection(http_client.HTTPConnection):
@@ -4342,7 +4315,6 @@ class FormPostHandler(urllib.request.BaseHandler):
             # Per https://stackoverflow.com/a/27174474
             # use a random string as the boundary if none was provided --
             # use uuid since mimetools no longer exists in Python 3.
-            # We'll do this across both python 2/3 rather than add more branching.
             boundary = uuid.uuid4()
         if buffer is None:
             buffer = BytesIO()

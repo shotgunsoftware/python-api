@@ -273,6 +273,67 @@ class TestShotgunApi(base.LiveTestBase):
         # cleanup
         os.remove(file_path)
 
+    @patch('shotgun_api3.Shotgun._send_form')
+    def test_upload_to_sg(self, mock_send_form):
+        """
+        Upload an attachment tests for _upload_to_sg()
+        """
+        if "localhost" in self.server_url:
+            self.skipTest("upload / down tests skipped for localhost")
+
+        self.sg.server_info["s3_direct_uploads_enabled"] = False
+        mock_send_form.method.assert_called_once()
+        mock_send_form.return_value = "1\n:123\nasd"
+        this_dir, _ = os.path.split(__file__)
+        u_path = os.path.abspath(
+            os.path.expanduser(
+                glob.glob(os.path.join(str(this_dir), "Noëlご.jpg"))[0]
+            )
+        )
+        upload_id = self.sg.upload(
+            "Ticket",
+            self.ticket['id'],
+            u_path,
+            'attachments',
+            tag_list="monkeys, everywhere, send, help"
+        )
+        mock_send_form_args, _ = mock_send_form.call_args
+        display_name_to_send = mock_send_form_args[1].get("display_name", "")
+        self.assertTrue(isinstance(upload_id, int))
+        self.assertFalse(
+            display_name_to_send.startswith("b'") and
+            display_name_to_send.endswith("'")
+        )
+
+        upload_id = self.sg.upload(
+            "Ticket",
+            self.ticket['id'],
+            u_path,
+            'filmstrip_image',
+            tag_list="monkeys, everywhere, send, help",
+        )
+        self.assertTrue(isinstance(upload_id, int))
+        mock_send_form_args, _ = mock_send_form.call_args
+        display_name_to_send = mock_send_form_args[1].get("display_name", "")
+        self.assertTrue(isinstance(upload_id, int))
+        self.assertFalse(
+            display_name_to_send.startswith("b'") and
+            display_name_to_send.endswith("'")
+        )
+
+        mock_send_form.method.assert_called_once()
+        mock_send_form.return_value = "2\nIt can't be upload"
+        self.assertRaises(
+            shotgun_api3.ShotgunError,
+            self.sg.upload,
+            "Ticket",
+            self.ticket['id'],
+            u_path,
+            'attachments',
+            tag_list="monkeys, everywhere, send, help"
+        )
+        self.sg.server_info["s3_direct_uploads_enabled"] = True
+
     def test_upload_thumbnail_in_create(self):
         """Upload a thumbnail via the create method"""
         this_dir, _ = os.path.split(__file__)
@@ -2801,7 +2862,6 @@ def _get_path(url):
     For example, the url "https://foo.shotgunstudio.com/page/2128#Shot_1190_sr10101_034"
     returns "/page/2128"
     """
-    # url_parse returns native objects for older python versions (2.4)
     if isinstance(url, dict):
         return url.get('path')
     elif isinstance(url, tuple):
