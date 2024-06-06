@@ -1,7 +1,7 @@
 import base64
 import re
 
-from ... import pyparsing as pp
+from .. import pyparsing as pp
 
 from .error import *
 

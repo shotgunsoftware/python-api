@@ -12,11 +12,12 @@
 
 import os
 import unittest
-from .mock import patch
+import urllib
+import ssl
 import shotgun_api3 as api
-from shotgun_api3.shotgun import _is_mimetypes_broken
-from shotgun_api3.lib.six.moves import range, urllib
-from shotgun_api3.lib.httplib2 import Http, ssl_error_classes
+
+from .mock import patch
+from shotgun_api3.lib.httplib2 import Http
 
 
 class TestShotgunInit(unittest.TestCase):
@@ -470,8 +471,12 @@ class TestCerts(unittest.TestCase):
         certificate with httplib.
         """
         # First check that we get an error when trying to connect to a known dummy bad URL
-        self.assertRaises(ssl_error_classes, self._check_url_with_sg_api_httplib2, self.bad_url, self.certs)
-
+        self.assertRaises(
+            (ssl.SSLError, ssl.CertificateError),
+            self._check_url_with_sg_api_httplib2,
+            self.bad_url,
+            self.certs
+        )
         # Now check that the good urls connect properly using the certs
         for url in self.test_urls:
             response, message = self._check_url_with_sg_api_httplib2(url, self.certs)
@@ -490,21 +495,6 @@ class TestCerts(unittest.TestCase):
             response = self._check_url_with_urllib(url)
             assert (response is not None)
 
-
-class TestMimetypesFix(unittest.TestCase):
-    """
-    Makes sure that the mimetypes fix will be imported.
-    """
-
-    @patch('shotgun_api3.shotgun.sys')
-    def _test_mimetypes_import(self, platform, major, minor, patch_number, result, mock):
-        """
-        Mocks sys.platform and sys.version_info to test the mimetypes import code.
-        """
-
-        mock.version_info = [major, minor, patch_number]
-        mock.platform = platform
-        self.assertEqual(_is_mimetypes_broken(), result)
 
 if __name__ == '__main__':
     unittest.main()

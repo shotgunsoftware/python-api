@@ -4,26 +4,15 @@ import os
 import random
 import re
 import unittest
+import urllib
+import shotgun_api3 as api
+
+from configparser import ConfigParser
+from unittest import skip
 
 from . import mock
-
-import shotgun_api3 as api
 from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
-from shotgun_api3.lib import six
-from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib.six.moves.configparser import ConfigParser
-
-try:
-    # Attempt to import skip from unittest.  Since this was added in Python 2.7
-    # in the case that we're running on Python 2.6 we'll need a decorator to
-    # provide some equivalent functionality.
-    from unittest import skip
-except ImportError:
-    # On Python 2.6 we'll just have to ignore tests that are skipped -- we won't
-    # mark them as skipped, but we will not fail on them.
-    def skip(f):
-        return lambda self: None
 
 
 class TestBase(unittest.TestCase):
@@ -163,18 +152,11 @@ class MockTestBase(TestBase):
         if not isinstance(self.sg._http_request, mock.Mock):
             return
 
-        if not isinstance(data, six.string_types):
-            if six.PY2:
-                data = json.dumps(
-                    data,
-                    ensure_ascii=False,
-                    encoding="utf-8"
-                )
-            else:
-                data = json.dumps(
-                    data,
-                    ensure_ascii=False,
-                )
+        if not isinstance(data, str):
+            data = json.dumps(
+                data,
+                ensure_ascii=False,
+            )
 
         resp_headers = {'cache-control': 'no-cache',
                         'connection': 'close',
@@ -196,7 +178,7 @@ class MockTestBase(TestBase):
         """Asserts _http_request is called with the method and params."""
         args, _ = self.sg._http_request.call_args
         arg_body = args[2]
-        assert isinstance(arg_body, six.binary_type)
+        assert isinstance(arg_body, bytes)
         arg_body = json.loads(arg_body)
 
         arg_params = arg_body.get("params")

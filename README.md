@@ -47,7 +47,7 @@ Integration and unit tests are provided.
     - (Note: Running `pip install -r tests/ci_requirements.txt` will install this package)
 - A `tests/config` file (you can copy an example from `tests/example_config`).
 - Tests can be run individually like this: `nosetests --config="nose.cfg" tests/test_client.py`
-    - Make sure to not forget the `--config="nose.cfg"` option. This option tells nose to use our config file.  This will exclude python 2- and 3-specific files in the `/lib` directory, preventing a failure from being reported by nose for compilation due to incompatible syntax in those files.
+    - Make sure to not forget the `--config="nose.cfg"` option. This option tells nose to use our config file.  This will exclude python 3 specific files in the `/lib` directory, preventing a failure from being reported by nose for compilation due to incompatible syntax in those files.
 - `test_client` and `tests_unit` use mock server interaction and do not require a Flow Production Tracking instance to be available (no modifications to `tests/config` are necessary).
 - `test_api` and `test_api_long` *do* require a Flow Production Tracking instance, with a script key available for the tests. The server and script user values must be supplied in the `tests/config` file. The tests will add test data to your server based on information in your config. This data will be manipulated by the tests, and should not be used for other purposes.
 - To run all of the tests, use the shell script `run-tests`.
