@@ -18,7 +18,9 @@ from __future__ import print_function
 import datetime
 import sys
 import os
+from . import mock
 from .mock import patch, MagicMock
+import ssl
 import time
 import types
 import uuid
@@ -1899,6 +1901,100 @@ class TestErrors(base.TestBase):
         response.reason = 'reason'
         mock_request.return_value = (response, {})
         self.assertRaises(shotgun_api3.ProtocolError, self.sg.find_one, 'Shot', [])
+
+    @patch('shotgun_api3.shotgun.Http.request')
+    def test_make_call_retry(self, mock_request):
+        response = MagicMock(name="response mock", spec=dict)
+        response.status = 200
+        response.reason = 'reason'
+        mock_request.return_value = (response, {})
+
+        bak_rpc_attempt_interval = self.sg.config.rpc_attempt_interval
+        self.sg.config.rpc_attempt_interval = 0
+        try:
+            # First: make the request raise a consistent exception
+            mock_request.side_effect = Exception("not working")
+            with self.assertLogs(
+                'shotgun_api3', level='DEBUG'
+            ) as cm1, self.assertRaises(
+                Exception
+            ) as cm2:
+                self.sg.info()
+
+            self.assertEqual(cm2.exception.args[0], "not working")
+            log_content = "\n".join(cm1.output)
+            for i in [1,2]:
+                self.assertIn(
+                    f"Request failed, attempt {i} of 3.  Retrying",
+                    log_content,
+                )
+            self.assertIn(
+                "Request failed.  Giving up after 3 attempts.",
+                log_content,
+            )
+
+            # Then, make the exception happening only once and prove the
+            # retry works
+            def my_side_effect(*args, **kwargs):
+                try:
+                    if my_side_effect.counter<1:
+                        raise Exception("not working")
+
+                    return mock.DEFAULT
+                finally:
+                    my_side_effect.counter += 1
+
+            my_side_effect.counter = 0
+            mock_request.side_effect = my_side_effect
+            with self.assertLogs('shotgun_api3', level='DEBUG') as cm:
+                self.assertIsInstance(
+                    self.sg.info(),
+                    dict,
+                )
+
+            log_content = "\n".join(cm.output)
+            self.assertIn(
+                "Request failed, attempt 1 of 3.  Retrying",
+                log_content,
+            )
+            self.assertNotIn(
+                "Request failed, attempt 2 of 3.  Retrying",
+                log_content,
+            )
+
+            # Last: raise a SSLEOFError exception - SG-34910
+            def my_side_effect2(*args, **kwargs):
+                try:
+                    if my_side_effect2.counter<1:
+                        raise ssl.SSLEOFError(
+                            "EOF occurred in violation of protocol (_ssl.c:2426)"
+                        )
+
+                    return mock.DEFAULT
+                finally:
+                    my_side_effect2.counter += 1
+
+            my_side_effect2.counter = 0
+            mock_request.side_effect = my_side_effect2
+
+            with self.assertLogs('shotgun_api3', level='DEBUG') as cm:
+                self.assertIsInstance(
+                    self.sg.info(),
+                    dict,
+                )
+
+            log_content = "\n".join(cm.output)
+            self.assertIn("SSLEOFError", log_content)
+            self.assertIn(
+                "Request failed, attempt 1 of 3.  Retrying",
+                log_content,
+            )
+            self.assertNotIn(
+                "Request failed, attempt 2 of 3.  Retrying",
+                log_content,
+            )
+        finally:
+            self.sg.config.rpc_attempt_interval = bak_rpc_attempt_interval
 
     @patch('shotgun_api3.shotgun.Http.request')
     def test_sha2_error(self, mock_request):

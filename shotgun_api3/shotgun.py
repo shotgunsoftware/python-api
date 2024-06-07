@@ -42,6 +42,7 @@ import uuid                                # used for attachment upload
 import os
 import re
 import copy
+import ssl
 import stat                                # used for attachment upload
 import sys
 import time
@@ -111,14 +112,6 @@ Sometimes there are cases where certificate validation should be disabled. For e
 have a self-signed internal certificate that isn't included in our certificate bundle, you may
 not require the added security provided by enforcing this.
 """
-try:
-    import ssl
-except ImportError as e:
-    if "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
-        raise ImportError("%s. SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable prevents "
-                          "disabling SSL certificate validation." % e)
-    LOG.debug("ssl not found, disabling certificate validation")
-    NO_SSL_VALIDATION = True
 
 # ----------------------------------------------------------------------------
 # Version
@@ -3577,6 +3570,22 @@ class Shotgun(object):
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
+            except ssl.SSLEOFError as e:
+                # SG-34910 - EOF occurred in violation of protocol (_ssl.c:2426)
+                # This issue seems to be related to proxy and keep alive.
+                # It looks like, sometimes, the proxy drops the connection on
+                # the TCP/TLS level despites the keep-alive. So we need to close
+                # the connection and make a new attempt.
+                LOG.debug("SSLEOFError: {}".format(e))
+                self._close_connection()
+                if attempt == max_rpc_attempts:
+                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
+                    raise
+                # This is the exact same block as the "except Exception" bellow.
+                # We need to do it here because the next except will match it
+                # otherwise and will not re-attempt.
+                # When we drop support of Python 2 and we will probably drop the
+                # next except, we might want to remove this except too.
             except ssl_error_classes as e:
                 # Test whether the exception is due to the fact that this is an older version of
                 # Python that cannot validate certificates encrypted with SHA-2. If it is, then
@@ -3608,17 +3617,19 @@ class Shotgun(object):
 
                 self._close_connection()
                 if attempt == max_rpc_attempts:
+                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
             except Exception:
                 self._close_connection()
                 if attempt == max_rpc_attempts:
                     LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
-                LOG.debug(
-                    "Request failed, attempt %d of %d.  Retrying in %.2f seconds..." %
-                    (attempt, max_rpc_attempts, rpc_attempt_interval)
-                )
-                time.sleep(rpc_attempt_interval)
+
+            LOG.debug(
+                "Request failed, attempt %d of %d.  Retrying in %.2f seconds..." %
+                (attempt, max_rpc_attempts, rpc_attempt_interval)
+            )
+            time.sleep(rpc_attempt_interval)
 
     def _http_request(self, verb, path, body, headers):
         """
