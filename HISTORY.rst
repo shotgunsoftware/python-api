@@ -7,7 +7,7 @@ Here you can see the full list of changes between each Python API release.
 v3.6.1 (2024 Jun 6)
 ===================
 - Adds multi_entity_update_modes support to mockgun ``update()`` and ``batch()`` methods.
-- Implements a retry strategy only when encountering an URLError or SSLEOFError..
+- Implements a retry strategy only when encountering an URLError or SSLEOFError.
 - Fixes the issue with deleting prefix and suffix for ``display_name`` variable at the moment of upload for a local install.
 - Clarifies the use of ``_build_opener`` in ``download_attachment()``.
 
