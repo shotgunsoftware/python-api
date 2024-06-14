@@ -39,7 +39,6 @@ class TestBase(unittest.TestCase):
     note = None
     playlist = None
     task = None
-    ticket = None
     human_password = None
     server_url = None
     server_address = None
