@@ -172,7 +172,7 @@ class TestShotgunApi(base.LiveTestBase):
         size = os.stat(path).st_size
 
         attach_id = self.sg.upload("Version",
-                                   self.version['id'], path, 'attachments',
+                                   self.version['id'], path, 'sg_uploaded_movie',
                                    tag_list="monkeys, everywhere, send, help")
 
         # test download with attachment_id
@@ -202,11 +202,11 @@ class TestShotgunApi(base.LiveTestBase):
 
         # test download with attachment hash
         version = self.sg.find_one('Version', [['id', 'is', self.version['id']]],
-                                  ['attachments'])
+                                  ['sg_uploaded_movie'])
 
         # Look for the attachment we just uploaded, the attachments are not returned from latest
         # to earliest.
-        attachment = [x for x in version["attachments"] if x["id"] == attach_id]
+        attachment = [v for k, v in version["sg_uploaded_movie"].items() if (k, v) == ("id", attach_id)]
         self.assertEqual(len(attachment), 1)
 
         attachment = attachment[0]
@@ -257,7 +257,7 @@ class TestShotgunApi(base.LiveTestBase):
             "Version",
             self.version['id'],
             u_path,
-            'attachments',
+            'sg_uploaded_movie',
             tag_list="monkeys, everywhere, send, help"
         )
 
@@ -269,7 +269,7 @@ class TestShotgunApi(base.LiveTestBase):
             "Version",
             self.version['id'],
             u_path.encode("utf-8"),
-            'attachments',
+            'sg_uploaded_movie',
             tag_list="monkeys, everywhere, send, help"
         )
         if six.PY2:
@@ -293,7 +293,7 @@ class TestShotgunApi(base.LiveTestBase):
                 "Version",
                 self.version['id'],
                 file_path_u.encode("shift-jis"),
-                'attachments',
+                'sg_uploaded_movie',
                 tag_list="monkeys, everywhere, send, help"
             )
 
@@ -302,7 +302,7 @@ class TestShotgunApi(base.LiveTestBase):
                 "Version",
                 self.version['id'],
                 file_path_u,
-                'attachments',
+                'sg_uploaded_movie',
                 tag_list="monkeys, everywhere, send, help"
             )
 
