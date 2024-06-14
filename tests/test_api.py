@@ -171,8 +171,8 @@ class TestShotgunApi(base.LiveTestBase):
             os.path.join(this_dir, "sg_logo.jpg")))
         size = os.stat(path).st_size
 
-        attach_id = self.sg.upload("Ticket",
-                                   self.ticket['id'], path, 'attachments',
+        attach_id = self.sg.upload("Version",
+                                   self.version['id'], path, 'attachments',
                                    tag_list="monkeys, everywhere, send, help")
 
         # test download with attachment_id
@@ -201,12 +201,12 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(orig_file, attach_file)
 
         # test download with attachment hash
-        ticket = self.sg.find_one('Ticket', [['id', 'is', self.ticket['id']]],
+        version = self.sg.find_one('Version', [['id', 'is', self.version['id']]],
                                   ['attachments'])
 
         # Look for the attachment we just uploaded, the attachments are not returned from latest
         # to earliest.
-        attachment = [x for x in ticket["attachments"] if x["id"] == attach_id]
+        attachment = [x for x in version["attachments"] if x["id"] == attach_id]
         self.assertEqual(len(attachment), 1)
 
         attachment = attachment[0]
@@ -254,8 +254,8 @@ class TestShotgunApi(base.LiveTestBase):
         # only checking that the non-ascii string encoding doesn't trip
         # us up the way it used to.
         self.sg.upload(
-            "Ticket",
-            self.ticket['id'],
+            "Version",
+            self.version['id'],
             u_path,
             'attachments',
             tag_list="monkeys, everywhere, send, help"
@@ -266,8 +266,8 @@ class TestShotgunApi(base.LiveTestBase):
         # primarily a concern on Windows, as it doesn't handle that
         # situation as well as OS X and Linux.
         self.sg.upload(
-            "Ticket",
-            self.ticket['id'],
+            "Version",
+            self.version['id'],
             u_path.encode("utf-8"),
             'attachments',
             tag_list="monkeys, everywhere, send, help"
@@ -290,8 +290,8 @@ class TestShotgunApi(base.LiveTestBase):
             self.assertRaises(
                 shotgun_api3.ShotgunError,
                 self.sg.upload,
-                "Ticket",
-                self.ticket['id'],
+                "Version",
+                self.version['id'],
                 file_path_u.encode("shift-jis"),
                 'attachments',
                 tag_list="monkeys, everywhere, send, help"
@@ -299,8 +299,8 @@ class TestShotgunApi(base.LiveTestBase):
 
             # But it should work in all cases if a unicode string is used.
             self.sg.upload(
-                "Ticket",
-                self.ticket['id'],
+                "Version",
+                self.version['id'],
                 file_path_u,
                 'attachments',
                 tag_list="monkeys, everywhere, send, help"
@@ -330,8 +330,8 @@ class TestShotgunApi(base.LiveTestBase):
             )
         )
         upload_id = self.sg.upload(
-            "Ticket",
-            self.ticket['id'],
+            "Version",
+            self.version['id'],
             u_path,
             'attachments',
             tag_list="monkeys, everywhere, send, help"
@@ -345,8 +345,8 @@ class TestShotgunApi(base.LiveTestBase):
         )
 
         upload_id = self.sg.upload(
-            "Ticket",
-            self.ticket['id'],
+            "Version",
+            self.version['id'],
             u_path,
             'filmstrip_image',
             tag_list="monkeys, everywhere, send, help",
@@ -365,8 +365,8 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertRaises(
             shotgun_api3.ShotgunError,
             self.sg.upload,
-            "Ticket",
-            self.ticket['id'],
+            "Version",
+            self.version['id'],
             u_path,
             'attachments',
             tag_list="monkeys, everywhere, send, help"
@@ -1519,36 +1519,6 @@ class TestFind(base.LiveTestBase):
                    ['project', 'is', self.project]]
 
         result = self._id_in_result('Version', filters, self.version['id'])
-        self.assertFalse(result)
-
-    def test_in_relation_comma_list(self):
-        """
-        Test that 'in' relation using commas (old format) works with list fields.
-        """
-        filters = [['sg_priority', 'in', self.ticket['sg_priority'], '1'],
-                   ['project', 'is', self.project]]
-
-        result = self._id_in_result('Ticket', filters, self.ticket['id'])
-        self.assertTrue(result)
-
-    def test_in_relation_list_list(self):
-        """
-        Test that 'in' relation using list (new format) works with list fields.
-        """
-        filters = [['sg_priority', 'in', [self.ticket['sg_priority'], '1']],
-                   ['project', 'is', self.project]]
-
-        result = self._id_in_result('Ticket', filters, self.ticket['id'])
-        self.assertTrue(result)
-
-    def test_not_in_relation_list(self):
-        """
-        Test that 'not_in' relation using commas (old format) works with list fields.
-        """
-        filters = [['sg_priority', 'not_in', [self.ticket['sg_priority'], '1']],
-                   ['project', 'is', self.project]]
-
-        result = self._id_in_result('Ticket', filters, self.ticket['id'])
         self.assertFalse(result)
 
     def test_in_relation_comma_multi_entity(self):

@@ -227,9 +227,6 @@ class MockTestBase(TestBase):
         self.version = {'id': 5,
                         'code': self.config.version_code,
                         'type': 'Version'}
-        self.ticket = {'id': 6,
-                       'title': self.config.ticket_title,
-                       'type': 'Ticket'}
         self.playlist = {'id': 7,
                          'code': self.config.playlist_code,
                          'type': 'Playlist'}
@@ -329,12 +326,6 @@ class LiveTestBase(TestBase):
                 'task_assignees': [cls.human_user],
                 'sg_status_list': 'ip'}
         cls.task = _find_or_create_entity(sg, 'Task', data, keys)
-
-        data = {'project': cls.project,
-                'title': cls.config.ticket_title,
-                'sg_priority': '3'}
-        keys = ['title', 'project', 'sg_priority']
-        cls.ticket = _find_or_create_entity(sg, 'Ticket', data, keys)
 
         keys = ['code']
         data = {'code': 'api wrapper test storage',
