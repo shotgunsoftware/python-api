@@ -397,7 +397,7 @@ class SgTestConfig(object):
             'api_key', 'asset_code', 'http_proxy', 'human_login', 'human_name',
             'human_password', 'mock', 'project_name', 'script_name',
             'server_url', 'session_uuid', 'shot_code', 'task_content',
-            'version_code', 'playlist_code', 'ticket_title'
+            'version_code', 'playlist_code'
         ]
 
     def read_config(self, config_path):
