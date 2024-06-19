@@ -26,6 +26,7 @@ tests/config
 .travis-solo
 htmlcov
 test-output.xml
+coverage.xml
 
 # setup related
 build

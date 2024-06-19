@@ -39,7 +39,6 @@ class TestBase(unittest.TestCase):
     note = None
     playlist = None
     task = None
-    ticket = None
     human_password = None
     server_url = None
     server_address = None
@@ -227,9 +226,6 @@ class MockTestBase(TestBase):
         self.version = {'id': 5,
                         'code': self.config.version_code,
                         'type': 'Version'}
-        self.ticket = {'id': 6,
-                       'title': self.config.ticket_title,
-                       'type': 'Ticket'}
         self.playlist = {'id': 7,
                          'code': self.config.playlist_code,
                          'type': 'Playlist'}
@@ -264,11 +260,18 @@ class LiveTestBase(TestBase):
         # When running the tests from a pull request from a client, the Shotgun
         # site URL won't be set, so do not attempt to connect to Shotgun.
         if cls.config.server_url:
-            sg = api.Shotgun(
-                cls.config.server_url,
-                cls.config.script_name,
-                cls.config.api_key
-            )
+            if cls.config.jenkins:
+                sg = api.Shotgun(
+                    cls.config.server_url,
+                    login=cls.config.human_login,
+                    password=cls.config.human_password
+                )
+            else:
+                sg = api.Shotgun(
+                    cls.config.server_url,
+                    cls.config.script_name,
+                    cls.config.api_key
+                )
             cls.sg_version = tuple(sg.info()['version'][:3])
             cls._setup_db(cls.config, sg)
 
@@ -329,12 +332,6 @@ class LiveTestBase(TestBase):
                 'task_assignees': [cls.human_user],
                 'sg_status_list': 'ip'}
         cls.task = _find_or_create_entity(sg, 'Task', data, keys)
-
-        data = {'project': cls.project,
-                'title': cls.config.ticket_title,
-                'sg_priority': '3'}
-        keys = ['title', 'project', 'sg_priority']
-        cls.ticket = _find_or_create_entity(sg, 'Ticket', data, keys)
 
         keys = ['code']
         data = {'code': 'api wrapper test storage',
@@ -406,7 +403,7 @@ class SgTestConfig(object):
             'api_key', 'asset_code', 'http_proxy', 'human_login', 'human_name',
             'human_password', 'mock', 'project_name', 'script_name',
             'server_url', 'session_uuid', 'shot_code', 'task_content',
-            'version_code', 'playlist_code', 'ticket_title'
+            'version_code', 'playlist_code', 'jenkins'
         ]
 
     def read_config(self, config_path):
