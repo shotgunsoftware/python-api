@@ -260,11 +260,18 @@ class LiveTestBase(TestBase):
         # When running the tests from a pull request from a client, the Shotgun
         # site URL won't be set, so do not attempt to connect to Shotgun.
         if cls.config.server_url:
-            sg = api.Shotgun(
-                cls.config.server_url,
-                cls.config.script_name,
-                cls.config.api_key
-            )
+            if cls.config.jenkins:
+                sg = api.Shotgun(
+                    cls.config.server_url,
+                    login=cls.config.human_login,
+                    password=cls.config.human_password
+                )
+            else:
+                sg = api.Shotgun(
+                    cls.config.server_url,
+                    cls.config.script_name,
+                    cls.config.api_key
+                )
             cls.sg_version = tuple(sg.info()['version'][:3])
             cls._setup_db(cls.config, sg)
 
@@ -396,7 +403,7 @@ class SgTestConfig(object):
             'api_key', 'asset_code', 'http_proxy', 'human_login', 'human_name',
             'human_password', 'mock', 'project_name', 'script_name',
             'server_url', 'session_uuid', 'shot_code', 'task_content',
-            'version_code', 'playlist_code'
+            'version_code', 'playlist_code', 'jenkins'
         ]
 
     def read_config(self, config_path):
