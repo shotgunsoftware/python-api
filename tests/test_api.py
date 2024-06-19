@@ -1521,6 +1521,36 @@ class TestFind(base.LiveTestBase):
         result = self._id_in_result('Version', filters, self.version['id'])
         self.assertFalse(result)
 
+    def test_in_relation_comma_list(self):
+        """
+        Test that 'in' relation using commas (old format) works with list fields.
+        """
+        filters = [['frame_count', 'in', self.version['frame_count'], 33],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Version', filters, self.version['id'])
+        self.assertTrue(result)
+
+    def test_in_relation_list_list(self):
+        """
+        Test that 'in' relation using list (new format) works with list fields.
+        """
+        filters = [['frame_count', 'in', [self.version['frame_count'], 33]],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Version', filters, self.version['id'])
+        self.assertTrue(result)
+
+    def test_not_in_relation_list(self):
+        """
+        Test that 'not_in' relation using commas (old format) works with list fields.
+        """
+        filters = [['frame_count', 'not_in', [self.version['frame_count'], 33]],
+                   ['project', 'is', self.project]]
+
+        result = self._id_in_result('Version', filters, self.version['id'])
+        self.assertFalse(result)
+
     def test_in_relation_comma_multi_entity(self):
         """
         Test that 'in' relation using commas (old format) works with multi_entity fields.
