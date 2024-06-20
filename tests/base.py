@@ -59,6 +59,14 @@ class TestBase(unittest.TestCase):
         cur_folder = os.path.dirname(os.path.abspath(__file__))
         config_path = os.path.join(cur_folder, "config")
         cls.config.read_config(config_path)
+        if cls.config.jenkins:
+            cls.auth_args = dict(
+                login=cls.config.human_login, password=cls.config.human_password
+            )
+        else:
+            cls.auth_args = dict(
+                script_name=cls.config.script_name, api_key=cls.config.api_key
+            )
 
     def setUp(self, auth_mode='ApiUser'):
         # When running the tests from a pull request from a client, the Shotgun
@@ -90,9 +98,8 @@ class TestBase(unittest.TestCase):
             # first make an instance based on script key/name so
             # we can generate a session token
             sg = api.Shotgun(self.config.server_url,
-                             self.config.script_name,
-                             self.config.api_key,
-                             http_proxy=self.config.http_proxy)
+                             http_proxy=self.config.http_proxy,
+                             **self.auth_args)
             self.session_token = sg.get_session_token()
             # now log in using session token
             self.sg = api.Shotgun(self.config.server_url,
@@ -234,7 +241,9 @@ class MockTestBase(TestBase):
 class LiveTestBase(TestBase):
     '''Test base for tests relying on connection to server.'''
 
-    def setUp(self, auth_mode='ApiUser'):
+    def setUp(self, auth_mode=None):
+        if not auth_mode:
+            auth_mode = 'HumanUser' if self.config.jenkins else 'ApiUser'
         super(LiveTestBase, self).setUp(auth_mode)
         if self.sg.server_caps.version and \
            self.sg.server_caps.version >= (3, 3, 0) and \
@@ -260,18 +269,10 @@ class LiveTestBase(TestBase):
         # When running the tests from a pull request from a client, the Shotgun
         # site URL won't be set, so do not attempt to connect to Shotgun.
         if cls.config.server_url:
-            if cls.config.jenkins:
-                sg = api.Shotgun(
-                    cls.config.server_url,
-                    login=cls.config.human_login,
-                    password=cls.config.human_password
-                )
-            else:
-                sg = api.Shotgun(
-                    cls.config.server_url,
-                    cls.config.script_name,
-                    cls.config.api_key
-                )
+            sg = api.Shotgun(
+                cls.config.server_url,
+                **cls.auth_args,
+            )
             cls.sg_version = tuple(sg.info()['version'][:3])
             cls._setup_db(cls.config, sg)
 

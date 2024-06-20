@@ -820,9 +820,8 @@ class TestShotgunApi(base.LiveTestBase):
     def test_ensure_ascii(self):
         '''test_ensure_ascii tests ensure_unicode flag.'''
         sg_ascii = shotgun_api3.Shotgun(self.config.server_url,
-                                        self.config.script_name,
-                                        self.config.api_key,
-                                        ensure_ascii=True)
+                                        ensure_ascii=True,
+                                        **self.auth_args)
 
         result = sg_ascii.find_one('Note', [['id', 'is', self.note['id']]], fields=['content'])
         if six.PY2:
@@ -832,9 +831,8 @@ class TestShotgunApi(base.LiveTestBase):
     def test_ensure_unicode(self):
         '''test_ensure_unicode tests ensure_unicode flag.'''
         sg_unicode = shotgun_api3.Shotgun(self.config.server_url,
-                                          self.config.script_name,
-                                          self.config.api_key,
-                                          ensure_ascii=False)
+                                          ensure_ascii=False,
+                                          **self.auth_args)
         result = sg_unicode.find_one('Note', [['id', 'is', self.note['id']]], fields=['content'])
         self.assertTrue(_has_unicode(result))
 
@@ -1069,8 +1067,7 @@ class TestDataTypes(base.LiveTestBase):
 
     def test_set_multi_entity(self):
         sg = shotgun_api3.Shotgun(self.config.server_url,
-                                  self.config.script_name,
-                                  self.config.api_key)
+                                  **self.auth_args)
         keys = ['project', 'user', 'code']
         data = {'project': self.project,
                 'user': self.human_user,
@@ -1205,19 +1202,17 @@ class TestUtc(base.LiveTestBase):
 
     def test_convert_to_utc(self):
         sg_utc = shotgun_api3.Shotgun(self.config.server_url,
-                                      self.config.script_name,
-                                      self.config.api_key,
                                       http_proxy=self.config.http_proxy,
-                                      convert_datetimes_to_utc=True)
+                                      convert_datetimes_to_utc=True,
+                                      **self.auth_args)
         self._assert_expected(sg_utc, self.datetime_none, self.datetime_local)
         self._assert_expected(sg_utc, self.datetime_local, self.datetime_local)
 
     def test_no_convert_to_utc(self):
         sg_no_utc = shotgun_api3.Shotgun(self.config.server_url,
-                                         self.config.script_name,
-                                         self.config.api_key,
                                          http_proxy=self.config.http_proxy,
-                                         convert_datetimes_to_utc=False)
+                                         convert_datetimes_to_utc=False,
+                                         **self.auth_args)
         self._assert_expected(sg_no_utc, self.datetime_none, self.datetime_none)
         self._assert_expected(sg_no_utc, self.datetime_utc, self.datetime_none)
 
@@ -1853,6 +1848,10 @@ class TestFollow(base.LiveTestBase):
 
 
 class TestErrors(base.TestBase):
+    def setUp(self):
+        auth_mode = "HumanUser" if self.config.jenkins else "ApiUser"
+        super(TestErrors, self).setUp(auth_mode)
+
     def test_bad_auth(self):
         '''test_bad_auth invalid script name or api key raises fault'''
         server_url = self.config.server_url
@@ -2079,7 +2078,7 @@ class TestErrors(base.TestBase):
             # Try to upload a bogus file
             self.sg.upload('Note', 1234, thumbnail_path)
         except shotgun_api3.ShotgunError as e:
-            self.assertFalse(self.api_key in str(e))
+            self.assertFalse(str(self.api_key) in str(e))
             return
 
         # You should never get here... Otherwise some mocking failed and the
@@ -2114,7 +2113,8 @@ class TestErrors(base.TestBase):
 
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
-        super(TestScriptUserSudoAuth, self).setUp('ApiUser')
+        auth_mode = "HumanUser" if self.config.jenkins else "ApiUser"
+        super(TestScriptUserSudoAuth, self).setUp(auth_mode)
 
         self.sg.update(
             'HumanUser',
@@ -2131,10 +2131,9 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
             return
 
         x = shotgun_api3.Shotgun(self.config.server_url,
-                                 self.config.script_name,
-                                 self.config.api_key,
                                  http_proxy=self.config.http_proxy,
-                                 sudo_as_login=self.config.human_login)
+                                 sudo_as_login=self.config.human_login,
+                                 **self.auth_args)
 
         data = {
             'project': self.project,
@@ -2340,10 +2339,9 @@ class TestProjectLastAccessedByCurrentUser(base.LiveTestBase):
             return
 
         sg = shotgun_api3.Shotgun(self.config.server_url,
-                                  self.config.script_name,
-                                  self.config.api_key,
                                   http_proxy=self.config.http_proxy,
-                                  sudo_as_login=self.config.human_login)
+                                  sudo_as_login=self.config.human_login,
+                                  **self.auth_args)
 
         initial = sg.find_one('Project', [['id', 'is', self.project['id']]], ['last_accessed_by_current_user'])
         time.sleep(1)
