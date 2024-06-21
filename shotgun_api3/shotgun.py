@@ -3441,7 +3441,7 @@ class Shotgun(object):
                 break
 
         response = self._decode_response(resp_headers, body)
-        self._response_errors(response)
+        self._response_errors(response, payload)
         response = self._transform_inbound(response)
 
         if not isinstance(response, dict) or "results" not in response:
@@ -3740,7 +3740,7 @@ class Shotgun(object):
             return newdict
         return json.loads(body, object_hook=_decode_dict)
 
-    def _response_errors(self, sg_response):
+    def _response_errors(self, sg_response, payload=None):
         """
         Raise any API errors specified in the response.
 
@@ -3770,6 +3770,8 @@ class Shotgun(object):
                                     "allowed for an SSO-enabled Flow Production Tracking site")
                 )
             elif sg_response.get("error_code") == ERR_OXYG:
+                if payload:
+                    print(f"{payload=}")
                 raise UserCredentialsNotAllowedForOxygenAuthenticationFault(
                     sg_response.get("message", "Authentication using username/password is not "
                                     "allowed for an Autodesk Identity enabled Flow Production Tracking site")
