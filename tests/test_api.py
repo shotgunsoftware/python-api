@@ -1849,7 +1849,7 @@ class TestFollow(base.LiveTestBase):
 
 class TestErrors(base.TestBase):
     def setUp(self):
-        auth_mode = "SessionToken" if self.config.jenkins else "ApiUser"
+        auth_mode = "HumanUser" if self.config.jenkins else "ApiUser"
         super(TestErrors, self).setUp(auth_mode)
 
     def test_bad_auth(self):
@@ -2113,7 +2113,7 @@ class TestErrors(base.TestBase):
 
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
-        auth_mode = "SessionToken" if self.config.jenkins else "ApiUser"
+        auth_mode = "HumanUser" if self.config.jenkins else "ApiUser"
         super(TestScriptUserSudoAuth, self).setUp(auth_mode)
 
         self.sg.update(
@@ -2122,7 +2122,6 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
             {'projects': [self.project]},
         )
 
-    @base.skipIf(os.environ.get("SG_JENKINS"), "We don't have script credentials in Jenkins")
     def test_user_is_creator(self):
         """
         Test 'sudo_as_login' option: on create, ensure appropriate user is set in created-by

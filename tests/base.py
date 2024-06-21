@@ -18,7 +18,7 @@ try:
     # Attempt to import skip from unittest.  Since this was added in Python 2.7
     # in the case that we're running on Python 2.6 we'll need a decorator to
     # provide some equivalent functionality.
-    from unittest import skip, skipIf
+    from unittest import skip
 except ImportError:
     # On Python 2.6 we'll just have to ignore tests that are skipped -- we won't
     # mark them as skipped, but we will not fail on them.
@@ -60,19 +60,9 @@ class TestBase(unittest.TestCase):
         config_path = os.path.join(cur_folder, "config")
         cls.config.read_config(config_path)
         if cls.config.jenkins:
-            sg = api.Shotgun(
-                cls.config.server_url,
-                login=cls.config.human_login,
-                password=cls.config.human_password,
-            )
             cls.auth_args = dict(
-                session_token=sg.get_session_token()
+                login=cls.config.human_login, password=cls.config.human_password
             )
-            # DEBUG
-            foo = sg.find("HumanUser", [], ["id", "email", "firstname", "lastname", "name", "oxygen_user_id"])
-            from pprint import pprint
-            print(">>>> HumanUsers")
-            pprint(foo)
         else:
             cls.auth_args = dict(
                 script_name=cls.config.script_name, api_key=cls.config.api_key
@@ -253,7 +243,7 @@ class LiveTestBase(TestBase):
 
     def setUp(self, auth_mode=None):
         if not auth_mode:
-            auth_mode = 'SessionToken' if self.config.jenkins else 'ApiUser'
+            auth_mode = 'HumanUser' if self.config.jenkins else 'ApiUser'
         super(LiveTestBase, self).setUp(auth_mode)
         if self.sg.server_caps.version and \
            self.sg.server_caps.version >= (3, 3, 0) and \
@@ -293,6 +283,9 @@ class LiveTestBase(TestBase):
 
         data = {'name': cls.config.human_name,
                 'login': cls.config.human_login,
+                'email': 'admin@something.com',
+                'firstname': 'adsk',
+                'lastname': 'admin',
                 'password_proxy': cls.config.human_password}
         if cls.sg_version >= (3, 0, 0):
             data['locked_until'] = None
