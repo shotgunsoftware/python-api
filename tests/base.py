@@ -18,7 +18,7 @@ try:
     # Attempt to import skip from unittest.  Since this was added in Python 2.7
     # in the case that we're running on Python 2.6 we'll need a decorator to
     # provide some equivalent functionality.
-    from unittest import skip
+    from unittest import skip, skipIf
 except ImportError:
     # On Python 2.6 we'll just have to ignore tests that are skipped -- we won't
     # mark them as skipped, but we will not fail on them.
@@ -60,13 +60,19 @@ class TestBase(unittest.TestCase):
         config_path = os.path.join(cur_folder, "config")
         cls.config.read_config(config_path)
         if cls.config.jenkins:
+            sg = api.Shotgun(
+                cls.config.server_url,
+                login=cls.config.human_login,
+                password=cls.config.human_password,
+            )
             cls.auth_args = dict(
-                login=cls.config.human_login, password=cls.config.human_password
+                session_token=sg.get_session_token()
             )
         else:
             cls.auth_args = dict(
                 script_name=cls.config.script_name, api_key=cls.config.api_key
             )
+        print(f">>> {cls.auth_args=}")  # TODO: remove me
 
     def setUp(self, auth_mode='ApiUser'):
         # When running the tests from a pull request from a client, the Shotgun
@@ -81,19 +87,6 @@ class TestBase(unittest.TestCase):
         self.api_key = self.config.api_key
         self.http_proxy = self.config.http_proxy
         self.session_uuid = self.config.session_uuid
-
-        print(f">>> setUp {auth_mode=} with {self.human_login} {self.human_password}")  # TODO: remove me
-        print("-----------")
-        test_sg = api.Shotgun(self.config.server_url,
-                                  login=self.human_login,
-                                  password=self.human_password,
-                                  http_proxy=self.config.http_proxy)
-        session_token = test_sg.get_session_token()
-        print(f">>> {session_token=}")
-        test_sg2 = api.Shotgun(self.config.server_url, session_token=session_token)
-        foo = test_sg2.schema_field_read("Task")
-        print(f">>> {foo=}")
-        print("-----------")
 
         if auth_mode == 'ApiUser':
             self.sg = api.Shotgun(self.config.server_url,
@@ -256,7 +249,7 @@ class LiveTestBase(TestBase):
 
     def setUp(self, auth_mode=None):
         if not auth_mode:
-            auth_mode = 'HumanUser' if self.config.jenkins else 'ApiUser'
+            auth_mode = 'SessionToken' if self.config.jenkins else 'ApiUser'
         super(LiveTestBase, self).setUp(auth_mode)
         if self.sg.server_caps.version and \
            self.sg.server_caps.version >= (3, 3, 0) and \
