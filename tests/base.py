@@ -68,11 +68,15 @@ class TestBase(unittest.TestCase):
             cls.auth_args = dict(
                 session_token=sg.get_session_token()
             )
+            # DEBUG
+            foo = sg.find("HumanUser", [], ["id", "email", "firstname", "lastname", "name", "oxygen_user_id"])
+            from pprint import pprint
+            print(">>>> HumanUsers")
+            pprint(foo)
         else:
             cls.auth_args = dict(
                 script_name=cls.config.script_name, api_key=cls.config.api_key
             )
-        print(f">>> {cls.auth_args=}")  # TODO: remove me
 
     def setUp(self, auth_mode='ApiUser'):
         # When running the tests from a pull request from a client, the Shotgun

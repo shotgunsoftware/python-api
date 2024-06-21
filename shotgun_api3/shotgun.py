@@ -3771,7 +3771,7 @@ class Shotgun(object):
                 )
             elif sg_response.get("error_code") == ERR_OXYG:
                 if payload:
-                    print(f"{payload=}")
+                    print(f">>> Payload {payload}")
                 raise UserCredentialsNotAllowedForOxygenAuthenticationFault(
                     sg_response.get("message", "Authentication using username/password is not "
                                     "allowed for an Autodesk Identity enabled Flow Production Tracking site")
