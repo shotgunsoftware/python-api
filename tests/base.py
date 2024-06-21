@@ -83,6 +83,17 @@ class TestBase(unittest.TestCase):
         self.session_uuid = self.config.session_uuid
 
         print(f">>> setUp {auth_mode=} with {self.human_login} {self.human_password}")  # TODO: remove me
+        print("-----------")
+        test_sg = api.Shotgun(self.config.server_url,
+                                  login=self.human_login,
+                                  password=self.human_password,
+                                  http_proxy=self.config.http_proxy)
+        session_token = test_sg.get_session_token()
+        print(f">>> {session_token=}")
+        test_sg2 = api.Shotgun(self.config.server_url, session_token=session_token)
+        foo = test_sg2.schema_field_read("Task")
+        print(f">>> {foo=}")
+        print("-----------")
 
         if auth_mode == 'ApiUser':
             self.sg = api.Shotgun(self.config.server_url,
@@ -400,7 +411,6 @@ class SgTestConfig(object):
             if key in ['mock']:
                 value = (value is None) or (str(value).lower() in ['true', '1'])
             setattr(self, key, value)
-            print(f">>> setting config {key} to {value}")  # TODO: remove me
 
     def config_keys(self):
         return [
@@ -420,7 +430,6 @@ class SgTestConfig(object):
                 if not getattr(self, option, None):
                     value = config_parser.get(section, option)
                     setattr(self, option, value)
-                    print(f">>> setting config via file {option} to {value}")  # TODO: remove me
 
 
 def _find_or_create_entity(sg, entity_type, data, identifyiers=None):
