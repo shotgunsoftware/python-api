@@ -283,9 +283,6 @@ class LiveTestBase(TestBase):
 
         data = {'name': cls.config.human_name,
                 'login': cls.config.human_login,
-                'email': 'admin@something.com',
-                'firstname': 'adsk',
-                'lastname': 'admin',
                 'password_proxy': cls.config.human_password}
         if cls.sg_version >= (3, 0, 0):
             data['locked_until'] = None
