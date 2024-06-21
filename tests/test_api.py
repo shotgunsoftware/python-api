@@ -2113,8 +2113,7 @@ class TestErrors(base.TestBase):
 
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
-        auth_mode = "HumanUser" if self.config.jenkins else "ApiUser"
-        super(TestScriptUserSudoAuth, self).setUp(auth_mode)
+        super(TestScriptUserSudoAuth, self).setUp()
 
         self.sg.update(
             'HumanUser',
