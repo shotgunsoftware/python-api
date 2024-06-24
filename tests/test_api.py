@@ -2539,6 +2539,10 @@ class TestNoteThreadRead(base.LiveTestBase):
         """
         if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
             return
+        
+        user_entity = "ApiUser"
+        if self.config.jenkins:
+            user_entity = "HumanUser"
 
         # create note
         note = self.sg.create("Note", {"content": "Test!", "project": self.project})
@@ -2550,21 +2554,21 @@ class TestNoteThreadRead(base.LiveTestBase):
 
         d = self.sg.find_one("Note",
                              [["id", "is", note["id"]]],
-                             ["created_by", "created_by.HumanUser.image"])
+                             ["created_by", f"created_by.{user_entity}.image"])
 
-        current_thumbnail = d["created_by.HumanUser.image"]
+        current_thumbnail = d[f"created_by.{user_entity}.image"]
 
         if current_thumbnail is None:
             # upload thumbnail
-            self.sg.upload_thumbnail("HumanUser",
+            self.sg.upload_thumbnail(user_entity,
                                      d["created_by"]["id"],
                                      self._thumbnail_path)
 
             d = self.sg.find_one("Note",
                                  [["id", "is", note["id"]]],
-                                 ["created_by", "created_by.HumanUser.image"])
+                                 ["created_by", f"created_by.{user_entity}.image"])
 
-            current_thumbnail = d["created_by.HumanUser.image"]
+            current_thumbnail = d[f"created_by.{user_entity}.image"]
 
         # get thread
         result = self.sg.note_thread_read(note["id"])
