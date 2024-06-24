@@ -3034,7 +3034,11 @@ def _get_path(url):
 def find_one_await_thumbnail(sg, entity_type, filters, fields=["image"], thumbnail_field_name="image", **kwargs):
     attempts = 0
     result = sg.find_one(entity_type, filters, fields=fields, **kwargs)
-    while attempts < THUMBNAIL_MAX_ATTEMPTS and TRANSIENT_IMAGE_PATH in result.get(thumbnail_field_name):
+    while (
+        attempts < THUMBNAIL_MAX_ATTEMPTS
+        and result[thumbnail_field_name]
+        and TRANSIENT_IMAGE_PATH in result[thumbnail_field_name]
+    ):
         time.sleep(THUMBNAIL_RETRY_INTERAL)
         result = sg.find_one(entity_type, filters, fields=fields, **kwargs)
         attempts += 1
