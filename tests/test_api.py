@@ -2173,7 +2173,7 @@ class TestHumanUserSudoAuth(base.TestBase):
                                  login=self.config.human_login,
                                  password=self.config.human_password,
                                  http_proxy=self.config.http_proxy,
-                                 sudo_as_login="norberto.moreno@autodesk.com")
+                                 sudo_as_login="blah")
         self.assertRaises(shotgun_api3.Fault, x.find_one, 'Shot', [])
         expected = "The user does not have permission to 'sudo':"
         try:
@@ -2494,7 +2494,10 @@ class TestNoteThreadRead(base.LiveTestBase):
                                      [["id", "is", note_id]],
                                      list(expected_fields))
         # remove images before comparison
-        if "created_by.HumanUser.image" in note_data:
+        if (
+            "created_by.HumanUser.image" in note_data
+            and "created_by.HumanUser.image" in data
+        ):
             note_data.pop("created_by.HumanUser.image")
             data.pop("created_by.HumanUser.image")
         self.assertEqual(note_data, data)
@@ -2528,7 +2531,7 @@ class TestNoteThreadRead(base.LiveTestBase):
                                            list(expected_fields))
 
         # remove images before comparison
-        if "this_file" in attachment_data:
+        if "this_file" in attachment_data and "this_file" in data:
             attachment_data["this_file"].pop("url")
             data["this_file"].pop("url")
         self.assertEqual(attachment_data, data)
@@ -2542,7 +2545,7 @@ class TestNoteThreadRead(base.LiveTestBase):
         """
         if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
             return
-        
+
         user_entity = "ApiUser"
         if self.config.jenkins:
             user_entity = "HumanUser"
