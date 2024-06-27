@@ -2541,9 +2541,7 @@ class TestNoteThreadRead(base.LiveTestBase):
         if not self.sg.server_caps.version or self.sg.server_caps.version < (6, 2, 0):
             return
 
-        user_entity = "ApiUser"
-        if self.config.jenkins:
-            user_entity = "HumanUser"
+        user_entity = "HumanUser" if self.config.jenkins else "ApiUser"
 
         # create note
         note = self.sg.create("Note", {"content": "Test!", "project": self.project})
