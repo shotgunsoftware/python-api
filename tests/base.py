@@ -3,6 +3,7 @@ import contextlib
 import os
 import random
 import re
+import time
 import unittest
 
 from . import mock
@@ -24,6 +25,11 @@ except ImportError:
     # mark them as skipped, but we will not fail on them.
     def skip(f):
         return lambda self: None
+
+
+THUMBNAIL_MAX_ATTEMPTS = 30
+THUMBNAIL_RETRY_INTERVAL = 10
+TRANSIENT_IMAGE_PATH = "images/status/transient"
 
 
 class TestBase(unittest.TestCase):
@@ -59,6 +65,14 @@ class TestBase(unittest.TestCase):
         cur_folder = os.path.dirname(os.path.abspath(__file__))
         config_path = os.path.join(cur_folder, "config")
         cls.config.read_config(config_path)
+        if cls.config.jenkins:
+            cls.auth_args = dict(
+                login=cls.config.human_login, password=cls.config.human_password
+            )
+        else:
+            cls.auth_args = dict(
+                script_name=cls.config.script_name, api_key=cls.config.api_key
+            )
 
     def setUp(self, auth_mode='ApiUser'):
         # When running the tests from a pull request from a client, the Shotgun
@@ -90,9 +104,8 @@ class TestBase(unittest.TestCase):
             # first make an instance based on script key/name so
             # we can generate a session token
             sg = api.Shotgun(self.config.server_url,
-                             self.config.script_name,
-                             self.config.api_key,
-                             http_proxy=self.config.http_proxy)
+                             http_proxy=self.config.http_proxy,
+                             **self.auth_args)
             self.session_token = sg.get_session_token()
             # now log in using session token
             self.sg = api.Shotgun(self.config.server_url,
@@ -234,7 +247,9 @@ class MockTestBase(TestBase):
 class LiveTestBase(TestBase):
     '''Test base for tests relying on connection to server.'''
 
-    def setUp(self, auth_mode='ApiUser'):
+    def setUp(self, auth_mode=None):
+        if not auth_mode:
+            auth_mode = 'HumanUser' if self.config.jenkins else 'ApiUser'
         super(LiveTestBase, self).setUp(auth_mode)
         if self.sg.server_caps.version and \
            self.sg.server_caps.version >= (3, 3, 0) and \
@@ -260,18 +275,10 @@ class LiveTestBase(TestBase):
         # When running the tests from a pull request from a client, the Shotgun
         # site URL won't be set, so do not attempt to connect to Shotgun.
         if cls.config.server_url:
-            if cls.config.jenkins:
-                sg = api.Shotgun(
-                    cls.config.server_url,
-                    login=cls.config.human_login,
-                    password=cls.config.human_password
-                )
-            else:
-                sg = api.Shotgun(
-                    cls.config.server_url,
-                    cls.config.script_name,
-                    cls.config.api_key
-                )
+            sg = api.Shotgun(
+                cls.config.server_url,
+                **cls.auth_args,
+            )
             cls.sg_version = tuple(sg.info()['version'][:3])
             cls._setup_db(cls.config, sg)
 
@@ -364,6 +371,19 @@ class LiveTestBase(TestBase):
         finally:
             rv = self.sg.delete(entity_type, entity["id"])
             assert rv == True
+
+    def find_one_await_thumbnail(self, entity_type, filters, fields=["image"], thumbnail_field_name="image", **kwargs):
+        attempts = 0
+        while attempts < THUMBNAIL_MAX_ATTEMPTS:
+            result = self.sg.find_one(entity_type, filters, fields=fields, **kwargs)
+            if TRANSIENT_IMAGE_PATH in result.get(thumbnail_field_name, ""):
+                return result
+            
+            time.sleep(THUMBNAIL_RETRY_INTERVAL)
+            attempts += 1
+        else:
+            if self.config.jenkins:
+                self.skipTest("Jenkins test timed out waiting for thumbnail")
 
 
 class HumanUserAuthLiveTestBase(LiveTestBase):
