@@ -313,9 +313,6 @@ class TestShotgunApi(base.LiveTestBase):
         """
         Upload an attachment tests for _upload_to_sg()
         """
-        if "localhost" in self.server_url:
-            self.skipTest("upload / down tests skipped for localhost")
-
         self.sg.server_info["s3_direct_uploads_enabled"] = False
         mock_send_form.method.assert_called_once()
         mock_send_form.return_value = "1\n:123\nasd"
