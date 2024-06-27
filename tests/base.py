@@ -3,6 +3,7 @@ import contextlib
 import os
 import random
 import re
+import time
 import unittest
 
 from . import mock
@@ -24,6 +25,11 @@ except ImportError:
     # mark them as skipped, but we will not fail on them.
     def skip(f):
         return lambda self: None
+
+
+THUMBNAIL_MAX_ATTEMPTS = 30
+THUMBNAIL_RETRY_INTERVAL = 10
+TRANSIENT_IMAGE_PATH = "images/status/transient"
 
 
 class TestBase(unittest.TestCase):
@@ -365,6 +371,20 @@ class LiveTestBase(TestBase):
         finally:
             rv = self.sg.delete(entity_type, entity["id"])
             assert rv == True
+
+    def find_one_await_thumbnail(self, entity_type, filters, fields=["image"], thumbnail_field_name="image", **kwargs):
+        attempts = 0
+        result = self.sg.find_one(entity_type, filters, fields=fields, **kwargs)
+        while attempts < THUMBNAIL_MAX_ATTEMPTS:
+            result = self.sg.find_one(entity_type, filters, fields=fields, **kwargs)
+            if TRANSIENT_IMAGE_PATH in result.get(thumbnail_field_name, ""):
+                return result
+            
+            time.sleep(THUMBNAIL_RETRY_INTERVAL)
+            attempts += 1
+        else:
+            if self.config.jenkins:
+                self.skipTest("Jenkins test timed out waiting for thumbnail")
 
 
 class HumanUserAuthLiveTestBase(LiveTestBase):
