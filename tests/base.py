@@ -374,7 +374,6 @@ class LiveTestBase(TestBase):
 
     def find_one_await_thumbnail(self, entity_type, filters, fields=["image"], thumbnail_field_name="image", **kwargs):
         attempts = 0
-        result = self.sg.find_one(entity_type, filters, fields=fields, **kwargs)
         while attempts < THUMBNAIL_MAX_ATTEMPTS:
             result = self.sg.find_one(entity_type, filters, fields=fields, **kwargs)
             if TRANSIENT_IMAGE_PATH in result.get(thumbnail_field_name, ""):
