@@ -112,6 +112,8 @@ Sometimes there are cases where certificate validation should be disabled. For e
 have a self-signed internal certificate that isn't included in our certificate bundle, you may
 not require the added security provided by enforcing this.
 """
+if os.environ.get("SHOTGUN_DISABLE_SSL_VALIDATION", False):
+    NO_SSL_VALIDATION = True
 
 # ----------------------------------------------------------------------------
 # Version
@@ -367,12 +369,11 @@ class ClientCapabilities(object):
 
         self.py_version = ".".join(str(x) for x in sys.version_info[:2])
 
-        # extract the OpenSSL version if we can. The version is only available in Python 2.7 and
-        # only if we successfully imported ssl
+        # extract the OpenSSL version if we can.
         self.ssl_version = "unknown"
         try:
             self.ssl_version = ssl.OPENSSL_VERSION
-        except (AttributeError, NameError):
+        except AttributeError:
             pass
 
     def __str__(self):
@@ -3360,18 +3361,6 @@ class Shotgun(object):
             cert_file = os.path.join(cur_dir, "lib", "certifi", "cacert.pem")
             return cert_file
 
-    def _turn_off_ssl_validation(self):
-        """
-        Turn off SSL certificate validation.
-        """
-        global NO_SSL_VALIDATION
-        self.config.no_ssl_validation = True
-        NO_SSL_VALIDATION = True
-        # reset ssl-validation in user-agents
-        self._user_agents = ["ssl %s (no-validate)" % self.client_caps.ssl_version
-                             if ua.startswith("ssl ") else ua
-                             for ua in self._user_agents]
-
     # Deprecated methods from old wrapper
     def schema(self, entity_type):
         """
@@ -3570,55 +3559,6 @@ class Shotgun(object):
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
-            except ssl.SSLEOFError as e:
-                # SG-34910 - EOF occurred in violation of protocol (_ssl.c:2426)
-                # This issue seems to be related to proxy and keep alive.
-                # It looks like, sometimes, the proxy drops the connection on
-                # the TCP/TLS level despites the keep-alive. So we need to close
-                # the connection and make a new attempt.
-                LOG.debug("SSLEOFError: {}".format(e))
-                self._close_connection()
-                if attempt == max_rpc_attempts:
-                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
-                    raise
-                # This is the exact same block as the "except Exception" bellow.
-                # We need to do it here because the next except will match it
-                # otherwise and will not re-attempt.
-                # When we drop support of Python 2 and we will probably drop the
-                # next except, we might want to remove this except too.
-            except ssl_error_classes as e:
-                # Test whether the exception is due to the fact that this is an older version of
-                # Python that cannot validate certificates encrypted with SHA-2. If it is, then
-                # fall back on disabling the certificate validation and try again - unless the
-                # SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable has been set by the
-                # user. In that case we simply raise the exception. Any other exceptions simply
-                # get raised as well.
-                #
-                # For more info see:
-                # https://www.shotgridsoftware.com/blog/important-ssl-certificate-renewal-and-sha-2/
-                #
-                # SHA-2 errors look like this:
-                #   [Errno 1] _ssl.c:480: error:0D0C50A1:asn1 encoding routines:ASN1_item_verify:
-                #   unknown message digest algorithm
-                #
-                # Any other exceptions simply get raised.
-                if "unknown message digest algorithm" not in str(e) or \
-                   "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
-                    raise
-
-                if self.config.no_ssl_validation is False:
-                    LOG.warning("SSL Error: this Python installation is incompatible with "
-                                "certificates signed with SHA-2. Disabling certificate validation. "
-                                "For more information, see https://www.shotgridsoftware.com/blog/"
-                                "important-ssl-certificate-renewal-and-sha-2/")
-                    self._turn_off_ssl_validation()
-                    # reload user agent to reflect that we have turned off ssl validation
-                    req_headers["user-agent"] = "; ".join(self._user_agents)
-
-                self._close_connection()
-                if attempt == max_rpc_attempts:
-                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
-                    raise
             except Exception:
                 self._close_connection()
                 if attempt == max_rpc_attempts:
