@@ -17,7 +17,7 @@ import os
 import re
 
 from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib import six
+from shotgun_api3.lib import six, sgutils
 try:
     import simplejson as json
 except ImportError:
@@ -44,7 +44,7 @@ else:
 
 
 def b64encode(val):
-    return base64encode(six.ensure_binary(val)).decode("utf-8")
+    return base64encode(sgutils.ensure_binary(val)).decode("utf-8")
 
 
 class TestShotgunClient(base.MockTestBase):
@@ -424,7 +424,7 @@ class TestShotgunClient(base.MockTestBase):
 
         # Test unicode mixed with utf-8 as reported in Ticket #17959
         d = {"results": ["foo", "bar"]}
-        a = {"utf_str": "\xe2\x88\x9a", "unicode_str": six.ensure_text("\xe2\x88\x9a")}
+        a = {"utf_str": "\xe2\x88\x9a", "unicode_str": sgutils.ensure_text("\xe2\x88\x9a")}
         self._mock_http(d)
         rv = self.sg._call_rpc("list", a)
         expected = "rpc response with list result"
@@ -585,14 +585,14 @@ class TestShotgunClient(base.MockTestBase):
             return datetime.datetime(*time.strptime(s, f)[:6])
 
         def assert_wire(wire, match):
-            self.assertTrue(isinstance(wire["date"], six.string_types))
+            self.assertTrue(isinstance(wire["date"], str))
             d = _datetime(wire["date"], "%Y-%m-%d").date()
             d = wire['date']
             self.assertEqual(match["date"], d)
-            self.assertTrue(isinstance(wire["datetime"], six.string_types))
+            self.assertTrue(isinstance(wire["datetime"], str))
             d = _datetime(wire["datetime"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["datetime"], d)
-            self.assertTrue(isinstance(wire["time"], six.string_types))
+            self.assertTrue(isinstance(wire["time"], str))
             d = _datetime(wire["time"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["time"], d.time())
 
@@ -621,16 +621,16 @@ class TestShotgunClient(base.MockTestBase):
 
         d = {"this is ": u"my data \u00E0"}
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, six.binary_type))
+        self.assertTrue(isinstance(j, bytes))
 
         d = {
             "this is ": u"my data"
         }
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, six.binary_type))
+        self.assertTrue(isinstance(j, bytes))
 
     def test_decode_response_ascii(self):
-        self._assert_decode_resonse(True, six.ensure_str(u"my data \u00E0", encoding='utf8'))
+        self._assert_decode_resonse(True, sgutils.ensure_str(u"my data \u00E0", encoding='utf8'))
 
     def test_decode_response_unicode(self):
         self._assert_decode_resonse(False, u"my data \u00E0")

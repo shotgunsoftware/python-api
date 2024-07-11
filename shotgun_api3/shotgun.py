@@ -32,6 +32,7 @@
 # Python 2/3 compatibility
 from .lib import six
 from .lib import sgsix
+from .lib import sgutils
 from .lib.six import BytesIO               # used for attachment upload
 from .lib.six.moves import map
 
@@ -665,7 +666,7 @@ class Shotgun(object):
         # the lowercase version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64encode(six.ensure_binary(
+            auth = base64encode(sgutils.ensure_binary(
                 urllib.parse.unquote(auth))).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
 
@@ -2440,7 +2441,7 @@ class Shotgun(object):
         # have to raise a sane exception. This will always work for ascii and utf-8
         # encoded strings, but will fail on some others if the string includes non
         # ascii characters.
-        if not isinstance(path, six.text_type):
+        if not isinstance(path, str):
             try:
                 path = path.decode("utf-8")
             except UnicodeDecodeError:
@@ -2721,7 +2722,7 @@ class Shotgun(object):
                 elif e.code == 403:
                     # Only parse the body if it is an Amazon S3 url.
                     if url.find("s3.amazonaws.com") != -1 and e.headers["content-type"] == "application/xml":
-                        body = [six.ensure_text(line) for line in e.readlines()]
+                        body = [sgutils.ensure_text(line) for line in e.readlines()]
                         if body:
                             xml = "".join(body)
                             # Once python 2.4 support is not needed we can think about using
@@ -3545,7 +3546,7 @@ class Shotgun(object):
         """
 
         wire = json.dumps(payload, ensure_ascii=False)
-        return six.ensure_binary(wire)
+        return sgutils.ensure_binary(wire)
 
     def _make_call(self, verb, path, body, headers):
         """
@@ -3720,8 +3721,8 @@ class Shotgun(object):
         def _decode_list(lst):
             newlist = []
             for i in lst:
-                if isinstance(i, six.text_type):
-                    i = six.ensure_str(i)
+                if isinstance(i, str):
+                    i = sgutils.ensure_str(i)
                 elif isinstance(i, list):
                     i = _decode_list(i)
                 newlist.append(i)
@@ -3730,10 +3731,10 @@ class Shotgun(object):
         def _decode_dict(dct):
             newdict = {}
             for k, v in six.iteritems(dct):
-                if isinstance(k, six.text_type):
-                    k = six.ensure_str(k)
-                if isinstance(v, six.text_type):
-                    v = six.ensure_str(v)
+                if isinstance(k, str):
+                    k = sgutils.ensure_str(k)
+                if isinstance(v, str):
+                    v = sgutils.ensure_str(v)
                 elif isinstance(v, list):
                     v = _decode_list(v)
                 newdict[k] = v
@@ -3844,8 +3845,8 @@ class Shotgun(object):
                 return value.strftime("%Y-%m-%dT%H:%M:%SZ")
 
             # ensure return is six.text_type
-            if isinstance(value, six.string_types):
-                return six.ensure_text(value)
+            if isinstance(value, str):
+                return sgutils.ensure_text(value)
 
             return value
 
@@ -3865,7 +3866,7 @@ class Shotgun(object):
             _change_tz = None
 
         def _inbound_visitor(value):
-            if isinstance(value, six.string_types):
+            if isinstance(value, str):
                 if len(value) == 20 and self._DATE_TIME_PATTERN.match(value):
                     try:
                         # strptime was not on datetime in python2.4
@@ -4266,7 +4267,7 @@ class Shotgun(object):
                 else:
                     raise ShotgunError("Unanticipated error occurred %s" % (e))
 
-            return six.ensure_text(result)
+            return sgutils.ensure_text(result)
         else:
             raise ShotgunError("Max attemps limit reached.")
 
@@ -4339,7 +4340,7 @@ class FormPostHandler(urllib.request.BaseHandler):
             data = request.data
         else:
             data = request.get_data()
-        if data is not None and not isinstance(data, six.string_types):
+        if data is not None and not isinstance(data, str):
             files = []
             params = []
             for key, value in data.items():
@@ -4348,7 +4349,7 @@ class FormPostHandler(urllib.request.BaseHandler):
                 else:
                     params.append((key, value))
             if not files:
-                data = six.ensure_binary(urllib.parse.urlencode(params, True))  # sequencing on
+                data = sgutils.ensure_binary(urllib.parse.urlencode(params, True))  # sequencing on
             else:
                 boundary, data = self.encode(params, files)
                 content_type = "multipart/form-data; boundary=%s" % boundary
@@ -4371,15 +4372,15 @@ class FormPostHandler(urllib.request.BaseHandler):
         if buffer is None:
             buffer = BytesIO()
         for (key, value) in params:
-            if not isinstance(value, six.string_types):
+            if not isinstance(value, str):
                 # If value is not a string (e.g. int) cast to text
-                value = six.text_type(value)
-            value = six.ensure_text(value)
-            key = six.ensure_text(key)
+                value = str(value)
+            value = sgutils.ensure_text(value)
+            key = sgutils.ensure_text(key)
 
-            buffer.write(six.ensure_binary("--%s\r\n" % boundary))
-            buffer.write(six.ensure_binary("Content-Disposition: form-data; name=\"%s\"" % key))
-            buffer.write(six.ensure_binary("\r\n\r\n%s\r\n" % value))
+            buffer.write(sgutils.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(sgutils.ensure_binary("Content-Disposition: form-data; name=\"%s\"" % key))
+            buffer.write(sgutils.ensure_binary("\r\n\r\n%s\r\n" % value))
         for (key, fd) in files:
             # On Windows, it's possible that we were forced to open a file
             # with non-ascii characters as unicode. In that case, we need to
@@ -4387,24 +4388,24 @@ class FormPostHandler(urllib.request.BaseHandler):
             # If we don't, the mix of unicode and strings going into the
             # buffer can cause UnicodeEncodeErrors to be raised.
             filename = fd.name
-            filename = six.ensure_text(filename)
+            filename = sgutils.ensure_text(filename)
             filename = filename.split("/")[-1]
-            key = six.ensure_text(key)
+            key = sgutils.ensure_text(key)
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or "application/octet-stream"
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-            buffer.write(six.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(sgutils.ensure_binary("--%s\r\n" % boundary))
             c_dis = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"%s"
             content_disposition = c_dis % (key, filename, "\r\n")
-            buffer.write(six.ensure_binary(content_disposition))
-            buffer.write(six.ensure_binary("Content-Type: %s\r\n" % content_type))
-            buffer.write(six.ensure_binary("Content-Length: %s\r\n" % file_size))
+            buffer.write(sgutils.ensure_binary(content_disposition))
+            buffer.write(sgutils.ensure_binary("Content-Type: %s\r\n" % content_type))
+            buffer.write(sgutils.ensure_binary("Content-Length: %s\r\n" % file_size))
 
-            buffer.write(six.ensure_binary("\r\n"))
+            buffer.write(sgutils.ensure_binary("\r\n"))
             fd.seek(0)
             shutil.copyfileobj(fd, buffer)
-            buffer.write(six.ensure_binary("\r\n"))
-        buffer.write(six.ensure_binary("--%s--\r\n\r\n" % boundary))
+            buffer.write(sgutils.ensure_binary("\r\n"))
+        buffer.write(sgutils.ensure_binary("--%s--\r\n\r\n" % boundary))
         buffer = buffer.getvalue()
         return boundary, buffer
 
