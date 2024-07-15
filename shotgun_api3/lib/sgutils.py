@@ -33,7 +33,6 @@ def ensure_binary(s, encoding='utf-8', errors='strict'):
     """
     Coerce **s** to bytes.
 
-    For Python 3:
       - `str` -> encoded to `bytes`
       - `bytes` -> `bytes`
     """
@@ -48,15 +47,16 @@ def ensure_binary(s, encoding='utf-8', errors='strict'):
 def ensure_str(s, encoding='utf-8', errors='strict'):
     """Coerce *s* to `str`.
 
-    For Python 3:
       - `str` -> `str`
       - `bytes` -> decoded to `str`
     """
-    if not isinstance(s, (str, bytes)):
-        raise TypeError(f"not expecting type '{type(s)}'")
-    if isinstance(s, bytes):
-        s = s.decode(encoding, errors)
-    return s
+    if isinstance(s, str):
+        return s
+
+    elif isinstance(s, bytes): 
+        return s.decode(encoding, errors)
+ 
+    raise TypeError(f"not expecting type '{type(s)}'")
 
 
 ensure_text = ensure_str
