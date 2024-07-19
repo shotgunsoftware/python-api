@@ -175,7 +175,7 @@ class MockTestBase(TestBase):
         if not isinstance(self.sg._http_request, mock.Mock):
             return
 
-        if not isinstance(data, six.string_types):
+        if not isinstance(data, str):
             if six.PY2:
                 data = json.dumps(
                     data,
@@ -208,7 +208,7 @@ class MockTestBase(TestBase):
         """Asserts _http_request is called with the method and params."""
         args, _ = self.sg._http_request.call_args
         arg_body = args[2]
-        assert isinstance(arg_body, six.binary_type)
+        assert isinstance(arg_body, bytes)
         arg_body = json.loads(arg_body)
 
         arg_params = arg_body.get("params")

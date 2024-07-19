@@ -120,7 +120,6 @@ from ... import ShotgunError
 from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
-from .. import six
 
 # ----------------------------------------------------------------------------
 # Version
@@ -505,14 +504,14 @@ class Shotgun(object):
                                    "float": float,
                                    "checkbox": bool,
                                    "percent": int,
-                                   "text": six.string_types,
+                                   "text": str,
                                    "serializable": dict,
-                                   "entity_type": six.string_types,
-                                   "date": six.string_types,
+                                   "entity_type": str,
+                                   "date": str,
                                    "date_time": datetime.datetime,
                                    "duration": int,
-                                   "list": six.string_types,
-                                   "status_list": six.string_types,
+                                   "list": str,
+                                   "status_list": str,
                                    "url": dict}[sg_type]
                 except KeyError:
                     raise ShotgunError(
