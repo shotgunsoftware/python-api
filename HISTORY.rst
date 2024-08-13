@@ -4,6 +4,13 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.6.2 (2024 Aug 13)
+====================
+- Remove Ticket entity reference and prepare this to run in CI.
+- Condition auth for Jenkins environment.
+- Update certifi to 2024.7.4.
+- FIRST PHASE Python2 removing.
+
 v3.6.1 (2024 Jun 6)
 ===================
 - Adds multi_entity_update_modes support to mockgun ``update()`` and ``batch()`` methods.
