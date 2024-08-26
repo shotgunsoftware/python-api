@@ -949,6 +949,13 @@ Stores the number of milliseconds to wait between request retries.  By default, 
 
 In the case that both this environment variable and the config's ``rpc_attempt_interval`` property are set, the value in ``rpc_attempt_interal`` will be used.
 
+
+SHOTGUN_DISABLE_SSL_VALIDATION
+==============================
+
+TODO
+
+
 ************
 Localization
 ************
