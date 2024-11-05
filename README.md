@@ -10,10 +10,6 @@ Autodesk provides a simple Python-based API for accessing Flow Production Tracki
 
 The latest version can always be found at http://github.com/shotgunsoftware/python-api
 
-## Minimum Requirements
-
-* Python v3.7
-
 ## Documentation
 Tutorials and detailed documentation about the Python API are available at http://developer.shotgridsoftware.com/python-api).
 
