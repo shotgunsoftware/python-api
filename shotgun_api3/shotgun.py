@@ -4470,6 +4470,28 @@ def _translate_filters_simple(sg_filter):
     if len(values) == 1 and isinstance(values[0], (list, tuple)):
         values = values[0]
 
+    # Payload optimization: Do not send a full object
+    # just send the `type` and `id` when combining related queries
+    disable_entity_optimization = os.environ.get(
+        "SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION"
+    )
+    if (
+        not disable_entity_optimization
+        and condition["path"] != "id"
+        and condition["relation"] in ["is", "is_not"]
+        and isinstance(values[0], dict)
+    ):
+        try:
+            values = [
+                {
+                    "type": values[0]["type"],
+                    "id": values[0]["id"],
+                }
+            ]
+        except KeyError:
+            pass
+
+
     condition["values"] = values
 
     return condition
