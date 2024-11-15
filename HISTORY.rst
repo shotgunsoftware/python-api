@@ -4,6 +4,11 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.7.0-beta.1 (Development)
+===========================
+- Optimize payload by prevent unnecessary data
+
+
 v3.6.2 (2024 Aug 13)
 ====================
 - Remove Ticket entity reference and prepare this to run in CI.
