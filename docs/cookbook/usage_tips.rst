@@ -85,7 +85,7 @@ Then when you're writing scripts, you don't need to worry about remembering whic
     import shotgun_api3
     import studio_globals
 
-    sg = Shotgun('https://my-site.shotgrid.autodesk.com', 'script_name', '0123456789abcdef0123456789abcdef0123456')
+    sg = shotgun_api3.Shotgun('https://my-site.shotgrid.autodesk.com', 'script_name', '0123456789abcdef0123456789abcdef0123456')
     result = sg.find(studio_globals.ENTITY_WIDGET,
                      filters=[['sg_status_list', 'is', 'ip']],
                      fields=['code', 'sg_shot'])
