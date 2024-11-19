@@ -960,6 +960,7 @@ For example, a ``find`` call like this:
 .. code-block:: python
 
     # sg_full_project is a project entity dictionary with a lot of FPTR fields
+    # Example: sg_full_project = sg.find_one('Project', [['id', 'is', 999]], ['id', 'name', 'sg_status_list', 'created_at', ...])
     sg.find('Asset', [['project', 'is', sg_full_project]])
 
 
@@ -970,7 +971,8 @@ Will internally be transformed as if you invoked something like this:
     sg.find('Asset', [['project', 'is', {'id': 999, 'type': 'Project'}]]) 
 
 
-When disabled, the API will make a request with the original entity data in the ``fields`` argument. Feel free to disable this feature if you are experiencing issues with the entity optimization feature.
+When disabled, the API will make a request with the original entity data in the ``fields`` argument which was the default and only behavior before v3.7
+Feel free to disable this feature if you are experiencing issues with the entity optimization feature.
 
 
 ************

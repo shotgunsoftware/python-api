@@ -4491,7 +4491,6 @@ def _translate_filters_simple(sg_filter):
         except KeyError:
             pass
 
-
     condition["values"] = values
 
     return condition
