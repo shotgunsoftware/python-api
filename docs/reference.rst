@@ -950,10 +950,14 @@ Stores the number of milliseconds to wait between request retries.  By default, 
 In the case that both this environment variable and the config's ``rpc_attempt_interval`` property are set, the value in ``rpc_attempt_interal`` will be used.
 
 
-SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
+SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
 =======================================
 
-When set to ``1``, this environment variable will disable the entity optimization feature.  This feature is enabled by default and is used to reduce the payload size made to the server when retrieving entities improving performance.  
+.. note:: This is an experimental feature. Feel free to disable this feature if you are experiencing any issues.
+
+When set to ``1``, this environment variable will enable the entity optimization feature.
+This feature is disabled by default and is used to reduce the payload size made to the server when retrieving entities
+improving performance.
 
 For example, a ``find`` call like this:
 
@@ -963,7 +967,8 @@ For example, a ``find`` call like this:
         'created_at': datetime.datetime(2015, 12, 16, 11, 2, 10, tzinfo),
         'id': 9999,
         'name': 'Demo: Game',
-        'type': 'Project', ...
+        'type': 'Project',
+        # More entity attributes
     }]])
 
 
@@ -972,10 +977,6 @@ Will internally be transformed as if you invoked something like this:
 .. code-block:: python
 
     sg.find('Asset', [['project', 'is', {'id': 999, 'type': 'Project'}]]) 
-
-
-When disabled, the API will make a request with the original entity data in the ``fields`` argument which was the default and only behavior before v3.7
-Feel free to disable this feature if you are experiencing issues with the entity optimization feature.
 
 
 ************
