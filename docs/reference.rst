@@ -959,7 +959,12 @@ For example, a ``find`` call like this:
 
 .. code-block:: python
 
-    sg.find('Asset', [['project', 'is', {'created_at': datetime.datetime(2015, 12, 16, 11, 2, 10, tzinfo), 'id': 9999, 'name': 'Demo: Game', 'type': 'Project', ...}]])
+    sg.find('Asset', [['project', 'is', {
+        'created_at': datetime.datetime(2015, 12, 16, 11, 2, 10, tzinfo),
+        'id': 9999,
+        'name': 'Demo: Game',
+        'type': 'Project', ...
+    }]])
 
 
 Will internally be transformed as if you invoked something like this:
