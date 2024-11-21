@@ -4474,7 +4474,7 @@ def _translate_filters_simple(sg_filter):
     # just send the `type` and `id` when combining related queries
     enable_entity_optimization_value = os.environ.get(
         "SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION", "0"
-    ).strip().lower()
+    ).strip()
     if (
         enable_entity_optimization_value == "1"
         and condition["path"] != "id"
