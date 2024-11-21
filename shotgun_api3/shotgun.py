@@ -4472,11 +4472,11 @@ def _translate_filters_simple(sg_filter):
 
     # Payload optimization: Do not send a full object
     # just send the `type` and `id` when combining related queries
-    enable_entity_optimization = os.environ.get(
+    enable_entity_optimization_value = os.environ.get(
         "SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION", "0"
     ).strip().lower()
     if (
-        enable_entity_optimization not in ["0", "no", "false"]
+        enable_entity_optimization_value == "1"
         and condition["path"] != "id"
         and condition["relation"] in ["is", "is_not"]
         and isinstance(values[0], dict)
