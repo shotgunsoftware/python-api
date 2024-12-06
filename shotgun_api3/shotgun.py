@@ -105,6 +105,8 @@ mimetypes.add_type("video/mp4", ".mp4")    # from some OS/distros
 
 SG_TIMEZONE = SgTimezone()
 
+SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION = False
+
 NO_SSL_VALIDATION = False
 """
 Turns off hostname matching validation for SSL certificates
@@ -116,7 +118,7 @@ not require the added security provided by enforcing this.
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.6.2"
+__version__ = "3.7.0"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -649,7 +651,11 @@ class Shotgun(object):
         if self.config.rpc_attempt_interval < 0:
             raise ValueError("Value of SHOTGUN_API_RETRY_INTERVAL must be positive, "
                              "got '%s'." % self.config.rpc_attempt_interval)
-
+        
+        global SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
+        if os.environ.get("SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION", "0").strip().lower() == "1":
+            SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION = True
+            
         self._connection = None
 
         self.__ca_certs = self._get_certs_file(ca_certs)
@@ -4469,6 +4475,25 @@ def _translate_filters_simple(sg_filter):
     values = sg_filter[2:]
     if len(values) == 1 and isinstance(values[0], (list, tuple)):
         values = values[0]
+
+    # Payload optimization: Do not send a full object
+    # just send the `type` and `id` when combining related queries
+    global SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
+    if (
+        SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
+        and condition["path"] != "id"
+        and condition["relation"] in ["is", "is_not"]
+        and isinstance(values[0], dict)
+    ):
+        try:
+            values = [
+                {
+                    "type": values[0]["type"],
+                    "id": values[0]["id"],
+                }
+            ]
+        except KeyError:
+            pass
 
     condition["values"] = values
 
