@@ -4,9 +4,11 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
-v3.7.0-beta.1 (Development)
+v3.7.0 (2024 Dec 9)
 ===========================
-- Optimize payload by prevent unnecessary data
+- Remove unnecessary data in the payload when combining related queries before sending it to the server.
+  This would improve overall performance decreasing network latency and server processing.
+  See documentation for more information.
 
 
 v3.6.2 (2024 Aug 13)

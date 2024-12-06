@@ -953,11 +953,11 @@ In the case that both this environment variable and the config's ``rpc_attempt_i
 SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
 =======================================
 
-.. note:: This is an experimental feature. Feel free to disable this feature if you are experiencing any issues.
+.. note:: (v3.7.0) This is an experimental feature. Feel free to disable this feature if you are experiencing any issues.
 
 When set to ``1``, this environment variable will enable the entity optimization feature.
 This feature is disabled by default and is used to reduce the payload size made to the server when retrieving entities
-improving performance.
+improving overall performance by decreasing network latency and server processing.
 
 For example, a ``find`` call like this:
 
