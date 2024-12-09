@@ -405,6 +405,63 @@ class TestFilters(unittest.TestCase):
 
         self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
 
+    def test_related_object(self):
+        filters = [
+            [
+                "project",
+                "is",
+                {"foo": "foo", "bar": "bar", "id": 999, "baz": "baz", "type": "Anything"},
+            ],
+        ]
+        expected = {
+            "logical_operator": "and",
+            "conditions": [
+                {
+                    "path": "project",
+                    "relation": "is",
+                    "values": [
+                        {
+                            "foo": "foo",
+                            "bar": "bar",
+                            "baz": "baz",
+                            "id": 999,
+                            "type": "Anything",
+                        }
+                    ],
+                }
+            ],
+        }
+        result = api.shotgun._translate_filters(filters, "all")
+        self.assertEqual(result, expected)
+
+    def test_related_object_entity_optimization(self):
+        filters = [
+            [
+                "project",
+                "is",
+                {"foo": "foo", "bar": "bar", "id": 999, "baz": "baz", "type": "Anything"},
+            ],
+        ]
+        expected = {
+            "logical_operator": "and",
+            "conditions": [
+                {
+                    "path": "project",
+                    "relation": "is",
+                    "values": [
+                        {
+                            "id": 999,
+                            "type": "Anything",
+                        }
+                    ],
+                }
+            ],
+        }
+        os.environ["SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION"] = "1"
+        api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = api.shotgun._translate_filters(filters, "all")
+        self.assertEqual(result, expected)
+
 
 class TestCerts(unittest.TestCase):
     # A dummy bad url provided by Amazon
@@ -505,6 +562,7 @@ class TestMimetypesFix(unittest.TestCase):
         mock.version_info = [major, minor, patch_number]
         mock.platform = platform
         self.assertEqual(_is_mimetypes_broken(), result)
+
 
 if __name__ == '__main__':
     unittest.main()
