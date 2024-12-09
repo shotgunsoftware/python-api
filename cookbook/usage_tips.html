@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Usage Tips &mdash; python-api v3.6.0 documentation</title>
+  <title>API Usage Tips &mdash; python-api v3.7.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -112,7 +112,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.6.0.<br>
+    <b>python-api</b> v3.7.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -226,7 +226,7 @@ Something like the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shotgun_api3</span>
 <span class="kn">import</span> <span class="nn">studio_globals</span>
 
-<span class="n">sg</span> <span class="o">=</span> <span class="n">Shotgun</span><span class="p">(</span><span class="s1">&#39;https://my-site.shotgrid.autodesk.com&#39;</span><span class="p">,</span> <span class="s1">&#39;script_name&#39;</span><span class="p">,</span> <span class="s1">&#39;0123456789abcdef0123456789abcdef0123456&#39;</span><span class="p">)</span>
+<span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s1">&#39;https://my-site.shotgrid.autodesk.com&#39;</span><span class="p">,</span> <span class="s1">&#39;script_name&#39;</span><span class="p">,</span> <span class="s1">&#39;0123456789abcdef0123456789abcdef0123456&#39;</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">studio_globals</span><span class="o">.</span><span class="n">ENTITY_WIDGET</span><span class="p">,</span>
                  <span class="n">filters</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;sg_status_list&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;ip&#39;</span><span class="p">]],</span>
                  <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span> <span class="s1">&#39;sg_shot&#39;</span><span class="p">])</span>

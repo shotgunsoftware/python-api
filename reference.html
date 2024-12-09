@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; python-api v3.6.0 documentation</title>
+  <title>API Reference &mdash; python-api v3.7.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -77,7 +77,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.close"><code class="docutils literal notranslate"><span class="pre">Shotgun.close()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.authenticate_human_user"><code class="docutils literal notranslate"><span class="pre">Shotgun.authenticate_human_user()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.get_session_token"><code class="docutils literal notranslate"><span class="pre">Shotgun.get_session_token()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.set_up_auth_cookie"><code class="docutils literal notranslate"><span class="pre">Shotgun.set_up_auth_cookie()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.get_auth_cookie_handler"><code class="docutils literal notranslate"><span class="pre">Shotgun.get_auth_cookie_handler()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.add_user_agent"><code class="docutils literal notranslate"><span class="pre">Shotgun.add_user_agent()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.reset_user_agent"><code class="docutils literal notranslate"><span class="pre">Shotgun.reset_user_agent()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.set_session_uuid"><code class="docutils literal notranslate"><span class="pre">Shotgun.set_session_uuid()</span></code></a></li>
@@ -219,6 +219,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment Variables</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#shotgun-api-cacerts">SHOTGUN_API_CACERTS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#shotgun-api-retry-interval">SHOTGUN_API_RETRY_INTERVAL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shotgun-api-enable-entity-optimization">SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#localization">Localization</a></li>
@@ -247,7 +248,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.6.0.<br>
+    <b>python-api</b> v3.7.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -443,19 +444,16 @@ The documentation for all of the methods you’ll need in your scripts lives in 
 <tr class="row-even"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.get_session_token" title="shotgun_api3.shotgun.Shotgun.get_session_token"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.get_session_token</span></code></a></p></td>
 <td><p>Get the session token associated with the current session.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.set_up_auth_cookie" title="shotgun_api3.shotgun.Shotgun.set_up_auth_cookie"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.set_up_auth_cookie</span></code></a></p></td>
-<td><p>Set up urllib2 with a cookie for authentication on the Shotgun instance.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.add_user_agent" title="shotgun_api3.shotgun.Shotgun.add_user_agent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.add_user_agent</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.add_user_agent" title="shotgun_api3.shotgun.Shotgun.add_user_agent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.add_user_agent</span></code></a></p></td>
 <td><p>Add agent to the user-agent header.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.reset_user_agent" title="shotgun_api3.shotgun.Shotgun.reset_user_agent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.reset_user_agent</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.reset_user_agent" title="shotgun_api3.shotgun.Shotgun.reset_user_agent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.reset_user_agent</span></code></a></p></td>
 <td><p>Reset user agent to the default value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.set_session_uuid" title="shotgun_api3.shotgun.Shotgun.set_session_uuid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.set_session_uuid</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.set_session_uuid" title="shotgun_api3.shotgun.Shotgun.set_session_uuid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.set_session_uuid</span></code></a></p></td>
 <td><p>Set the browser session_uuid in the current Shotgun API instance.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.info" title="shotgun_api3.shotgun.Shotgun.info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.info</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#shotgun_api3.shotgun.Shotgun.info" title="shotgun_api3.shotgun.Shotgun.info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shotgun.info</span></code></a></p></td>
 <td><p>Get API-related metadata from the Shotgun server.</p></td>
 </tr>
 </tbody>
@@ -659,11 +657,13 @@ generated on the server and returned.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="shotgun_api3.shotgun.Shotgun.set_up_auth_cookie">
-<span class="sig-prename descclassname"><span class="pre">Shotgun.</span></span><span class="sig-name descname"><span class="pre">set_up_auth_cookie</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.set_up_auth_cookie"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.set_up_auth_cookie" title="Permalink to this definition"></a></dt>
-<dd><p>Set up urllib2 with a cookie for authentication on the Shotgun instance.</p>
-<p>Looks up session token and sets that in a cookie in the <code class="xref py py-mod docutils literal notranslate"><span class="pre">urllib2</span></code> handler. This is
-used internally for downloading attachments from the Shotgun server.</p>
+<dt class="sig sig-object py" id="shotgun_api3.shotgun.Shotgun.get_auth_cookie_handler">
+<span class="sig-prename descclassname"><span class="pre">Shotgun.</span></span><span class="sig-name descname"><span class="pre">get_auth_cookie_handler</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#Shotgun.get_auth_cookie_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shotgun_api3.shotgun.Shotgun.get_auth_cookie_handler" title="Permalink to this definition"></a></dt>
+<dd><p>Return an urllib cookie handler containing a cookie for FPTR
+authentication.</p>
+<p>Looks up session token and sets that in a cookie in the <code class="xref py py-mod docutils literal notranslate"><span class="pre">urllib2</span></code>
+handler.
+This is used internally for downloading attachments from FPTR.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3332,6 +3332,30 @@ immediate concerns, please <a class="reference external" href="https://www.autod
 </pre></div>
 </div>
 <p>In the case that both this environment variable and the config’s <code class="docutils literal notranslate"><span class="pre">rpc_attempt_interval</span></code> property are set, the value in <code class="docutils literal notranslate"><span class="pre">rpc_attempt_interal</span></code> will be used.</p>
+</section>
+<section id="shotgun-api-enable-entity-optimization">
+<h3>SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION<a class="headerlink" href="#shotgun-api-enable-entity-optimization" title="Permalink to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>(v3.7.0) This is an experimental feature. Feel free to disable this feature if you are experiencing any issues.</p>
+</div>
+<p>When set to <code class="docutils literal notranslate"><span class="pre">1</span></code>, this environment variable will enable the entity optimization feature.
+This feature is disabled by default and is used to reduce the payload size made to the server when retrieving entities
+improving overall performance by decreasing network latency and server processing.</p>
+<p>For example, a <code class="docutils literal notranslate"><span class="pre">find</span></code> call like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Asset&#39;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">&#39;created_at&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">tzinfo</span><span class="p">),</span>
+    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">9999</span><span class="p">,</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Demo: Game&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span>
+    <span class="c1"># More entity attributes</span>
+<span class="p">}]])</span>
+</pre></div>
+</div>
+<p>Will internally be transformed as if you invoked something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Asset&#39;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">999</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">}]])</span>
+</pre></div>
+</div>
 </section>
 </section>
 <section id="localization">

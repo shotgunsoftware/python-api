@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flow Production Tracking Python API Changelog &mdash; python-api v3.6.0 documentation</title>
+  <title>Flow Production Tracking Python API Changelog &mdash; python-api v3.7.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -66,6 +66,9 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced/packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/iron_python.html">IronPython</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Flow Production Tracking Python API Changelog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v3-7-0-2024-dec-9">v3.7.0 (2024 Dec 9)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-6-2-2024-aug-13">v3.6.2 (2024 Aug 13)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-6-1-2024-jun-6">v3.6.1 (2024 Jun 6)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-6-0-2024-may-1">v3.6.0 (2024 May 1)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-5-1-2024-apr-3">v3.5.1 (2024 Apr 3)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-5-0-2024-mar-26">v3.5.0 (2024 Mar 26)</a></li>
@@ -163,7 +166,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.6.0.<br>
+    <b>python-api</b> v3.7.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -207,6 +210,32 @@
   <section id="flow-production-tracking-python-api-changelog">
 <h1>Flow Production Tracking Python API Changelog<a class="headerlink" href="#flow-production-tracking-python-api-changelog" title="Permalink to this heading"></a></h1>
 <p>Here you can see the full list of changes between each Python API release.</p>
+<section id="v3-7-0-2024-dec-9">
+<h2>v3.7.0 (2024 Dec 9)<a class="headerlink" href="#v3-7-0-2024-dec-9" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Remove unnecessary data in the payload when combining related queries before sending it to the server.
+This would improve overall performance decreasing network latency and server processing.
+See documentation for more information.</p></li>
+</ul>
+</section>
+<section id="v3-6-2-2024-aug-13">
+<h2>v3.6.2 (2024 Aug 13)<a class="headerlink" href="#v3-6-2-2024-aug-13" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Remove Ticket entity reference and prepare this to run in CI.</p></li>
+<li><p>Condition auth for Jenkins environment.</p></li>
+<li><p>Update certifi to 2024.7.4.</p></li>
+<li><p>FIRST PHASE Python2 removing.</p></li>
+</ul>
+</section>
+<section id="v3-6-1-2024-jun-6">
+<h2>v3.6.1 (2024 Jun 6)<a class="headerlink" href="#v3-6-1-2024-jun-6" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Adds multi_entity_update_modes support to mockgun <code class="docutils literal notranslate"><span class="pre">update()</span></code> and <code class="docutils literal notranslate"><span class="pre">batch()</span></code> methods.</p></li>
+<li><p>Implements a retry strategy only when encountering an URLError or SSLEOFError.</p></li>
+<li><p>Fixes the issue with deleting prefix and suffix for <code class="docutils literal notranslate"><span class="pre">display_name</span></code> variable at the moment of upload for a local install.</p></li>
+<li><p>Clarifies the use of <code class="docutils literal notranslate"><span class="pre">_build_opener</span></code> in <code class="docutils literal notranslate"><span class="pre">download_attachment()</span></code>.</p></li>
+</ul>
+</section>
 <section id="v3-6-0-2024-may-1">
 <h2>v3.6.0 (2024 May 1)<a class="headerlink" href="#v3-6-0-2024-may-1" title="Permalink to this heading"></a></h2>
 <ul class="simple">
