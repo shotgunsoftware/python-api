@@ -12,6 +12,7 @@
 
 import os
 import unittest
+from unittest import mock
 from .mock import patch
 import shotgun_api3 as api
 from shotgun_api3.shotgun import _is_mimetypes_broken
@@ -434,7 +435,8 @@ class TestFilters(unittest.TestCase):
         result = api.shotgun._translate_filters(filters, "all")
         self.assertEqual(result, expected)
 
-    def test_related_object_entity_optimization(self):
+    @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
+    def test_related_object_entity_optimization_is(self):
         filters = [
             [
                 "project",
@@ -457,7 +459,41 @@ class TestFilters(unittest.TestCase):
                 }
             ],
         }
-        os.environ["SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION"] = "1"
+        api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = api.shotgun._translate_filters(filters, "all")
+        self.assertEqual(result, expected)
+
+    @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
+    def test_related_object_entity_optimization_in(self):
+        filters = [
+            [
+                "project",
+                "in",
+                [
+                    {"foo1": "foo1", "bar1": "bar1", "id": 999, "baz1": "baz1", "type": "Anything"},
+                    {"foo2": "foo2", "bar2": "bar2", "id": 998, "baz2": "baz2", "type": "Anything"}
+                ],
+            ],
+        ]
+        expected = {
+            "logical_operator": "and",
+            "conditions": [
+                {
+                    "path": "project",
+                    "relation": "in",
+                    "values": [
+                        {
+                            "id": 999,
+                            "type": "Anything",
+                        },
+                        {
+                            "id": 998,
+                            "type": "Anything",
+                        }
+                    ],
+                }
+            ],
+        }
         api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
         result = api.shotgun._translate_filters(filters, "all")
         self.assertEqual(result, expected)

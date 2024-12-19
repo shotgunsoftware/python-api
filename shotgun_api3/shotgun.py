@@ -4482,16 +4482,11 @@ def _translate_filters_simple(sg_filter):
     if (
         SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
         and condition["path"] != "id"
-        and condition["relation"] in ["is", "is_not"]
+        and condition["relation"] in ["is", "is_not", "in", "not_in"]
         and isinstance(values[0], dict)
     ):
         try:
-            values = [
-                {
-                    "type": values[0]["type"],
-                    "id": values[0]["id"],
-                }
-            ]
+            values = [{"type": v["type"], "id": v["id"]} for v in values]
         except KeyError:
             pass
 
