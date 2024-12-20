@@ -1132,6 +1132,31 @@ class Shotgun(object):
             params["project"] = project_entity
 
         return params
+    
+    def _translate_update_params(
+        self, entity_type, entity_id, data, multi_entity_update_modes
+    ):
+        global SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
+
+        def optimize_value(field_value):
+            if isinstance(field_value, dict) and SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION:
+                return {"type": field_value["type"], "id": field_value["id"]}
+            return field_value
+
+        def optimize_field(field_dict):
+            return {k: optimize_value(v) for k, v in field_dict.items()}
+
+        full_fields = self._dict_to_list(
+            data,
+            extra_data=self._dict_to_extra_data(
+                multi_entity_update_modes, "multi_entity_update_mode"
+            ),
+        )
+        return {
+            "type": entity_type,
+            "id": entity_id,
+            "fields": [optimize_field(field_dict) for field_dict in full_fields],
+        }
 
     def summarize(self,
                   entity_type,
@@ -1463,14 +1488,7 @@ class Shotgun(object):
             upload_filmstrip_image = data.pop("filmstrip_image")
 
         if data:
-            params = {
-                "type": entity_type,
-                "id": entity_id,
-                "fields": self._dict_to_list(
-                    data,
-                    extra_data=self._dict_to_extra_data(
-                        multi_entity_update_modes, "multi_entity_update_mode"))
-            }
+            params = self._translate_update_params(entity_type, entity_id, data, multi_entity_update_modes)
             record = self._call_rpc("update", params)
             result = self._parse_records(record)[0]
         else:
