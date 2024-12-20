@@ -1139,7 +1139,7 @@ class Shotgun(object):
         global SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
 
         def optimize_value(field_value):
-            if isinstance(field_value, dict) and SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION:
+            if SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION and isinstance(field_value, dict):
                 return {"type": field_value["type"], "id": field_value["id"]}
             return field_value
 
