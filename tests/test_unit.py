@@ -498,6 +498,45 @@ class TestFilters(unittest.TestCase):
         result = api.shotgun._translate_filters(filters, "all")
         self.assertEqual(result, expected)
 
+    @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
+    def test_related_object_update_entity(self):
+        entity_type = "Anything"
+        entity_id = 999
+        multi_entity_update_modes = {"project": "set", "name": "set"}
+        data = {
+            "name": "test",
+            "project": {
+                "foo1": "foo1",
+                "bar1": "bar1",
+                "id": 999,
+                "baz1": "baz1",
+                "type": "Anything",
+            },
+        }
+        expected = {
+            "id": 999,
+            "type": "Anything",
+            "fields": [
+                {
+                    "field_name": "name",
+                    "value": "test",
+                    "multi_entity_update_mode": "set",
+                },
+                {
+                    "field_name": "project",
+                    "multi_entity_update_mode": "set",
+                    "value": {
+                        # Entity is optimized with type/id fields.
+                        "id": 999,
+                        "type": "Anything",
+                    },
+                },
+            ],
+        }
+        sg = api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = sg._translate_update_params(entity_type, entity_id, data, multi_entity_update_modes)
+        self.assertEqual(result, expected)
+
 
 class TestCerts(unittest.TestCase):
     # A dummy bad url provided by Amazon
