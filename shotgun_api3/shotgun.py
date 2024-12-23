@@ -4517,7 +4517,7 @@ def _version_str(version):
 def _get_type_and_id_from_value(value_dict):
     """
     For an entity dictionary, returns a new dictionary with only the type and id keys.
-    If ant of these keys are not present, the original dictionary is returned.
+    If any of these keys are not present, the original dictionary is returned.
     """
     try:
         return {"type": value_dict["type"], "id": value_dict["id"]}
