@@ -1138,13 +1138,10 @@ class Shotgun(object):
     ):
         global SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
 
-        def optimize_value(field_value):
-            if SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION and isinstance(field_value, dict):
-                return {"type": field_value["type"], "id": field_value["id"]}
-            return field_value
-
         def optimize_field(field_dict):
-            return {k: optimize_value(v) for k, v in field_dict.items()}
+            if SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION:
+                return {k: _get_type_and_id_from_value(v) for k, v in field_dict.items()}
+            return field_dict
 
         full_fields = self._dict_to_list(
             data,
@@ -4503,10 +4500,7 @@ def _translate_filters_simple(sg_filter):
         and condition["relation"] in ["is", "is_not", "in", "not_in"]
         and isinstance(values[0], dict)
     ):
-        try:
-            values = [{"type": v["type"], "id": v["id"]} for v in values]
-        except KeyError:
-            pass
+        values = [_get_type_and_id_from_value(v) for v in values]
 
     condition["values"] = values
 
@@ -4518,3 +4512,14 @@ def _version_str(version):
     Convert a tuple of int's to a '.' separated str.
     """
     return ".".join(map(str, version))
+
+
+def _get_type_and_id_from_value(value_dict):
+    """
+    For an entity dictionary, returns a new dictionary with only the type and id keys.
+    If ant of these keys are not present, the original dictionary is returned.
+    """
+    try:
+        return {"type": value_dict["type"], "id": value_dict["id"]}
+    except (KeyError, TypeError):
+        return value_dict
