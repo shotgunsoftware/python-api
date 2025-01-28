@@ -291,6 +291,8 @@ class TestClientCapabilities(unittest.TestCase):
 
 
 class TestFilters(unittest.TestCase):
+    maxDiff = None
+
     def test_empty(self):
         expected = {
             "logical_operator": "and",
@@ -574,9 +576,9 @@ class TestFilters(unittest.TestCase):
             "project": {
                 "foo1": "foo1",
                 "bar1": "bar1",
-                "id": 999,
+                "id": 888,
                 "baz1": "baz1",
-                "type": "Anything",
+                "type": "Project",
             },
         }
         expected = {
@@ -601,14 +603,47 @@ class TestFilters(unittest.TestCase):
                     "multi_entity_update_mode": "set",
                     "value": {
                         # Entity is optimized with type/id fields.
-                        "id": 999,
-                        "type": "Anything",
+                        "id": 888,
+                        "type": "Project",
                     },
                 },
             ],
         }
         sg = api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
         result = sg._translate_update_params(entity_type, entity_id, data, multi_entity_update_modes)
+        self.assertEqual(result, expected)
+
+    @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
+    def test_related_object_update_optimization_entity_multi(self):
+        entity_type = "Asset"
+        entity_id = 6626
+        data = {
+            "sg_status_list": "ip",
+            "project": {"id": 70, "type": "Project", "name": "disposable name 70"},
+            "sg_vvv": [
+                {"id": 6441, "type": "Asset", "name": "disposable name 6441"},
+                {"id": 6440, "type": "Asset"},
+            ],
+            "sg_class": {"id": 1, "type": "CustomEntity53", "name": "disposable name 1"},
+        }
+        expected = {
+            "type": "Asset",
+            "id": 6626,
+            "fields": [
+                {"field_name": "sg_status_list", "value": "ip"},
+                {"field_name": "project", "value": {"type": "Project", "id": 70}},
+                {
+                    "field_name": "sg_vvv",
+                    "value": [
+                        {"id": 6441, "type": "Asset"},
+                        {"id": 6440, "type": "Asset"},
+                    ],
+                },
+                {"field_name": "sg_class", "value": {"type": "CustomEntity53", "id": 1}},
+            ],
+        }
+        sg = api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = sg._translate_update_params(entity_type, entity_id, data, None)
         self.assertEqual(result, expected)
 
 

@@ -4514,12 +4514,17 @@ def _version_str(version):
     return ".".join(map(str, version))
 
 
-def _get_type_and_id_from_value(value_dict):
+def _get_type_and_id_from_value(value):
     """
     For an entity dictionary, returns a new dictionary with only the type and id keys.
     If any of these keys are not present, the original dictionary is returned.
     """
     try:
-        return {"type": value_dict["type"], "id": value_dict["id"]}
+        if isinstance(value, dict):
+            return {"type": value["type"], "id": value["id"]}
+        elif isinstance(value, list):
+            return [{"type": v["type"], "id": v["id"]} for v in value]
+        else:
+            return value
     except (KeyError, TypeError):
-        return value_dict
+        return value
