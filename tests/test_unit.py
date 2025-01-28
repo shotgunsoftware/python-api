@@ -438,8 +438,6 @@ class TestFilters(unittest.TestCase):
 
     @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
     def test_related_object_entity_optimization_is(self):
-    @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
-    def test_related_object_entity_optimization_is(self):
         filters = [
             [
                 "project",
