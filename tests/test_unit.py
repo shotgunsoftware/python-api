@@ -13,7 +13,6 @@
 import os
 import unittest
 from unittest import mock
-from unittest import mock
 from .mock import patch
 import shotgun_api3 as api
 from shotgun_api3.shotgun import _is_mimetypes_broken

@@ -4523,8 +4523,9 @@ def _get_type_and_id_from_value(value):
         if isinstance(value, dict):
             return {"type": value["type"], "id": value["id"]}
         elif isinstance(value, list):
-            return [{"type": v["type"], "id": v["id"]} for v in value]
-        else:
-            return value
+            return [{"type": v["type"], "id": v["id"]} for v in value]    
     except (KeyError, TypeError):
-        return value
+        LOG.debug(f"Could not optimize entity value {value}")
+        pass
+
+    return value
