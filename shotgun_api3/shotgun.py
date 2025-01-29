@@ -4526,6 +4526,5 @@ def _get_type_and_id_from_value(value):
             return [{"type": v["type"], "id": v["id"]} for v in value]    
     except (KeyError, TypeError):
         LOG.debug(f"Could not optimize entity value {value}")
-        pass
 
     return value
