@@ -1132,6 +1132,28 @@ class Shotgun(object):
             params["project"] = project_entity
 
         return params
+    
+    def _translate_update_params(
+        self, entity_type, entity_id, data, multi_entity_update_modes
+    ):
+        global SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
+
+        def optimize_field(field_dict):
+            if SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION:
+                return {k: _get_type_and_id_from_value(v) for k, v in field_dict.items()}
+            return field_dict
+
+        full_fields = self._dict_to_list(
+            data,
+            extra_data=self._dict_to_extra_data(
+                multi_entity_update_modes, "multi_entity_update_mode"
+            ),
+        )
+        return {
+            "type": entity_type,
+            "id": entity_id,
+            "fields": [optimize_field(field_dict) for field_dict in full_fields],
+        }
 
     def summarize(self,
                   entity_type,
@@ -1463,14 +1485,7 @@ class Shotgun(object):
             upload_filmstrip_image = data.pop("filmstrip_image")
 
         if data:
-            params = {
-                "type": entity_type,
-                "id": entity_id,
-                "fields": self._dict_to_list(
-                    data,
-                    extra_data=self._dict_to_extra_data(
-                        multi_entity_update_modes, "multi_entity_update_mode"))
-            }
+            params = self._translate_update_params(entity_type, entity_id, data, multi_entity_update_modes)
             record = self._call_rpc("update", params)
             result = self._parse_records(record)[0]
         else:
@@ -4485,10 +4500,7 @@ def _translate_filters_simple(sg_filter):
         and condition["relation"] in ["is", "is_not", "in", "not_in"]
         and isinstance(values[0], dict)
     ):
-        try:
-            values = [{"type": v["type"], "id": v["id"]} for v in values]
-        except KeyError:
-            pass
+        values = [_get_type_and_id_from_value(v) for v in values]
 
     condition["values"] = values
 
@@ -4500,3 +4512,19 @@ def _version_str(version):
     Convert a tuple of int's to a '.' separated str.
     """
     return ".".join(map(str, version))
+
+
+def _get_type_and_id_from_value(value):
+    """
+    For an entity dictionary, returns a new dictionary with only the type and id keys.
+    If any of these keys are not present, the original dictionary is returned.
+    """
+    try:
+        if isinstance(value, dict):
+            return {"type": value["type"], "id": value["id"]}
+        elif isinstance(value, list):
+            return [{"type": v["type"], "id": v["id"]} for v in value]    
+    except (KeyError, TypeError):
+        LOG.debug(f"Could not optimize entity value {value}")
+
+    return value
