@@ -35,6 +35,7 @@ Unit tests for Mockgun. Does not require an Internet connection
 and can be run on their own by typing "python test_mockgun.py".
 """
 
+import datetime
 import re
 import os
 import unittest
@@ -402,7 +403,9 @@ class TestFilterOperator(unittest.TestCase):
             "Shot",
             {
                 "code": "shot1",
-                "project": self._prj1_link
+                "project": self._prj1_link,
+                "description": "a",
+                "sg_cut_order": 2
             }
         )
 
@@ -410,7 +413,8 @@ class TestFilterOperator(unittest.TestCase):
             "Shot",
             {
                 "code": "shot2",
-                "project": self._prj1_link
+                "project": self._prj1_link,
+                "sg_cut_order": 1
             }
         )
 
@@ -418,8 +422,18 @@ class TestFilterOperator(unittest.TestCase):
             "Shot",
             {
                 "code": "shot3",
-                "project": self._prj2_link
+                "project": self._prj2_link,
+                "description": "b"
             }
+        )
+
+        self._user1 = self._mockgun.create(
+            "HumanUser", {"login": "user1", "password_strength": 0.2}
+        )
+
+        self._user2 = self._mockgun.create(
+            "HumanUser",
+            {"login": "user2", "created_at": datetime.datetime(2025, 1, 1)}
         )
 
     def test_simple_filter_operators(self):
@@ -451,6 +465,50 @@ class TestFilterOperator(unittest.TestCase):
         )
 
         self.assertEqual(len(shots), 0)
+
+    def test_ordered_filter_operator(self):
+        """
+        Test use of the order feature of filter_operator on supported data types.
+        """
+        find_args = ["Shot", [], ["code"]]
+
+        # str field
+        shots = self._mockgun.find(
+            *find_args,
+            order=[{"field_name": "description", "direction": "asc"}]
+        )
+        self.assertEqual([s["code"] for s in shots], ["shot2", "shot1", "shot3"])
+
+        shots = self._mockgun.find(
+            *find_args,
+            order=[{"field_name": "description", "direction": "desc"}]
+        )
+        self.assertEqual([s["code"] for s in shots], ["shot3", "shot1", "shot2"])
+
+        # int field
+        shots = self._mockgun.find(
+            *find_args,
+            order=[{"field_name": "sg_cut_order", "direction": "asc"}]
+        )
+        self.assertEqual([s["code"] for s in shots], ["shot3", "shot2", "shot1"])
+
+        # float field
+        users = self._mockgun.find(
+            "HumanUser",
+            [],
+            ["login"],
+            order=[{"field_name": "password_strength", "direction": "asc"}]
+        )
+        self.assertEqual([u["login"] for u in users], ["user2", "user1"])
+
+        # date_time field
+        users = self._mockgun.find(
+            "HumanUser",
+            [],
+            ["login"],
+            order=[{"field_name": "created_at", "direction": "asc"}]
+        )
+        self.assertEqual([u["login"] for u in users], ["user1", "user2"])
 
     def test_nested_filter_operators(self):
         """
