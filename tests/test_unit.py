@@ -290,6 +290,8 @@ class TestClientCapabilities(unittest.TestCase):
 
 
 class TestFilters(unittest.TestCase):
+    maxDiff = None
+
     def test_empty(self):
         expected = {
             "logical_operator": "and",
@@ -463,6 +465,28 @@ class TestFilters(unittest.TestCase):
         result = api.shotgun._translate_filters(filters, "all")
         self.assertEqual(result, expected)
 
+        # Now test a non-related object. The expected result should not be optimized.
+        filters = [
+            [
+                "something",
+                "is",
+                {"foo": "foo", "bar": "bar"},
+            ],
+        ]
+        expected = {
+            "logical_operator": "and",
+            "conditions": [
+                {
+                    "path": "something",
+                    "relation": "is",
+                    "values": [{'bar': 'bar', 'foo': 'foo'}],
+                }
+            ],
+        }
+        api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = api.shotgun._translate_filters(filters, "all")
+        self.assertEqual(result, expected)
+
     @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
     def test_related_object_entity_optimization_in(self):
         filters = [
@@ -471,7 +495,8 @@ class TestFilters(unittest.TestCase):
                 "in",
                 [
                     {"foo1": "foo1", "bar1": "bar1", "id": 999, "baz1": "baz1", "type": "Anything"},
-                    {"foo2": "foo2", "bar2": "bar2", "id": 998, "baz2": "baz2", "type": "Anything"}
+                    {"foo2": "foo2", "bar2": "bar2", "id": 998, "baz2": "baz2", "type": "Anything"},
+                    {"foo3": "foo3", "bar3": "bar3"},
                 ],
             ],
         ]
@@ -489,6 +514,10 @@ class TestFilters(unittest.TestCase):
                         {
                             "id": 998,
                             "type": "Anything",
+                        },
+                        {
+                            "foo3": "foo3",
+                            "bar3": "bar3",
                         }
                     ],
                 }
@@ -496,6 +525,124 @@ class TestFilters(unittest.TestCase):
         }
         api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
         result = api.shotgun._translate_filters(filters, "all")
+        self.assertEqual(result, expected)
+
+    def test_related_object_update_entity(self):
+        entity_type = "Anything"
+        entity_id = 999
+        multi_entity_update_modes = {"link": "set", "name": "set"}
+        data = {
+            "name": "test",
+            "link": {
+                "name": "test",
+                "url": "http://test.com",
+            },
+        }
+        expected = {
+            "id": 999,
+            "type": "Anything",
+            "fields": [
+                {
+                    "field_name": "name",
+                    "value": "test",
+                    "multi_entity_update_mode": "set",
+                },
+                {
+                    "field_name": "link",
+                    "value": {
+                        "name": "test",
+                        "url": "http://test.com",
+                    },
+                    "multi_entity_update_mode": "set",
+                },
+            ],
+        }
+        sg = api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = sg._translate_update_params(entity_type, entity_id, data, multi_entity_update_modes)
+        self.assertEqual(result, expected)
+
+    @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
+    def test_related_object_update_optimization_entity(self):
+        entity_type = "Anything"
+        entity_id = 999
+        multi_entity_update_modes = {"project": "set", "link": "set", "name": "set"}
+        data = {
+            "name": "test",
+            "link": {
+                "name": "test",
+                "url": "http://test.com",
+            },
+            "project": {
+                "foo1": "foo1",
+                "bar1": "bar1",
+                "id": 888,
+                "baz1": "baz1",
+                "type": "Project",
+            },
+        }
+        expected = {
+            "id": 999,
+            "type": "Anything",
+            "fields": [
+                {
+                    "field_name": "name",
+                    "value": "test",
+                    "multi_entity_update_mode": "set",
+                },
+                {
+                    "field_name": "link",
+                    "value": {
+                        "name": "test",
+                        "url": "http://test.com",
+                    },
+                    "multi_entity_update_mode": "set",
+                },
+                {
+                    "field_name": "project",
+                    "multi_entity_update_mode": "set",
+                    "value": {
+                        # Entity is optimized with type/id fields.
+                        "id": 888,
+                        "type": "Project",
+                    },
+                },
+            ],
+        }
+        sg = api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = sg._translate_update_params(entity_type, entity_id, data, multi_entity_update_modes)
+        self.assertEqual(result, expected)
+
+    @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
+    def test_related_object_update_optimization_entity_multi(self):
+        entity_type = "Asset"
+        entity_id = 6626
+        data = {
+            "sg_status_list": "ip",
+            "project": {"id": 70, "type": "Project", "name": "disposable name 70"},
+            "sg_vvv": [
+                {"id": 6441, "type": "Asset", "name": "disposable name 6441"},
+                {"id": 6440, "type": "Asset"},
+            ],
+            "sg_class": {"id": 1, "type": "CustomEntity53", "name": "disposable name 1"},
+        }
+        expected = {
+            "type": "Asset",
+            "id": 6626,
+            "fields": [
+                {"field_name": "sg_status_list", "value": "ip"},
+                {"field_name": "project", "value": {"type": "Project", "id": 70}},
+                {
+                    "field_name": "sg_vvv",
+                    "value": [
+                        {"id": 6441, "type": "Asset"},
+                        {"id": 6440, "type": "Asset"},
+                    ],
+                },
+                {"field_name": "sg_class", "value": {"type": "CustomEntity53", "id": 1}},
+            ],
+        }
+        sg = api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = sg._translate_update_params(entity_type, entity_id, data, None)
         self.assertEqual(result, expected)
 
 
