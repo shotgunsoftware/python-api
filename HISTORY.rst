@@ -4,8 +4,15 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.8.0 (2024 Feb 7)
+===================
+
+- Keep adding optimizations like the one we did on v3.7.0. Includes ``in``, ``not_in`` filters and ``update`` method.
+- Make this payload optimization enabled by default. 
+  They can be disabled with ``SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION`` environment variable.
+
 v3.7.0 (2024 Dec 9)
-===========================
+===================
 - Remove unnecessary data in the payload when combining related queries before sending it to the server.
   This would improve overall performance decreasing network latency and server processing.
   See documentation for more information.
