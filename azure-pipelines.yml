@@ -51,7 +51,7 @@ pr:
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
 jobs:
-- template: azure-pipelines/code_style_validation.yml
+- template: azure-pipelines-templates/code_style_validation.yml
 
 # These are jobs templates, they allow to reduce the redundancy between
 # variations of the same build. We pass in the image name
