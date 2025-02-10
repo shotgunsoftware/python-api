@@ -33,4 +33,3 @@ build
 dist
 shotgun_api3.egg-info
 /%1
-

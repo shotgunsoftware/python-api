@@ -4,9 +4,9 @@
 Updating Task Dates: How Flow Production Tracking Thinks
 ########################################################
 
-When updating Task dates in an API update() request, there is no specified order to the values that 
+When updating Task dates in an API update() request, there is no specified order to the values that
 are passed in. Flow Production Tracking also does automatic calculation of the``start_date``,``due_date``, and ``duration`` fields for convenience. In order to clarify how updates are handled by Flow Production Tracking we are
-providing some general rules below and examples of what will happen when you make updates to your 
+providing some general rules below and examples of what will happen when you make updates to your
 Tasks.
 
 **************
@@ -17,31 +17,31 @@ General Rules
 - Updating the ``due_date`` automatically updates the ``duration`` (``start_date`` remains constant)
 - Updating the ``duration`` automatically updates the ``due_date`` (``start_date`` remains constant)
 - When updating Task values, Flow Production Tracking sets schedule fields (``milestone``, ``duration``,
-  ``start_date``, ``due_date``) after all other fields, because the Project and Task Assignees 
+  ``start_date``, ``due_date``) after all other fields, because the Project and Task Assignees
   affect schedule calculations.
-- If ``start_date`` and ``due_date`` are both set, ``duration`` is ignored (``duration`` can often 
+- If ``start_date`` and ``due_date`` are both set, ``duration`` is ignored (``duration`` can often
   be wrong since it's easy to calculate scheduling incorrectly).
 - If both ``start_date`` and ``due_date`` are provided, Flow Production Tracking sets ``start_date`` before
   ``due_date``.
-- Set ``milestone`` before other schedule fields (because ``start_date``, ``due_date``, and 
+- Set ``milestone`` before other schedule fields (because ``start_date``, ``due_date``, and
   ``duration`` get lost if ``milestone`` is not set to ``False`` first)
 - If ``milestone`` is being set to ``True``, ``duration`` is ignored.
-- If ``milestone`` is set to ``True`` and ``start_date`` and ``due_date`` are also being set to 
+- If ``milestone`` is set to ``True`` and ``start_date`` and ``due_date`` are also being set to
   conflicting values, an Exception is raised.
-- If ``due_date`` and ``duration`` are set together (without ``start_date``), ``duration`` is set 
-  first, then ``due_date`` (otherwise setting ``duration`` will change ``due_date`` after it is 
+- If ``due_date`` and ``duration`` are set together (without ``start_date``), ``duration`` is set
+  first, then ``due_date`` (otherwise setting ``duration`` will change ``due_date`` after it is
   set).
 
 ********
 Examples
 ********
 
-The following examples show what the resulting Task object will look like after being run on the 
+The following examples show what the resulting Task object will look like after being run on the
 initial Task object listed under the header of each section.
 
 The ``duration`` values in the following examples assume your Flow Production Tracking instance is set to
-10-hour work days. If your server is configured with a different setting, the ``duration`` values 
-will vary. 
+10-hour work days. If your server is configured with a different setting, the ``duration`` values
+will vary.
 
 .. note:: The ``duration`` field stores ``duration`` values in minutes
 
@@ -56,7 +56,7 @@ Regardless of current values on the Task, this behavior rules::
 
 **Update start_date and due_date**
 
-``duration`` is ignored if also provided. It is instead set automatically as (``due_date`` - 
+``duration`` is ignored if also provided. It is instead set automatically as (``due_date`` -
 ``start_date``)
 
 ::
@@ -66,7 +66,7 @@ Regardless of current values on the Task, this behavior rules::
 
 - ``start_date`` is updated.
 - ``due_date`` is updated.
-- ``duration`` is calculated as (``due_date`` - ``start_date``) 
+- ``duration`` is calculated as (``due_date`` - ``start_date``)
 
 .. note:: The value provided in the update() is ignored (and in this case was also incorrect).
 
@@ -90,7 +90,7 @@ Regardless of current values on the Task, this behavior rules::
 
 - ``duration`` is updated.
 - ``due_date`` is updated.
-- ``duration`` is calculated as (``due_date`` - ``start_date``) 
+- ``duration`` is calculated as (``due_date`` - ``start_date``)
 
 .. note:: This means the ``duration`` provided is overwritten.
 
@@ -226,7 +226,7 @@ If the Task has ``start_date`` and ``due_date`` values but has no ``duration``, 
 will behave.
 
 ::
-    
+
     # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-25', 'duration': None, 'id':123}
 
 **Update start_date**
@@ -310,7 +310,7 @@ If the Task has ``due_date`` and ``duration`` values but has no ``start_date``, 
 will behave.
 
 ::
-    
+
     # Task = {'start_date': None, 'due_date': '2011-05-25', 'duration': 2400, 'id':123}
 
 **Update start_date**

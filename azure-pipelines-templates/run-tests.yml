@@ -34,7 +34,7 @@ parameters:
 jobs:
   # The job will be named after the OS and Azure will suffix the strategy to make it unique
   # so we'll have a job name "Windows Python27" for example. What's a strategy? Strategies are the
-  # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python27" and 
+  # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python27" and
   # "<OS> Python37".
 - job: ${{ parameters.name }}
   pool:
@@ -63,7 +63,7 @@ jobs:
   # Specifies which version of Python we want to use. That's where the strategy comes in.
   # Each job will share this set of steps, but each of them will receive a different
   # $(python.version)
-  # TODO: We should provide `githubToken` if we want to download a python release. 
+  # TODO: We should provide `githubToken` if we want to download a python release.
   #       Otherwise we may hit the GitHub anonymous download limit.
   - task: UsePythonVersion@0
     inputs:
@@ -138,7 +138,7 @@ jobs:
         Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
         .\codecov.exe -f coverage.xml
       displayName: Uploading code coverage
-  - ${{ elseif eq(parameters.name, 'Linux') }}:        
+  - ${{ elseif eq(parameters.name, 'Linux') }}:
     - script: |
         curl -Os https://uploader.codecov.io/latest/linux/codecov
         chmod +x codecov

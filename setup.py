@@ -12,25 +12,25 @@
 import sys
 from setuptools import setup, find_packages
 
-f = open('README.md')
+f = open("README.md")
 readme = f.read().strip()
 
-f = open('LICENSE')
+f = open("LICENSE")
 license = f.read().strip()
 
 setup(
-    name='shotgun_api3',
-    version='3.7.0',
-    description='Flow Production Tracking Python API',
+    name="shotgun_api3",
+    version="3.7.0",
+    description="Flow Production Tracking Python API",
     long_description=readme,
-    author='Autodesk',
-    author_email='https://www.autodesk.com/support/contact-support',
-    url='https://github.com/shotgunsoftware/python-api',
+    author="Autodesk",
+    author_email="https://www.autodesk.com/support/contact-support",
+    url="https://github.com/shotgunsoftware/python-api",
     license=license,
-    packages=find_packages(exclude=('tests',)),
+    packages=find_packages(exclude=("tests",)),
     script_args=sys.argv[1:],
     include_package_data=True,
-    package_data={'': ['cacerts.txt', 'cacert.pem']},
+    package_data={"": ["cacerts.txt", "cacert.pem"]},
     zip_safe=False,
     python_requires=">=3.7.0",
     classifiers=[

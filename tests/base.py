@@ -1,4 +1,5 @@
 """Base class for Flow Production Tracking API tests."""
+
 import contextlib
 import os
 import random
@@ -33,9 +34,9 @@ TRANSIENT_IMAGE_PATH = "images/status/transient"
 
 
 class TestBase(unittest.TestCase):
-    '''Base class for tests.
+    """Base class for tests.
 
-    Sets up mocking and database test data.'''
+    Sets up mocking and database test data."""
 
     human_user = None
     project = None
@@ -74,7 +75,7 @@ class TestBase(unittest.TestCase):
                 script_name=cls.config.script_name, api_key=cls.config.api_key
             )
 
-    def setUp(self, auth_mode='ApiUser'):
+    def setUp(self, auth_mode="ApiUser"):
         # When running the tests from a pull request from a client, the Shotgun
         # site URL won't be set, so do not attempt to run the test.
         if not self.config.server_url:
@@ -88,30 +89,38 @@ class TestBase(unittest.TestCase):
         self.http_proxy = self.config.http_proxy
         self.session_uuid = self.config.session_uuid
 
-        if auth_mode == 'ApiUser':
-            self.sg = api.Shotgun(self.config.server_url,
-                                  self.config.script_name,
-                                  self.config.api_key,
-                                  http_proxy=self.config.http_proxy,
-                                  connect=self.connect)
-        elif auth_mode == 'HumanUser':
-            self.sg = api.Shotgun(self.config.server_url,
-                                  login=self.human_login,
-                                  password=self.human_password,
-                                  http_proxy=self.config.http_proxy,
-                                  connect=self.connect)
-        elif auth_mode == 'SessionToken':
+        if auth_mode == "ApiUser":
+            self.sg = api.Shotgun(
+                self.config.server_url,
+                self.config.script_name,
+                self.config.api_key,
+                http_proxy=self.config.http_proxy,
+                connect=self.connect,
+            )
+        elif auth_mode == "HumanUser":
+            self.sg = api.Shotgun(
+                self.config.server_url,
+                login=self.human_login,
+                password=self.human_password,
+                http_proxy=self.config.http_proxy,
+                connect=self.connect,
+            )
+        elif auth_mode == "SessionToken":
             # first make an instance based on script key/name so
             # we can generate a session token
-            sg = api.Shotgun(self.config.server_url,
-                             http_proxy=self.config.http_proxy,
-                             **self.auth_args)
+            sg = api.Shotgun(
+                self.config.server_url,
+                http_proxy=self.config.http_proxy,
+                **self.auth_args,
+            )
             self.session_token = sg.get_session_token()
             # now log in using session token
-            self.sg = api.Shotgun(self.config.server_url,
-                                  session_token=self.session_token,
-                                  http_proxy=self.config.http_proxy,
-                                  connect=self.connect)
+            self.sg = api.Shotgun(
+                self.config.server_url,
+                session_token=self.session_token,
+                http_proxy=self.config.http_proxy,
+                connect=self.connect,
+            )
         else:
             raise ValueError("Unknown value for auth_mode: %s" % auth_mode)
 
@@ -123,7 +132,7 @@ class TestBase(unittest.TestCase):
 
 
 class MockTestBase(TestBase):
-    '''Test base for tests mocking server interactions.'''
+    """Test base for tests mocking server interactions."""
 
     def setUp(self):
         super(MockTestBase, self).setUp()
@@ -132,23 +141,25 @@ class MockTestBase(TestBase):
         self._setup_mock_data()
 
     def _setup_mock(self, s3_status_code_error=503):
-        """Setup mocking on the ShotgunClient to stop it calling a live server
-        """
+        """Setup mocking on the ShotgunClient to stop it calling a live server"""
         # Replace the function used to make the final call to the server
         # eaiser than mocking the http connection + response
-        self.sg._http_request = mock.Mock(spec=api.Shotgun._http_request,
-                                          return_value=((200, "OK"), {}, None))
+        self.sg._http_request = mock.Mock(
+            spec=api.Shotgun._http_request, return_value=((200, "OK"), {}, None)
+        )
         # Replace the function used to make the final call to the S3 server, and simulate
         # the exception HTTPError raised with 503 status errors
-        self.sg._make_upload_request = mock.Mock(spec=api.Shotgun._make_upload_request,
-                                                 side_effect = urllib.error.HTTPError(
-                                                     "url",
-                                                     s3_status_code_error,
-                                                     "The server is currently down or to busy to reply."
-                                                     "Please try again later.",
-                                                     {},
-                                                     None
-                                                 ))
+        self.sg._make_upload_request = mock.Mock(
+            spec=api.Shotgun._make_upload_request,
+            side_effect=urllib.error.HTTPError(
+                "url",
+                s3_status_code_error,
+                "The server is currently down or to busy to reply."
+                "Please try again later.",
+                {},
+                None,
+            ),
+        )
         # also replace the function that is called to get the http connection
         # to avoid calling the server. OK to return a mock as we will not use
         # it
@@ -160,8 +171,9 @@ class MockTestBase(TestBase):
         self.sg._get_connection = mock.Mock(return_value=self.mock_conn)
 
         # create the server caps directly to say we have the correct version
-        self.sg._server_caps = ServerCapabilities(self.sg.config.server,
-                                                  {"version": [2, 4, 0]})
+        self.sg._server_caps = ServerCapabilities(
+            self.sg.config.server, {"version": [2, 4, 0]}
+        )
         # prevent waiting for backoff
         self.sg.BACKOFF = 0
 
@@ -177,24 +189,22 @@ class MockTestBase(TestBase):
 
         if not isinstance(data, str):
             if six.PY2:
-                data = json.dumps(
-                    data,
-                    ensure_ascii=False,
-                    encoding="utf-8"
-                )
+                data = json.dumps(data, ensure_ascii=False, encoding="utf-8")
             else:
                 data = json.dumps(
                     data,
                     ensure_ascii=False,
                 )
 
-        resp_headers = {'cache-control': 'no-cache',
-                        'connection': 'close',
-                        'content-length': (data and str(len(data))) or 0,
-                        'content-type': 'application/json; charset=utf-8',
-                        'date': 'Wed, 13 Apr 2011 04:18:58 GMT',
-                        'server': 'Apache/2.2.3 (CentOS)',
-                        'status': '200 OK'}
+        resp_headers = {
+            "cache-control": "no-cache",
+            "connection": "close",
+            "content-length": (data and str(len(data))) or 0,
+            "content-type": "application/json; charset=utf-8",
+            "date": "Wed, 13 Apr 2011 04:18:58 GMT",
+            "server": "Apache/2.2.3 (CentOS)",
+            "status": "200 OK",
+        }
         if headers:
             resp_headers.update(headers)
 
@@ -220,42 +230,40 @@ class MockTestBase(TestBase):
             self.assertEqual(self.api_key, auth["script_key"])
 
         if params:
-            rpc_args = arg_params[len(arg_params)-1]
+            rpc_args = arg_params[len(arg_params) - 1]
             self.assertEqual(params, rpc_args)
 
     def _setup_mock_data(self):
-        self.human_user = {'id': 1,
-                           'login': self.config.human_login,
-                           'type': 'HumanUser'}
-        self.project = {'id': 2,
-                        'name': self.config.project_name,
-                        'type': 'Project'}
-        self.shot = {'id': 3,
-                     'code': self.config.shot_code,
-                     'type': 'Shot'}
-        self.asset = {'id': 4,
-                      'code': self.config.asset_code,
-                      'type': 'Asset'}
-        self.version = {'id': 5,
-                        'code': self.config.version_code,
-                        'type': 'Version'}
-        self.playlist = {'id': 7,
-                         'code': self.config.playlist_code,
-                         'type': 'Playlist'}
+        self.human_user = {
+            "id": 1,
+            "login": self.config.human_login,
+            "type": "HumanUser",
+        }
+        self.project = {"id": 2, "name": self.config.project_name, "type": "Project"}
+        self.shot = {"id": 3, "code": self.config.shot_code, "type": "Shot"}
+        self.asset = {"id": 4, "code": self.config.asset_code, "type": "Asset"}
+        self.version = {"id": 5, "code": self.config.version_code, "type": "Version"}
+        self.playlist = {"id": 7, "code": self.config.playlist_code, "type": "Playlist"}
 
 
 class LiveTestBase(TestBase):
-    '''Test base for tests relying on connection to server.'''
+    """Test base for tests relying on connection to server."""
 
     def setUp(self, auth_mode=None):
         if not auth_mode:
-            auth_mode = 'HumanUser' if self.config.jenkins else 'ApiUser'
+            auth_mode = "HumanUser" if self.config.jenkins else "ApiUser"
         super(LiveTestBase, self).setUp(auth_mode)
-        if self.sg.server_caps.version and \
-           self.sg.server_caps.version >= (3, 3, 0) and \
-           (self.sg.server_caps.host.startswith('0.0.0.0') or
-                self.sg.server_caps.host.startswith('127.0.0.1')):
-            self.server_address = re.sub('^0.0.0.0|127.0.0.1', 'localhost', self.sg.server_caps.host)
+        if (
+            self.sg.server_caps.version
+            and self.sg.server_caps.version >= (3, 3, 0)
+            and (
+                self.sg.server_caps.host.startswith("0.0.0.0")
+                or self.sg.server_caps.host.startswith("127.0.0.1")
+            )
+        ):
+            self.server_address = re.sub(
+                "^0.0.0.0|127.0.0.1", "localhost", self.sg.server_caps.host
+            )
         else:
             self.server_address = self.sg.server_caps.host
 
@@ -279,73 +287,75 @@ class LiveTestBase(TestBase):
                 cls.config.server_url,
                 **cls.auth_args,
             )
-            cls.sg_version = tuple(sg.info()['version'][:3])
+            cls.sg_version = tuple(sg.info()["version"][:3])
             cls._setup_db(cls.config, sg)
 
     @classmethod
     def _setup_db(cls, config, sg):
-        data = {'name': cls.config.project_name}
-        cls.project = _find_or_create_entity(sg, 'Project', data)
+        data = {"name": cls.config.project_name}
+        cls.project = _find_or_create_entity(sg, "Project", data)
 
-        data = {'name': cls.config.human_name,
-                'login': cls.config.human_login,
-                'password_proxy': cls.config.human_password}
+        data = {
+            "name": cls.config.human_name,
+            "login": cls.config.human_login,
+            "password_proxy": cls.config.human_password,
+        }
         if cls.sg_version >= (3, 0, 0):
-            data['locked_until'] = None
+            data["locked_until"] = None
 
-        cls.human_user = _find_or_create_entity(sg, 'HumanUser', data)
+        cls.human_user = _find_or_create_entity(sg, "HumanUser", data)
 
-        data = {'code': cls.config.asset_code,
-                'project': cls.project}
-        keys = ['code']
-        cls.asset = _find_or_create_entity(sg, 'Asset', data, keys)
+        data = {"code": cls.config.asset_code, "project": cls.project}
+        keys = ["code"]
+        cls.asset = _find_or_create_entity(sg, "Asset", data, keys)
 
-        data = {'project': cls.project,
-                'code': cls.config.version_code,
-                'entity': cls.asset,
-                'user': cls.human_user,
-                'sg_frames_aspect_ratio': 13.3,
-                'frame_count': 33}
-        keys = ['code', 'project']
-        cls.version = _find_or_create_entity(sg, 'Version', data, keys)
+        data = {
+            "project": cls.project,
+            "code": cls.config.version_code,
+            "entity": cls.asset,
+            "user": cls.human_user,
+            "sg_frames_aspect_ratio": 13.3,
+            "frame_count": 33,
+        }
+        keys = ["code", "project"]
+        cls.version = _find_or_create_entity(sg, "Version", data, keys)
 
-        keys = ['code', 'project']
-        data = {'code': cls.config.shot_code,
-                'project': cls.project}
-        cls.shot = _find_or_create_entity(sg, 'Shot', data, keys)
+        keys = ["code", "project"]
+        data = {"code": cls.config.shot_code, "project": cls.project}
+        cls.shot = _find_or_create_entity(sg, "Shot", data, keys)
 
-        keys = ['project', 'user']
-        data = {'project': cls.project,
-                'user': cls.human_user,
-                'content': 'anything'}
-        cls.note = _find_or_create_entity(sg, 'Note', data, keys)
+        keys = ["project", "user"]
+        data = {"project": cls.project, "user": cls.human_user, "content": "anything"}
+        cls.note = _find_or_create_entity(sg, "Note", data, keys)
 
-        keys = ['code', 'project']
-        data = {'project': cls.project,
-                'code': cls.config.playlist_code}
-        cls.playlist = _find_or_create_entity(sg, 'Playlist', data, keys)
+        keys = ["code", "project"]
+        data = {"project": cls.project, "code": cls.config.playlist_code}
+        cls.playlist = _find_or_create_entity(sg, "Playlist", data, keys)
 
-        keys = ['code', 'entity_type']
-        data = {'code': 'wrapper test step',
-                'entity_type': 'Shot'}
-        cls.step = _find_or_create_entity(sg, 'Step', data, keys)
+        keys = ["code", "entity_type"]
+        data = {"code": "wrapper test step", "entity_type": "Shot"}
+        cls.step = _find_or_create_entity(sg, "Step", data, keys)
 
-        keys = ['project', 'entity', 'content']
-        data = {'project': cls.project,
-                'entity': cls.asset,
-                'content': cls.config.task_content,
-                'color': 'Black',
-                'due_date': '1968-10-13',
-                'task_assignees': [cls.human_user],
-                'sg_status_list': 'ip'}
-        cls.task = _find_or_create_entity(sg, 'Task', data, keys)
+        keys = ["project", "entity", "content"]
+        data = {
+            "project": cls.project,
+            "entity": cls.asset,
+            "content": cls.config.task_content,
+            "color": "Black",
+            "due_date": "1968-10-13",
+            "task_assignees": [cls.human_user],
+            "sg_status_list": "ip",
+        }
+        cls.task = _find_or_create_entity(sg, "Task", data, keys)
 
-        keys = ['code']
-        data = {'code': 'api wrapper test storage',
-                'mac_path': 'nowhere',
-                'windows_path': 'nowhere',
-                'linux_path': 'nowhere'}
-        cls.local_storage = _find_or_create_entity(sg, 'LocalStorage', data, keys)
+        keys = ["code"]
+        data = {
+            "code": "api wrapper test storage",
+            "mac_path": "nowhere",
+            "windows_path": "nowhere",
+            "linux_path": "nowhere",
+        }
+        cls.local_storage = _find_or_create_entity(sg, "LocalStorage", data, keys)
 
     @contextlib.contextmanager
     def gen_entity(self, entity_type, **kwargs):
@@ -360,7 +370,7 @@ class LiveTestBase(TestBase):
             if "password_proxy" not in kwargs:
                 kwargs["password_proxy"] = self.config.human_password
 
-        item_rnd = random.randrange(100,999)
+        item_rnd = random.randrange(100, 999)
         for k in kwargs:
             if isinstance(kwargs[k], str):
                 kwargs[k] = kwargs[k].format(rnd=item_rnd)
@@ -372,13 +382,20 @@ class LiveTestBase(TestBase):
             rv = self.sg.delete(entity_type, entity["id"])
             assert rv == True
 
-    def find_one_await_thumbnail(self, entity_type, filters, fields=["image"], thumbnail_field_name="image", **kwargs):
+    def find_one_await_thumbnail(
+        self,
+        entity_type,
+        filters,
+        fields=["image"],
+        thumbnail_field_name="image",
+        **kwargs
+    ):
         attempts = 0
         while attempts < THUMBNAIL_MAX_ATTEMPTS:
             result = self.sg.find_one(entity_type, filters, fields=fields, **kwargs)
             if TRANSIENT_IMAGE_PATH in result.get(thumbnail_field_name, ""):
                 return result
-            
+
             time.sleep(THUMBNAIL_RETRY_INTERVAL)
             attempts += 1
         else:
@@ -387,43 +404,55 @@ class LiveTestBase(TestBase):
 
 
 class HumanUserAuthLiveTestBase(LiveTestBase):
-    '''
+    """
     Test base for relying on a Shotgun connection authenticate through the
     configured login/password pair.
-    '''
+    """
 
     def setUp(self):
-        super(HumanUserAuthLiveTestBase, self).setUp('HumanUser')
+        super(HumanUserAuthLiveTestBase, self).setUp("HumanUser")
 
 
 class SessionTokenAuthLiveTestBase(LiveTestBase):
-    '''
+    """
     Test base for relying on a Shotgun connection authenticate through the
     configured session_token parameter.
-    '''
+    """
 
     def setUp(self):
-        super(SessionTokenAuthLiveTestBase, self).setUp('SessionToken')
+        super(SessionTokenAuthLiveTestBase, self).setUp("SessionToken")
 
 
 class SgTestConfig(object):
-    '''Reads test config and holds values'''
+    """Reads test config and holds values"""
 
     def __init__(self):
         for key in self.config_keys():
             # Look for any environment variables that match our test
             # configuration naming of "SG_{KEY}". Default is None.
-            value = os.environ.get('SG_%s' % (str(key).upper()))
-            if key in ['mock']:
-                value = (value is None) or (str(value).lower() in ['true', '1'])
+            value = os.environ.get("SG_%s" % (str(key).upper()))
+            if key in ["mock"]:
+                value = (value is None) or (str(value).lower() in ["true", "1"])
             setattr(self, key, value)
 
     def config_keys(self):
         return [
-            'api_key', 'asset_code', 'http_proxy', 'human_login', 'human_name',
-            'human_password', 'mock', 'project_name', 'script_name',
-            'server_url', 'session_uuid', 'shot_code', 'task_content',
-            'version_code', 'playlist_code', 'jenkins'
+            "api_key",
+            "asset_code",
+            "http_proxy",
+            "human_login",
+            "human_name",
+            "human_password",
+            "mock",
+            "project_name",
+            "script_name",
+            "server_url",
+            "session_uuid",
+            "shot_code",
+            "task_content",
+            "version_code",
+            "playlist_code",
+            "jenkins",
         ]
 
     def read_config(self, config_path):
@@ -439,7 +468,7 @@ class SgTestConfig(object):
 
 
 def _find_or_create_entity(sg, entity_type, data, identifyiers=None):
-    '''Finds or creates entities.
+    """Finds or creates entities.
     @params:
         sg           - shogun_json.Shotgun instance
         entity_type  - entity type
@@ -447,11 +476,11 @@ def _find_or_create_entity(sg, entity_type, data, identifyiers=None):
         identifyiers -list of subset of keys from data which should be used to
                       uniquely identity the entity
     @returns dicitonary of the entity values
-    '''
-    identifyiers = identifyiers or ['name']
+    """
+    identifyiers = identifyiers or ["name"]
     fields = list(data.keys())
-    filters = [[key, 'is', data[key]] for key in identifyiers]
+    filters = [[key, "is", data[key]] for key in identifyiers]
     entity = sg.find_one(entity_type, filters, fields=fields)
     entity = entity or sg.create(entity_type, data, return_fields=fields)
-    assert(entity)
+    assert entity
     return entity

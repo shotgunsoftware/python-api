@@ -17,18 +17,20 @@ class Utilities:
     def download_archive(self, file_path, file_name):
         """Download the archive from github."""
         print(f"Downloading {file_name}")
-        subprocess.check_output([
-            "curl",
-            "-L",
-            f"https://github.com/httplib2/httplib2/archive/{file_name}",
-            "-o",
-            file_path])
+        subprocess.check_output(
+            [
+                "curl",
+                "-L",
+                f"https://github.com/httplib2/httplib2/archive/{file_name}",
+                "-o",
+                file_path,
+            ]
+        )
 
     def unzip_archive(self, file_path, file_name, temp_dir):
         """Unzip in a temp dir."""
         print(f"Unzipping {file_name}")
-        subprocess.check_output(
-            ["unzip", str(file_path), "-d", str(temp_dir)])
+        subprocess.check_output(["unzip", str(file_path), "-d", str(temp_dir)])
 
     def remove_folder(self, path):
         """Remove a folder recursively."""
@@ -38,11 +40,14 @@ class Utilities:
     def git_remove(self, target):
         print(f"Removing {target} in git.")
         try:
-            subprocess.check_output([
-                "git",
-                "rm",
-                "-rf",
-            ] + target)
+            subprocess.check_output(
+                [
+                    "git",
+                    "rm",
+                    "-rf",
+                ]
+                + target
+            )
         except Exception as e:
             pass
 
@@ -58,8 +63,8 @@ class Utilities:
         contents = contents.replace("from httplib2.", "from .")
         contents = contents.replace("from httplib2", "from .")
         contents = contents.replace(
-            "import pyparsing as pp",
-            "from ... import pyparsing as pp")
+            "import pyparsing as pp", "from ... import pyparsing as pp"
+        )
 
         with open(file_path, "w") as f:
             f.write(contents)
@@ -88,18 +93,13 @@ def main(temp_path, repo_root, version):
     utilities.remove_folder(python3_dir)
 
     # Removes the previous version of httplib2
-    utilities.git_remove([
-        str(python2_dir),
-        str(python3_dir)
-    ])
+    utilities.git_remove([str(python2_dir), str(python3_dir)])
 
     # Copies a new version into place.
     print("Copying new version of httplib2")
     root_folder = unzipped_folder / f"httplib2-{version[1:]}"
-    utilities.copy_folder(
-        str(root_folder / "python2" / "httplib2"), python2_dir)
-    utilities.copy_folder(
-        str(root_folder / "python3" / "httplib2"), python3_dir)
+    utilities.copy_folder(str(root_folder / "python2" / "httplib2"), python2_dir)
+    utilities.copy_folder(str(root_folder / "python3" / "httplib2"), python3_dir)
     utilities.remove_folder(f"{python2_dir}/test")
     utilities.remove_folder(f"{python3_dir}/test")
 

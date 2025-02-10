@@ -30,12 +30,12 @@ Shotgun()
 Shotgun Methods
 ***************
 
-The majority of functionality is contained within the :class:`~shotgun_api3.Shotgun` class. 
+The majority of functionality is contained within the :class:`~shotgun_api3.Shotgun` class.
 The documentation for all of the methods you'll need in your scripts lives in here.
 
 .. rubric:: Connection & Authentication
 
-.. autosummary:: 
+.. autosummary::
     :nosignatures:
 
     Shotgun.connect
@@ -46,11 +46,11 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.add_user_agent
     Shotgun.reset_user_agent
     Shotgun.set_session_uuid
-    Shotgun.info  
+    Shotgun.info
 
 .. rubric:: CRUD Methods
 
-.. autosummary:: 
+.. autosummary::
     :nosignatures:
 
     Shotgun.create
@@ -66,11 +66,11 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.update_project_last_accessed
     Shotgun.work_schedule_read
     Shotgun.work_schedule_update
-    Shotgun.preferences_read    
+    Shotgun.preferences_read
 
 .. rubric:: Working With Files
 
-.. autosummary:: 
+.. autosummary::
     :nosignatures:
 
     Shotgun.upload
@@ -82,7 +82,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
 
 .. rubric:: Activity Stream
 
-.. autosummary:: 
+.. autosummary::
     :nosignatures:
 
     Shotgun.activity_stream_read
@@ -93,7 +93,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
 
 .. rubric:: Working with the Shotgun Schema and Preferences
 
-.. autosummary:: 
+.. autosummary::
     :nosignatures:
 
     Shotgun.schema_entity_read
@@ -480,18 +480,18 @@ Additional Filter Presets
 =========================
 
 As of Flow Production Tracking version 7.0 it is possible to also use filter presets. These presets provide a simple
-way to specify powerful query filters that would otherwise be costly and difficult to craft using 
+way to specify powerful query filters that would otherwise be costly and difficult to craft using
 traditional filters.
 
 Multiple presets can be specified in cases where it makes sense.
 
-Also, these presets can be used alongside normal filters. The result returned is an AND operation 
+Also, these presets can be used alongside normal filters. The result returned is an AND operation
 between the specified filters.
 
 Example Uses
 ------------
 
-The following query will return the Version with the name 'ABC' that is linked to the latest entity 
+The following query will return the Version with the name 'ABC' that is linked to the latest entity
 created::
 
     additional_filter_presets = [
@@ -506,7 +506,7 @@ created::
     result = sg.find('Version', filters = filters, additional_filter_presets = additional_filter_presets)
 
 
-The following query will find all CutItems associated to Cut #1 and return all Versions associated 
+The following query will find all CutItems associated to Cut #1 and return all Versions associated
 to the Shot linked to each of these CutItems::
 
     additional_filter_presets = [
@@ -523,7 +523,7 @@ Available Filter Presets by Entity Type
 
 Allowed filter presets (and preset parameter values) depend on the entity type being searched.
 
-The table bellow gives the details about which filter preset can be used on each entity type and 
+The table bellow gives the details about which filter preset can be used on each entity type and
 with which parameters.
 
 ::
@@ -862,7 +862,7 @@ Event-based Triggers
 Events are particularlly useful when used in conjunction with a trigger framework like the
 `Flow Production Tracking Event Daemon <https://github.com/shotgunsoftware/shotgunEvents>`_. This allows you to
 write plug-ins that watch for certain types of events and then run code when they occur.
-   
+
 Structure of Event Types
 ========================
 
@@ -872,57 +872,57 @@ The basic structure of event types is broken into 3 parts:
 
 - ``Application``: Is always "Shotgun" for events automatically created by the Flow Production Tracking server.
   Other Flow Production Tracking products may use their name in here, for example, Toolkit has its own events
-  that it logs and the application portion is identified by "Toolkit". If you decide to use the 
+  that it logs and the application portion is identified by "Toolkit". If you decide to use the
   EventLogEntry entity to log events for your scripts or tools, you would use your tool name here.
 - ``EntityType``: This is the entity type in Flow Production Tracking that was acted upon (eg. Shot, Asset, etc.)
-- ``Action``: The general action that was taken. (eg. New, Change, Retirement, Revival)   
-   
+- ``Action``: The general action that was taken. (eg. New, Change, Retirement, Revival)
+
 
 Standard Event Types
 ====================
 
-Each entity type has a standard set of events associated with it when it's created, updated, 
+Each entity type has a standard set of events associated with it when it's created, updated,
 deleted, and revived. They follow this pattern:
 
 - ``Shotgun_EntityType_New``: a new entity was created. Example: ``Shotgun_Task_New``
 - ``Shotgun_EntityType_Change``: an entity was modified. Example: ``Shotgun_HumanUser_Change``
 - ``Shotgun_EntityType_Retirement``: an entity was deleted. Example: ``Shotgun_Ticket_Retirement``
-- ``Shotgun_EntityType_Revival``: an entity was revived. Example: ``Shotgun_CustomEntity03_Revival``   
+- ``Shotgun_EntityType_Revival``: an entity was revived. Example: ``Shotgun_CustomEntity03_Revival``
 
 Additional Event Types
 ======================
 
 These are _some_ of the additional event types that are logged by Flow Production Tracking:
- 
+
 - ``Shotgun_Attachment_View``: an Attachment (file) was viewed by a user.
-- ``Shotgun_Reading_Change``: a threaded entity has been marked read or unread. For example, a 
-  Note was read by a user. The readings are unique to the entity<->user connection so when a 
+- ``Shotgun_Reading_Change``: a threaded entity has been marked read or unread. For example, a
+  Note was read by a user. The readings are unique to the entity<->user connection so when a
   Note is read by user "joe" it may still be unread by user "jane".
 - ``Shotgun_User_Login``: a user logged in to Flow Production Tracking.
 - ``Shotgun_User_Logout``: a user logged out of Flow Production Tracking.
-   
+
 
 Custom Event Types
 ==================
 
-Since ``EventLogEntries`` are entities themselves, you can create them using the API just like any 
-other entity type. As mentioned previously, if you'd like to have your scripts or tools log to 
+Since ``EventLogEntries`` are entities themselves, you can create them using the API just like any
+other entity type. As mentioned previously, if you'd like to have your scripts or tools log to
 the Flow Production Tracking event log, simply devise a thoughtful naming structure for your event types and
 create the EventLogEntry as needed following the usual methods for creating entities via the API.
 
 Again, other Flow Production Tracking products like Toolkit use event logs this way.
 
-.. note:: 
-    EventLogEntries cannot be updated or deleted (that would defeat the purpose of course).   
-   
+.. note::
+    EventLogEntries cannot be updated or deleted (that would defeat the purpose of course).
+
 Performance
 ===========
 
 Event log database tables can get large very quickly. While Flow Production Tracking does very well with event logs
-that get into the millions of records, there's an inevitable degradation of performance for pages 
-that display them in the web application as well as any API queries for events when they get too 
-big. This volume of events is not the norm, but can be reached if your server expereinces high 
-usage. 
+that get into the millions of records, there's an inevitable degradation of performance for pages
+that display them in the web application as well as any API queries for events when they get too
+big. This volume of events is not the norm, but can be reached if your server expereinces high
+usage.
 
 This **does not** mean your Flow Production Tracking server performance will suffer in general, just any pages that
 are specifically displaying EventLogEntries in the web application, or API queries on the event
@@ -976,7 +976,7 @@ Will internally be transformed as if you invoked something like this:
 
 .. code-block:: python
 
-    sg.find('Asset', [['project', 'is', {'id': 999, 'type': 'Project'}]]) 
+    sg.find('Asset', [['project', 'is', {'id': 999, 'type': 'Project'}]])
 
 
 ************

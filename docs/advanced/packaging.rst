@@ -6,7 +6,7 @@ Packaging an application with py2app (or py2exe)
 
 You can create standalone applications with Python scripts by using
 `py2app <https://pythonhosted.org/py2app/>`_ on OS X or `py2exe <http://www.py2exe.org/>`_ on
-Windows. This is often done to more easily distribute applications that have a GUI based on 
+Windows. This is often done to more easily distribute applications that have a GUI based on
 toolkits like Tk, Qt or others.
 
 There are caveats you need to be aware of when creating such an app.

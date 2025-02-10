@@ -4,15 +4,15 @@
 Handling Action Menu Item Calls
 ###############################
 
-This is an example ActionMenu Python class to handle the ``GET`` request sent from an 
-ActionMenuItem. It doesn't manage dispatching custom protocols but rather takes the arguments 
-from any ``GET`` data and parses them into the easily accessible and correctly typed instance 
+This is an example ActionMenu Python class to handle the ``GET`` request sent from an
+ActionMenuItem. It doesn't manage dispatching custom protocols but rather takes the arguments
+from any ``GET`` data and parses them into the easily accessible and correctly typed instance
 variables for your Python scripts.
 
 Available as a Gist at https://gist.github.com/3253287
 
 .. seealso::
-    Our `support site has more information about Action Menu Items 
+    Our `support site has more information about Action Menu Items
     <https://developer.shotgridsoftware.com/python-api/cookbook/examples/ami_handler.html>`_.
 
 ************
