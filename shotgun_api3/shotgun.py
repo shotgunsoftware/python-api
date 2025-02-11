@@ -4321,7 +4321,7 @@ class CACertsHTTPSConnection(http_client.HTTPConnection):
             context.check_hostname = False
             if self.__ca_certs:
                 context.load_verify_locations(self.__ca_certs)
-            self.sock = context.wrap_socket(self.sock, server_hostname=self.host)
+            self.sock = context.wrap_socket(self.sock)
         else:
             self.sock = ssl.wrap_socket(
                 self.sock,
