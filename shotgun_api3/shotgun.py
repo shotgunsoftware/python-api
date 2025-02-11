@@ -4151,16 +4151,16 @@ class Shotgun(object):
         :returns: upload url.
         :rtype: str
         """
-        opener = self._build_opener(urllib.request.HTTPHandler)
-
-        request = urllib.request.Request(storage_url, data=data)
-        request.add_header("Content-Type", content_type)
-        request.add_header("Content-Length", size)
-        request.get_method = lambda: "PUT"
 
         attempt = 1
         while attempt <= self.MAX_ATTEMPTS:
             try:
+                opener = self._build_opener(urllib.request.HTTPHandler)
+
+                request = urllib.request.Request(storage_url, data=data)
+                request.add_header("Content-Type", content_type)
+                request.add_header("Content-Length", size)
+                request.get_method = lambda: "PUT"
                 result = self._make_upload_request(request, opener)
 
                 LOG.debug("Completed request to %s" % request.get_method())
@@ -4267,12 +4267,12 @@ class Shotgun(object):
 
         params.update(self._auth_params())
 
-        opener = self._build_opener(FormPostHandler)
 
         attempt = 1
         while attempt <= self.MAX_ATTEMPTS:
             # Perform the request
             try:
+                opener = self._build_opener(FormPostHandler)
                 resp = opener.open(url, params)
                 result = resp.read()
                 # response headers are in str(resp.info()).splitlines()
@@ -4321,7 +4321,7 @@ class CACertsHTTPSConnection(http_client.HTTPConnection):
             context.check_hostname = False
             if self.__ca_certs:
                 context.load_verify_locations(self.__ca_certs)
-            self.sock = context.wrap_socket(self.sock)
+            self.sock = context.wrap_socket(self.sock, server_hostname=self.host)
         else:
             self.sock = ssl.wrap_socket(
                 self.sock,
