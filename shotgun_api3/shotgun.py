@@ -4293,7 +4293,7 @@ class Shotgun(object):
             raise ShotgunError("Max attemps limit reached.")
 
 
-class CACertsHTTPSConnection(http_client.HTTPSConnection):
+class CACertsHTTPSConnection(http_client.HTTPConnection):
     """"
     This class allows to create an HTTPS connection that uses the custom certificates
     passed in.
