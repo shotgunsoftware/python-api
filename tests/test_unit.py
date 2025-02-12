@@ -408,6 +408,7 @@ class TestFilters(unittest.TestCase):
 
         self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
 
+    @mock.patch.dict(os.environ, {"SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION": "1"})
     def test_related_object(self):
         filters = [
             [
@@ -434,10 +435,11 @@ class TestFilters(unittest.TestCase):
                 }
             ],
         }
+        api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
         result = api.shotgun._translate_filters(filters, "all")
         self.assertEqual(result, expected)
 
-    @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
+    @mock.patch("shotgun_api3.shotgun.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
     def test_related_object_entity_optimization_is(self):
         filters = [
             [
@@ -487,7 +489,7 @@ class TestFilters(unittest.TestCase):
         result = api.shotgun._translate_filters(filters, "all")
         self.assertEqual(result, expected)
 
-    @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
+    @mock.patch("shotgun_api3.shotgun.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
     def test_related_object_entity_optimization_in(self):
         filters = [
             [
@@ -561,7 +563,7 @@ class TestFilters(unittest.TestCase):
         result = sg._translate_update_params(entity_type, entity_id, data, multi_entity_update_modes)
         self.assertEqual(result, expected)
 
-    @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
+    @mock.patch("shotgun_api3.shotgun.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
     def test_related_object_update_optimization_entity(self):
         entity_type = "Anything"
         entity_id = 999
@@ -612,7 +614,7 @@ class TestFilters(unittest.TestCase):
         result = sg._translate_update_params(entity_type, entity_id, data, multi_entity_update_modes)
         self.assertEqual(result, expected)
 
-    @mock.patch.dict(os.environ, {"SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION": "1"})
+    @mock.patch("shotgun_api3.shotgun.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
     def test_related_object_update_optimization_entity_multi(self):
         entity_type = "Asset"
         entity_id = 6626

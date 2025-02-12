@@ -105,7 +105,7 @@ mimetypes.add_type("video/mp4", ".mp4")    # from some OS/distros
 
 SG_TIMEZONE = SgTimezone()
 
-SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION = False
+SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = False
 
 NO_SSL_VALIDATION = False
 """
@@ -118,7 +118,7 @@ not require the added security provided by enforcing this.
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.7.0"
+__version__ = "3.8.0"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -652,9 +652,9 @@ class Shotgun(object):
             raise ValueError("Value of SHOTGUN_API_RETRY_INTERVAL must be positive, "
                              "got '%s'." % self.config.rpc_attempt_interval)
         
-        global SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
-        if os.environ.get("SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION", "0").strip().lower() == "1":
-            SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION = True
+        global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
+        if os.environ.get("SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", "0").strip().lower() == "1":
+            SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = True
             
         self._connection = None
 
@@ -1136,12 +1136,12 @@ class Shotgun(object):
     def _translate_update_params(
         self, entity_type, entity_id, data, multi_entity_update_modes
     ):
-        global SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
+        global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
 
         def optimize_field(field_dict):
-            if SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION:
-                return {k: _get_type_and_id_from_value(v) for k, v in field_dict.items()}
-            return field_dict
+            if SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION:
+                return field_dict
+            return {k: _get_type_and_id_from_value(v) for k, v in field_dict.items()}
 
         full_fields = self._dict_to_list(
             data,
@@ -4493,9 +4493,9 @@ def _translate_filters_simple(sg_filter):
 
     # Payload optimization: Do not send a full object
     # just send the `type` and `id` when combining related queries
-    global SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
+    global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
     if (
-        SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
+        not SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
         and condition["path"] != "id"
         and condition["relation"] in ["is", "is_not", "in", "not_in"]
         and isinstance(values[0], dict)
