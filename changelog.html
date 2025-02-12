@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flow Production Tracking Python API Changelog &mdash; python-api v3.7.0 documentation</title>
+  <title>Flow Production Tracking Python API Changelog &mdash; python-api v3.8.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -66,6 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced/packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/iron_python.html">IronPython</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Flow Production Tracking Python API Changelog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v3-8-0-2024-feb-7">v3.8.0 (2024 Feb 7)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-7-0-2024-dec-9">v3.7.0 (2024 Dec 9)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-6-2-2024-aug-13">v3.6.2 (2024 Aug 13)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-6-1-2024-jun-6">v3.6.1 (2024 Jun 6)</a></li>
@@ -166,7 +167,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.7.0.<br>
+    <b>python-api</b> v3.8.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -210,6 +211,16 @@
   <section id="flow-production-tracking-python-api-changelog">
 <h1>Flow Production Tracking Python API Changelog<a class="headerlink" href="#flow-production-tracking-python-api-changelog" title="Permalink to this heading"></a></h1>
 <p>Here you can see the full list of changes between each Python API release.</p>
+<section id="v3-8-0-2024-feb-7">
+<h2>v3.8.0 (2024 Feb 7)<a class="headerlink" href="#v3-8-0-2024-feb-7" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Extend the payload optimizations to the <code class="docutils literal notranslate"><span class="pre">in</span></code> and <code class="docutils literal notranslate"><span class="pre">not_in</span></code> filters and
+the <code class="docutils literal notranslate"><span class="pre">update</span></code> method.</p></li>
+<li><p>The payload optimization is now enabled by default.
+It can be disabled with the <code class="docutils literal notranslate"><span class="pre">SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION</span></code>
+environment variable.</p></li>
+</ul>
+</section>
 <section id="v3-7-0-2024-dec-9">
 <h2>v3.7.0 (2024 Dec 9)<a class="headerlink" href="#v3-7-0-2024-dec-9" title="Permalink to this heading"></a></h2>
 <ul class="simple">
@@ -836,7 +847,7 @@ after initializing it).</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Autodesk.</p>
+    <p>&#169; Copyright 2025, Autodesk.</p>
   </div>
 
    

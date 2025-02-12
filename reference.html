@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; python-api v3.7.0 documentation</title>
+  <title>API Reference &mdash; python-api v3.8.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -219,7 +219,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment Variables</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#shotgun-api-cacerts">SHOTGUN_API_CACERTS</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#shotgun-api-retry-interval">SHOTGUN_API_RETRY_INTERVAL</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#shotgun-api-enable-entity-optimization">SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#shotgun-api-disable-entity-optimization">SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#localization">Localization</a></li>
@@ -248,7 +248,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.7.0.<br>
+    <b>python-api</b> v3.8.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -3333,14 +3333,14 @@ immediate concerns, please <a class="reference external" href="https://www.autod
 </div>
 <p>In the case that both this environment variable and the config’s <code class="docutils literal notranslate"><span class="pre">rpc_attempt_interval</span></code> property are set, the value in <code class="docutils literal notranslate"><span class="pre">rpc_attempt_interal</span></code> will be used.</p>
 </section>
-<section id="shotgun-api-enable-entity-optimization">
-<h3>SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION<a class="headerlink" href="#shotgun-api-enable-entity-optimization" title="Permalink to this heading"></a></h3>
+<section id="shotgun-api-disable-entity-optimization">
+<h3>SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION<a class="headerlink" href="#shotgun-api-disable-entity-optimization" title="Permalink to this heading"></a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>(v3.7.0) This is an experimental feature. Feel free to disable this feature if you are experiencing any issues.</p>
 </div>
-<p>When set to <code class="docutils literal notranslate"><span class="pre">1</span></code>, this environment variable will enable the entity optimization feature.
-This feature is disabled by default and is used to reduce the payload size made to the server when retrieving entities
+<p>When set to <code class="docutils literal notranslate"><span class="pre">1</span></code>, this environment variable will disable the entity optimization feature.
+This feature is enabled by default and is used to reduce the payload size made to the server when retrieving entities
 improving overall performance by decreasing network latency and server processing.</p>
 <p>For example, a <code class="docutils literal notranslate"><span class="pre">find</span></code> call like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Asset&#39;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span>
@@ -3409,7 +3409,7 @@ Requests made from script/API users are localized in the site settings.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Autodesk.</p>
+    <p>&#169; Copyright 2025, Autodesk.</p>
   </div>
 
    
