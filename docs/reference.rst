@@ -950,13 +950,13 @@ Stores the number of milliseconds to wait between request retries.  By default, 
 In the case that both this environment variable and the config's ``rpc_attempt_interval`` property are set, the value in ``rpc_attempt_interal`` will be used.
 
 
-SHOTGUN_API_ENABLE_ENTITY_OPTIMIZATION
+SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
 =======================================
 
 .. note:: (v3.7.0) This is an experimental feature. Feel free to disable this feature if you are experiencing any issues.
 
-When set to ``1``, this environment variable will enable the entity optimization feature.
-This feature is disabled by default and is used to reduce the payload size made to the server when retrieving entities
+When set to ``1``, this environment variable will disable the entity optimization feature.
+This feature is enabled by default and is used to reduce the payload size made to the server when retrieving entities
 improving overall performance by decreasing network latency and server processing.
 
 For example, a ``find`` call like this:
