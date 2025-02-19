@@ -9,16 +9,16 @@ Smart Cut Fields
     cut support. `Read the Cut Support Documentation here <https://knowledge.autodesk.com/support/shotgrid/learn-explore/caas/CloudHelp/cloudhelp/ENU/SG-Editorial/files/SG-Editorial-ed-cut-schema-html-html.html>`_.
 
 If you want to work with 'smart' cut fields through the API, your script should use a corresponding
-'raw' fields for all updates. The 'smart_cut_fields' are primarily for display in the UI, the real 
+'raw' fields for all updates. The 'smart_cut_fields' are primarily for display in the UI, the real
 data is stored in a set of 'raw' fields that have different names.
 
 ************
 Smart Fields
 ************
 
-In the UI these fields attempt to calculate values based on data entered into the various fields. 
-These fields can be queried via the API using the find() method, but not updated. Note that we are 
-deprecating this feature and recommend creating your own cut fields from scratch, which will not 
+In the UI these fields attempt to calculate values based on data entered into the various fields.
+These fields can be queried via the API using the find() method, but not updated. Note that we are
+deprecating this feature and recommend creating your own cut fields from scratch, which will not
 contain any calculations which have proven to be too magical at times.
 
 - ``smart_cut_duration``

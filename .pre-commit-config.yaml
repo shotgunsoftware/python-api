@@ -1,5 +1,4 @@
-# -----------------------------------------------------------------------------
-# Copyright (c) 2009-2021, Shotgun Software Inc.
+# Copyright (c) 2024, Shotgun Software Inc.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -26,47 +25,25 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# We've stored some variables in Azure. They contain credentials
-# and are encrypted. They are also not available to clients.
-# This statement says which variable groups this repo requires.
-# We have two: one that can be shared by all repos that use CI
-# and another that is used just by the Python API, which creates
-# HumanUser's and as such need a password, which we can't
-# hardcode in the .yml files.
-variables:
-  - group: sg-credentials
+# Styles the code properly
 
-# We want builds to trigger for 3 reasons:
-# - The master branch sees new commits
-# - Each PR should get rebuilt when commits are added to it.
-trigger:
-  branches:
-    include:
-    - master
-pr:
-  branches:
-    include:
-    - "*"
+# Exclude Third Pary components
+exclude: "shotgun_api3/lib/.*"
 
-# This here is the list of jobs we want to run for our build.
-# Jobs run in parallel.
-jobs:
-- template: azure-pipelines-templates/code_style_validation.yml
+# List of super useful formatters.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+    - id: check-ast
+    - id: check-case-conflict
+    - id: check-executables-have-shebangs
+    - id: check-merge-conflict
+    - id: end-of-file-fixer
+    - id: requirements-txt-fixer
+    - id: trailing-whitespace
 
-# These are jobs templates, they allow to reduce the redundancy between
-# variations of the same build. We pass in the image name
-# and a friendly name that then template can then use to create jobs.
-- template: azure-pipelines-templates/run-tests.yml
-  parameters:
-    name: Linux
-    vm_image: 'ubuntu-latest'
-
-- template: azure-pipelines-templates/run-tests.yml
-  parameters:
-    name: macOS
-    vm_image: 'macOS-latest'
-
-- template: azure-pipelines-templates/run-tests.yml
-  parameters:
-    name: Windows
-    vm_image: 'windows-latest'
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+    - id: black

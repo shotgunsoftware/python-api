@@ -1,5 +1,4 @@
-# -----------------------------------------------------------------------------
-# Copyright (c) 2009-2021, Shotgun Software Inc.
+# Copyright (c) 2024, Shotgun Software Inc.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -26,47 +25,26 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# We've stored some variables in Azure. They contain credentials
-# and are encrypted. They are also not available to clients.
-# This statement says which variable groups this repo requires.
-# We have two: one that can be shared by all repos that use CI
-# and another that is used just by the Python API, which creates
-# HumanUser's and as such need a password, which we can't
-# hardcode in the .yml files.
-variables:
-  - group: sg-credentials
-
-# We want builds to trigger for 3 reasons:
-# - The master branch sees new commits
-# - Each PR should get rebuilt when commits are added to it.
-trigger:
-  branches:
-    include:
-    - master
-pr:
-  branches:
-    include:
-    - "*"
-
-# This here is the list of jobs we want to run for our build.
-# Jobs run in parallel.
 jobs:
-- template: azure-pipelines-templates/code_style_validation.yml
+- job: code_style_validation
+  displayName: Code Style Validation
+  pool:
+    vmImage: 'ubuntu-latest'
 
-# These are jobs templates, they allow to reduce the redundancy between
-# variations of the same build. We pass in the image name
-# and a friendly name that then template can then use to create jobs.
-- template: azure-pipelines-templates/run-tests.yml
-  parameters:
-    name: Linux
-    vm_image: 'ubuntu-latest'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: 3.9
+      addToPath: True
+      architecture: 'x64'
 
-- template: azure-pipelines-templates/run-tests.yml
-  parameters:
-    name: macOS
-    vm_image: 'macOS-latest'
+  - script: |
+      pip install --upgrade pip setuptools wheel
+      pip install --upgrade pre-commit
+    displayName: Install dependencies
 
-- template: azure-pipelines-templates/run-tests.yml
-  parameters:
-    name: Windows
-    vm_image: 'windows-latest'
+  - bash: pre-commit autoupdate
+    displayName: Update pre-commit hook versions
+
+  - bash: pre-commit run --all
+    displayName: Validate code with pre-commit

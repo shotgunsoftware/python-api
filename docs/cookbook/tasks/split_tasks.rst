@@ -4,15 +4,15 @@
 Split Tasks
 ###########
 
-Split tasks can be created and edited via the API but must comply to some rules. Before going 
+Split tasks can be created and edited via the API but must comply to some rules. Before going
 further, a good understanding of :ref:`how Flow Production Tracking handles task dates is useful <updating_tasks>`.
 
 ********
 Overview
 ********
 
-The Task entity has a field called ``splits`` which is a list of dictionaries. Each dictionary 
-in the list has two string keys, ``start`` and ``end``, who's values are strings representing dates 
+The Task entity has a field called ``splits`` which is a list of dictionaries. Each dictionary
+in the list has two string keys, ``start`` and ``end``, who's values are strings representing dates
 in the ``YYYY-mm-dd`` format.
 
 ::
@@ -21,11 +21,11 @@ in the ``YYYY-mm-dd`` format.
 
 - Splits should be ordered from eldest to newest.
 - There should be gaps between each split.
-  
-  - Gaps are defined as at least one working day. Non-workdays such as weekends and holidays 
+
+  - Gaps are defined as at least one working day. Non-workdays such as weekends and holidays
     are not gaps.
 
-If there are multiple splits but there between two or more splits there is no gap, an error will be 
+If there are multiple splits but there between two or more splits there is no gap, an error will be
 raised. For example::
 
     >>> sg.update('Task', 2088, {'splits':[{'start':'2012-12-10', 'end':'2012-12-11'}, {'start':'2012-12-12', 'end':'2012-12-14'}, {'start':'2012-12-19', 'end':'2012-12-20'}]})
@@ -40,7 +40,7 @@ raised. For example::
         shotgun_api3.shotgun.Fault: API update() CRUD ERROR #5: Update failed for [Task.splits]: (task.rb) The start date in split segment 2 is only one calendar day away from  the end date of the previous segment. There must be calendar days between split segments.
 
 Alternately, a split value can be set to ``None`` to remove splits (you can also use an empty list).
-This will preserve the ``start_date`` and ``due_date`` values but recalculate the ``duration`` value 
+This will preserve the ``start_date`` and ``due_date`` values but recalculate the ``duration`` value
 while appropriately considering all workday rules in effect.
 
 ********************************************************
@@ -50,16 +50,16 @@ How Do Splits Influence Dates And Dates Influence Splits
 - If splits are specified the supplied ``start_date``, ``due_date`` and ``duration`` fields will be ignored.
 - The ``start_date`` will be inferred from the earliest split.
 - The ``due_date`` will be inferred from the last split.
-- If the ``start_date`` is changed on a task that has splits the first split will be moved to start 
-  on the new ``start_date`` and all further splits will be moved while maintaining gap lengths 
+- If the ``start_date`` is changed on a task that has splits the first split will be moved to start
+  on the new ``start_date`` and all further splits will be moved while maintaining gap lengths
   between splits and respecting workday rules.
-- If the ``due_date`` is changed on a task that has splits the last split will be moved to end on 
-  the new ``due_date`` and all prior splits will be moved while maintaining gap lengths between 
+- If the ``due_date`` is changed on a task that has splits the last split will be moved to end on
+  the new ``due_date`` and all prior splits will be moved while maintaining gap lengths between
   splits and respecting workday rules.
 - If the ``duration`` is changed two scenarios are possible
-    
+
     - In the case of a longer duration, additional days will be added to the end of the last split
-    - In the case of a shorter duration splits, starting with the latest ones, will be either 
+    - In the case of a shorter duration splits, starting with the latest ones, will be either
       removed or shortened until the new duration is met.
 
 Examples
@@ -216,7 +216,7 @@ Result:
 Setting the due_date in a gap
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When a due date is set in a gap later splits are removed and the day of the due date is considered 
+When a due date is set in a gap later splits are removed and the day of the due date is considered
 a day when work will be done.
 
 For this example let's assume as a starting point the result of the 5th example:
@@ -242,16 +242,3 @@ For this example let's assume as a starting point the result of the 5th example:
 Result:
 
 .. image:: /images/split_tasks_9.png
-
-
-
-
-
-
-
-
-
-
-
-
-

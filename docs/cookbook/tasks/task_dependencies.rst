@@ -4,16 +4,16 @@
 Task Dependencies
 #################
 
-Task dependencies work the same way in the API as they do in the UI. You can filter and sort on 
+Task dependencies work the same way in the API as they do in the UI. You can filter and sort on
 any of the fields. For information about Task Dependencies in Flow Production Tracking, check out the `main
-documentation page on our support site 
+documentation page on our support site
 <https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Producer_pr_scheduling_tasks_pr_gantt_chart_tasks_html>`_
 
 ************
 Create Tasks
 ************
 
-Let's create a couple of Tasks and create dependencies between them. First we'll create a "Layout" 
+Let's create a couple of Tasks and create dependencies between them. First we'll create a "Layout"
 Task for our Shot::
 
     data = {
@@ -22,7 +22,7 @@ Task for our Shot::
         'start_date': '2010-04-28',
         'due_date': '2010-05-05',
         'entity': {'type':'Shot', 'id':860}
-        }    
+        }
     result = sg.create(Task, data)
 
 
@@ -45,7 +45,7 @@ Now let's create an "Anm" Task for our Shot::
         'start_date': '2010-05-06',
         'due_date': '2010-05-12',
         'entity': {'type':'Shot', 'id':860}
-        }    
+        }
     result = sg.create(Task, data)
 
 Returns::
@@ -63,11 +63,11 @@ Returns::
 Create A Dependency
 *******************
 
-Tasks each have an ``upstream_tasks`` field and a ``downstream_tasks`` field. Each field is a 
-list ``[]`` type and can contain zero, one, or multiple Task entity dictionaries representing the 
+Tasks each have an ``upstream_tasks`` field and a ``downstream_tasks`` field. Each field is a
+list ``[]`` type and can contain zero, one, or multiple Task entity dictionaries representing the
 dependent Tasks.
 There are four dependency types from which you can choose: ``finish-to-start-next-day``, ``start-to-finish-next-day``, ``start-to-start``, ``finish-to-finish``.
-If no dependency type is provided the default ``finish-to-start-next-day`` will be used. 
+If no dependency type is provided the default ``finish-to-start-next-day`` will be used.
 Here is how to create a dependency between our "Layout" and "Anm" Tasks::
 
     # make 'Layout' an upstream Task to 'Anm'. (aka, make 'Anm' dependent on 'Layout') with finish-to-start-next-day dependency type
@@ -85,7 +85,7 @@ Returns::
 This will also automatically update the `downstream_tasks` field on 'Layout' to include the 'Anm' Task.
 
 ***********************
-Query Task Dependencies 
+Query Task Dependencies
 ***********************
 
 Task Dependencies each have a ``dependent_task_id`` and a ``task_id`` fields.
@@ -127,7 +127,7 @@ So now lets look at the Tasks we've created and their dependency-related fields:
         'due_date',
         'upstream_tasks',
         'downstream_tasks',
-        'dependency_violation', 
+        'dependency_violation',
         'pinned'
         ]
     result = sg.find("Task", filters, fields)
@@ -151,17 +151,17 @@ Returns::
       'pinned': False,
       'start_date': '2010-05-06',
       'type': 'Task',
-      'upstream_tasks': [{'type': 'Task', 'name': 'Layout', 'id': 556}]}, 
-    ...    
+      'upstream_tasks': [{'type': 'Task', 'name': 'Layout', 'id': 556}]},
+    ...
 
-*Note that we have also created additional Tasks for this Shot but we're going to focus on these 
+*Note that we have also created additional Tasks for this Shot but we're going to focus on these
 first two for simplicity.*
 
 *****************************************************************
 Updating the End Date on a Task with Downstream Task Dependencies
 *****************************************************************
 
-If we update the ``due_date`` field on our "Layout" Task, we'll see that the "Anm" Task dates 
+If we update the ``due_date`` field on our "Layout" Task, we'll see that the "Anm" Task dates
 will automatically get pushed back to keep the dependency satisfied::
 
     result = sg.update('Task', 556, {'due_date': '2010-05-07'})
@@ -189,20 +189,20 @@ Our Tasks now look like this (notice the new dates on the "Anm" Task)::
       'pinned': False,
       'start_date': '2010-05-10',
       'type': 'Task',
-      'upstream_tasks': [{'type': 'Task', 'name': 'Layout', 'id': 556}]}, 
-    ...  
+      'upstream_tasks': [{'type': 'Task', 'name': 'Layout', 'id': 556}]},
+    ...
 
 
 **********************************************************
 Creating a Dependency Violation by pushing up a Start Date
 **********************************************************
 
-Task Dependencies can work nicely if you are pushing out an end date for a Task as it will just 
-recalculate the dates for all of the dependent Tasks. But what if we push up the Start Date of our 
+Task Dependencies can work nicely if you are pushing out an end date for a Task as it will just
+recalculate the dates for all of the dependent Tasks. But what if we push up the Start Date of our
 "Anm" Task to start before our "Layout" Task is scheduled to end?
 
 ::
-    
+
     result = sg.update('Task', 557, {'start_date': '2010-05-06'})
 
 Returns::
@@ -229,21 +229,21 @@ Our Tasks now look like this::
       'start_date': '2010-05-06',
       'type': 'Task',
       'upstream_tasks': [{'type': 'Task', 'name': 'Layout', 'id': 556}]},
-     ...  
+     ...
 
-Because the "Anm" Task ``start_date`` depends on the ``due_date`` of the "Layout" Task, this 
+Because the "Anm" Task ``start_date`` depends on the ``due_date`` of the "Layout" Task, this
 change creates a dependency violation. The update succeeds, but Flow Production Tracking has also set the
-``dependency_violation`` field to ``True`` and has also updated the ``pinned`` field to ``True``. 
+``dependency_violation`` field to ``True`` and has also updated the ``pinned`` field to ``True``.
 
-The ``pinned`` field simply means that if the upstream Task(s) are moved, the "Anm" Task will no 
-longer get moved with it. The dependency is still there (in ``upstream_tasks``) but the Task is 
+The ``pinned`` field simply means that if the upstream Task(s) are moved, the "Anm" Task will no
+longer get moved with it. The dependency is still there (in ``upstream_tasks``) but the Task is
 now "pinned" to those dates until the Dependency Violation is resolved.
 
 ***********************************************************
-Resolving a Dependency Violation by updating the Start Date 
+Resolving a Dependency Violation by updating the Start Date
 ***********************************************************
 
-We don't want that violation there. Let's revert that change so the Start Date for "Anm" is after 
+We don't want that violation there. Let's revert that change so the Start Date for "Anm" is after
 the End Date of "Layout"::
 
     result = sg.update('Task', 557, {'start_date': '2010-05-10'})
@@ -272,10 +272,10 @@ Our Tasks now look like this::
       'start_date': '2010-05-10',
       'type': 'Task',
       'upstream_tasks': [{'type': 'Task', 'name': 'Layout', 'id': 556}]},
-     ...  
+     ...
 
-The ``dependency_violation`` field has now been set back to ``False`` since there is no longer 
-a violation. But notice that the ``pinned`` field is still ``True``. We will have to manually 
+The ``dependency_violation`` field has now been set back to ``False`` since there is no longer
+a violation. But notice that the ``pinned`` field is still ``True``. We will have to manually
 update that if we want the Task to travel with its dependencies again::
 
     result = sg.update('Task', 557, {'pinned': False})
@@ -304,19 +304,19 @@ Our Tasks now look like this::
       'start_date': '2010-05-10',
       'type': 'Task',
       'upstream_tasks': [{'type': 'Task', 'name': 'Layout', 'id': 556}]},
-     ...  
+     ...
 
-Looks great. But that's an annoying manual process. What if we want to just reset a Task so that 
+Looks great. But that's an annoying manual process. What if we want to just reset a Task so that
 it automatically gets updated so that the Start Date is after its dependent Tasks?
 
 *******************************************************************
 Updating the ``pinned`` field on a Task with a Dependency Violation
 *******************************************************************
 
-Let's go back a couple of steps to where our "Anm" Task had a Dependency Violation because we had 
-moved the Start Date up before the "Layout" Task End Date. Remember that the ``pinned`` field 
+Let's go back a couple of steps to where our "Anm" Task had a Dependency Violation because we had
+moved the Start Date up before the "Layout" Task End Date. Remember that the ``pinned`` field
 was also ``True``. If we simply update the ``pinned`` field to be ``False``, Flow Production Tracking will also
-automatically update the Task dates to satisfy the upstream dependencies and reset the 
+automatically update the Task dates to satisfy the upstream dependencies and reset the
 ``dependency_violation`` value to ``False``::
 
     result = sg.update('Task', 557, {'pinned': False})
@@ -345,19 +345,19 @@ Our Tasks now look like this::
       'pinned': False,
       'start_date': '2010-05-10',
       'type': 'Task',
-      'upstream_tasks': [{'type': 'Task', 'name': 'Layout', 'id': 556}]}, 
-    ...  
+      'upstream_tasks': [{'type': 'Task', 'name': 'Layout', 'id': 556}]},
+    ...
 
 
 Notice by updating ``pinned`` to ``False``, Flow Production Tracking also updated the ``start_date`` and
-``due_date`` fields of our "Anm" Task so it will satisfy the upstream Task dependencies. And since 
+``due_date`` fields of our "Anm" Task so it will satisfy the upstream Task dependencies. And since
 that succeeded, the ``dependency_violation`` field has also been set to ``False``
 
 *******************************************
 ``dependency_violation`` field is read-only
 *******************************************
 
-The ``dependency_violation`` field is the only dependency-related field that is read-only. Trying 
+The ``dependency_violation`` field is the only dependency-related field that is read-only. Trying
 to modify it will generate a Fault::
 
     result = sg.update('Task', 557, {'dependency_violation': False})

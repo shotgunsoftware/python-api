@@ -3,9 +3,9 @@ API Usage Tips
 ##############
 
 Below is a list of helpful tips when using the Flow Production Tracking API3. We have tried to make the API very
-simple to use with predictable results while remaining a powerful tool to integrate with your 
-pipeline. However, there's always a couple of things that crop up that our users might not be 
-aware of. Those are the types of things you'll find below. We'll be adding to this document over 
+simple to use with predictable results while remaining a powerful tool to integrate with your
+pipeline. However, there's always a couple of things that crop up that our users might not be
+aware of. Those are the types of things you'll find below. We'll be adding to this document over
 time as new questions come up from our users that exhibit these types of cases.
 
 *********
@@ -43,13 +43,13 @@ the entities are returned in a standard dictionary::
 
     {'type': 'Asset', 'name': 'redBall', 'id': 1}
 
-For each entity returned, you will get a ``type``, ``name``, and ``id`` key. This does not mean 
-there are fields named ``type`` and ``name`` on the Asset. These are only used to provide a 
+For each entity returned, you will get a ``type``, ``name``, and ``id`` key. This does not mean
+there are fields named ``type`` and ``name`` on the Asset. These are only used to provide a
 consistent way to represent entities returned via the API.
 
 - ``type``: the entity type (CamelCase)
 - ``name``: the display name of the entity. For most entity types this is the value of the ``code``
-  field but not always. For example, on the Ticket and Delivery entities the ``name`` key would 
+  field but not always. For example, on the Ticket and Delivery entities the ``name`` key would
   contain the value of the ``title`` field.
 
 .. _custom_entities:
@@ -100,14 +100,14 @@ Connection entities exist behind the scenes for any many-to-many relationship. M
 you won't need to pay any attention to them. But in some cases, you may need to track information
 on the instance of one entity's relationship to another.
 
-For example, when viewing a list of Versions on a Playlist, the Sort Order (``sg_sort_order``) field is an 
+For example, when viewing a list of Versions on a Playlist, the Sort Order (``sg_sort_order``) field is an
 example of a field that resides on the connection entity between Playlists and Versions. This
-connection entity is appropriately called `PlaylistVersionConnection`. Because any Version can 
-exist in multiple Playlists, the sort order isn't specific to the Version, it's specific to 
-each _instance_ of the Version in a Playlist. These instances are tracked using connection 
+connection entity is appropriately called `PlaylistVersionConnection`. Because any Version can
+exist in multiple Playlists, the sort order isn't specific to the Version, it's specific to
+each _instance_ of the Version in a Playlist. These instances are tracked using connection
 entities in Shtogun and are accessible just like any other entity type in Flow Production Tracking.
 
-To find information about your Versions in the Playlist "Director Review" (let's say it has an 
+To find information about your Versions in the Playlist "Director Review" (let's say it has an
 ``id`` of 4). We'd run a query like so::
 
     filters = [['playlist', 'is', {'type':'Playlist', 'id':4}]]
@@ -169,9 +169,9 @@ Which returns the following::
 - ``playlist`` is the Playlist record for this connection instance.
 - ``sg_sort_order`` is the sort order field on the connection instance.
 
-We can pull in field values from the linked Playlist and Version entities using dot notation like 
-``version.Version.code``. The syntax is ``fieldname.EntityType.fieldname``. In this example, 
-``PlaylistVersionConnection`` has a field named ``version``. That field contains a ``Version`` 
+We can pull in field values from the linked Playlist and Version entities using dot notation like
+``version.Version.code``. The syntax is ``fieldname.EntityType.fieldname``. In this example,
+``PlaylistVersionConnection`` has a field named ``version``. That field contains a ``Version``
 entity. The field we are interested on the Version is ``code``. Put those together with our f
 riend the dot and we have ``version.Version.code``.
 
@@ -179,20 +179,20 @@ riend the dot and we have ``version.Version.code``.
 Flow Production Tracking UI fields not available via the API
 ************************************************************
 
-Summary type fields like Query Fields and Pipeline Step summary fields are currently only available 
-via the UI. Some other fields may not work as expected through the API because they are "display 
+Summary type fields like Query Fields and Pipeline Step summary fields are currently only available
+via the UI. Some other fields may not work as expected through the API because they are "display
 only" fields made available for convenience and are only available in the browser UI.
 
 HumanUser
 =========
 
-- ``name``: This is a UI-only field that is a combination of the ``firstname`` + ``' '`` + 
+- ``name``: This is a UI-only field that is a combination of the ``firstname`` + ``' '`` +
   ``lastname``.
 
 Shot
 ====
 
-**Smart Cut Fields**: These fields are available only in the browser UI. You can read more about 
+**Smart Cut Fields**: These fields are available only in the browser UI. You can read more about
 smart cut fields and the API in the :ref:`Smart Cut Fields doc <smart_cut_fields>`::
 
     smart_cut_in
@@ -212,25 +212,25 @@ smart cut fields and the API in the :ref:`Smart Cut Fields doc <smart_cut_fields
 Pipeline Step summary fields on entities
 ========================================
 
-The Pipeline Step summary fields on entities that have Tasks aren't currently available via the API 
-and are calculated on the client side in the UI. These fields are like ``step_0``, or ``step_13``. 
+The Pipeline Step summary fields on entities that have Tasks aren't currently available via the API
+and are calculated on the client side in the UI. These fields are like ``step_0``, or ``step_13``.
 Note that the Pipeline Step entity itself is available via the API as the entity type ``Step``.
 
 Query Fields
 ============
 
-Query fields are also summary fields like Pipeline Steps, the query is run from the client side UI 
+Query fields are also summary fields like Pipeline Steps, the query is run from the client side UI
 and therefore is not currently supported in the API.
 
 ************
 Audit Fields
 ************
-You can set the ``created_by`` and ``created_at`` fields via the API at creation time. This is 
-often useful for when you're importing or migrating data from another source and want to keep the 
-history in tact. However, you cannot set the ``updated_by`` and ``updated_at`` fields. These are 
+You can set the ``created_by`` and ``created_at`` fields via the API at creation time. This is
+often useful for when you're importing or migrating data from another source and want to keep the
+history in tact. However, you cannot set the ``updated_by`` and ``updated_at`` fields. These are
 automatically set whenever an entity is created or updated.
 
-.. _logging: 
+.. _logging:
 
 *****************************
 Logging Messages from the API
@@ -250,7 +250,7 @@ To write logging output from the Flow Production Tracking API to a file, define 
     import shotgun_api3 as shotgun
     logging.basicConfig(level=logging.DEBUG, filename='/path/to/your/log')
 
-To suppress the logging output from the API in a script which uses logging, set the level of the 
+To suppress the logging output from the API in a script which uses logging, set the level of the
 Flow Production Tracking logger to a higher level::
 
     import logging
@@ -262,7 +262,7 @@ Flow Production Tracking logger to a higher level::
 Optimizations
 *************
 
-.. _combining-related-queries: 
+.. _combining-related-queries:
 
 Combining Related Queries
 =========================
