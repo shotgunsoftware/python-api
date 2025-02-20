@@ -4,7 +4,7 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
-v3.8.0 (2024 Feb 7)
+v3.8.0 (2025 Feb 7)
 ===================
 
 - Extend the payload optimizations to the ``in`` and ``not_in`` filters and
