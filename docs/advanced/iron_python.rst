@@ -22,9 +22,7 @@ v3.0.20 can be used with IronPython with a little bit of added work:
 
 - If you encounter any SSL errors like
   ``unknown field: SERIALNUMBER=0123456789`` or ``:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed``.
-  For now you can workaround this problem by disabling ssl certificate validation which we've
-  encountered some intermittent issues with. Set ``NO_SSL_VALIDATION = True`` for either case.
-  See :const:`shotgun_api3.shotgun.NO_SSL_VALIDATION`
+  Inject you own CA cert <<TODO>>
 
 - If you encounter ``LookupError: unknown encoding: idna``, you can force utf-8 by changing
   iri2uri.py ~ln 71 from ``authority = authority.encode('idna')`` to

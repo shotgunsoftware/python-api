@@ -288,6 +288,10 @@ class TestShotgunApi(base.LiveTestBase):
             "attachments",
             tag_list="monkeys, everywhere, send, help",
         )
+<<<<<<< HEAD
+=======
+
+>>>>>>> 413afc6 (SSL)
         mock_send_form.assert_called_once()
         mock_send_form_args, _ = mock_send_form.call_args
         display_name_to_send = mock_send_form_args[1].get("display_name", "")
@@ -311,7 +315,11 @@ class TestShotgunApi(base.LiveTestBase):
             display_name_to_send.startswith("b'") and display_name_to_send.endswith("'")
         )
 
+<<<<<<< HEAD
         mock_send_form.reset_mock()
+=======
+        # mock_send_form.method.assert_called_once() ## CANOT work because was already called earlier....
+>>>>>>> 413afc6 (SSL)
         mock_send_form.return_value = "2\nIt can't be upload"
         self.assertRaises(
             shotgun_api3.ShotgunError,
@@ -693,6 +701,10 @@ class TestShotgunApi(base.LiveTestBase):
     def test_share_thumbnail_returns_error(self, mock_send_form):
         """throw an exception if server returns an error code"""
 
+<<<<<<< HEAD
+=======
+        # mock_send_form.method.assert_called_once()  # never worked.....
+>>>>>>> 413afc6 (SSL)
         mock_send_form.return_value = "1\nerror message.\n"
 
         self.assertRaises(
@@ -2248,78 +2260,7 @@ class TestErrors(base.TestBase):
         finally:
             self.sg.config.rpc_attempt_interval = bak_rpc_attempt_interval
 
-    @unittest.mock.patch("shotgun_api3.shotgun.Http.request")
-    def test_sha2_error(self, mock_request):
-        # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ssl.SSLError(
-            "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
-            "encoding routines:ASN1_item_verify: unknown message digest "
-            "algorithm"
-        )
-
-        # save the original state
-        original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
-
-        # ensure we're starting with the right values
-        self.sg.reset_user_agent()
-
-        # ensure the initial settings are correct. These will be different depending on whether
-        # the ssl module imported successfully or not.
-        if "ssl" in sys.modules:
-            self.assertFalse(self.sg.config.no_ssl_validation)
-            self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
-            self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
-        else:
-            self.assertTrue(self.sg.config.no_ssl_validation)
-            self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertFalse("(validate)" in " ".join(self.sg._user_agents))
-            self.assertTrue("(no-validate)" in " ".join(self.sg._user_agents))
-
-        try:
-            self.sg.info()
-        except ssl.SSLError:
-            # ensure the api has reset the values in the correct fallback behavior
-            self.assertTrue(self.sg.config.no_ssl_validation)
-            self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertFalse("(validate)" in " ".join(self.sg._user_agents))
-            self.assertTrue("(no-validate)" in " ".join(self.sg._user_agents))
-
-        if original_env_val is not None:
-            os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
-
-    @unittest.mock.patch("shotgun_api3.shotgun.Http.request")
-    def test_sha2_error_with_strict(self, mock_request):
-        # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ssl.SSLError(
-            "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
-            "encoding routines:ASN1_item_verify: unknown message digest "
-            "algorithm"
-        )
-
-        # save the original state
-        original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
-        os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = "1"
-
-        # ensure we're starting with the right values
-        self.sg.config.no_ssl_validation = False
-        shotgun_api3.shotgun.NO_SSL_VALIDATION = False
-        self.sg.reset_user_agent()
-
-        try:
-            self.sg.info()
-        except ssl.SSLError:
-            # ensure the api has NOT reset the values in the fallback behavior because we have
-            # set the env variable to force validation
-            self.assertFalse(self.sg.config.no_ssl_validation)
-            self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
-            self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
-
-        if original_env_val is not None:
-            os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
-
-    @unittest.mock.patch.object(urllib.request.OpenerDirector, "open")
+    @unittest.mock.patch.object(urllib.request.OpenerDirector, 'open')
     def test_sanitized_auth_params(self, mock_open):
         # Simulate the server blowing up and giving us a 500 error
         mock_open.side_effect = urllib.error.HTTPError("url", 500, "message", {}, None)

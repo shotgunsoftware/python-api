@@ -29,7 +29,8 @@ import urllib.error
 import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
-from . import base
+import shotgun_api3 as api
+import shotgun_api3.lib.httplib2 as httplib2
 
 
 def b64encode(val):
@@ -269,12 +270,11 @@ class TestShotgunClient(base.MockTestBase):
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
         ssl_validate_lut = {True: "no-validate", False: "validate"}
-        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s)" % (
+        expected = "shotgun-json (%s); Python %s (%s); ssl %s" % (
             api.__version__,
             client_caps.py_version,
             client_caps.platform.capitalize(),
             client_caps.ssl_version,
-            ssl_validate_lut[config.no_ssl_validation],
         )
         self.assertEqual(expected, headers.get("user-agent"))
 
@@ -283,12 +283,11 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.info()
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s); test-agent" % (
+        expected = "shotgun-json (%s); Python %s (%s); ssl %s; test-agent" % (
             api.__version__,
             client_caps.py_version,
             client_caps.platform.capitalize(),
             client_caps.ssl_version,
-            ssl_validate_lut[config.no_ssl_validation],
         )
         self.assertEqual(expected, headers.get("user-agent"))
 
@@ -297,12 +296,11 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.info()
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s)" % (
+        expected = "shotgun-json (%s); Python %s (%s); ssl %s" % (
             api.__version__,
             client_caps.py_version,
             client_caps.platform.capitalize(),
             client_caps.ssl_version,
-            ssl_validate_lut[config.no_ssl_validation],
         )
         self.assertEqual(expected, headers.get("user-agent"))
 
