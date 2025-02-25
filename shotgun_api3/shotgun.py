@@ -34,7 +34,6 @@ from .lib import six
 from .lib import sgsix
 from .lib import sgutils
 from .lib.six import BytesIO  # used for attachment upload
-from .lib.six.moves import map
 
 from .lib.six.moves import http_cookiejar  # used for attachment upload
 import datetime
@@ -48,9 +47,9 @@ import stat  # used for attachment upload
 import sys
 import time
 import json
-from .lib.six.moves import urllib
+import urllib
 import shutil  # used for attachment download
-from .lib.six.moves import http_client  # Used for secure file upload.
+import http.client  # Used for secure file upload.
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib.sgtimezone import SgTimezone
 
@@ -58,10 +57,7 @@ from .lib.sgtimezone import SgTimezone
 # to be exposed as part of the API.
 from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError  # noqa
 
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
+from base64 import encodebytes as base64encode
 
 
 LOG = logging.getLogger("shotgun_api3")
