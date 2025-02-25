@@ -4,6 +4,13 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.8.1 (2025 Feb 25)
+====================
+
+- Upgrade certifi to 2024.12.14.
+- Apply black 25.1.0 formatting to the source code.
+- Update Software Credits
+
 v3.8.0 (2025 Feb 7)
 ===================
 
