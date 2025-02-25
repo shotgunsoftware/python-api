@@ -3577,7 +3577,13 @@ class Shotgun(object):
         """
         handlers = []
         if self.__ca_certs:
-            handlers.append(CACertsHTTPSHandler(self.__ca_certs))
+            handlers.append(
+                urllib.request.HTTPSHandler(
+                    context=ssl.create_default_context(
+                        cafile=self.__ca_certs,
+                    ),
+                ),
+            )
 
         if self.config.proxy_handler:
             handlers.append(self.config.proxy_handler)
@@ -4570,57 +4576,6 @@ class Shotgun(object):
             return sgutils.ensure_text(result)
         else:
             raise ShotgunError("Max attemps limit reached.")
-
-
-class CACertsHTTPSConnection(http_client.HTTPConnection):
-    """ "
-    This class allows to create an HTTPS connection that uses the custom certificates
-    passed in.
-    """
-
-    default_port = http_client.HTTPS_PORT
-
-    def __init__(self, *args, **kwargs):
-        """
-        :param args: Positional arguments passed down to the base class.
-        :param ca_certs: Path to the custom CA certs file.
-        :param kwargs: Keyword arguments passed down to the bas class
-        """
-        # Pop that argument,
-        self.__ca_certs = kwargs.pop("ca_certs")
-        http_client.HTTPConnection.__init__(self, *args, **kwargs)
-
-    def connect(self):
-        "Connect to a host on a given (SSL) port."
-        http_client.HTTPConnection.connect(self)
-        # Now that the regular HTTP socket has been created, wrap it with our SSL certs.
-        if six.PY38:
-            context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-            context.verify_mode = ssl.CERT_REQUIRED
-            context.check_hostname = False
-            if self.__ca_certs:
-                context.load_verify_locations(self.__ca_certs)
-            self.sock = context.wrap_socket(self.sock)
-        else:
-            self.sock = ssl.wrap_socket(
-                self.sock, ca_certs=self.__ca_certs, cert_reqs=ssl.CERT_REQUIRED
-            )
-
-
-class CACertsHTTPSHandler(urllib.request.HTTPSHandler):
-    """
-    Handler that ensures https connections are created with the custom CA certs.
-    """
-
-    def __init__(self, cacerts):
-        urllib.request.HTTPSHandler.__init__(self)
-        self.__ca_certs = cacerts
-
-    def https_open(self, req):
-        return self.do_open(self.create_https_connection, req)
-
-    def create_https_connection(self, *args, **kwargs):
-        return CACertsHTTPSConnection(*args, ca_certs=self.__ca_certs, **kwargs)
 
 
 # Helpers from the previous API, left as is.
