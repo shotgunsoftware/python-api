@@ -936,8 +936,19 @@ Environment Variables
 SHOTGUN_API_CACERTS
 ===================
 
-Used to specify a path to an external SSL certificates file.  This environment variable can be used in place of the ``ca_certs`` keyword argument to the :class:`~shotgun.Shotgun` constructor.  In the case that both this environment variable is set and the keyword argument is provided, the value from the keyword argument will be used.
+Use this variable to override the default Trusted Root Certification Authorities
+Certificate Store bundled with this library.
+By default, the library relies on `certifi <https://pypi.org/project/certifi/>`_
+as its Root CA store.
 
+This environment variable can be used in place of the ``ca_certs`` keyword
+argument to the :class:`~shotgun.Shotgun` constructor.
+In the case that both this environment variable is set and the keyword argument
+is provided, the value from the keyword argument will be used.
+
+For an example about using ``SHOTGUN_API_CACERTS`` to fix a certificate issue,
+see the `SSLHandshakeError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed <https://help.autodesk.com/view/SGDEV/ENU/?guid=SGD_qa_troubleshooting_qa_sslhandshakeerror_ssl_certificate_verify_failed_html>`_
+article.
 
 SHOTGUN_API_RETRY_INTERVAL
 ==========================
