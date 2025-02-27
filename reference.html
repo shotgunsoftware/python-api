@@ -6,10 +6,11 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; python-api v3.8.0 documentation</title>
+  <title>API Reference &mdash; python-api v3.8.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -248,7 +249,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.8.0.<br>
+    <b>python-api</b> v3.8.1.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -1717,7 +1718,7 @@ You can optionally store the file in a field on the entity, change the display n
 assign tags to the Attachment.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Make sure to have retries for file uploads. Failures when uploading will occasionally happen. 
+<p>Make sure to have retries for file uploads. Failures when uploading will occasionally happen.
 When it does, immediately retrying to upload usually works</p>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mov_file</span> <span class="o">=</span> <span class="s1">&#39;/data/show/ne2/100_110/anim/01.mlk-02b.mov&#39;</span>
@@ -1961,7 +1962,7 @@ share the static thumbnail. Defaults to <code class="docutils literal notranslat
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.9/library/functions.html#int" title="(in Python v3.9)">int</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#shotgun_api3.ShotgunError" title="shotgun_api3.shotgun.ShotgunError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotgunError</span></code></a> if not supported by server version or improperly called, 
+<dd class="field-even"><p><a class="reference internal" href="#shotgun_api3.ShotgunError" title="shotgun_api3.shotgun.ShotgunError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotgunError</span></code></a> if not supported by server version or improperly called,
 or <code class="xref py py-class docutils literal notranslate"><span class="pre">ShotgunThumbnailNotReady</span></code> if thumbnail is still pending.</p>
 </dd>
 </dl>
@@ -3322,7 +3323,17 @@ immediate concerns, please <a class="reference external" href="https://www.autod
 <h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this heading"></a></h2>
 <section id="shotgun-api-cacerts">
 <h3>SHOTGUN_API_CACERTS<a class="headerlink" href="#shotgun-api-cacerts" title="Permalink to this heading"></a></h3>
-<p>Used to specify a path to an external SSL certificates file.  This environment variable can be used in place of the <code class="docutils literal notranslate"><span class="pre">ca_certs</span></code> keyword argument to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Shotgun</span></code> constructor.  In the case that both this environment variable is set and the keyword argument is provided, the value from the keyword argument will be used.</p>
+<p>Use this variable to override the default Trusted Root Certification Authorities
+Certificate Store bundled with this library.
+By default, the library relies on <a class="reference external" href="https://pypi.org/project/certifi/">certifi</a>
+as its Root CA store.</p>
+<p>This environment variable can be used in place of the <code class="docutils literal notranslate"><span class="pre">ca_certs</span></code> keyword
+argument to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Shotgun</span></code> constructor.
+In the case that both this environment variable is set and the keyword argument
+is provided, the value from the keyword argument will be used.</p>
+<p>For an example about using <code class="docutils literal notranslate"><span class="pre">SHOTGUN_API_CACERTS</span></code> to fix a certificate issue,
+see the <a class="reference external" href="https://help.autodesk.com/view/SGDEV/ENU/?guid=SGD_qa_troubleshooting_qa_sslhandshakeerror_ssl_certificate_verify_failed_html">SSLHandshakeError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed</a>
+article.</p>
 </section>
 <section id="shotgun-api-retry-interval">
 <h3>SHOTGUN_API_RETRY_INTERVAL<a class="headerlink" href="#shotgun-api-retry-interval" title="Permalink to this heading"></a></h3>

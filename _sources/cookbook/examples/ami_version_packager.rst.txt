@@ -4,7 +4,7 @@
 Using an ActionMenuItem to Package Versions for a Client
 ########################################################
 
-This is an example script to demonstrate how you can use an ActionMenuItem to launch a local 
+This is an example script to demonstrate how you can use an ActionMenuItem to launch a local
 script to package up files for a client. It performs the following:
 
 -  Downloads Attachments from a specified field for all selected entities.
@@ -37,10 +37,10 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
     login who ran the ActionMenuItem ('Demo_Project_2010-04-29-172210_kp.tar.gz'):
 
         sa = ShotgunAction(sys.argv[1])
-        sg = shotgun_connect()    
+        sg = shotgun_connect()
         if sa.action == 'package4client':
             r = packageFilesForClient('sg_qt','/path/where/i/want/to/put/the/archive/')
-     
+
     """
 
     # ---------------------------------------------------------------------------------------------
@@ -61,8 +61,8 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
     # ---------------------------------------------------------------------------------------------
     # Flow Production Tracking server auth info
     shotgun_conf = {
-        'url':'https://my-site.shotgrid.autodesk.com', 
-        'name':'YOUR_SCRIPT_NAME_HERE', 
+        'url':'https://my-site.shotgrid.autodesk.com',
+        'name':'YOUR_SCRIPT_NAME_HERE',
         'key':'YOUR_SCRIPT_KEY_HERE'
         }
 
@@ -70,9 +70,9 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
     logfile = os.path.dirname(sys.argv[0])+"/version_packager.log"
 
     # temporary directory to download movie files to and create thumbnail files in
-    file_dir = os.path.dirname(sys.argv[0])+"/tmp" 
+    file_dir = os.path.dirname(sys.argv[0])+"/tmp"
 
-    # compress command 
+    # compress command
     # tar czf /home/user/backup_www.tar.gz -C / var/www/html
     compress_cmd = "tar czf %s -C / %s"
 
@@ -89,7 +89,7 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
     # ----------------------------------------------
     # Set up logging
     # ----------------------------------------------
-    def init_log(filename="version_packager.log"):    
+    def init_log(filename="version_packager.log"):
         try:
             logger.basicConfig(level=logger.DEBUG,
                             format='%(asctime)s %(levelname)-8s %(message)s',
@@ -98,8 +98,8 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
                             filemode='w+')
         except IOError, e:
             raise ShotgunException ("Unable to open logfile for writing: %s" % e)
-        logger.info("Version Packager logging started.") 
-        return logger   
+        logger.info("Version Packager logging started.")
+        return logger
 
 
     # ----------------------------------------------
@@ -111,9 +111,9 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
         try:
             attachment_id = int(attachment_id)
         except:
-            # not an integer. 
+            # not an integer.
             return None
-            # raise ShotgunException("invalid Attachment id returned. Expected an integer: %s "% attachment_id)   
+            # raise ShotgunException("invalid Attachment id returned. Expected an integer: %s "% attachment_id)
 
         return attachment_id
 
@@ -126,16 +126,16 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
         if type(attachment_id) != int:
             return None
         # download the attachment file from Flow Production Tracking and write it to local disk
-        logger.info("Downloading Attachment #%s" % (attachment_id)) 
+        logger.info("Downloading Attachment #%s" % (attachment_id))
         stream = sg.download_attachment(attachment_id)
         try:
             file = open(destination_filename, 'w')
             file.write(stream)
             file.close()
             logger.info("Downloaded attachment %s" % (destination_filename))
-            return True 
+            return True
         except e:
-            raise ShotgunException("unable to write attachment to disk: %s"% e)   
+            raise ShotgunException("unable to write attachment to disk: %s"% e)
 
 
     # ----------------------------------------------
@@ -194,28 +194,28 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
         logger.info("copied files to: %s" % destination_directory)
         return destination_directory
 
-        
-        
+
+
     def packageFilesForClient(file_field,destination_dir):
-        
-        # get entities matching the selected ids    
-        logger.info("Querying Shotgun for %s %ss" % (len(sa.selected_ids_filter), sa.params['entity_type'])) 
+
+        # get entities matching the selected ids
+        logger.info("Querying Shotgun for %s %ss" % (len(sa.selected_ids_filter), sa.params['entity_type']))
         entities = sg.find(sa.params['entity_type'],sa.selected_ids_filter,['id','code',file_field],filter_operator='any')
-        
+
         # download the attachments for each entity, zip them, and copy to destination directory
         files = []
         for e in entities:
             if not e[file_field]:
-                logger.info("%s #%s: No file exists. Skippinsa." % (sa.params['entity_type'], e['id'])) 
+                logger.info("%s #%s: No file exists. Skippinsa." % (sa.params['entity_type'], e['id']))
             else:
-                logger.info("%s #%s: %s" % (sa.params['entity_type'], e['id'], e[file_field])) 
+                logger.info("%s #%s: %s" % (sa.params['entity_type'], e['id'], e[file_field]))
                 path_to_file = file_dir+"/"+re.sub(r"\s+", '_', e[file_field]['name'])
-                result = download_attachment_to_disk(e[file_field], path_to_file )           
-                
+                result = download_attachment_to_disk(e[file_field], path_to_file )
+
                 # only include attachments. urls won't return true
                 if result:
                     files.append(path_to_file)
-                
+
         # compress files
         # create a nice valid destination filename
         project_name = ''
@@ -223,7 +223,7 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
             project_name = re.sub(r"\s+", '_', sa.params['project_name'])+'_'
         dest_filename = project_name+datetime.today().strftime('%Y-%m-%d-%H%M%S')+"_"+sa.params['user_login']
         archive = compress_files(files,file_dir+"/"+dest_filename)
-        
+
         # now that we have the archive, remove the downloads
         r = remove_downloaded_files(files)
 
@@ -232,26 +232,25 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
 
         return True
 
-            
+
     # ----------------------------------------------
     # Main Block
     # ----------------------------------------------
     if __name__ == "__main__":
         init_log(logfile)
-        
+
         try:
             sa = ShotgunAction(sys.argv[1])
             logger.info("Firing... %s" % (sys.argv[1]) )
         except IndexError, e:
             raise ShotgunException("Missing POST arguments")
-        
-        sg = Shotgun(shotgun_conf['url'], shotgun_conf['name'], shotgun_conf['key'],convert_datetimes_to_utc=convert_tz) 
-        
+
+        sg = Shotgun(shotgun_conf['url'], shotgun_conf['name'], shotgun_conf['key'],convert_datetimes_to_utc=convert_tz)
+
         if sa.action == 'package4client':
             result = packageFilesForClient('sg_qt','/Users/kp/Documents/shotgun/dev/api/files/')
         else:
             raise ShotgunException("Unknown action... :%s" % sa.action)
-            
-        
-        print("\nVersion Packager done!")
 
+
+        print("\nVersion Packager done!")

@@ -14,7 +14,7 @@ First we need to find the Task Template we're going to apply. We'll assume you k
 The Resulting Task Template
 ---------------------------
 
-Assuming the task template was found, we will now have something like this in our ``template`` 
+Assuming the task template was found, we will now have something like this in our ``template``
 variable::
 
     {'type': 'TaskTemplate', 'id': 12}
@@ -30,16 +30,16 @@ Now we can create the Shot with the link to the ``TaskTemplate`` to apply.
             'task_template': template }
     result = sg.create('Shot', data)
 
-This will create a new Shot named "100_010" linked to the TaskTemplate "3D Shot Template" and 
+This will create a new Shot named "100_010" linked to the TaskTemplate "3D Shot Template" and
 Flow Production Tracking will then create the Tasks defined in the template and link them to the Shot you just
 created.
 
-- ``data`` is a list of key/value pairs where the key is the column name to update and the value is 
+- ``data`` is a list of key/value pairs where the key is the column name to update and the value is
   the value.
 - ``project`` and `code` are required
 - ``description`` is just a text field that you might want to update as well
-- ``task_template`` is another entity column where we set the Task Template which has the Tasks we 
-  wish to create by default on this Shot. We found the specific template we wanted to assign in the 
+- ``task_template`` is another entity column where we set the Task Template which has the Tasks we
+  wish to create by default on this Shot. We found the specific template we wanted to assign in the
   previous block by searching
 
 Result
@@ -59,7 +59,7 @@ The variable ``result`` now contains the dictionary of the new Shot that was cre
     }
 
 
-If we now search for the Tasks linked to the Shot, we'll find the Tasks that match our 
+If we now search for the Tasks linked to the Shot, we'll find the Tasks that match our
 ``TaskTemplate``::
 
     tasks = sg.find('Task', filters=[['entity', 'is', result]])

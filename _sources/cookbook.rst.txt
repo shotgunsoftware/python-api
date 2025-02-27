@@ -3,7 +3,7 @@ API Cookbook
 ************
 
 Here we have a collection of useful information you can use for reference when writing your API
-scripts. From usage tips and gotchas to deeper examples of working with entities like Tasks and 
+scripts. From usage tips and gotchas to deeper examples of working with entities like Tasks and
 Files, there's a lot of example code in here for you to play with.
 
 .. rubric:: Usage Tips
@@ -28,7 +28,7 @@ and paste any of these into your own scripts.
 
 .. rubric:: Working With Files
 
-You'll probably be doing some work with files at your studio. This is a deep dive into some of 
+You'll probably be doing some work with files at your studio. This is a deep dive into some of
 the inners of how Flow Production Tracking handles files (also called Attachments) and the different ways to link
 to them.
 
@@ -51,10 +51,10 @@ need to do.
 
 .. rubric:: Smart Cut Fields
 
-Smart Cut Fields are deprecated in favor of the 
+Smart Cut Fields are deprecated in favor of the
 `new cut support added in ShotGrid v7.0 <https://knowledge.autodesk.com/support/shotgrid/learn-explore/caas/CloudHelp/cloudhelp/ENU/SG-Editorial/files/SG-Editorial-ed-cut-schema-html-html.html>`_.
 This documentation remains only to support studios who may not have upgraded to the new cut support
-features. 
+features.
 
 .. toctree::
     :maxdepth: 2
