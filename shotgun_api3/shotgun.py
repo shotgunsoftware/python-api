@@ -4634,7 +4634,6 @@ class Shotgun(object):
 
         params.update(self._auth_params())
 
-
         attempt = 1
         while attempt <= self.MAX_ATTEMPTS:
             # Perform the request
