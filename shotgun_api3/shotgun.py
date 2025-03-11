@@ -122,7 +122,7 @@ not require the added security provided by enforcing this.
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.8.1"
+__version__ = "3.8.2"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -4633,7 +4633,6 @@ class Shotgun(object):
         """
 
         params.update(self._auth_params())
-
 
         attempt = 1
         while attempt <= self.MAX_ATTEMPTS:
