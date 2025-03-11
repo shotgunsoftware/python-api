@@ -8,7 +8,7 @@ v3.8.2 (2025 Mar 11)
 ====================
 
 - Prevent flaky disconnection when uploading thumbnails on publish.
-  There's a flaky disconnection when the publisher uploads the thumbnail to the server. 
+  There's a flaky disconnection when the publisher uploads the thumbnail to the server.
   The most common errors were: ``Connection closed by peer`` and ``URLopen error EOF occurred in violation of protocol ssl.c:1006``.
 
 v3.8.1 (2025 Feb 25)
