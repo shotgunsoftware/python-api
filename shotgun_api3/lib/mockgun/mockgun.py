@@ -293,6 +293,25 @@ class Shotgun(object):
         # handle the ordering of the recordset
         if order:
             # order: [{"field_name": "code", "direction": "asc"}, ... ]
+            def sort_none(k, order_field):
+                """
+                Handle sorting of None consistently.
+                Note: Doesn't handle [checkbox, serializable, url].
+                """
+                field_type = self._get_field_type(k["type"], order_field)
+                value = k[order_field]
+                if value is not None:
+                    return value
+                elif field_type in ("number", "percent", "duration"):
+                    return 0
+                elif field_type == "float":
+                    return 0.0
+                elif field_type in ("text", "entity_type", "date", "list", "status_list"):
+                    return ""
+                elif field_type == "date_time":
+                    return datetime.datetime(datetime.MINYEAR, 1, 1)
+                return None
+
             for order_entry in order:
                 if "field_name" not in order_entry:
                     raise ValueError("Order clauses must be list of dicts with keys 'field_name' and 'direction'!")
@@ -305,7 +324,11 @@ class Shotgun(object):
                 else:
                     raise ValueError("Unknown ordering direction")
 
-                results = sorted(results, key=lambda k: k[order_field], reverse=desc_order)
+                results = sorted(
+                    results,
+                    key=lambda k: sort_none(k, order_field),
+                    reverse=desc_order,
+                )
 
         if fields is None:
             fields = set(["type", "id"])
