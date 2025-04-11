@@ -845,7 +845,10 @@ class Shotgun(object):
                 update_mode = multi_entity_update_modes.get(field, "set") if multi_entity_update_modes else "set"
 
                 if update_mode == "add":
-                    row[field] += [{"type": item["type"], "id": item["id"]} for item in data[field]]
+                    for item in data[field]:
+                        new_item = {"type": item["type"], "id": item["id"]}
+                        if new_item not in row[field]:
+                            row[field].append(new_item)
                 elif update_mode == "remove":
                     row[field] = [
                         item

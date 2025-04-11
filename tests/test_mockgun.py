@@ -502,10 +502,12 @@ class TestMultiEntityFieldUpdate(unittest.TestCase):
         """
         Ensures that "add" multi_entity_update_mode works.
         """
+        # Attempts to add _version2
+        # It already exists on the playlist and should not be duplicated
         self._mockgun.update(
             "Playlist",
             self._add_playlist["id"],
-            {"versions": [self._version3]},
+            {"versions": [self._version2, self._version3]},
             multi_entity_update_modes={"versions": "add"},
         )
 
