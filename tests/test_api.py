@@ -1004,6 +1004,7 @@ class TestShotgunApi(base.LiveTestBase):
         resp = self.sg.preferences_read()
 
         expected = {
+            "creative_review_settings": "",
             "date_component_order": "month_day",
             "duration_units": "days",
             "format_currency_fields_decimal_options": "$1,000.99",
