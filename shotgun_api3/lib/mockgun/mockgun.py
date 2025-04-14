@@ -293,6 +293,25 @@ class Shotgun(object):
         # handle the ordering of the recordset
         if order:
             # order: [{"field_name": "code", "direction": "asc"}, ... ]
+            def sort_none(k, order_field):
+                """
+                Handle sorting of None consistently.
+                Note: Doesn't handle [checkbox, serializable, url].
+                """
+                field_type = self._get_field_type(k["type"], order_field)
+                value = k[order_field]
+                if value is not None:
+                    return value
+                elif field_type in ("number", "percent", "duration"):
+                    return 0
+                elif field_type == "float":
+                    return 0.0
+                elif field_type in ("text", "entity_type", "date", "list", "status_list"):
+                    return ""
+                elif field_type == "date_time":
+                    return datetime.datetime(datetime.MINYEAR, 1, 1)
+                return None
+
             for order_entry in order:
                 if "field_name" not in order_entry:
                     raise ValueError("Order clauses must be list of dicts with keys 'field_name' and 'direction'!")
@@ -305,7 +324,11 @@ class Shotgun(object):
                 else:
                     raise ValueError("Unknown ordering direction")
 
-                results = sorted(results, key=lambda k: k[order_field], reverse=desc_order)
+                results = sorted(
+                    results,
+                    key=lambda k: sort_none(k, order_field),
+                    reverse=desc_order,
+                )
 
         if fields is None:
             fields = set(["type", "id"])
@@ -608,6 +631,20 @@ class Shotgun(object):
             if operator == "is":
                 return lval == rval
         elif field_type == "text":
+            # Some operations expect a list but can deal with a single value
+            if operator in ("in", "not_in") and not isinstance(rval, list):
+                rval = [rval]
+            # Some operation expect a string but can deal with None
+            elif operator in ("starts_with", "ends_with", "contains", "not_contains"):
+                lval = lval or ''
+                rval = rval or ''
+            # Shotgun string comparison is case insensitive
+            lval = lval.lower() if lval is not None else None
+            if isinstance(rval, list):
+                rval = [val.lower() if val is not None else None for val in rval]
+            else:
+                rval = rval.lower() if rval is not None else None
+
             if operator == "is":
                 return lval == rval
             elif operator == "is_not":
@@ -617,7 +654,7 @@ class Shotgun(object):
             elif operator == "contains":
                 return rval in lval
             elif operator == "not_contains":
-                return lval not in rval
+                return rval not in lval
             elif operator == "starts_with":
                 return lval.startswith(rval)
             elif operator == "ends_with":
@@ -831,7 +868,10 @@ class Shotgun(object):
                 update_mode = multi_entity_update_modes.get(field, "set") if multi_entity_update_modes else "set"
 
                 if update_mode == "add":
-                    row[field] += [{"type": item["type"], "id": item["id"]} for item in data[field]]
+                    for item in data[field]:
+                        new_item = {"type": item["type"], "id": item["id"]}
+                        if new_item not in row[field]:
+                            row[field].append(new_item)
                 elif update_mode == "remove":
                     row[field] = [
                         item
