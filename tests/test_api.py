@@ -1004,7 +1004,6 @@ class TestShotgunApi(base.LiveTestBase):
         resp = self.sg.preferences_read()
 
         expected = {
-            "creative_review_settings": "",
             "date_component_order": "month_day",
             "duration_units": "days",
             "format_currency_fields_decimal_options": "$1,000.99",
@@ -1026,6 +1025,12 @@ class TestShotgunApi(base.LiveTestBase):
         # update the test.
         self.assertIn("view_master_settings", resp)
         resp.pop("view_master_settings")
+
+        # Simply make sure creative review settings are there. These change frequently and we
+        # don't want to have the test break because Creative Review changed or because we didn't
+        # update the test.
+        self.assertIn("creative_review_settings", resp)
+        resp.pop("creative_review_settings")
 
         self.assertEqual(expected, resp)
 
