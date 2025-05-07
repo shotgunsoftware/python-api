@@ -4,6 +4,13 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.8.3-beta1 (2025 May 7)
+==========================
+
+- We don't want to retry on a general exceptions (e.g. Timeout or remote disconnection)
+  because we might send a resource modification request (create, batch create, etc) and
+  we can end up duplicating things.
+
 v3.8.2 (2025 Mar 11)
 ====================
 
