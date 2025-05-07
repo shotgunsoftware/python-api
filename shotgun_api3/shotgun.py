@@ -3940,7 +3940,7 @@ class Shotgun(object):
                     raise
             except Exception as e:
                 self._close_connection()
-                LOG.debug(f"Request failed.  Reason: {e}")
+                LOG.debug(f"Request failed.  Reason: {e}", exc_info=True)
                 raise
 
             LOG.debug(
