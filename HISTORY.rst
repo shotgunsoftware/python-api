@@ -61,7 +61,7 @@ v3.5.1 (2024 Apr 3)
 - Mockgun: add support for ``add_user_agent`` and ``set_session_uuid`` methods
 
 v3.5.0 (2024 Mar 26)
-===================
+====================
 - Rebranding component for Flow Production Tracking
 
 v3.4.2 (2024 Feb 6)
@@ -222,8 +222,8 @@ v3.0.34 (2017 September 18)
 v3.0.33 (2017 July 18)
 ======================
 
-- Raise an exception when uploading an empty file using :meth:`upload`, :meth:`upload_thumbnail`
-  or :meth:`upload_filmstrip_thumbnail` before calling out to the server.
+- Raise an exception when uploading an empty file using `upload`, `upload_thumbnail`
+  or :`upload_filmstrip_thumbnail` before calling out to the server.
 - Multiple enhancements and bugfixes to Mockgun
 - Added ``nav_search_string()`` and ``nav_search_entity()`` methods as experimental, internal methods for querying SG hierarchy.
 - Introduces a :meth:`following` query method, that accepts a user entity and optionally an entity type and/or project.
