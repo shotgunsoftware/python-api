@@ -42,8 +42,8 @@ created.
   wish to create by default on this Shot. We found the specific template we wanted to assign in the
   previous block by searching
 
-Result
-------
+Create Shot Result
+------------------
 The variable ``result`` now contains the dictionary of the new Shot that was created.
 ::
 
