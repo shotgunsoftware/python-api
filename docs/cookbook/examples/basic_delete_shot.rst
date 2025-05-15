@@ -13,8 +13,8 @@ If the Shot was deleted successfully ``result`` will contain::
 
     True
 
-The Complete Example
---------------------
+The Complete Example for deleting a Shot
+----------------------------------------
 ::
 
     #!/usr/bin/env python
