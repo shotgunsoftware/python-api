@@ -61,7 +61,7 @@ v3.5.1 (2024 Apr 3)
 - Mockgun: add support for ``add_user_agent`` and ``set_session_uuid`` methods
 
 v3.5.0 (2024 Mar 26)
-===================
+====================
 - Rebranding component for Flow Production Tracking
 
 v3.4.2 (2024 Feb 6)
