@@ -4,6 +4,17 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.8.3 (2025 May 22)
+====================
+
+- Add improvements to Mockgun.
+  Ensure string comparison are case insensitive.
+  Ignore duplicate entities when ``multi_entity_update_mode`` is added.
+  Support for ``None`` in mockgun when using ordering.
+  Thank you rlessardrodeofx, slingshotsys, and MHendricks for your contributions.
+- Minor fixes on unit tests and documentation.
+
+
 v3.8.2 (2025 Mar 11)
 ====================
 
