@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Handling Action Menu Item Calls &mdash; python-api v3.8.1 documentation</title>
+  <title>Handling Action Menu Item Calls &mdash; python-api v3.8.3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -102,7 +102,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.8.1.<br>
+    <b>python-api</b> v3.8.3.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -230,9 +230,9 @@ select a lot of rows and launch your custom protocol, you may encounter
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
 <span class="c1"># Imports</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
-<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">six</span>
-<span class="kn">import</span> <span class="nn">logging</span> <span class="k">as</span> <span class="nn">logger</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">six</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">logger</span>
 
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
 <span class="c1"># Variables</span>
@@ -245,15 +245,15 @@ select a lot of rows and launch your custom protocol, you may encounter
 <span class="c1"># ----------------------------------------------</span>
 <span class="c1"># Generic ShotgunAction Exception Class</span>
 <span class="c1"># ----------------------------------------------</span>
-<span class="k">class</span> <span class="nc">ShotgunActionException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShotgunActionException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span>
 
 
 <span class="c1"># ----------------------------------------------</span>
 <span class="c1"># ShotgunAction Class to manage ActionMenuItem call</span>
 <span class="c1"># ----------------------------------------------</span>
-<span class="k">class</span> <span class="nc">ShotgunAction</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShotgunAction</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_log</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_url</span><span class="p">()</span>
@@ -319,7 +319,7 @@ select a lot of rows and launch your custom protocol, you may encounter
     <span class="c1"># ----------------------------------------------</span>
     <span class="c1"># Set up logging</span>
     <span class="c1"># ----------------------------------------------</span>
-    <span class="k">def</span> <span class="nf">_init_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;shotgun_action.log&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;shotgun_action.log&quot;</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
                 <span class="n">level</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
@@ -337,7 +337,7 @@ select a lot of rows and launch your custom protocol, you may encounter
 
     <span class="c1"># Parse ActionMenuItem call into protocol, action and params</span>
     <span class="c1"># ----------------------------------------------</span>
-    <span class="k">def</span> <span class="nf">_parse_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Parsing full url received: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
 
         <span class="c1"># get the protocol used</span>
@@ -366,7 +366,7 @@ select a lot of rows and launch your custom protocol, you may encounter
     <span class="c1"># ----------------------------------------------</span>
     <span class="c1"># Convert IDs to filter format to us in find() queries</span>
     <span class="c1"># ----------------------------------------------</span>
-    <span class="k">def</span> <span class="nf">_convert_ids_to_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_ids_to_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">):</span>
         <span class="nb">filter</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
             <span class="nb">filter</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="p">])</span>

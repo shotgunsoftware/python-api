@@ -51,8 +51,8 @@ this dictionary represents. It does not correspond to any field in Flow Producti
 Flow Production Tracking will *always* return the ``id`` and ``type`` keys in the dictionary when there are results
 representing an entity.
 
-The Complete Example
---------------------
+The Complete Example for creating a Shot
+----------------------------------------
 ::
 
     #!/usr/bin/env python

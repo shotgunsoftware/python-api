@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Find a Shot &mdash; python-api v3.8.1 documentation</title>
+  <title>Find a Shot &mdash; python-api v3.8.3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -107,7 +107,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.8.1.<br>
+    <b>python-api</b> v3.8.3.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -180,20 +180,20 @@ returned it as a dictionary object with <code class="docutils literal notranslat
 sure, the <a class="reference external" href="https://docs.python.org/3.9/library/pprint.html#module-pprint" title="(in Python v3.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pprint</span></code></a> (PrettyPrint) module from the Python standard library is a really good tool
 to help with debugging. It will print out objects in a nicely formatted way that makes things
 easier to read. So we’ll add that to the import section of our script.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shotgun_api3</span>
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span> <span class="c1"># useful for debugging</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">shotgun_api3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span> <span class="c1"># useful for debugging</span>
 </pre></div>
 </div>
 </section>
-<section id="the-complete-example">
-<h2>The Complete Example<a class="headerlink" href="#the-complete-example" title="Permalink to this heading"></a></h2>
+<section id="the-complete-example-for-finding-a-shot">
+<h2>The Complete Example for finding a Shot<a class="headerlink" href="#the-complete-example-for-finding-a-shot" title="Permalink to this heading"></a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Imports</span>
 <span class="c1"># --------------------------------------</span>
-<span class="kn">import</span> <span class="nn">shotgun_api3</span>
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span> <span class="c1"># useful for debugging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shotgun_api3</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span> <span class="c1"># useful for debugging</span>
 
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Globals</span>

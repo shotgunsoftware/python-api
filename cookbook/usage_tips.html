@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Usage Tips &mdash; python-api v3.8.1 documentation</title>
+  <title>API Usage Tips &mdash; python-api v3.8.3 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -113,7 +113,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.8.1.<br>
+    <b>python-api</b> v3.8.3.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -168,11 +168,11 @@ time as new questions come up from our users that exhibit these types of cases.<
 is managed at the module level which may not work as expected if you only import the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun</span></code> object.</p>
 <p>Do:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shotgun_api3</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">shotgun_api3</span>
 </pre></div>
 </div>
 <p>Don’t:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">shotgun_api3</span> <span class="kn">import</span> <span class="n">Shotgun</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">shotgun_api3</span><span class="w"> </span><span class="kn">import</span> <span class="n">Shotgun</span>
 </pre></div>
 </div>
 </section>
@@ -224,8 +224,8 @@ Something like the following:</p>
 </div>
 <p>Then when you’re writing scripts, you don’t need to worry about remembering which Custom Entity
 “Foobars” are, you just use your global:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shotgun_api3</span>
-<span class="kn">import</span> <span class="nn">studio_globals</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">shotgun_api3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">studio_globals</span>
 
 <span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s1">&#39;https://my-site.shotgrid.autodesk.com&#39;</span><span class="p">,</span> <span class="s1">&#39;script_name&#39;</span><span class="p">,</span> <span class="s1">&#39;0123456789abcdef0123456789abcdef0123456&#39;</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">studio_globals</span><span class="o">.</span><span class="n">ENTITY_WIDGET</span><span class="p">,</span>
@@ -366,21 +366,21 @@ automatically set whenever an entity is created or updated.</p>
 <span id="logging"></span><h2>Logging Messages from the API<a class="headerlink" href="#logging-messages-from-the-api" title="Permalink to this heading"></a></h2>
 <p>The API uses standard python logging but does not define a handler.</p>
 <p>To see the logging output in stdout, define a streamhandler in your script:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">shotgun_api3</span> <span class="k">as</span> <span class="nn">shotgun</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shotgun_api3</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">shotgun</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To write logging output from the Flow Production Tracking API to a file, define a file handler in your script:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">shotgun_api3</span> <span class="k">as</span> <span class="nn">shotgun</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shotgun_api3</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">shotgun</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;/path/to/your/log&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To suppress the logging output from the API in a script which uses logging, set the level of the
 Flow Production Tracking logger to a higher level:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">shotgun_api3</span> <span class="k">as</span> <span class="nn">shotgun</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shotgun_api3</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">shotgun</span>
 <span class="n">sg_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;shotgun_api3&#39;</span><span class="p">)</span>
 <span class="n">sg_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 </pre></div>

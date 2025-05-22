@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flow Production Tracking Python API Changelog &mdash; python-api v3.8.1 documentation</title>
+  <title>Flow Production Tracking Python API Changelog &mdash; python-api v3.8.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -67,6 +67,8 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced/packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/iron_python.html">IronPython</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Flow Production Tracking Python API Changelog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v3-8-3-2025-may-22">v3.8.3 (2025 May 22)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v3-8-2-2025-mar-11">v3.8.2 (2025 Mar 11)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-8-1-2025-feb-25">v3.8.1 (2025 Feb 25)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-8-0-2025-feb-7">v3.8.0 (2025 Feb 7)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-7-0-2024-dec-9">v3.7.0 (2024 Dec 9)</a></li>
@@ -169,7 +171,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.8.1.<br>
+    <b>python-api</b> v3.8.3.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -213,6 +215,25 @@
   <section id="flow-production-tracking-python-api-changelog">
 <h1>Flow Production Tracking Python API Changelog<a class="headerlink" href="#flow-production-tracking-python-api-changelog" title="Permalink to this heading"></a></h1>
 <p>Here you can see the full list of changes between each Python API release.</p>
+<section id="v3-8-3-2025-may-22">
+<h2>v3.8.3 (2025 May 22)<a class="headerlink" href="#v3-8-3-2025-may-22" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add improvements to Mockgun.
+Ensure string comparison are case insensitive.
+Ignore duplicate entities when <code class="docutils literal notranslate"><span class="pre">multi_entity_update_mode</span></code> is added.
+Support for <code class="docutils literal notranslate"><span class="pre">None</span></code> in mockgun when using ordering.
+Thank you rlessardrodeofx, slingshotsys, and MHendricks for your contributions.</p></li>
+<li><p>Minor fixes on unit tests and documentation.</p></li>
+</ul>
+</section>
+<section id="v3-8-2-2025-mar-11">
+<h2>v3.8.2 (2025 Mar 11)<a class="headerlink" href="#v3-8-2-2025-mar-11" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Prevent flaky disconnection when uploading thumbnails on publish.
+There’s a flaky disconnection when the publisher uploads the thumbnail to the server.
+The most common errors were: <code class="docutils literal notranslate"><span class="pre">Connection</span> <span class="pre">closed</span> <span class="pre">by</span> <span class="pre">peer</span></code> and <code class="docutils literal notranslate"><span class="pre">URLopen</span> <span class="pre">error</span> <span class="pre">EOF</span> <span class="pre">occurred</span> <span class="pre">in</span> <span class="pre">violation</span> <span class="pre">of</span> <span class="pre">protocol</span> <span class="pre">ssl.c:1006</span></code>.</p></li>
+</ul>
+</section>
 <section id="v3-8-1-2025-feb-25">
 <h2>v3.8.1 (2025 Feb 25)<a class="headerlink" href="#v3-8-1-2025-feb-25" title="Permalink to this heading"></a></h2>
 <ul class="simple">
