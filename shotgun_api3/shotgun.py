@@ -1900,6 +1900,13 @@ class Shotgun(object):
 
         return self._call_rpc("work_schedule_update", params)
 
+    def export_page(self, format, page_id):
+        params = dict(
+            format=format, page_id=page_id
+        )
+
+        return self._call_rpc("export_page", params)
+
     def follow(self, user, entity):
         """
         Add the entity to the user's followed entities.
