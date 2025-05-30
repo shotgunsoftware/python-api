@@ -12,12 +12,15 @@
 CRUD functions. These tests always use a mock http connection so not not
 need a live server to run against."""
 
+import base64
 import datetime
 import os
+import platform
 import re
-
-from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib import six, sgutils
+import sys
+import time
+import unittest
+from unittest import mock
 
 try:
     import simplejson as json
@@ -27,25 +30,17 @@ except ImportError:
     except ImportError:
         import shotgun_api3.lib.simplejson as json
 
-import platform
-import sys
-import time
-import unittest
-from . import mock
-
-import shotgun_api3.lib.httplib2 as httplib2
-import shotgun_api3 as api
+from shotgun_api3.lib import six, sgutils
+from shotgun_api3.lib.six.moves import urllib
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
-from . import base
+import shotgun_api3 as api
+import shotgun_api3.lib.httplib2 as httplib2
 
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
+from . import base
 
 
 def b64encode(val):
-    return base64encode(sgutils.ensure_binary(val)).decode("utf-8")
+    return base64.encodebytes(sgutils.ensure_binary(val)).decode("utf-8")
 
 
 class TestShotgunClient(base.MockTestBase):

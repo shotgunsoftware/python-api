@@ -14,20 +14,17 @@ Includes short run tests, like simple crud and single finds. See
 test_api_long for other tests.
 """
 
-from __future__ import print_function
 import datetime
-import sys
+import glob
 import os
-from . import mock
-from .mock import patch, MagicMock
 import ssl
+import sys
 import time
 import types
-import uuid
 import unittest
-from shotgun_api3.lib.six.moves import range, urllib
+import urllib
+import uuid
 import warnings
-import glob
 
 import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http
@@ -632,7 +629,7 @@ class TestShotgunApi(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_share_thumbnail(self):
         """share thumbnail between two entities"""
 
@@ -716,7 +713,7 @@ class TestShotgunApi(base.LiveTestBase):
             shotgun_api3.ShotgunError, self.sg.share_thumbnail, [self.shot, self.asset]
         )
 
-    @patch("shotgun_api3.Shotgun._send_form")
+    @mock.patch("shotgun_api3.Shotgun._send_form")
     def test_share_thumbnail_not_ready(self, mock_send_form):
         """throw an exception if trying to share a transient thumbnail"""
 
@@ -734,7 +731,7 @@ class TestShotgunApi(base.LiveTestBase):
             source_entity=self.asset,
         )
 
-    @patch("shotgun_api3.Shotgun._send_form")
+    @mock.patch("shotgun_api3.Shotgun._send_form")
     def test_share_thumbnail_returns_error(self, mock_send_form):
         """throw an exception if server returns an error code"""
 
@@ -2196,17 +2193,17 @@ class TestErrors(base.TestBase):
         user = self.sg.find_one("HumanUser", [["login", "is", login]])
         self.sg.update("HumanUser", user["id"], {"locked_until": None})
 
-    @patch("shotgun_api3.shotgun.Http.request")
+    @mock.patch("shotgun_api3.shotgun.Http.request")
     def test_status_not_200(self, mock_request):
-        response = MagicMock(name="response mock", spec=dict)
+        response = mock.MagicMock(name="response mock", spec=dict)
         response.status = 300
         response.reason = "reason"
         mock_request.return_value = (response, {})
         self.assertRaises(shotgun_api3.ProtocolError, self.sg.find_one, "Shot", [])
 
-    @patch("shotgun_api3.shotgun.Http.request")
+    @mock.patch("shotgun_api3.shotgun.Http.request")
     def test_make_call_retry(self, mock_request):
-        response = MagicMock(name="response mock", spec=dict)
+        response = mock.MagicMock(name="response mock", spec=dict)
         response.status = 200
         response.reason = "reason"
         mock_request.return_value = (response, {})
@@ -2296,7 +2293,7 @@ class TestErrors(base.TestBase):
         finally:
             self.sg.config.rpc_attempt_interval = bak_rpc_attempt_interval
 
-    @patch.object(urllib.request.OpenerDirector, "open")
+    @mock.patch.object(urllib.request.OpenerDirector, "open")
     def test_sanitized_auth_params(self, mock_open):
         # Simulate the server blowing up and giving us a 500 error
         mock_open.side_effect = urllib.error.HTTPError("url", 500, "message", {}, None)
@@ -2865,7 +2862,7 @@ class TestNoteThreadRead(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_simple(self):
         """
         Test note reply thread API call
@@ -2944,7 +2941,7 @@ class TestNoteThreadRead(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_complex(self):
         """
         Test note reply thread API call with additional params
