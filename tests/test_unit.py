@@ -13,9 +13,8 @@
 import os
 import unittest
 from unittest import mock
-from .mock import patch
+
 import shotgun_api3 as api
-from shotgun_api3.shotgun import _is_mimetypes_broken
 from shotgun_api3.lib.six.moves import range, urllib
 from shotgun_api3.lib.httplib2 import Http, ssl_error_classes
 
@@ -187,7 +186,7 @@ class TestShotgunSummarize(unittest.TestCase):
         actual_condition = result["filters"]["conditions"][0]
         self.assertEqual(expected_condition, actual_condition)
 
-    @patch("shotgun_api3.Shotgun._call_rpc")
+    @mock.patch("shotgun_api3.Shotgun._call_rpc")
     def get_call_rpc_params(self, args, kws, call_rpc):
         """Return params sent to _call_rpc from summarize."""
         if not args:
@@ -300,7 +299,7 @@ class TestClientCapabilities(unittest.TestCase):
         finally:
             api.shotgun.sys.platform = platform
 
-    @patch("shotgun_api3.shotgun.sys")
+    @mock.patch("shotgun_api3.shotgun.sys")
     def test_py_version(self, mock_sys):
         major = 2
         minor = 7
@@ -796,24 +795,6 @@ class TestCerts(unittest.TestCase):
         for url in self.test_urls:
             response = self._check_url_with_urllib(url)
             assert response is not None
-
-
-class TestMimetypesFix(unittest.TestCase):
-    """
-    Makes sure that the mimetypes fix will be imported.
-    """
-
-    @patch("shotgun_api3.shotgun.sys")
-    def _test_mimetypes_import(
-        self, platform, major, minor, patch_number, result, mock
-    ):
-        """
-        Mocks sys.platform and sys.version_info to test the mimetypes import code.
-        """
-
-        mock.version_info = [major, minor, patch_number]
-        mock.platform = platform
-        self.assertEqual(_is_mimetypes_broken(), result)
 
 
 if __name__ == "__main__":
