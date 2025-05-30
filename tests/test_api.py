@@ -319,7 +319,7 @@ class TestShotgunApi(base.LiveTestBase):
         Upload an attachment tests for _upload_to_sg()
         """
         self.sg.server_info["s3_direct_uploads_enabled"] = False
-        mock_send_form.method.assert_called_once()
+
         mock_send_form.return_value = "1\n:123\nasd"
         this_dir, _ = os.path.split(__file__)
         u_path = os.path.abspath(
@@ -334,6 +334,8 @@ class TestShotgunApi(base.LiveTestBase):
             "attachments",
             tag_list="monkeys, everywhere, send, help",
         )
+
+        mock_send_form.method.assert_called_once()
         mock_send_form_args, _ = mock_send_form.call_args
         display_name_to_send = mock_send_form_args[1].get("display_name", "")
         self.assertTrue(isinstance(upload_id, int))
@@ -356,7 +358,7 @@ class TestShotgunApi(base.LiveTestBase):
             display_name_to_send.startswith("b'") and display_name_to_send.endswith("'")
         )
 
-        mock_send_form.method.assert_called_once()
+        # mock_send_form.method.assert_called_once() ## CANOT work because was already called earlier....
         mock_send_form.return_value = "2\nIt can't be upload"
         self.assertRaises(
             shotgun_api3.ShotgunError,
@@ -718,7 +720,7 @@ class TestShotgunApi(base.LiveTestBase):
     def test_share_thumbnail_not_ready(self, mock_send_form):
         """throw an exception if trying to share a transient thumbnail"""
 
-        mock_send_form.method.assert_called_once()
+        # mock_send_form.method.assert_called_once()  # never worked.....
         mock_send_form.return_value = (
             "2"
             "\nsource_entity image is a transient thumbnail that cannot be shared. "
@@ -736,7 +738,7 @@ class TestShotgunApi(base.LiveTestBase):
     def test_share_thumbnail_returns_error(self, mock_send_form):
         """throw an exception if server returns an error code"""
 
-        mock_send_form.method.assert_called_once()
+        # mock_send_form.method.assert_called_once()  # never worked.....
         mock_send_form.return_value = "1\nerror message.\n"
 
         self.assertRaises(
