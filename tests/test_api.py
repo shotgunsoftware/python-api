@@ -22,6 +22,7 @@ import sys
 import time
 import types
 import unittest
+from unittest import mock
 import urllib
 import uuid
 import warnings
@@ -312,7 +313,7 @@ class TestShotgunApi(base.LiveTestBase):
         # cleanup
         os.remove(file_path)
 
-    @patch("shotgun_api3.Shotgun._send_form")
+    @mock.patch("shotgun_api3.Shotgun._send_form")
     def test_upload_to_sg(self, mock_send_form):
         """
         Upload an attachment tests for _upload_to_sg()

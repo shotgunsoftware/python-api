@@ -186,7 +186,7 @@ class TestShotgunSummarize(unittest.TestCase):
         actual_condition = result["filters"]["conditions"][0]
         self.assertEqual(expected_condition, actual_condition)
 
-    @patch("shotgun_api3.Shotgun._call_rpc")
+    @mock.patch("shotgun_api3.Shotgun._call_rpc")
     def get_call_rpc_params(self, args, kws, call_rpc):
         """Return params sent to _call_rpc from summarize."""
         if not args:
@@ -299,7 +299,7 @@ class TestClientCapabilities(unittest.TestCase):
         finally:
             api.shotgun.sys.platform = platform
 
-    @patch("shotgun_api3.shotgun.sys")
+    @mock.patch("shotgun_api3.shotgun.sys")
     def test_py_version(self, mock_sys):
         major = 2
         minor = 7
