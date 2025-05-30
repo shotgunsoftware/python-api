@@ -29,6 +29,23 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+import base64
+import copy
+import datetime
+import http.client  # Used for secure file upload.
+import json
+import logging
+import mimetypes
+import os
+import re
+import shutil  # used for attachment download
+import ssl
+import stat  # used for attachment upload
+import sys
+import time
+import urllib
+import uuid  # used for attachment upload
+
 # Python 2/3 compatibility
 from .lib import six
 from .lib import sgsix
@@ -36,28 +53,12 @@ from .lib import sgutils
 from .lib.six import BytesIO  # used for attachment upload
 
 from .lib.six.moves import http_cookiejar  # used for attachment upload
-import datetime
-import logging
-import uuid  # used for attachment upload
-import os
-import re
-import copy
-import ssl
-import stat  # used for attachment upload
-import sys
-import time
-import json
-import urllib
-import shutil  # used for attachment download
-import http.client  # Used for secure file upload.
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib.sgtimezone import SgTimezone
 
 # Import Error and ResponseError (even though they're unused in this file) since they need
 # to be exposed as part of the API.
 from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError  # noqa
-
-from base64 import encodebytes as base64encode
 
 
 LOG = logging.getLogger("shotgun_api3")
@@ -665,11 +666,11 @@ class Shotgun(object):
         # and auth header
 
         # Do NOT self._split_url(self.base_url) here, as it contains the lower
-        # case version of the base_url argument. Doing so would base64encode
+        # case version of the base_url argument. Doing so would base64.encodebytes
         # the lowercase version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64encode(
+            auth = base64.encodebytes(
                 sgutils.ensure_binary(urllib.parse.unquote(auth))
             ).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
