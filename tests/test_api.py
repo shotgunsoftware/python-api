@@ -335,7 +335,7 @@ class TestShotgunApi(base.LiveTestBase):
             tag_list="monkeys, everywhere, send, help",
         )
 
-        mock_send_form.method.assert_called_once()
+        mock_send_form.assert_called_once()
         mock_send_form_args, _ = mock_send_form.call_args
         display_name_to_send = mock_send_form_args[1].get("display_name", "")
         self.assertTrue(isinstance(upload_id, int))
