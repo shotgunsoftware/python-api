@@ -62,8 +62,8 @@ How Do Splits Influence Dates And Dates Influence Splits
     - In the case of a shorter duration splits, starting with the latest ones, will be either
       removed or shortened until the new duration is met.
 
-Examples
-========
+Examples for splitting Tasks
+============================
 Throughout the following examples, each successive one will build on the previous.
 
 start_date, due_date and duration being ignored

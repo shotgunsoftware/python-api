@@ -40,8 +40,8 @@ It does not correspond to any field in Flow Production Tracking.
 Flow Production Tracking will *always* return the ``id`` and ``type`` keys in the dictionary when there are results
 representing an entity.
 
-The Complete Example
---------------------
+The Complete Example for updating a Shot
+----------------------------------------
 ::
 
     #!/usr/bin/env python

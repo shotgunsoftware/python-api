@@ -7,14 +7,14 @@ Deleting an entity in Flow Production Tracking is pretty straight-forward. No ex
 
     result = sg.delete("Shot", 40435)
 
-Result
-------
+Delete Shot Result
+------------------
 If the Shot was deleted successfully ``result`` will contain::
 
     True
 
-The Complete Example
---------------------
+The Complete Example for deleting a Shot
+----------------------------------------
 ::
 
     #!/usr/bin/env python

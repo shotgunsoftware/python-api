@@ -1026,6 +1026,12 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertIn("view_master_settings", resp)
         resp.pop("view_master_settings")
 
+        # Simply make sure creative review settings are there. These change frequently and we
+        # don't want to have the test break because Creative Review changed or because we didn't
+        # update the test.
+        self.assertIn("creative_review_settings", resp)
+        resp.pop("creative_review_settings")
+
         self.assertEqual(expected, resp)
 
         # all filtered
@@ -2290,7 +2296,7 @@ class TestErrors(base.TestBase):
         finally:
             self.sg.config.rpc_attempt_interval = bak_rpc_attempt_interval
 
-    @patch.object(urllib.request.OpenerDirector, 'open')
+    @patch.object(urllib.request.OpenerDirector, "open")
     def test_sanitized_auth_params(self, mock_open):
         # Simulate the server blowing up and giving us a 500 error
         mock_open.side_effect = urllib.error.HTTPError("url", 500, "message", {}, None)

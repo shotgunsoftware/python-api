@@ -32,9 +32,9 @@ General Rules
   first, then ``due_date`` (otherwise setting ``duration`` will change ``due_date`` after it is
   set).
 
-********
-Examples
-********
+***************************
+Examples for updating Tasks
+***************************
 
 The following examples show what the resulting Task object will look like after being run on the
 initial Task object listed under the header of each section.

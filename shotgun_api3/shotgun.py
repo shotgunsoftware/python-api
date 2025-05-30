@@ -82,7 +82,7 @@ SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = False
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.8.1"
+__version__ = "3.8.2"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -4391,16 +4391,16 @@ class Shotgun(object):
         :returns: upload url.
         :rtype: str
         """
-        opener = self._build_opener(urllib.request.HTTPHandler)
-
-        request = urllib.request.Request(storage_url, data=data)
-        request.add_header("Content-Type", content_type)
-        request.add_header("Content-Length", size)
-        request.get_method = lambda: "PUT"
 
         attempt = 1
         while attempt <= self.MAX_ATTEMPTS:
             try:
+                opener = self._build_opener(urllib.request.HTTPHandler)
+
+                request = urllib.request.Request(storage_url, data=data)
+                request.add_header("Content-Type", content_type)
+                request.add_header("Content-Length", size)
+                request.get_method = lambda: "PUT"
                 result = self._make_upload_request(request, opener)
 
                 LOG.debug("Completed request to %s" % request.get_method())
@@ -4521,12 +4521,11 @@ class Shotgun(object):
 
         params.update(self._auth_params())
 
-        opener = self._build_opener(FormPostHandler)
-
         attempt = 1
         while attempt <= self.MAX_ATTEMPTS:
             # Perform the request
             try:
+                opener = self._build_opener(FormPostHandler)
                 resp = opener.open(url, params)
                 result = resp.read()
                 # response headers are in str(resp.info()).splitlines()
@@ -4555,6 +4554,9 @@ class Shotgun(object):
 class FormPostHandler(urllib.request.BaseHandler):
     """
     Handler for multipart form data
+
+    TODO remove all that in Py3!!!!
+
     """
 
     handler_order = urllib.request.HTTPHandler.handler_order - 10  # needs to run first

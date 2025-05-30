@@ -4,6 +4,24 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.8.3 (2025 May 22)
+====================
+
+- Add improvements to Mockgun.
+  Ensure string comparison are case insensitive.
+  Ignore duplicate entities when ``multi_entity_update_mode`` is added.
+  Support for ``None`` in mockgun when using ordering.
+  Thank you rlessardrodeofx, slingshotsys, and MHendricks for your contributions.
+- Minor fixes on unit tests and documentation.
+
+
+v3.8.2 (2025 Mar 11)
+====================
+
+- Prevent flaky disconnection when uploading thumbnails on publish.
+  There's a flaky disconnection when the publisher uploads the thumbnail to the server.
+  The most common errors were: ``Connection closed by peer`` and ``URLopen error EOF occurred in violation of protocol ssl.c:1006``.
+
 v3.8.1 (2025 Feb 25)
 ====================
 
@@ -54,7 +72,7 @@ v3.5.1 (2024 Apr 3)
 - Mockgun: add support for ``add_user_agent`` and ``set_session_uuid`` methods
 
 v3.5.0 (2024 Mar 26)
-===================
+====================
 - Rebranding component for Flow Production Tracking
 
 v3.4.2 (2024 Feb 6)

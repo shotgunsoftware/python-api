@@ -130,7 +130,7 @@ Explanation of selected lines:
 
 - line ``14``: This should be the URL to your instance of Flow Production Tracking.
 - lines ``15-16``: Make sure you get these values from the "Scripts" page in the Admin section of
-  the Flow Production Tracking web application. If you're not sure how to do this, check out :doc:`authentication`.
+  the Flow Production Tracking web application. If you're not sure how to do this, check out :ref:`authentication`.
 - line ``17``: This is the address of Trac, our web-based interface that we use with Subversion.
   You may use a different interface, or none at all, so feel free to adjust this line or ignore it
   as your case may be.

@@ -37,8 +37,8 @@ easier to read. So we'll add that to the import section of our script.::
     import shotgun_api3
     from pprint import pprint # useful for debugging
 
-The Complete Example
---------------------
+The Complete Example for finding a Shot
+---------------------------------------
 ::
 
     #!/usr/bin/env python

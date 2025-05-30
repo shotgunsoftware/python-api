@@ -35,6 +35,7 @@ Unit tests for Mockgun. Does not require an Internet connection
 and can be run on their own by typing "python test_mockgun.py".
 """
 
+import datetime
 import re
 import os
 import unittest
@@ -188,14 +189,171 @@ class TestTextFieldOperators(unittest.TestCase):
         self._mockgun = Mockgun(
             "https://test.shotgunstudio.com", login="user", password="1234"
         )
-        self._user = self._mockgun.create("HumanUser", {"login": "user"})
+        self._user1 = self._mockgun.create("HumanUser", {"login": "user"})
+        self._user2 = self._mockgun.create("HumanUser", {"login": None})
+
+    def test_operator_is(self):
+        """
+        Ensure is operator work.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "is", "user"]])
+        expected = [{"type": "HumanUser", "id": self._user1["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_is_none(self):
+        """
+        Ensure is operator work when used with None.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "is", None]])
+        expected = [{"type": "HumanUser", "id": self._user2["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_is_case_sensitivity(self):
+        """
+        Ensure is operator is case insensitive.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "is", "USER"]])
+        expected = [{"type": "HumanUser", "id": self._user1["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_is_not(self):
+        """
+        Ensure the is_not operator works.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "is_not", "user"]])
+        expected = [{"type": "HumanUser", "id": self._user2["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_is_not_none(self):
+        """
+        Ensure the is_not operator works when used with None.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "is_not", None]])
+        expected = [{"type": "HumanUser", "id": self._user1["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_is_not_case_sensitivity(self):
+        """
+        Ensure the is_not operator is case insensitive.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "is_not", "USER"]])
+        expected = [{"type": "HumanUser", "id": self._user2["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_in(self):
+        """
+        Ensure the in operator works.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "in", ["user"]]])
+        expected = [{"type": "HumanUser", "id": self._user1["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_in_none(self):
+        """
+        Ensure the in operator works with a list containing None.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "in", [None]]])
+        expected = [{"type": "HumanUser", "id": self._user2["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_in_case_sensitivity(self):
+        """
+        Ensure the in operator is case insensitive.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "in", ["USER"]]])
+        expected = [{"type": "HumanUser", "id": self._user1["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_not_in(self):
+        """
+        Ensure the not_in operator works.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "not_in", ["foo"]]])
+        expected = [
+            {"type": "HumanUser", "id": self._user1["id"]},
+            {"type": "HumanUser", "id": self._user2["id"]},
+        ]
+        self.assertEqual(expected, actual)
+
+    def test_operator_not_in_none(self):
+        """
+        Ensure the not_not operator works with a list containing None.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "not_in", [None]]])
+        expected = [{"type": "HumanUser", "id": self._user1["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_not_in_case_sensitivity(self):
+        """
+        Ensure the not_in operator is case insensitive.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "not_in", ["USER"]]])
+        expected = [{"type": "HumanUser", "id": self._user2["id"]}]
+        self.assertEqual(expected, actual)
 
     def test_operator_contains(self):
         """
-        Ensures contains operator works.
+        Ensures the contains operator works.
         """
-        item = self._mockgun.find_one("HumanUser", [["login", "contains", "se"]])
-        self.assertTrue(item)
+        actual = self._mockgun.find("HumanUser", [["login", "contains", "se"]])
+        expected = [{"type": "HumanUser", "id": self._user1["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_contains_case_sensitivity(self):
+        """
+        Ensure the contains operator is case insensitive.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "contains", "SE"]])
+        expected = [{"type": "HumanUser", "id": self._user1["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_not_contains(self):
+        """
+        Ensure the not_contains operator works.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "not_contains", "user"]])
+        expected = [{"type": "HumanUser", "id": self._user2["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_not_contains_case_sensitivity(self):
+        """
+        Ensure the not_contains operator is case insensitive.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "not_contains", "USER"]])
+        expected = [{"type": "HumanUser", "id": self._user2["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_starts_with(self):
+        """
+        Ensure the starts_with operator works.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "starts_with", "us"]])
+        expected = [{"type": "HumanUser", "id": self._user1["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_starts_with_case_sensitivity(self):
+        """
+        Ensure the starts_with operator is case insensitive.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "starts_with", "US"]])
+        expected = [{"type": "HumanUser", "id": self._user1["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_ends_with(self):
+        """
+        Ensure the ends_with operator works.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "ends_with", "er"]])
+        expected = [{"type": "HumanUser", "id": self._user1["id"]}]
+        self.assertEqual(expected, actual)
+
+    def test_operator_ends_with_case_sensitivity(self):
+        """
+        Ensure the starts_with operator is case insensitive.
+        """
+        actual = self._mockgun.find("HumanUser", [["login", "ends_with", "ER"]])
+        expected = [{"type": "HumanUser", "id": self._user1["id"]}]
+        self.assertEqual(expected, actual)
 
 
 class TestMultiEntityFieldComparison(unittest.TestCase):
@@ -345,10 +503,12 @@ class TestMultiEntityFieldUpdate(unittest.TestCase):
         """
         Ensures that "add" multi_entity_update_mode works.
         """
+        # Attempts to add _version2
+        # It already exists on the playlist and should not be duplicated
         self._mockgun.update(
             "Playlist",
             self._add_playlist["id"],
-            {"versions": [self._version3]},
+            {"versions": [self._version2, self._version3]},
             multi_entity_update_modes={"versions": "add"},
         )
 
@@ -429,15 +589,29 @@ class TestFilterOperator(unittest.TestCase):
         self._prj2_link = self._mockgun.create("Project", {"name": "prj2"})
 
         self._shot1 = self._mockgun.create(
-            "Shot", {"code": "shot1", "project": self._prj1_link}
+            "Shot",
+            {
+                "code": "shot1",
+                "project": self._prj1_link,
+                "description": "a",
+                "sg_cut_order": 2,
+            },
         )
 
         self._shot2 = self._mockgun.create(
-            "Shot", {"code": "shot2", "project": self._prj1_link}
+            "Shot", {"code": "shot2", "project": self._prj1_link, "sg_cut_order": 1}
         )
 
         self._shot3 = self._mockgun.create(
-            "Shot", {"code": "shot3", "project": self._prj2_link}
+            "Shot", {"code": "shot3", "project": self._prj2_link, "description": "b"}
+        )
+
+        self._user1 = self._mockgun.create(
+            "HumanUser", {"login": "user1", "password_strength": 0.2}
+        )
+
+        self._user2 = self._mockgun.create(
+            "HumanUser", {"login": "user2", "created_at": datetime.datetime(2025, 1, 1)}
         )
 
     def test_simple_filter_operators(self):
@@ -467,6 +641,47 @@ class TestFilterOperator(unittest.TestCase):
         )
 
         self.assertEqual(len(shots), 0)
+
+    def test_ordered_filter_operator(self):
+        """
+        Test use of the order feature of filter_operator on supported data types.
+        """
+        find_args = ["Shot", [], ["code"]]
+
+        # str field
+        shots = self._mockgun.find(
+            *find_args, order=[{"field_name": "description", "direction": "asc"}]
+        )
+        self.assertEqual([s["code"] for s in shots], ["shot2", "shot1", "shot3"])
+
+        shots = self._mockgun.find(
+            *find_args, order=[{"field_name": "description", "direction": "desc"}]
+        )
+        self.assertEqual([s["code"] for s in shots], ["shot3", "shot1", "shot2"])
+
+        # int field
+        shots = self._mockgun.find(
+            *find_args, order=[{"field_name": "sg_cut_order", "direction": "asc"}]
+        )
+        self.assertEqual([s["code"] for s in shots], ["shot3", "shot2", "shot1"])
+
+        # float field
+        users = self._mockgun.find(
+            "HumanUser",
+            [],
+            ["login"],
+            order=[{"field_name": "password_strength", "direction": "asc"}],
+        )
+        self.assertEqual([u["login"] for u in users], ["user2", "user1"])
+
+        # date_time field
+        users = self._mockgun.find(
+            "HumanUser",
+            [],
+            ["login"],
+            order=[{"field_name": "created_at", "direction": "asc"}],
+        )
+        self.assertEqual([u["login"] for u in users], ["user1", "user2"])
 
     def test_nested_filter_operators(self):
         """
