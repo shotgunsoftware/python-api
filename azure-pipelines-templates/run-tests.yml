@@ -37,6 +37,7 @@ jobs:
   # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python27" and
   # "<OS> Python37".
 - job: ${{ parameters.name }}
+  displayName: ${{ parameters.job_name }}
   pool:
     vmImage: ${{ parameters.vm_image }}
   # The strategy is another way of removing repetition. It will create one job per entry in the
@@ -44,11 +45,11 @@ jobs:
   strategy:
     matrix:
       # We support these versions of Python.
-      Python39:
+      Python 3.9:
         python.version: '3.9'
-      Python310:
+      Python 3.10:
         python.version: '3.10'
-      Python311:
+      Python 3.11:
         python.version: '3.11'
 
     maxParallel: 4
