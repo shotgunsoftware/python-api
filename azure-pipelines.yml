@@ -59,17 +59,14 @@ jobs:
 - template: azure-pipelines-templates/run-tests.yml
   parameters:
     name: Linux
-    os_name: Linux
     vm_image: 'ubuntu-latest'
 
 - template: azure-pipelines-templates/run-tests.yml
   parameters:
     name: macOS
-    os_name: macOS
     vm_image: 'macOS-latest'
 
 - template: azure-pipelines-templates/run-tests.yml
   parameters:
     name: Windows
-    os_name: Windows
     vm_image: 'windows-latest'

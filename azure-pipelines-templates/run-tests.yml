@@ -29,17 +29,14 @@
 # This is the list of parameters for this template and their default values.
 parameters:
   name: ''
-  os_name: ''
   vm_image: ''
 
 jobs:
   # The job will be named after the OS and Azure will suffix the strategy to make it unique
-  # so we'll have a job name "Windows Python27" for example. What's a strategy? Strategies are the
-  # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python27" and
-  # "<OS> Python37".
-- job:
-  displayName: ${{ parameters.os_name }} Python ${{ parameters.python.version }}
-  # displayName: ${{ parameters.job_name }}
+  # so we'll have a job name "Windows Python 2.7" for example. What's a strategy? Strategies are the
+  # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python 2.7" and
+  # "<OS> Python 3.7".
+- job: ${{ parameters.job_name }}
   pool:
     vmImage: ${{ parameters.vm_image }}
   # The strategy is another way of removing repetition. It will create one job per entry in the
