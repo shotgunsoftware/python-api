@@ -36,7 +36,7 @@ jobs:
   # so we'll have a job name "Windows Python 2.7" for example. What's a strategy? Strategies are the
   # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python 2.7" and
   # "<OS> Python 3.7".
-- job: ${{ parameters.job_name }}
+- job: ${{ parameters.name }}
   pool:
     vmImage: ${{ parameters.vm_image }}
   # The strategy is another way of removing repetition. It will create one job per entry in the
