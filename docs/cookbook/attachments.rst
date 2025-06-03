@@ -238,7 +238,7 @@ are available:
     A dictionary representing which LocalStorage entity is applied for this local file link.
 
 - **url** (:obj:`str`) *read-only*:
-    A file:// link provided for convenience pointing to the value in the ``local_path``
+    A file URI (``file://``) path provided for convenience pointing to the value in the ``local_path``
 
 Reading Local File Fields
 =========================
@@ -284,39 +284,106 @@ defaults. Any other keys that are provided will be ignored.
     Optionally set the mime-type of the associated local file. This is assigned automatically
     using a best-guess based on the file extension.
 
-
 * **name** :obj:`str`:
     Optional display name of the local file. This is set to the filename by default.
 
 * **local_path** :obj:`str`:
-    The full local path to the file. Flow Production Tracking will find the LocalStorage
+    The full local path to the file. Flow Production Tracking will find the ``LocalStorage``
     that has the most specific match to this path and automatically assign that LocalStorage to
     the file.
+    Alternative to ``relative_path``
+
+* **local_storage** :obj:`dict`:
+    The reference to an existing ``LocalStorage``.
+    Must contain ``type: LocalStorage`` plus either an ``id`` or a ``name``
+
+* **relative_path** :obj:`str`:
+    The path to the file relative ``local_storage`` root.
+    Requires ``local_storage``
+    Only acceptinh  slash ``/`` separated path. Does not accept Windows path.
+    Alternative to ``local_path``
+
+Example 1 Using ``local_path``
+------------------------------
 
 ::
 
-    data = {'sg_uploaded_movie': {'local_path': '/Users/kp/Movies/testing/test_movie_002.mov',
-                                  'name': 'Better Movie'}
-    result = sg.update('Version', 123, data)
+    result = sg.update(
+        'Version',
+        123,
+        {
+            'sg_uploaded_movie': {
+                'local_path': '/Users/kp/Movies/testing/test_movie_002.mov',
+                'name': 'Better Movie',
+            }
+        )
 
 Returns::
 
-    {'id':123,
-     'sg_uploaded_movie': { 'content_type': 'video/quicktime',
-                            'link_type': 'local',
-                            'name': 'my_test_movie.mov',
-                            'local_path': '/Users/kp/Movies/testing/test_movie_002.mov'
-                            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov'
-                            'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov'
-                            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov'
-                            'local_storage': {'id': 1,
-                                              'name': 'Dailies Directories',
-                                              'type': 'LocalStorage'},
-                            'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'},
-     'type': 'Version'}]
+    {
+        'id':123,
+        'sg_uploaded_movie': {
+            'content_type': 'video/quicktime',
+            'link_type': 'local',
+            'name': 'my_test_movie.mov',
+            'local_path': '/Users/kp/Movies/testing/test_movie_002.mov'
+            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov'
+            'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov'
+            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov'
+            'local_storage': {
+                'id': 1,
+                'name': 'Dailies Directories',
+                'type': 'LocalStorage'
+            },
+            'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'
+        },
+        'type': 'Version',
+    }
 
 The ``content_type`` was assigned a best-guess value based on the file extension. Flow Production Tracking selected
 the most appropriate specific LocalStorage match and assigned it to local_storage automatically.
+
+
+Example 2 Using ``relative_path``
+---------------------------------
+
+::
+
+    result = sg.update(
+        'Version',
+        123,
+        {
+            'sg_uploaded_movie': {
+                'local_storage': {
+                    'type': 'LocalStorage',
+                    'name': 'Dailies Directories',
+                },
+                'relative_path': 'testing/test_movie_002.mov',
+            }
+        )
+
+Returns::
+
+    {
+        'id':123,
+        'sg_uploaded_movie': {
+            'content_type': 'video/quicktime',
+            'link_type': 'local',
+            'name': 'my_test_movie.mov',
+            'local_path': '/Users/kp/Movies/testing/test_movie_002.mov'
+            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov'
+            'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov'
+            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov'
+            'local_storage': {
+                'id': 1,
+                'name': 'Dailies Directories',
+                'type': 'LocalStorage'
+            },
+            'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'
+        },
+        'type': 'Version',
+    }
+
 
 Un-setting local file field values
 ==================================
