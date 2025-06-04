@@ -805,8 +805,8 @@ Additional keys exist for local file links
       'local_path_windows': "string" | None,
       'local_storage': {
         'type': 'LocalStorage',
-        'id': int | Pass,
-        'name': "string" | Pass,  TODO
+        'id': int | None,
+        'name': "string" | None,
       },
       'name': "string",
       'relative_path': "string" | None
