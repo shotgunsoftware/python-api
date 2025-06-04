@@ -300,7 +300,7 @@ defaults. Any other keys that are provided will be ignored.
 * **relative_path** :obj:`str`:
     The path to the file relative ``local_storage`` root.
     Requires ``local_storage``
-    Only acceptinh  slash ``/`` separated path. Does not accept Windows path.
+    Only accepting slash ``/`` separated path. Does not accept Windows path.
     Alternative to ``local_path``
 
 Example 1 Using ``local_path``
@@ -370,10 +370,10 @@ Returns::
             'content_type': 'video/quicktime',
             'link_type': 'local',
             'name': 'my_test_movie.mov',
-            'local_path': '/Users/kp/Movies/testing/test_movie_002.mov'
-            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov'
-            'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov'
-            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov'
+            'local_path': '/Users/kp/Movies/testing/test_movie_002.mov',
+            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov',
+            'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov',
+            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov',
             'local_storage': {
                 'id': 1,
                 'name': 'Dailies Directories',
