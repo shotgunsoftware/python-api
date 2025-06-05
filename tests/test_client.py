@@ -587,7 +587,9 @@ class TestShotgunClient(base.MockTestBase):
         now = datetime.datetime.fromtimestamp(timestamp).replace(
             microsecond=0, tzinfo=SG_TIMEZONE.local
         )
-        utc_now = datetime.datetime.utcfromtimestamp(timestamp).replace(microsecond=0)
+        utc_now = datetime.datetime.fromtimestamp(
+            timestamp, tz=datetime.timezone.utc
+        ).replace(microsecond=0)
         local = {"date": now.strftime("%Y-%m-%d"), "datetime": now, "time": now.time()}
         # date will still be the local date, because they are not transformed
         utc = {
