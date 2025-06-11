@@ -4,6 +4,11 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.8.4 (2025 Jun 11)
+====================
+
+- Replace ``utcfromtimestamp`` to prevent breaking changes in Python 3.12.
+
 v3.8.3 (2025 May 22)
 ====================
 
