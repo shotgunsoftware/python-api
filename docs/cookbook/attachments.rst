@@ -303,7 +303,7 @@ defaults. Any other keys that are provided will be ignored.
     Only accepting slash ``/`` separated path. Does not accept Windows path.
     Alternative to ``local_path``
 
-Example 1 Using ``local_path``
+Example 1: Using ``local_path``
 ------------------------------
 
 ::
@@ -344,7 +344,7 @@ The ``content_type`` was assigned a best-guess value based on the file extension
 the most appropriate specific LocalStorage match and assigned it to local_storage automatically.
 
 
-Example 2 Using ``relative_path``
+Example 2: Using ``relative_path``
 ---------------------------------
 
 ::
