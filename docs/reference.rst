@@ -42,7 +42,6 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.close
     Shotgun.authenticate_human_user
     Shotgun.get_session_token
-    Shotgun.set_up_auth_cookie
     Shotgun.add_user_agent
     Shotgun.reset_user_agent
     Shotgun.set_session_uuid

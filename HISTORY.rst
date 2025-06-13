@@ -4,12 +4,28 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
-v3.8.3-beta1 (2025 May 7)
-==========================
+v3.8.5 (2025 Xxx X)
+===================
 
 - We don't want to retry on a general exceptions (e.g. Timeout or remote disconnection)
   because we might send a resource modification request (create, batch create, etc) and
   we can end up duplicating things.
+
+v3.8.4 (2025 Jun 11)
+====================
+
+- Replace ``utcfromtimestamp`` to prevent breaking changes in Python 3.12.
+
+v3.8.3 (2025 May 22)
+====================
+
+- Add improvements to Mockgun.
+  Ensure string comparison are case insensitive.
+  Ignore duplicate entities when ``multi_entity_update_mode`` is added.
+  Support for ``None`` in mockgun when using ordering.
+  Thank you rlessardrodeofx, slingshotsys, and MHendricks for your contributions.
+- Minor fixes on unit tests and documentation.
+
 
 v3.8.2 (2025 Mar 11)
 ====================
@@ -68,7 +84,7 @@ v3.5.1 (2024 Apr 3)
 - Mockgun: add support for ``add_user_agent`` and ``set_session_uuid`` methods
 
 v3.5.0 (2024 Mar 26)
-===================
+====================
 - Rebranding component for Flow Production Tracking
 
 v3.4.2 (2024 Feb 6)

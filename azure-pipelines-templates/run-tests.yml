@@ -33,9 +33,9 @@ parameters:
 
 jobs:
   # The job will be named after the OS and Azure will suffix the strategy to make it unique
-  # so we'll have a job name "Windows Python27" for example. What's a strategy? Strategies are the
-  # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python27" and
-  # "<OS> Python37".
+  # so we'll have a job name "Windows Python 2.7" for example. What's a strategy? Strategies are the
+  # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python 2.7" and
+  # "<OS> Python 3.7".
 - job: ${{ parameters.name }}
   pool:
     vmImage: ${{ parameters.vm_image }}
@@ -44,11 +44,11 @@ jobs:
   strategy:
     matrix:
       # We support these versions of Python.
-      Python39:
+      Python 3.9:
         python.version: '3.9'
-      Python310:
+      Python 3.10:
         python.version: '3.10'
-      Python311:
+      Python 3.11:
         python.version: '3.11'
 
     maxParallel: 4
