@@ -2223,42 +2223,8 @@ class TestErrors(base.TestBase):
 
             self.assertEqual(cm2.exception.args[0], "not working")
             log_content = "\n".join(cm1.output)
-            for i in [1, 2]:
-                self.assertIn(
-                    f"Request failed, attempt {i} of 3.  Retrying",
-                    log_content,
-                )
             self.assertIn(
-                "Request failed.  Giving up after 3 attempts.",
-                log_content,
-            )
-
-            # Then, make the exception happening only once and prove the
-            # retry works
-            def my_side_effect(*args, **kwargs):
-                try:
-                    if my_side_effect.counter < 1:
-                        raise Exception("not working")
-
-                    return mock.DEFAULT
-                finally:
-                    my_side_effect.counter += 1
-
-            my_side_effect.counter = 0
-            mock_request.side_effect = my_side_effect
-            with self.assertLogs("shotgun_api3", level="DEBUG") as cm:
-                self.assertIsInstance(
-                    self.sg.info(),
-                    dict,
-                )
-
-            log_content = "\n".join(cm.output)
-            self.assertIn(
-                "Request failed, attempt 1 of 3.  Retrying",
-                log_content,
-            )
-            self.assertNotIn(
-                "Request failed, attempt 2 of 3.  Retrying",
+                "Request failed.  Reason: not working",
                 log_content,
             )
 
