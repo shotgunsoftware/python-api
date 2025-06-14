@@ -7,7 +7,7 @@ Here you can see the full list of changes between each Python API release.
 v3.8.5 (2025 Xxx X)
 ===================
 
-- We don't want to retry on general exceptions (e.g. Timeout or remote disconnection)
+- We don't want to retry on general exceptions (e.g. timeout or remote disconnection)
   because we might send a resource modification request (create, batch create, etc) and
   we can end up duplicating things.
 
