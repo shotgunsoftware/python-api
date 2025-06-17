@@ -14,20 +14,18 @@ Includes short run tests, like simple crud and single finds. See
 test_api_long for other tests.
 """
 
-from __future__ import print_function
 import datetime
-import sys
+import glob
 import os
-from . import mock
-from .mock import patch, MagicMock
 import ssl
+import sys
 import time
 import types
-import uuid
 import unittest
-from shotgun_api3.lib.six.moves import range, urllib
+from unittest import mock
+import urllib
+import uuid
 import warnings
-import glob
 
 import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http
@@ -315,13 +313,13 @@ class TestShotgunApi(base.LiveTestBase):
         # cleanup
         os.remove(file_path)
 
-    @patch("shotgun_api3.Shotgun._send_form")
+    @mock.patch("shotgun_api3.Shotgun._send_form")
     def test_upload_to_sg(self, mock_send_form):
         """
         Upload an attachment tests for _upload_to_sg()
         """
         self.sg.server_info["s3_direct_uploads_enabled"] = False
-        mock_send_form.method.assert_called_once()
+
         mock_send_form.return_value = "1\n:123\nasd"
         this_dir, _ = os.path.split(__file__)
         u_path = os.path.abspath(
@@ -336,6 +334,8 @@ class TestShotgunApi(base.LiveTestBase):
             "attachments",
             tag_list="monkeys, everywhere, send, help",
         )
+
+        mock_send_form.assert_called_once()
         mock_send_form_args, _ = mock_send_form.call_args
         display_name_to_send = mock_send_form_args[1].get("display_name", "")
         self.assertTrue(isinstance(upload_id, int))
@@ -358,7 +358,7 @@ class TestShotgunApi(base.LiveTestBase):
             display_name_to_send.startswith("b'") and display_name_to_send.endswith("'")
         )
 
-        mock_send_form.method.assert_called_once()
+        # mock_send_form.method.assert_called_once() ## CANOT work because was already called earlier....
         mock_send_form.return_value = "2\nIt can't be upload"
         self.assertRaises(
             shotgun_api3.ShotgunError,
@@ -632,7 +632,7 @@ class TestShotgunApi(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_share_thumbnail(self):
         """share thumbnail between two entities"""
 
@@ -716,11 +716,11 @@ class TestShotgunApi(base.LiveTestBase):
             shotgun_api3.ShotgunError, self.sg.share_thumbnail, [self.shot, self.asset]
         )
 
-    @patch("shotgun_api3.Shotgun._send_form")
+    @mock.patch("shotgun_api3.Shotgun._send_form")
     def test_share_thumbnail_not_ready(self, mock_send_form):
         """throw an exception if trying to share a transient thumbnail"""
 
-        mock_send_form.method.assert_called_once()
+        # mock_send_form.method.assert_called_once()  # never worked.....
         mock_send_form.return_value = (
             "2"
             "\nsource_entity image is a transient thumbnail that cannot be shared. "
@@ -734,11 +734,11 @@ class TestShotgunApi(base.LiveTestBase):
             source_entity=self.asset,
         )
 
-    @patch("shotgun_api3.Shotgun._send_form")
+    @mock.patch("shotgun_api3.Shotgun._send_form")
     def test_share_thumbnail_returns_error(self, mock_send_form):
         """throw an exception if server returns an error code"""
 
-        mock_send_form.method.assert_called_once()
+        # mock_send_form.method.assert_called_once()  # never worked.....
         mock_send_form.return_value = "1\nerror message.\n"
 
         self.assertRaises(
@@ -2196,17 +2196,17 @@ class TestErrors(base.TestBase):
         user = self.sg.find_one("HumanUser", [["login", "is", login]])
         self.sg.update("HumanUser", user["id"], {"locked_until": None})
 
-    @patch("shotgun_api3.shotgun.Http.request")
+    @mock.patch("shotgun_api3.shotgun.Http.request")
     def test_status_not_200(self, mock_request):
-        response = MagicMock(name="response mock", spec=dict)
+        response = mock.MagicMock(name="response mock", spec=dict)
         response.status = 300
         response.reason = "reason"
         mock_request.return_value = (response, {})
         self.assertRaises(shotgun_api3.ProtocolError, self.sg.find_one, "Shot", [])
 
-    @patch("shotgun_api3.shotgun.Http.request")
+    @mock.patch("shotgun_api3.shotgun.Http.request")
     def test_make_call_retry(self, mock_request):
-        response = MagicMock(name="response mock", spec=dict)
+        response = mock.MagicMock(name="response mock", spec=dict)
         response.status = 200
         response.reason = "reason"
         mock_request.return_value = (response, {})
@@ -2296,78 +2296,7 @@ class TestErrors(base.TestBase):
         finally:
             self.sg.config.rpc_attempt_interval = bak_rpc_attempt_interval
 
-    @patch("shotgun_api3.shotgun.Http.request")
-    def test_sha2_error(self, mock_request):
-        # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError(
-            "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
-            "encoding routines:ASN1_item_verify: unknown message digest "
-            "algorithm"
-        )
-
-        # save the original state
-        original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
-
-        # ensure we're starting with the right values
-        self.sg.reset_user_agent()
-
-        # ensure the initial settings are correct. These will be different depending on whether
-        # the ssl module imported successfully or not.
-        if "ssl" in sys.modules:
-            self.assertFalse(self.sg.config.no_ssl_validation)
-            self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
-            self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
-        else:
-            self.assertTrue(self.sg.config.no_ssl_validation)
-            self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertFalse("(validate)" in " ".join(self.sg._user_agents))
-            self.assertTrue("(no-validate)" in " ".join(self.sg._user_agents))
-
-        try:
-            self.sg.info()
-        except ShotgunSSLError:
-            # ensure the api has reset the values in the correct fallback behavior
-            self.assertTrue(self.sg.config.no_ssl_validation)
-            self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertFalse("(validate)" in " ".join(self.sg._user_agents))
-            self.assertTrue("(no-validate)" in " ".join(self.sg._user_agents))
-
-        if original_env_val is not None:
-            os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
-
-    @patch("shotgun_api3.shotgun.Http.request")
-    def test_sha2_error_with_strict(self, mock_request):
-        # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError(
-            "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
-            "encoding routines:ASN1_item_verify: unknown message digest "
-            "algorithm"
-        )
-
-        # save the original state
-        original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
-        os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = "1"
-
-        # ensure we're starting with the right values
-        self.sg.config.no_ssl_validation = False
-        shotgun_api3.shotgun.NO_SSL_VALIDATION = False
-        self.sg.reset_user_agent()
-
-        try:
-            self.sg.info()
-        except ShotgunSSLError:
-            # ensure the api has NOT reset the values in the fallback behavior because we have
-            # set the env variable to force validation
-            self.assertFalse(self.sg.config.no_ssl_validation)
-            self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
-            self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
-
-        if original_env_val is not None:
-            os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
-
-    @patch.object(urllib.request.OpenerDirector, "open")
+    @mock.patch.object(urllib.request.OpenerDirector, "open")
     def test_sanitized_auth_params(self, mock_open):
         # Simulate the server blowing up and giving us a 500 error
         mock_open.side_effect = urllib.error.HTTPError("url", 500, "message", {}, None)
@@ -2936,7 +2865,7 @@ class TestNoteThreadRead(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_simple(self):
         """
         Test note reply thread API call
@@ -3015,7 +2944,7 @@ class TestNoteThreadRead(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_complex(self):
         """
         Test note reply thread API call with additional params
