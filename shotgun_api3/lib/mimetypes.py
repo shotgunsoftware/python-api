@@ -26,6 +26,7 @@ Note that this code has not been updated for python 3 compatibility, as it is
 a patched version of the native mimetypes module and is used only in Python
 versions 2.7.0 - 2.7.9, which included a broken version of the mimetypes module.
 """
+from __future__ import print_function
 
 import os
 import sys
@@ -568,14 +569,14 @@ More than one type argument may be given.
 """
 
     def usage(code, msg=''):
-        print USAGE
-        if msg: print msg
+        print(USAGE)
+        if msg: print(msg)
         sys.exit(code)
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'hle',
                                    ['help', 'lenient', 'extension'])
-    except getopt.error, msg:
+    except getopt.error as msg:
         usage(1, msg)
 
     strict = 1
@@ -590,9 +591,9 @@ More than one type argument may be given.
     for gtype in args:
         if extension:
             guess = guess_extension(gtype, strict)
-            if not guess: print "I don't know anything about type", gtype
-            else: print guess
+            if not guess: print("I don't know anything about type", gtype)
+            else: print(guess)
         else:
             guess, encoding = guess_type(gtype, strict)
-            if not guess: print "I don't know anything about type", gtype
-            else: print 'type:', guess, 'encoding:', encoding
+            if not guess: print("I don't know anything about type", gtype)
+            else: print('type:', guess, 'encoding:', encoding)

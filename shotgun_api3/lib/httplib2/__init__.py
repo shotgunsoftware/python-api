@@ -1,3 +1,4 @@
+# type: ignore
 from .. import six
 
 # Define all here to keep linters happy.  It should be overwritten by the code

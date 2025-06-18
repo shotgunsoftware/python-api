@@ -120,6 +120,7 @@ from ... import ShotgunError
 from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
+from typing import Any
 
 # ----------------------------------------------------------------------------
 # Version
@@ -581,7 +582,7 @@ class Shotgun(object):
             row[field] = default_value
         return row
 
-    def _compare(self, field_type, lval, operator, rval):
+    def _compare(self, field_type: str, lval: Any, operator: str, rval: Any) -> bool:
         """
         Compares a field using the operator and value provide by the filter.
 
@@ -798,7 +799,7 @@ class Shotgun(object):
 
             return self._compare(field_type, lval, operator, rval)
 
-    def _rearrange_filters(self, filters):
+    def _rearrange_filters(self, filters: list) -> None:
         """
         Modifies the filter syntax to turn it into a list of three items regardless
         of the actual filter. Most of the filters are list of three elements, so this doesn't change much.

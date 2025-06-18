@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# type: ignore
 """Converts an IRI to a URI."""
 
 __author__ = "Joe Gregorio (joe@bitworking.org)"

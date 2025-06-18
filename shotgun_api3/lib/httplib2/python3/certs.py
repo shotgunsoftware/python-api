@@ -1,3 +1,4 @@
+# type: ignore
 """Utilities for certificate management."""
 
 import os

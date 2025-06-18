@@ -1,3 +1,4 @@
+# type: ignore
 """
  -----------------------------------------------------------------------------
  Copyright (c) 2009-2017, Shotgun Software Inc
@@ -47,7 +48,7 @@ class SchemaFactory(object):
     _schema_cache_path = None
 
     @classmethod
-    def get_schemas(cls, schema_path, schema_entity_path):
+    def get_schemas(cls, schema_path: str, schema_entity_path: str) -> tuple:
         """
         Retrieves the schemas from disk.
 
