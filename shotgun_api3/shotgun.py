@@ -57,6 +57,7 @@ from typing import (
     Literal,
     NoReturn,
     Optional,
+    TypedDict,
     TypeVar,
     Union,
     TYPE_CHECKING,
@@ -86,6 +87,22 @@ handler associated with it.
 .. seealso:: :ref:`logging`
 """
 LOG.setLevel(logging.WARN)
+
+
+class OrderItem(TypedDict):
+    field_name: str
+    direction: str
+
+
+class GroupingItem(TypedDict):
+    field: str
+    type: str
+    direction: str
+
+
+class BaseEntity(TypedDict, total=False):
+    id: int
+    type: str
 
 
 def _is_mimetypes_broken():
@@ -912,12 +929,12 @@ class Shotgun(object):
         entity_type: str,
         filters: Union[list, tuple, dict[str, Any]],
         fields: Optional[list[str]] = None,
-        order: Optional[list[dict[str, Any]]] = None,
+        order: Optional[list[OrderItem]] = None,
         filter_operator: Optional[Literal["all", "any"]] = None,
         retired_only: bool = False,
         include_archived_projects: bool = True,
         additional_filter_presets: Optional[list[dict[str, Any]]] = None,
-    ) -> Optional[dict[str, Any]]:
+    ) -> Optional[BaseEntity]:
         """
         Shortcut for :meth:`~shotgun_api3.Shotgun.find` with ``limit=1`` so it returns a single
         result.
@@ -992,14 +1009,14 @@ class Shotgun(object):
         entity_type: str,
         filters: Union[list, tuple, dict[str, Any]],
         fields: Optional[list[str]] = None,
-        order: Optional[list[dict[str, Any]]] = None,
+        order: Optional[list[OrderItem]] = None,
         filter_operator: Optional[Literal["all", "any"]] = None,
         limit: int = 0,
         retired_only: bool = False,
         page: int = 0,
         include_archived_projects: bool = True,
         additional_filter_presets: Optional[list[dict[str, Any]]] = None,
-    ) -> list[dict[str, Any]]:
+    ) -> list[BaseEntity]:
         """
         Find entities matching the given filters.
 
@@ -1194,7 +1211,7 @@ class Shotgun(object):
         retired_only: bool,
         order: Optional[list[dict[str, Any]]],
         include_archived_projects: bool,
-        additional_filter_presets,
+        additional_filter_presets: Optional[list[dict[str, Any]]],
     ) -> dict[str, Any]:
         params: dict[str, Any] = {}
         params["type"] = entity_type
@@ -1263,7 +1280,7 @@ class Shotgun(object):
         filters: Union[list, dict[str, Any]],
         summary_fields: list[dict[str, str]],
         filter_operator: Optional[str] = None,
-        grouping: Optional[list] = None,
+        grouping: Optional[list[GroupingItem]] = None,
         include_archived_projects: bool = True,
     ) -> dict[str, Any]:
         """
@@ -1563,7 +1580,7 @@ class Shotgun(object):
         entity_id: int,
         data: dict[str, Any],
         multi_entity_update_modes: Optional[dict[str, Any]] = None,
-    ) -> dict[str, Any]:
+    ) -> BaseEntity:
         """
         Update the specified entity with the supplied data.
 
@@ -2024,7 +2041,7 @@ class Shotgun(object):
         user: dict[str, Any],
         project: Optional[dict[str, Any]] = None,
         entity_type: Optional[str] = None,
-    ) -> list[dict[str, Any]]:
+    ) -> list[BaseEntity]:
         """
         Return all entity instances a user is following.
 
@@ -2056,8 +2073,8 @@ class Shotgun(object):
         return self._call_rpc("following", params)
 
     def schema_entity_read(
-        self, project_entity: Optional[dict[str, Any]] = None
-    ) -> dict[str, Any]:
+        self, project_entity: Optional[BaseEntity] = None
+    ) -> dict[str, dict[str, Any]]:
         """
         Return all active entity types, their display names, and their visibility.
 
@@ -2102,8 +2119,8 @@ class Shotgun(object):
             return self._call_rpc("schema_entity_read", None)
 
     def schema_read(
-        self, project_entity: Optional[dict[str, Any]] = None
-    ) -> dict[str, Any]:
+        self, project_entity: Optional[BaseEntity] = None
+    ) -> dict[str, dict[str, Any]]:
         """
         Get the schema for all fields on all entities.
 
@@ -2179,8 +2196,8 @@ class Shotgun(object):
         self,
         entity_type: str,
         field_name: Optional[str] = None,
-        project_entity: Optional[dict[str, Any]] = None,
-    ) -> dict[str, Any]:
+        project_entity: Optional[BaseEntity] = None,
+    ) -> dict[str, dict[str, Any]]:
         """
         Get schema for all fields on the specified entity type or just the field name specified
         if provided.
@@ -2292,7 +2309,7 @@ class Shotgun(object):
         entity_type: str,
         field_name: str,
         properties: dict[str, Any],
-        project_entity: Optional[dict[str, Any]] = None,
+        project_entity: Optional[BaseEntity] = None,
     ) -> bool:
         """
         Update the properties for the specified field on an entity.
@@ -2408,7 +2425,7 @@ class Shotgun(object):
         self,
         entities: list[dict[str, Any]],
         thumbnail_path: Optional[str] = None,
-        source_entity: Optional[dict[str, Any]] = None,
+        source_entity: Optional[BaseEntity] = None,
         filmstrip_thumbnail: bool = False,
         **kwargs: Any,
     ) -> int:
