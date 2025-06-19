@@ -30,7 +30,7 @@ setup(
     packages=find_packages(exclude=("tests",)),
     script_args=sys.argv[1:],
     include_package_data=True,
-    package_data={"": ["cacerts.txt", "cacert.pem"]},
+    package_data={"": ["cacerts.txt", "cacert.pem", "py.typed"]},
     zip_safe=False,
     python_requires=">=3.9.0",
     classifiers=[
