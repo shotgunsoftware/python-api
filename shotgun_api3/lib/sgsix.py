@@ -58,7 +58,7 @@ else:
     ShotgunSSLError = SSLHandshakeError
 
 
-def normalize_platform(platform, python2=True):
+def normalize_platform(platform: str, python2: bool = True) -> str:
     """
     Normalize the return of sys.platform between Python 2 and 3.
 
