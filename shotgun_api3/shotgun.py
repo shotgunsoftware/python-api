@@ -4678,11 +4678,11 @@ class CACertsHTTPSConnection(http_client.HTTPConnection):
         """
         # Pop that argument,
         self.__ca_certs = kwargs.pop("ca_certs")
-        super().__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def connect(self):
         "Connect to a host on a given (SSL) port."
-        super().connect(self)
+        super().connect()
         # Now that the regular HTTP socket has been created, wrap it with our SSL certs.
         if six.PY38:
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
@@ -4697,13 +4697,13 @@ class CACertsHTTPSConnection(http_client.HTTPConnection):
             )
 
 
-class CACertsHTTPSHandler(urllib.request.HTTPHandler):
+class CACertsHTTPSHandler(urllib.request.HTTPSHandler):
     """
     Handler that ensures https connections are created with the custom CA certs.
     """
 
     def __init__(self, cacerts):
-        super().__init__(self)
+        super().__init__()
         self.__ca_certs = cacerts
 
     def https_open(self, req):
