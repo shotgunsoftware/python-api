@@ -2003,7 +2003,7 @@ class TestExportPage(base.LiveTestBase):
 
         page_entity = self.sg.create("Page", {"entity_type": "Shot"})
         with self.assertRaises(Exception) as cm:
-            self.sg.export_page('csv', page_entity["id"])
+            self.sg.export_page(page_entity["id"],'csv')
         self.assertIn(f"Report for Page id={page_entity['id']} does not exist", str(cm.exception))
 
     def test_export_page_format_missing(self):
@@ -2012,7 +2012,7 @@ class TestExportPage(base.LiveTestBase):
             return
 
         with self.assertRaises(Exception) as cm:
-            self.sg.export_page(None, 11)
+            self.sg.export_page(11, None)
         self.assertIn("\'format\' missing", str(cm.exception))
 
     def test_export_page_missing_page_id(self):
@@ -2021,7 +2021,7 @@ class TestExportPage(base.LiveTestBase):
             return
 
         with self.assertRaises(Exception) as cm:
-            self.sg.export_page('csv', None)
+            self.sg.export_page(None, 'csv')
         self.assertIn("\'page_id\' missing", str(cm.exception))
 
 class TestFollow(base.LiveTestBase):
