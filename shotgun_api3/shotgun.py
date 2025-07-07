@@ -33,10 +33,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 from .lib import six
 from .lib import sgsix
 from .lib import sgutils
-from .lib.six import BytesIO  # used for attachment upload
-from .lib.six.moves import map
+from io import BytesIO # used for attachment upload
 
-from .lib.six.moves import http_cookiejar  # used for attachment upload
+import io
+import http.cookiejar  # used for attachment upload
 import datetime
 import logging
 import uuid  # used for attachment upload
@@ -48,20 +48,19 @@ import stat  # used for attachment upload
 import sys
 import time
 import json
-from .lib.six.moves import urllib
+import urllib.request
+import urllib.parse
+import urllib.error
 import shutil  # used for attachment download
-from .lib.six.moves import http_client  # Used for secure file upload.
+import http.client  # Used for secure file upload.
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib.sgtimezone import SgTimezone
 
 # Import Error and ResponseError (even though they're unused in this file) since they need
 # to be exposed as part of the API.
-from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError  # noqa
+from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
+from base64 import encodebytes as base64encode
 
 
 LOG = logging.getLogger("shotgun_api3")
@@ -782,27 +781,18 @@ class Shotgun(object):
         """
         Extract the hostname:port and username/password/token from base_url
         sent when connect to the API.
-
-        In python 3.8 `urllib.parse.splituser` was deprecated warning devs to
-        use `urllib.parse.urlparse`.
         """
-        if six.PY38:
-            auth = None
-            results = urllib.parse.urlparse(base_url)
-            server = results.hostname
-            if results.port:
-                server = "{}:{}".format(server, results.port)
+        auth = None
+        results = urllib.parse.urlparse(base_url)
+        server = results.hostname
+        if results.port:
+            server = "{}:{}".format(server, results.port)
 
-            if results.username:
-                auth = results.username
+        if results.username:
+            auth = results.username
 
-                if results.password:
-                    auth = "{}:{}".format(auth, results.password)
-
-        else:
-            auth, server = urllib.parse.splituser(
-                urllib.parse.urlsplit(base_url).netloc
-            )
+            if results.password:
+                auth = "{}:{}".format(auth, results.password)
 
         return auth, server
 
@@ -2271,7 +2261,7 @@ class Shotgun(object):
             "field_name": field_name,
             "properties": [
                 {"property_name": k, "value": v}
-                for k, v in six.iteritems((properties or {}))
+                for k, v in (properties or {}).items()
             ],
         }
         params = self._add_project_param(params, project_entity)
@@ -3000,8 +2990,8 @@ class Shotgun(object):
         This is used internally for downloading attachments from FPTR.
         """
         sid = self.get_session_token()
-        cj = http_cookiejar.LWPCookieJar()
-        c = http_cookiejar.Cookie(
+        cj = http.cookiejar.LWPCookieJar()
+        c = http.cookiejar.Cookie(
             "0",
             "_session_id",
             sid,
@@ -3328,7 +3318,7 @@ class Shotgun(object):
             raise ValueError("entity_types parameter must be a dictionary")
 
         api_entity_types = {}
-        for entity_type, filter_list in six.iteritems(entity_types):
+        for entity_type, filter_list in entity_types.items():
 
             if isinstance(filter_list, (list, tuple)):
                 resolved_filters = _translate_filters(filter_list, filter_operator=None)
@@ -3965,7 +3955,7 @@ class Shotgun(object):
         resp, content = conn.request(url, method=verb, body=body, headers=headers)
         # http response code is handled else where
         http_status = (resp.status, resp.reason)
-        resp_headers = dict((k.lower(), v) for k, v in six.iteritems(resp))
+        resp_headers = dict((k.lower(), v) for k, v in resp.items())
         resp_body = content
 
         LOG.debug("Response status is %s %s" % http_status)
@@ -4662,13 +4652,13 @@ class Shotgun(object):
             raise ShotgunError("Max attemps limit reached.")
 
 
-class CACertsHTTPSConnection(http_client.HTTPConnection):
+class CACertsHTTPSConnection(http.client.HTTPConnection):
     """ "
     This class allows to create an HTTPS connection that uses the custom certificates
     passed in.
     """
 
-    default_port = http_client.HTTPS_PORT
+    default_port = http.client.HTTPS_PORT
 
     def __init__(self, *args, **kwargs):
         """
@@ -4733,7 +4723,7 @@ class FormPostHandler(urllib.request.BaseHandler):
             files = []
             params = []
             for key, value in data.items():
-                if isinstance(value, sgsix.file_types):
+                if isinstance(value, io.IOBase):
                     files.append((key, value))
                 else:
                     params.append((key, value))
@@ -4745,12 +4735,8 @@ class FormPostHandler(urllib.request.BaseHandler):
                 boundary, data = self.encode(params, files)
                 content_type = "multipart/form-data; boundary=%s" % boundary
                 request.add_unredirected_header("Content-Type", content_type)
-            # add_data was removed in 3.4. since we're testing against 3.6 and
-            # 3.7, this should be sufficient.
-            if six.PY3:
-                request.data = data
-            else:
-                request.add_data(data)
+            request.data = data
+
         return request
 
     def encode(self, params, files, boundary=None, buffer=None):
