@@ -29,10 +29,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-# Python 2/3 compatibility
-from .lib import six
-from .lib import sgsix
-from .lib import sgutils
 from io import BytesIO # used for attachment upload
 
 import io
@@ -712,7 +708,7 @@ class Shotgun(object):
         auth, self.config.server = self._split_url(base_url)
         if auth:
             auth = base64encode(
-                sgutils.ensure_binary(urllib.parse.unquote(auth))
+                urllib.parse.unquote(auth).encode("utf-8")
             ).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
 
@@ -757,7 +753,7 @@ class Shotgun(object):
             )
 
         if ensure_ascii:
-            self._json_loads = self._json_loads_ascii
+            self._json_loads = self._json_loads
 
         self.client_caps = ClientCapabilities()
         # this relies on self.client_caps being set first
@@ -2956,7 +2952,7 @@ class Shotgun(object):
                         url.find("s3.amazonaws.com") != -1
                         and e.headers["content-type"] == "application/xml"
                     ):
-                        body = [sgutils.ensure_text(line) for line in e.readlines()]
+                        body = [line.decode("utf-8") for line in e.readlines()]
                         if body:
                             xml = "".join(body)
                             # Once python 2.4 support is not needed we can think about using
@@ -3849,8 +3845,7 @@ class Shotgun(object):
         be in a single byte encoding to go over the wire.
         """
 
-        wire = json.dumps(payload, ensure_ascii=False)
-        return sgutils.ensure_binary(wire)
+        return json.dumps(payload, ensure_ascii=False).encode("utf-8")
 
     def _make_call(self, verb, path, body, headers):
         """
@@ -4018,35 +4013,6 @@ class Shotgun(object):
     def _json_loads(self, body):
         return json.loads(body)
 
-    def _json_loads_ascii(self, body):
-        """
-        See http://stackoverflow.com/questions/956867
-        """
-
-        def _decode_list(lst):
-            newlist = []
-            for i in lst:
-                if isinstance(i, str):
-                    i = sgutils.ensure_str(i)
-                elif isinstance(i, list):
-                    i = _decode_list(i)
-                newlist.append(i)
-            return newlist
-
-        def _decode_dict(dct):
-            newdict = {}
-            for k, v in six.iteritems(dct):
-                if isinstance(k, str):
-                    k = sgutils.ensure_str(k)
-                if isinstance(v, str):
-                    v = sgutils.ensure_str(v)
-                elif isinstance(v, list):
-                    v = _decode_list(v)
-                newdict[k] = v
-            return newdict
-
-        return json.loads(body, object_hook=_decode_dict)
-
     def _response_errors(self, sg_response):
         """
         Raise any API errors specified in the response.
@@ -4109,7 +4075,7 @@ class Shotgun(object):
             return tuple(recursive(i, visitor) for i in data)
 
         if isinstance(data, dict):
-            return dict((k, recursive(v, visitor)) for k, v in six.iteritems(data))
+            return dict((k, recursive(v, visitor)) for k, v in data.items())
 
         return visitor(data)
 
@@ -4155,10 +4121,6 @@ class Shotgun(object):
                 if _change_tz:
                     value = _change_tz(value)
                 return value.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-            # ensure return is six.text_type
-            if isinstance(value, str):
-                return sgutils.ensure_text(value)
 
             return value
 
@@ -4278,7 +4240,7 @@ class Shotgun(object):
                 continue
 
             # iterate over each item and check each field for possible injection
-            for k, v in six.iteritems(rec):
+            for k, v in rec.items():
                 if not v:
                     continue
 
@@ -4366,7 +4328,7 @@ class Shotgun(object):
         [{'field_name': 'foo', 'value': 'bar', 'thing1': 'value1'}]
         """
         ret = []
-        for k, v in six.iteritems((d or {})):
+        for k, v in d.items():
             d = {key_name: k, value_name: v}
             d.update((extra_data or {}).get(k, {}))
             ret.append(d)
@@ -4379,7 +4341,7 @@ class Shotgun(object):
 
         e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
         """
-        return dict([(k, {key_name: v}) for (k, v) in six.iteritems((d or {}))])
+        return dict([(k, {key_name: v}) for (k, v) in d.items()])
 
     def _upload_file_to_storage(self, path, storage_url):
         """
@@ -4647,7 +4609,7 @@ class Shotgun(object):
                 else:
                     raise ShotgunError("Unanticipated error occurred %s" % (e))
 
-            return sgutils.ensure_text(result)
+            return result.decode("utf-8")
         else:
             raise ShotgunError("Max attemps limit reached.")
 
@@ -4674,7 +4636,7 @@ class CACertsHTTPSConnection(http.client.HTTPConnection):
         "Connect to a host on a given (SSL) port."
         super().connect(self)
         # Now that the regular HTTP socket has been created, wrap it with our SSL certs.
-        if six.PY38:
+        if sys.version_info >= (3, 8):
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
             context.verify_mode = ssl.CERT_REQUIRED
             context.check_hostname = False
@@ -4713,12 +4675,7 @@ class FormPostHandler(urllib.request.BaseHandler):
     handler_order = urllib.request.HTTPHandler.handler_order - 10  # needs to run first
 
     def http_request(self, request):
-        # get_data was removed in 3.4. since we're testing against 3.6 and
-        # 3.7, this should be sufficient.
-        if six.PY3:
-            data = request.data
-        else:
-            data = request.get_data()
+        data = request.data
         if data is not None and not isinstance(data, str):
             files = []
             params = []
@@ -4728,9 +4685,7 @@ class FormPostHandler(urllib.request.BaseHandler):
                 else:
                     params.append((key, value))
             if not files:
-                data = sgutils.ensure_binary(
-                    urllib.parse.urlencode(params, True)
-                )  # sequencing on
+                data = urllib.parse.urlencode(params, doseq=True).encode("utf-8")
             else:
                 boundary, data = self.encode(params, files)
                 content_type = "multipart/form-data; boundary=%s" % boundary
@@ -4744,7 +4699,6 @@ class FormPostHandler(urllib.request.BaseHandler):
             # Per https://stackoverflow.com/a/27174474
             # use a random string as the boundary if none was provided --
             # use uuid since mimetools no longer exists in Python 3.
-            # We'll do this across both python 2/3 rather than add more branching.
             boundary = uuid.uuid4()
         if buffer is None:
             buffer = BytesIO()
@@ -4752,14 +4706,11 @@ class FormPostHandler(urllib.request.BaseHandler):
             if not isinstance(value, str):
                 # If value is not a string (e.g. int) cast to text
                 value = str(value)
-            value = sgutils.ensure_text(value)
-            key = sgutils.ensure_text(key)
+            key = key.decode("utf-8") if isinstance(key, bytes) else str(key)
 
-            buffer.write(sgutils.ensure_binary("--%s\r\n" % boundary))
-            buffer.write(
-                sgutils.ensure_binary('Content-Disposition: form-data; name="%s"' % key)
-            )
-            buffer.write(sgutils.ensure_binary("\r\n\r\n%s\r\n" % value))
+            buffer.write(("--%s\r\n" % boundary).encode("utf-8"))
+            buffer.write(('Content-Disposition: form-data; name="%s"' % key).encode("utf-8"))
+            buffer.write(("\r\n\r\n%s\r\n" % value).encode("utf-8"))
         for key, fd in files:
             # On Windows, it's possible that we were forced to open a file
             # with non-ascii characters as unicode. In that case, we need to
@@ -4767,24 +4718,24 @@ class FormPostHandler(urllib.request.BaseHandler):
             # If we don't, the mix of unicode and strings going into the
             # buffer can cause UnicodeEncodeErrors to be raised.
             filename = fd.name
-            filename = sgutils.ensure_text(filename)
+            filename = filename.decode("utf-8") if isinstance(filename, bytes) else str(filename)
             filename = filename.split("/")[-1]
-            key = sgutils.ensure_text(key)
+            key = key.decode("utf-8") if isinstance(key, bytes) else str(key)
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or "application/octet-stream"
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-            buffer.write(sgutils.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(("--%s\r\n" % boundary).encode("utf-8"))
             c_dis = 'Content-Disposition: form-data; name="%s"; filename="%s"%s'
             content_disposition = c_dis % (key, filename, "\r\n")
-            buffer.write(sgutils.ensure_binary(content_disposition))
-            buffer.write(sgutils.ensure_binary("Content-Type: %s\r\n" % content_type))
-            buffer.write(sgutils.ensure_binary("Content-Length: %s\r\n" % file_size))
+            buffer.write(content_disposition.encode("utf-8"))
+            buffer.write(("Content-Type: %s\r\n" % content_type).encode("utf-8"))
+            buffer.write(("Content-Length: %s\r\n" % file_size).encode("utf-8"))
+            buffer.write(b"\r\n")
 
-            buffer.write(sgutils.ensure_binary("\r\n"))
             fd.seek(0)
             shutil.copyfileobj(fd, buffer)
-            buffer.write(sgutils.ensure_binary("\r\n"))
-        buffer.write(sgutils.ensure_binary("--%s--\r\n\r\n" % boundary))
+            buffer.write(b"\r\n")
+        buffer.write(("--%s--\r\n\r\n" % boundary).encode("utf-8"))
         buffer = buffer.getvalue()
         return boundary, buffer
 

@@ -16,17 +16,10 @@ import datetime
 import os
 import re
 
-from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib import six, sgutils
+import urllib.parse
+import urllib.error
 
-try:
-    import simplejson as json
-except ImportError:
-    try:
-        import json as json
-    except ImportError:
-        import shotgun_api3.lib.simplejson as json
-
+import json
 import platform
 import sys
 import time
@@ -38,14 +31,13 @@ import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 from . import base
 
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
+from base64 import encodebytes as base64encode
 
 
 def b64encode(val):
-    return base64encode(sgutils.ensure_binary(val)).decode("utf-8")
+    if isinstance(val, str):
+        val = val.encode('utf-8')
+    return base64encode(val).decode("utf-8")
 
 
 class TestShotgunClient(base.MockTestBase):
@@ -434,7 +426,7 @@ class TestShotgunClient(base.MockTestBase):
         d = {"results": ["foo", "bar"]}
         a = {
             "utf_str": "\xe2\x88\x9a",
-            "unicode_str": sgutils.ensure_text("\xe2\x88\x9a"),
+            "unicode_str": str("\xe2\x88\x9a"),
         }
         self._mock_http(d)
         rv = self.sg._call_rpc("list", a)
@@ -649,7 +641,7 @@ class TestShotgunClient(base.MockTestBase):
 
     def test_decode_response_ascii(self):
         self._assert_decode_resonse(
-            True, sgutils.ensure_str("my data \u00e0", encoding="utf8")
+            True, str("my data \u00e0")
         )
 
     def test_decode_response_unicode(self):
@@ -669,10 +661,7 @@ class TestShotgunClient(base.MockTestBase):
             connect=False,
         )
 
-        if six.PY3:
-            j = json.dumps(d, ensure_ascii=ensure_ascii)
-        else:
-            j = json.dumps(d, ensure_ascii=ensure_ascii, encoding="utf-8")
+        j = json.dumps(d, ensure_ascii=ensure_ascii)
         self.assertEqual(d, sg._decode_response(headers, j))
 
         headers["content-type"] = "text/javascript"

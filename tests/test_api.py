@@ -25,18 +25,14 @@ import time
 import types
 import uuid
 import unittest
-from shotgun_api3.lib.six.moves import range, urllib
+import urllib.parse
+import urllib.request
+import urllib.error
 import warnings
 import glob
 
 import shotgun_api3
 from shotgun_api3.lib.httplib2 import Http
-from shotgun_api3.lib import six
-
-# To mock the correct exception when testion on Python 2 and 3, use the
-# ShotgunSSLError variable from sgsix that contains the appropriate exception
-# class for the current Python version.
-from shotgun_api3.lib.sgsix import ShotgunSSLError
 
 from . import base
 
@@ -246,7 +242,7 @@ class TestShotgunApi(base.LiveTestBase):
         # test upload of non-ascii, unicode path
         u_path = os.path.abspath(
             os.path.expanduser(
-                glob.glob(os.path.join(six.text_type(this_dir), "Noëlご.jpg"))[0]
+                glob.glob(os.path.join(str(this_dir), "Noëlご.jpg"))[0]
             )
         )
 
@@ -273,44 +269,6 @@ class TestShotgunApi(base.LiveTestBase):
             "sg_uploaded_movie",
             tag_list="monkeys, everywhere, send, help",
         )
-        if six.PY2:
-            # In Python2, make sure that non-utf-8 encoded paths raise when they
-            # can't be converted to utf-8.  For Python3, we'll skip these tests
-            # since string encoding is handled differently.
-
-            # We need to touch the file we're going to test with first. We can't
-            # bundle a file with this filename in the repo due to some pip install
-            # problems on Windows. Note that the path below is utf-8 encoding of
-            # what we'll eventually encode as shift-jis.
-            file_path_s = os.path.join(this_dir, "./\xe3\x81\x94.shift-jis")
-            file_path_u = file_path_s.decode("utf-8")
-
-            with open(
-                file_path_u if sys.platform.startswith("win") else file_path_s, "w"
-            ) as fh:
-                fh.write("This is just a test file with some random data in it.")
-
-            self.assertRaises(
-                shotgun_api3.ShotgunError,
-                self.sg.upload,
-                "Version",
-                self.version["id"],
-                file_path_u.encode("shift-jis"),
-                "sg_uploaded_movie",
-                tag_list="monkeys, everywhere, send, help",
-            )
-
-            # But it should work in all cases if a unicode string is used.
-            self.sg.upload(
-                "Version",
-                self.version["id"],
-                file_path_u,
-                "sg_uploaded_movie",
-                tag_list="monkeys, everywhere, send, help",
-            )
-
-            # cleanup
-            os.remove(file_path_u)
 
         # cleanup
         os.remove(file_path)
@@ -326,7 +284,7 @@ class TestShotgunApi(base.LiveTestBase):
         this_dir, _ = os.path.split(__file__)
         u_path = os.path.abspath(
             os.path.expanduser(
-                glob.glob(os.path.join(six.text_type(this_dir), "Noëlご.jpg"))[0]
+                glob.glob(os.path.join(str(this_dir), "Noëlご.jpg"))[0]
             )
         )
         upload_id = self.sg.upload(
@@ -417,7 +375,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         url = new_version.get("filmstrip_image")
         data = self.sg.download_attachment({"url": url})
-        self.assertTrue(isinstance(data, six.binary_type))
+        self.assertTrue(isinstance(data, bytes))
 
         self.sg.delete("Version", new_version["id"])
 
@@ -870,19 +828,6 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertEqual(
             sorted(result["groups"], key=lambda x: x["group_name"]), groups
         )
-
-    def test_ensure_ascii(self):
-        """test_ensure_ascii tests ensure_unicode flag."""
-        sg_ascii = shotgun_api3.Shotgun(
-            self.config.server_url, ensure_ascii=True, **self.auth_args
-        )
-
-        result = sg_ascii.find_one(
-            "Note", [["id", "is", self.note["id"]]], fields=["content"]
-        )
-        if six.PY2:
-            # In Python3 there isn't a separate unicode type.
-            self.assertFalse(_has_unicode(result))
 
     def test_ensure_unicode(self):
         """test_ensure_unicode tests ensure_unicode flag."""
@@ -2299,7 +2244,7 @@ class TestErrors(base.TestBase):
     @patch("shotgun_api3.shotgun.Http.request")
     def test_sha2_error(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError(
+        mock_request.side_effect = ssl.SSLError(
             "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
             "encoding routines:ASN1_item_verify: unknown message digest "
             "algorithm"
@@ -2326,7 +2271,7 @@ class TestErrors(base.TestBase):
 
         try:
             self.sg.info()
-        except ShotgunSSLError:
+        except ssl.SSLError:
             # ensure the api has reset the values in the correct fallback behavior
             self.assertTrue(self.sg.config.no_ssl_validation)
             self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
@@ -2339,7 +2284,7 @@ class TestErrors(base.TestBase):
     @patch("shotgun_api3.shotgun.Http.request")
     def test_sha2_error_with_strict(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError(
+        mock_request.side_effect = ssl.SSLError(
             "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
             "encoding routines:ASN1_item_verify: unknown message digest "
             "algorithm"
@@ -2356,7 +2301,7 @@ class TestErrors(base.TestBase):
 
         try:
             self.sg.info()
-        except ShotgunSSLError:
+        except ssl.SSLError:
             # ensure the api has NOT reset the values in the fallback behavior because we have
             # set the env variable to force validation
             self.assertFalse(self.sg.config.no_ssl_validation)
@@ -3486,10 +3431,7 @@ class TestLibImports(base.LiveTestBase):
         # python3, depending on what has been imported.  Make sure we got the
         # right one.)
         httplib2_compat_version = httplib2.Http.__module__.split(".")[-1]
-        if six.PY2:
-            self.assertEqual(httplib2_compat_version, "python2")
-        elif six.PY3:
-            self.assertTrue(httplib2_compat_version, "python3")
+        self.assertTrue(httplib2_compat_version, "python3")
 
         # Ensure that socks submodule is present and importable using a from
         # import -- this is a good indication that external httplib2 imports
@@ -3503,9 +3445,9 @@ class TestLibImports(base.LiveTestBase):
 
 def _has_unicode(data):
     for k, v in data.items():
-        if isinstance(k, six.text_type):
+        if isinstance(k, str):
             return True
-        if isinstance(v, six.text_type):
+        if isinstance(v, str):
             return True
     return False
 

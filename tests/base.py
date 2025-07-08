@@ -6,27 +6,14 @@ import random
 import re
 import time
 import unittest
-
-from . import mock
+import urllib.error
+from configparser import ConfigParser
+from unittest import skip
 
 import shotgun_api3 as api
-from shotgun_api3.shotgun import json
-from shotgun_api3.shotgun import ServerCapabilities
-from shotgun_api3.lib import six
-from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib.six.moves.configparser import ConfigParser
+from shotgun_api3.shotgun import ServerCapabilities, json
 
-try:
-    # Attempt to import skip from unittest.  Since this was added in Python 2.7
-    # in the case that we're running on Python 2.6 we'll need a decorator to
-    # provide some equivalent functionality.
-    from unittest import skip
-except ImportError:
-    # On Python 2.6 we'll just have to ignore tests that are skipped -- we won't
-    # mark them as skipped, but we will not fail on them.
-    def skip(f):
-        return lambda self: None
-
+from . import mock
 
 THUMBNAIL_MAX_ATTEMPTS = 30
 THUMBNAIL_RETRY_INTERVAL = 10
@@ -188,13 +175,10 @@ class MockTestBase(TestBase):
             return
 
         if not isinstance(data, str):
-            if six.PY2:
-                data = json.dumps(data, ensure_ascii=False, encoding="utf-8")
-            else:
-                data = json.dumps(
-                    data,
-                    ensure_ascii=False,
-                )
+            data = json.dumps(
+                data,
+                ensure_ascii=False,
+            )
 
         resp_headers = {
             "cache-control": "no-cache",
