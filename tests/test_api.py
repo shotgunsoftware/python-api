@@ -241,9 +241,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         # test upload of non-ascii, unicode path
         u_path = os.path.abspath(
-            os.path.expanduser(
-                glob.glob(os.path.join(str(this_dir), "Noëlご.jpg"))[0]
-            )
+            os.path.expanduser(glob.glob(os.path.join(str(this_dir), "Noëlご.jpg"))[0])
         )
 
         # If this is a problem, it'll raise with a UnicodeEncodeError. We
@@ -283,9 +281,7 @@ class TestShotgunApi(base.LiveTestBase):
         mock_send_form.return_value = "1\n:123\nasd"
         this_dir, _ = os.path.split(__file__)
         u_path = os.path.abspath(
-            os.path.expanduser(
-                glob.glob(os.path.join(str(this_dir), "Noëlご.jpg"))[0]
-            )
+            os.path.expanduser(glob.glob(os.path.join(str(this_dir), "Noëlご.jpg"))[0])
         )
         upload_id = self.sg.upload(
             "Version",

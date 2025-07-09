@@ -29,7 +29,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-from io import BytesIO # used for attachment upload
+from io import BytesIO  # used for attachment upload
 
 import io
 import http.cookiejar  # used for attachment upload
@@ -707,9 +707,9 @@ class Shotgun(object):
         # the lowercase version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64encode(
-                urllib.parse.unquote(auth).encode("utf-8")
-            ).decode("utf-8")
+            auth = base64encode(urllib.parse.unquote(auth).encode("utf-8")).decode(
+                "utf-8"
+            )
             self.config.authorization = "Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
@@ -2256,8 +2256,7 @@ class Shotgun(object):
             "type": entity_type,
             "field_name": field_name,
             "properties": [
-                {"property_name": k, "value": v}
-                for k, v in (properties or {}).items()
+                {"property_name": k, "value": v} for k, v in (properties or {}).items()
             ],
         }
         params = self._add_project_param(params, project_entity)
@@ -4709,7 +4708,9 @@ class FormPostHandler(urllib.request.BaseHandler):
             key = key.decode("utf-8") if isinstance(key, bytes) else str(key)
 
             buffer.write(("--%s\r\n" % boundary).encode("utf-8"))
-            buffer.write(('Content-Disposition: form-data; name="%s"' % key).encode("utf-8"))
+            buffer.write(
+                ('Content-Disposition: form-data; name="%s"' % key).encode("utf-8")
+            )
             buffer.write(("\r\n\r\n%s\r\n" % value).encode("utf-8"))
         for key, fd in files:
             # On Windows, it's possible that we were forced to open a file
@@ -4718,7 +4719,11 @@ class FormPostHandler(urllib.request.BaseHandler):
             # If we don't, the mix of unicode and strings going into the
             # buffer can cause UnicodeEncodeErrors to be raised.
             filename = fd.name
-            filename = filename.decode("utf-8") if isinstance(filename, bytes) else str(filename)
+            filename = (
+                filename.decode("utf-8")
+                if isinstance(filename, bytes)
+                else str(filename)
+            )
             filename = filename.split("/")[-1]
             key = key.decode("utf-8") if isinstance(key, bytes) else str(key)
             content_type = mimetypes.guess_type(filename)[0]

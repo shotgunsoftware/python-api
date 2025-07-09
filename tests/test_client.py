@@ -36,7 +36,7 @@ from base64 import encodebytes as base64encode
 
 def b64encode(val):
     if isinstance(val, str):
-        val = val.encode('utf-8')
+        val = val.encode("utf-8")
     return base64encode(val).decode("utf-8")
 
 
@@ -640,9 +640,7 @@ class TestShotgunClient(base.MockTestBase):
         self.assertTrue(isinstance(j, bytes))
 
     def test_decode_response_ascii(self):
-        self._assert_decode_resonse(
-            True, str("my data \u00e0")
-        )
+        self._assert_decode_resonse(True, str("my data \u00e0"))
 
     def test_decode_response_unicode(self):
         self._assert_decode_resonse(False, "my data \u00e0")
