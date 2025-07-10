@@ -73,8 +73,6 @@ class Utilities:
 def main(temp_path, repo_root, version):
     # Paths and file names
     httplib2_dir = repo_root / "shotgun_api3" / "lib" / "httplib2"
-    # python2_dir = str(httplib2_dir / "python2")
-    # python3_dir = str(httplib2_dir / "python3")
     file_name = f"{version}.zip"
     file_path = temp_path / file_name
 
@@ -88,20 +86,14 @@ def main(temp_path, repo_root, version):
     unzipped_folder.mkdir()
     utilities.unzip_archive(file_path, file_name, unzipped_folder)
 
-    # # Remove current httplib2/python2 and httplib2/python3 folders
-    # utilities.remove_folder(python2_dir)
-    # utilities.remove_folder(python3_dir)
-
     # Removes the previous version of httplib2
-    # utilities.git_remove([str(python2_dir), str(python3_dir)])
     utilities.git_remove([str(httplib2_dir)])
+    utilities.remove_folder(httplib2_dir)
 
     # Copies a new version into place.
     print("Copying new version of httplib2")
     root_folder = unzipped_folder / f"httplib2-{version[1:]}"
     utilities.copy_folder(str(root_folder / "python3" / "httplib2"), httplib2_dir)
-    # utilities.remove_folder(f"{python2_dir}/test")
-    # utilities.remove_folder(f"{python3_dir}/test")
     utilities.remove_folder(f"{httplib2_dir}/test")
 
     # Patches the httplib2 imports so they are relative instead of absolute.
