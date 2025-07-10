@@ -49,7 +49,7 @@ import urllib.parse
 import urllib.error
 import shutil  # used for attachment download
 import http.client  # Used for secure file upload.
-from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
+from .lib.httplib2 import Http, ProxyInfo, socks
 from .lib.sgtimezone import SgTimezone
 
 # Import Error and ResponseError (even though they're unused in this file) since they need
@@ -3885,7 +3885,7 @@ class Shotgun(object):
                 # otherwise and will not re-attempt.
                 # When we drop support of Python 2 and we will probably drop the
                 # next except, we might want to remove this except too.
-            except ssl_error_classes as e:
+            except (ssl.SSLError, ssl.CertificateError) as e:
                 # Test whether the exception is due to the fact that this is an older version of
                 # Python that cannot validate certificates encrypted with SHA-2. If it is, then
                 # fall back on disabling the certificate validation and try again - unless the
