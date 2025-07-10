@@ -63,7 +63,7 @@ class Utilities:
         contents = contents.replace("from httplib2.", "from .")
         contents = contents.replace("from httplib2", "from .")
         contents = contents.replace(
-            "import pyparsing as pp", "from ... import pyparsing as pp"
+            "import pyparsing as pp", "from .. import pyparsing as pp"
         )
 
         with open(file_path, "w") as f:
