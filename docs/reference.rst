@@ -803,8 +803,13 @@ Additional keys exist for local file links
       'local_path_linux': "string" | None,
       'local_path_mac': "string" | None,
       'local_path_windows': "string" | None,
-      'local_storage': {dictionary},
+      'local_storage': {
+        'type': 'LocalStorage',
+        'id': int | None,
+        'name': "string" | None,
+      },
       'name': "string",
+      'relative_path': "string" | None
       'url': "string",
     }
     API versions < v3.0.3:
