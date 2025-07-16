@@ -10,19 +10,6 @@ Some third-party modules are bundled with `python-api` inside lib.
 
 The version of `httplib2` bundled should be updated manually, however its version is included in the unused `shotgun_api3/lib/requirements.txt` to allow Github's automated CVE notifications to work.
 
-### mimetypes
-
-The `mimetypes` module is broken on Windows only for Python 2.7.0 to 2.7.9 inclusively.
-We bundle the version from 2.7.10
-
-See bugs:
-
- * [9291](http://bugs.python.org/issue9291) (Fixed in 2.7.7)
- * [21652](http://bugs.python.org/issue21652) (Fixed in 2.7.8)
- * [22028](http://bugs.python.org/issue22028) (Fixed in 2.7.10)
-
-The version of `mimetypes` bundled should be updated manually if necessary, however it is unlikely this will be needed, as it is only used for Python versions 2.7.0 - 2.7.9, and newer Python versions simply use the native `mimetypes` module.
-
 ### six
 
 Six is a Python 2/3 compatibility library.  In python-api, it's used to make simultaneous support for Python on 2 and 3 easier to maintain and more readable, but allowing the use of common helper functions, unified interfaces for modules that changed, and variables to ease type comparisons.  For more on six, see the [documentation](https://six.readthedocs.io/).
