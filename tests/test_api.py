@@ -246,9 +246,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         # test upload of non-ascii, unicode path
         u_path = os.path.abspath(
-            os.path.expanduser(
-                glob.glob(os.path.join(six.text_type(this_dir), "Noëlご.jpg"))[0]
-            )
+            os.path.expanduser(glob.glob(os.path.join(this_dir, "Noëlご.jpg"))[0])
         )
 
         # If this is a problem, it'll raise with a UnicodeEncodeError. We
@@ -326,9 +324,7 @@ class TestShotgunApi(base.LiveTestBase):
         mock_send_form.return_value = "1\n:123\nasd"
         this_dir, _ = os.path.split(__file__)
         u_path = os.path.abspath(
-            os.path.expanduser(
-                glob.glob(os.path.join(six.text_type(this_dir), "Noëlご.jpg"))[0]
-            )
+            os.path.expanduser(glob.glob(os.path.join(this_dir, "Noëlご.jpg"))[0])
         )
         upload_id = self.sg.upload(
             "Version",
@@ -418,7 +414,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         url = new_version.get("filmstrip_image")
         data = self.sg.download_attachment({"url": url})
-        self.assertTrue(isinstance(data, six.binary_type))
+        self.assertTrue(isinstance(data, bytes))
 
         self.sg.delete("Version", new_version["id"])
 
@@ -3504,9 +3500,9 @@ class TestLibImports(base.LiveTestBase):
 
 def _has_unicode(data):
     for k, v in data.items():
-        if isinstance(k, six.text_type):
+        if isinstance(k, str):
             return True
-        if isinstance(v, six.text_type):
+        if isinstance(v, str):
             return True
     return False
 
