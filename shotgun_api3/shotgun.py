@@ -4694,12 +4694,7 @@ class FormPostHandler(urllib.request.BaseHandler):
     handler_order = urllib.request.HTTPHandler.handler_order - 10  # needs to run first
 
     def http_request(self, request):
-        # get_data was removed in 3.4. since we're testing against 3.6 and
-        # 3.7, this should be sufficient.
-        if six.PY3:
-            data = request.data
-        else:
-            data = request.get_data()
+        data = request.data
         if data is not None and not isinstance(data, str):
             files = []
             params = []
@@ -4715,12 +4710,8 @@ class FormPostHandler(urllib.request.BaseHandler):
                 boundary, data = self.encode(params, files)
                 content_type = "multipart/form-data; boundary=%s" % boundary
                 request.add_unredirected_header("Content-Type", content_type)
-            # add_data was removed in 3.4. since we're testing against 3.6 and
-            # 3.7, this should be sufficient.
-            if six.PY3:
-                request.data = data
-            else:
-                request.add_data(data)
+            request.data = data
+
         return request
 
     def encode(self, params, files, boundary=None, buffer=None):
