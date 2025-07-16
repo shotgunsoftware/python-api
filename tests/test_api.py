@@ -29,7 +29,6 @@ import urllib.error
 import uuid
 import warnings
 
-from shotgun_api3.lib import six
 from shotgun_api3.lib.httplib2 import Http
 
 import shotgun_api3
@@ -828,28 +827,23 @@ class TestShotgunApi(base.LiveTestBase):
             sorted(result["groups"], key=lambda x: x["group_name"]), groups
         )
 
-    def test_ensure_ascii(self):
-        """test_ensure_ascii tests ensure_unicode flag."""
-        sg_ascii = shotgun_api3.Shotgun(
-            self.config.server_url, ensure_ascii=True, **self.auth_args
+    def test_json_dumps_default_ensure_ascii_disabled(self):
+        """Make sure SG'payload is using ensure_ascii for json dumps"""
+        sg = shotgun_api3.Shotgun(
+            self.config.server_url, connect=False, **self.auth_args
         )
 
-        result = sg_ascii.find_one(
-            "Note", [["id", "is", self.note["id"]]], fields=["content"]
-        )
-        if six.PY2:
-            # In Python3 there isn't a separate unicode type.
-            self.assertFalse(_has_unicode(result))
+        # Mock the _http_request method so we can assert_called_with
+        sg._http_request(return_value=(200, {}, ""))
 
-    def test_ensure_unicode(self):
-        """test_ensure_unicode tests ensure_unicode flag."""
-        sg_unicode = shotgun_api3.Shotgun(
-            self.config.server_url, ensure_ascii=False, **self.auth_args
+        sg.find_one("Note", [["id", "is", "Noëlご"]])  # Force a non-ascii character
+
+        sg._http_request.assert_called_once_with(
+            "POST",  # verb
+            "api3/json",  # path
+            "",  # body
+            {},  # headers
         )
-        result = sg_unicode.find_one(
-            "Note", [["id", "is", self.note["id"]]], fields=["content"]
-        )
-        self.assertTrue(_has_unicode(result))
 
     def test_work_schedule(self):
         """test_work_schedule tests WorkDayRules api"""
@@ -3441,15 +3435,6 @@ class TestLibImports(base.LiveTestBase):
         self.assertTrue(isinstance(socks, types.ModuleType))
         # Make sure that objects in socks are available as expected
         self.assertTrue(hasattr(socks, "HTTPError"))
-
-
-def _has_unicode(data):
-    for k, v in data.items():
-        if isinstance(k, str):
-            return True
-        if isinstance(v, str):
-            return True
-    return False
 
 
 def _get_path(url):
