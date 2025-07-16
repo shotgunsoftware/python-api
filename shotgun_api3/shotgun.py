@@ -713,7 +713,7 @@ class Shotgun(object):
         auth, self.config.server = self._split_url(base_url)
         if auth:
             auth = base64encode(
-                sgutils.ensure_binary(urllib.parse.unquote(auth))
+                urllib.parse.unquote(auth).encode("utf-8")
             ).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
 
@@ -2965,7 +2965,11 @@ class Shotgun(object):
                         url.find("s3.amazonaws.com") != -1
                         and e.headers["content-type"] == "application/xml"
                     ):
-                        body = [sgutils.ensure_text(line) for line in e.readlines()]
+                        body = [
+                            line.decode("utf-8") if isinstance(line, bytes) else line
+                            for line in e.readlines()
+                        ]
+
                         if body:
                             xml = "".join(body)
                             # Once python 2.4 support is not needed we can think about using
@@ -3858,8 +3862,7 @@ class Shotgun(object):
         be in a single byte encoding to go over the wire.
         """
 
-        wire = json.dumps(payload, ensure_ascii=False)
-        return sgutils.ensure_binary(wire)
+        return json.dumps(payload, ensure_ascii=False).encode("utf-8")
 
     def _make_call(self, verb, path, body, headers):
         """
@@ -4164,10 +4167,6 @@ class Shotgun(object):
                 if _change_tz:
                     value = _change_tz(value)
                 return value.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-            # ensure return is six.text_type
-            if isinstance(value, str):
-                return sgutils.ensure_text(value)
 
             return value
 
@@ -4656,7 +4655,10 @@ class Shotgun(object):
                 else:
                     raise ShotgunError("Unanticipated error occurred %s" % (e))
 
-            return sgutils.ensure_text(result)
+            if isinstance(result, bytes):
+                result = result.decode("utf-8")
+
+            return result
         else:
             raise ShotgunError("Max attemps limit reached.")
 
@@ -4737,9 +4739,8 @@ class FormPostHandler(urllib.request.BaseHandler):
                 else:
                     params.append((key, value))
             if not files:
-                data = sgutils.ensure_binary(
-                    urllib.parse.urlencode(params, True)
-                )  # sequencing on
+                data = urllib.parse.urlencode(params, True).encode("utf-8")
+                # sequencing on
             else:
                 boundary, data = self.encode(params, files)
                 content_type = "multipart/form-data; boundary=%s" % boundary
@@ -4762,42 +4763,48 @@ class FormPostHandler(urllib.request.BaseHandler):
         if buffer is None:
             buffer = BytesIO()
         for key, value in params:
-            if not isinstance(value, str):
+            if isinstance(key, bytes):
+                key = key.decode("utf-8")
+
+            if isinstance(value, bytes):
+                value = value.decode("utf-8")
+            elif not isinstance(value, str):
                 # If value is not a string (e.g. int) cast to text
                 value = str(value)
-            value = sgutils.ensure_text(value)
-            key = sgutils.ensure_text(key)
 
-            buffer.write(sgutils.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(f"--{boundary}\r\n".encode("utf-8"))
             buffer.write(
-                sgutils.ensure_binary('Content-Disposition: form-data; name="%s"' % key)
+                f'Content-Disposition: form-data; name="{key}"'.encode("utf-8")
             )
-            buffer.write(sgutils.ensure_binary("\r\n\r\n%s\r\n" % value))
+            buffer.write(f"\r\n\r\n{value}\r\n".encode("utf-8"))
         for key, fd in files:
             # On Windows, it's possible that we were forced to open a file
             # with non-ascii characters as unicode. In that case, we need to
             # encode it as a utf-8 string to remove unicode from the equation.
             # If we don't, the mix of unicode and strings going into the
             # buffer can cause UnicodeEncodeErrors to be raised.
-            filename = fd.name
-            filename = sgutils.ensure_text(filename)
+            filename = (
+                fd.name.decode("utf-8") if isinstance(fd.name, bytes) else fd.name
+            )
             filename = filename.split("/")[-1]
-            key = sgutils.ensure_text(key)
+            if isinstance(key, bytes):
+                key = key.decode("utf-8")
+
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or "application/octet-stream"
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-            buffer.write(sgutils.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(f"--{boundary}\r\n".encode("utf-8"))
             c_dis = 'Content-Disposition: form-data; name="%s"; filename="%s"%s'
             content_disposition = c_dis % (key, filename, "\r\n")
-            buffer.write(sgutils.ensure_binary(content_disposition))
-            buffer.write(sgutils.ensure_binary("Content-Type: %s\r\n" % content_type))
-            buffer.write(sgutils.ensure_binary("Content-Length: %s\r\n" % file_size))
+            buffer.write(content_disposition.encode("utf-8"))
+            buffer.write(f"Content-Type: {content_type}\r\n".encode("utf-8"))
+            buffer.write(f"Content-Length: {file_size}\r\n".encode("utf-8"))
 
-            buffer.write(sgutils.ensure_binary("\r\n"))
+            buffer.write(b"\r\n")
             fd.seek(0)
             shutil.copyfileobj(fd, buffer)
-            buffer.write(sgutils.ensure_binary("\r\n"))
-        buffer.write(sgutils.ensure_binary("--%s--\r\n\r\n" % boundary))
+            buffer.write(b"\r\n")
+        buffer.write("--{boundary}--\r\n\r\n".encode("utf-8"))
         buffer = buffer.getvalue()
         return boundary, buffer
 
