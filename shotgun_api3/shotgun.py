@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import copy
 import datetime
 import json
+import http.client  # Used for secure file upload
+import http.cookiejar  # used for attachment upload
 import logging
 import os
 import re
@@ -40,23 +42,22 @@ import ssl
 import stat  # used for attachment upload
 import sys
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
 import uuid  # used for attachment upload
+
+# Import Error and ResponseError (even though they're unused in this file) since they need
+# to be exposed as part of the API.
+from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 
 # Python 2/3 compatibility
 from .lib import six
 from .lib import sgsix
 from .lib import sgutils
 from .lib.six import BytesIO  # used for attachment upload
-from .lib.six.moves import map
-from .lib.six.moves import http_cookiejar  # used for attachment upload
-from .lib.six.moves import urllib
-from .lib.six.moves import http_client  # Used for secure file upload.
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib.sgtimezone import SgTimezone
-
-# Import Error and ResponseError (even though they're unused in this file) since they need
-# to be exposed as part of the API.
-from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError  # noqa
 
 if six.PY3:
     from base64 import encodebytes as base64encode
@@ -3003,8 +3004,8 @@ class Shotgun(object):
         This is used internally for downloading attachments from FPTR.
         """
         sid = self.get_session_token()
-        cj = http_cookiejar.LWPCookieJar()
-        c = http_cookiejar.Cookie(
+        cj = http.cookiejar.LWPCookieJar()
+        c = http.cookiejar.Cookie(
             "0",
             "_session_id",
             sid,
@@ -4663,13 +4664,13 @@ class Shotgun(object):
             raise ShotgunError("Max attemps limit reached.")
 
 
-class CACertsHTTPSConnection(http_client.HTTPConnection):
+class CACertsHTTPSConnection(http.client.HTTPConnection):
     """ "
     This class allows to create an HTTPS connection that uses the custom certificates
     passed in.
     """
 
-    default_port = http_client.HTTPS_PORT
+    default_port = http.client.HTTPS_PORT
 
     def __init__(self, *args, **kwargs):
         """

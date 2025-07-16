@@ -19,8 +19,9 @@ import re
 import sys
 import time
 import unittest
+import urllib.parse
+import urllib.error
 
-from shotgun_api3.lib.six.moves import urllib
 from shotgun_api3.lib import six, sgutils
 
 try:

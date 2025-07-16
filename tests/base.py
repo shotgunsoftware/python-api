@@ -1,11 +1,13 @@
 """Base class for Flow Production Tracking API tests."""
 
+import configparser
 import contextlib
 import os
 import random
 import re
 import time
 import unittest
+import urllib.error
 
 from . import mock
 
@@ -13,8 +15,6 @@ import shotgun_api3 as api
 from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
 from shotgun_api3.lib import six
-from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib.six.moves.configparser import ConfigParser
 
 try:
     # Attempt to import skip from unittest.  Since this was added in Python 2.7
@@ -456,7 +456,7 @@ class SgTestConfig(object):
         ]
 
     def read_config(self, config_path):
-        config_parser = ConfigParser()
+        config_parser = configparser.ConfigParser()
         config_parser.read(config_path)
         for section in config_parser.sections():
             for option in config_parser.options(section):
