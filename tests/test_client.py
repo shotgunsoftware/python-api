@@ -52,7 +52,7 @@ class TestShotgunClient(base.MockTestBase):
     """Test case for shotgun api with server interactions mocked."""
 
     def setUp(self):
-        super(TestShotgunClient, self).setUp()
+        super().setUp()
         # get domain and uri scheme
         match = re.search("(https?://)(.*)", self.server_url)
         self.uri_prefix = match.group(1)

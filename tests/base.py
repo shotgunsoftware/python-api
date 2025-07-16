@@ -135,7 +135,7 @@ class MockTestBase(TestBase):
     """Test base for tests mocking server interactions."""
 
     def setUp(self):
-        super(MockTestBase, self).setUp()
+        super().setUp()
         # TODO see if there is another way to stop sg connecting
         self._setup_mock()
         self._setup_mock_data()
@@ -252,7 +252,7 @@ class LiveTestBase(TestBase):
     def setUp(self, auth_mode=None):
         if not auth_mode:
             auth_mode = "HumanUser" if self.config.jenkins else "ApiUser"
-        super(LiveTestBase, self).setUp(auth_mode)
+        super().setUp(auth_mode)
         if (
             self.sg.server_caps.version
             and self.sg.server_caps.version >= (3, 3, 0)
@@ -410,7 +410,7 @@ class HumanUserAuthLiveTestBase(LiveTestBase):
     """
 
     def setUp(self):
-        super(HumanUserAuthLiveTestBase, self).setUp("HumanUser")
+        super().setUp("HumanUser")
 
 
 class SessionTokenAuthLiveTestBase(LiveTestBase):
@@ -420,7 +420,7 @@ class SessionTokenAuthLiveTestBase(LiveTestBase):
     """
 
     def setUp(self):
-        super(SessionTokenAuthLiveTestBase, self).setUp("SessionToken")
+        super().setUp("SessionToken")
 
 
 class SgTestConfig(object):

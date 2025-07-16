@@ -44,7 +44,7 @@ from .mock import patch, MagicMock
 
 class TestShotgunApi(base.LiveTestBase):
     def setUp(self):
-        super(TestShotgunApi, self).setUp()
+        super().setUp()
         # give note unicode content
         self.sg.update("Note", self.note["id"], {"content": "La Pe\xf1a"})
 
@@ -1060,7 +1060,7 @@ class TestDataTypes(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestDataTypes, self).setUp()
+        super().setUp()
 
     def test_set_checkbox(self):
         entity = "HumanUser"
@@ -1270,7 +1270,7 @@ class TestUtc(base.LiveTestBase):
     """Test utc options"""
 
     def setUp(self):
-        super(TestUtc, self).setUp()
+        super().setUp()
         utc = shotgun_api3.shotgun.SG_TIMEZONE.utc
         self.datetime_utc = datetime.datetime(2008, 10, 13, 23, 10, tzinfo=utc)
         local = shotgun_api3.shotgun.SG_TIMEZONE.local
@@ -1312,7 +1312,7 @@ class TestUtc(base.LiveTestBase):
 
 class TestFind(base.LiveTestBase):
     def setUp(self):
-        super(TestFind, self).setUp()
+        super().setUp()
         # We will need the created_at field for the shot
         fields = list(self.shot.keys())[:]
         fields.append("created_at")
@@ -2108,7 +2108,7 @@ class TestFollow(base.LiveTestBase):
 class TestErrors(base.TestBase):
     def setUp(self):
         auth_mode = "HumanUser" if self.config.jenkins else "ApiUser"
-        super(TestErrors, self).setUp(auth_mode)
+        super().setUp(auth_mode)
 
     def test_bad_auth(self):
         """test_bad_auth invalid script name or api key raises fault"""
@@ -2434,7 +2434,7 @@ class TestErrors(base.TestBase):
 
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
-        super(TestScriptUserSudoAuth, self).setUp()
+        super().setUp()
 
         self.sg.update(
             "HumanUser",
@@ -2475,7 +2475,7 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
 
 class TestHumanUserSudoAuth(base.TestBase):
     def setUp(self):
-        super(TestHumanUserSudoAuth, self).setUp("HumanUser")
+        super().setUp("HumanUser")
 
     def test_human_user_sudo_auth_fails(self):
         """
@@ -2746,7 +2746,7 @@ class TestActivityStream(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestActivityStream, self).setUp()
+        super().setUp()
         self._prefix = uuid.uuid4().hex
 
         self._shot = self.sg.create(
@@ -2796,7 +2796,7 @@ class TestActivityStream(base.LiveTestBase):
         )
         self.sg.batch(batch_data)
 
-        super(TestActivityStream, self).tearDown()
+        super().tearDown()
 
     def test_simple(self):
         """
@@ -2869,7 +2869,7 @@ class TestNoteThreadRead(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestNoteThreadRead, self).setUp()
+        super().setUp()
 
         # get path to our std attahcment
         this_dir, _ = os.path.split(__file__)
@@ -3080,7 +3080,7 @@ class TestTextSearch(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestTextSearch, self).setUp()
+        super().setUp()
 
         # create 5 shots and 5 assets to search for
         self._prefix = uuid.uuid4().hex
@@ -3120,7 +3120,7 @@ class TestTextSearch(base.LiveTestBase):
             )
         self.sg.batch(batch_data)
 
-        super(TestTextSearch, self).tearDown()
+        super().tearDown()
 
     def test_simple(self):
         """
