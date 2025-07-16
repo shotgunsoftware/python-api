@@ -57,7 +57,6 @@ from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 
 # Python 2/3 compatibility
 from .lib import six
-from .lib import sgutils
 from .lib.httplib2 import Http, ProxyInfo, socks
 from .lib.sgtimezone import SgTimezone
 
