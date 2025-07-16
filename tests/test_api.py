@@ -3466,10 +3466,6 @@ class TestLibImports(base.LiveTestBase):
     def test_import_httplib(self):
         """
         Ensure that httplib2 is importable and objects are available
-
-        This is important, because httplib2 imports switch between
-        the Python 2 and 3 compatible versions, and the module imports are
-        proxied to allow this.
         """
         from shotgun_api3.lib import httplib2
 
@@ -3477,17 +3473,6 @@ class TestLibImports(base.LiveTestBase):
         # the httplib2 module contents are importable.
         self.assertTrue(hasattr(httplib2, "Http"))
         self.assertTrue(isinstance(httplib2.Http, object))
-
-        # Ensure that the version of httplib2 compatible with the current Python
-        # version was imported.
-        # (The last module name for __module__ should be either python2 or
-        # python3, depending on what has been imported.  Make sure we got the
-        # right one.)
-        httplib2_compat_version = httplib2.Http.__module__.split(".")[-1]
-        if six.PY2:
-            self.assertEqual(httplib2_compat_version, "python2")
-        elif six.PY3:
-            self.assertTrue(httplib2_compat_version, "python3")
 
         # Ensure that socks submodule is present and importable using a from
         # import -- this is a good indication that external httplib2 imports
