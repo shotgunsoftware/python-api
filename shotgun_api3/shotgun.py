@@ -34,6 +34,7 @@ import datetime
 import json
 import http.client  # Used for secure file upload
 import http.cookiejar  # used for attachment upload
+import io  # used for attachment upload
 import logging
 import os
 import re
@@ -55,7 +56,6 @@ from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 from .lib import six
 from .lib import sgsix
 from .lib import sgutils
-from .lib.six import BytesIO  # used for attachment upload
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib.sgtimezone import SgTimezone
 
@@ -4434,7 +4434,7 @@ class Shotgun(object):
                 data_size = len(data)
                 # keep data as a stream so that we don't need to worry how it was
                 # encoded.
-                data = BytesIO(data)
+                data = io.BytesIO(data)
                 bytes_read += data_size
                 part_url = self._get_upload_part_link(
                     upload_info, filename, part_number
@@ -4762,7 +4762,7 @@ class FormPostHandler(urllib.request.BaseHandler):
             # We'll do this across both python 2/3 rather than add more branching.
             boundary = uuid.uuid4()
         if buffer is None:
-            buffer = BytesIO()
+            buffer = io.BytesIO()
         for key, value in params:
             if isinstance(key, bytes):
                 key = key.decode("utf-8")
