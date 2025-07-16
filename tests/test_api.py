@@ -32,11 +32,6 @@ import warnings
 from shotgun_api3.lib import six
 from shotgun_api3.lib.httplib2 import Http
 
-# To mock the correct exception when testion on Python 2 and 3, use the
-# ShotgunSSLError variable from sgsix that contains the appropriate exception
-# class for the current Python version.
-from shotgun_api3.lib.sgsix import ShotgunSSLError
-
 import shotgun_api3
 
 from . import base
@@ -2297,7 +2292,7 @@ class TestErrors(base.TestBase):
     @unittest.mock.patch("shotgun_api3.shotgun.Http.request")
     def test_sha2_error(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError(
+        mock_request.side_effect = ssl.SSLError(
             "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
             "encoding routines:ASN1_item_verify: unknown message digest "
             "algorithm"
@@ -2324,7 +2319,7 @@ class TestErrors(base.TestBase):
 
         try:
             self.sg.info()
-        except ShotgunSSLError:
+        except ssl.SSLError:
             # ensure the api has reset the values in the correct fallback behavior
             self.assertTrue(self.sg.config.no_ssl_validation)
             self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
@@ -2337,7 +2332,7 @@ class TestErrors(base.TestBase):
     @unittest.mock.patch("shotgun_api3.shotgun.Http.request")
     def test_sha2_error_with_strict(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError(
+        mock_request.side_effect = ssl.SSLError(
             "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
             "encoding routines:ASN1_item_verify: unknown message digest "
             "algorithm"
@@ -2354,7 +2349,7 @@ class TestErrors(base.TestBase):
 
         try:
             self.sg.info()
-        except ShotgunSSLError:
+        except ssl.SSLError:
             # ensure the api has NOT reset the values in the fallback behavior because we have
             # set the env variable to force validation
             self.assertFalse(self.sg.config.no_ssl_validation)
