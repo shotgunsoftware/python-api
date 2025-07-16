@@ -18,10 +18,6 @@ The version of `six` bundled should be updated manually, however its version is 
 
 ## Flow Production Tracking Modules
 
-### sgsix
-
-`sgsix` is a module that contains extensions to `six`.  These might be additional helper functions, variables, etc. that supplement six's functionality.  It is intended that `sgsix` can be used within other packages that include or depend on the `python-api` package as well.
-
 ### sgtimezone
 
 `sgtimezone` contains classes for easing the conversion between the server (UTC) timezone and client timezone.
