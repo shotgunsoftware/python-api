@@ -2270,8 +2270,7 @@ class Shotgun(object):
             "type": entity_type,
             "field_name": field_name,
             "properties": [
-                {"property_name": k, "value": v}
-                for k, v in six.iteritems((properties or {}))
+                {"property_name": k, "value": v} for k, v in (properties or {}).items()
             ],
         }
         params = self._add_project_param(params, project_entity)
@@ -3328,7 +3327,7 @@ class Shotgun(object):
             raise ValueError("entity_types parameter must be a dictionary")
 
         api_entity_types = {}
-        for entity_type, filter_list in six.iteritems(entity_types):
+        for entity_type, filter_list in entity_types.items():
 
             if isinstance(filter_list, (list, tuple)):
                 resolved_filters = _translate_filters(filter_list, filter_operator=None)
@@ -3965,7 +3964,7 @@ class Shotgun(object):
         resp, content = conn.request(url, method=verb, body=body, headers=headers)
         # http response code is handled else where
         http_status = (resp.status, resp.reason)
-        resp_headers = dict((k.lower(), v) for k, v in six.iteritems(resp))
+        resp_headers = dict((k.lower(), v) for k, v in resp.items())
         resp_body = content
 
         LOG.debug("Response status is %s %s" % http_status)
@@ -4045,7 +4044,7 @@ class Shotgun(object):
 
         def _decode_dict(dct):
             newdict = {}
-            for k, v in six.iteritems(dct):
+            for k, v in dct.items():
                 if isinstance(k, str):
                     k = sgutils.ensure_str(k)
                 if isinstance(v, str):
@@ -4119,7 +4118,7 @@ class Shotgun(object):
             return tuple(recursive(i, visitor) for i in data)
 
         if isinstance(data, dict):
-            return dict((k, recursive(v, visitor)) for k, v in six.iteritems(data))
+            return dict((k, recursive(v, visitor)) for k, v in data.items())
 
         return visitor(data)
 
@@ -4288,7 +4287,7 @@ class Shotgun(object):
                 continue
 
             # iterate over each item and check each field for possible injection
-            for k, v in six.iteritems(rec):
+            for k, v in rec.items():
                 if not v:
                     continue
 
@@ -4376,7 +4375,7 @@ class Shotgun(object):
         [{'field_name': 'foo', 'value': 'bar', 'thing1': 'value1'}]
         """
         ret = []
-        for k, v in six.iteritems((d or {})):
+        for k, v in (d or {}).items():
             d = {key_name: k, value_name: v}
             d.update((extra_data or {}).get(k, {}))
             ret.append(d)
@@ -4389,7 +4388,7 @@ class Shotgun(object):
 
         e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
         """
-        return dict([(k, {key_name: v}) for (k, v) in six.iteritems((d or {}))])
+        return dict([(k, {key_name: v}) for (k, v) in (d or {}).items()])
 
     def _upload_file_to_storage(self, path, storage_url):
         """
