@@ -22,12 +22,11 @@ import re
 import sys
 import time
 import unittest
+import unittest.mock
 import urllib.parse
 import urllib.error
 
 from shotgun_api3.lib import six, sgutils
-
-from . import mock
 
 import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
@@ -321,7 +320,7 @@ class TestShotgunClient(base.MockTestBase):
         """Network failure is retried, with a sleep call between retries."""
         self.sg._http_request.side_effect = httplib2.HttpLib2Error
 
-        with mock.patch("time.sleep") as mock_sleep:
+        with unittest.mock.patch("time.sleep") as mock_sleep:
             self.assertRaises(httplib2.HttpLib2Error, self.sg.info)
             self.assertTrue(
                 self.sg.config.max_rpc_attempts == self.sg._http_request.call_count,
@@ -329,7 +328,7 @@ class TestShotgunClient(base.MockTestBase):
             )
             # Ensure that sleep was called with the retry interval between each attempt
             attempt_interval = self.sg.config.rpc_attempt_interval / 1000.0
-            calls = [mock.callargs(((attempt_interval,), {}))]
+            calls = [unittest.mock.callargs(((attempt_interval,), {}))]
             calls *= self.sg.config.max_rpc_attempts - 1
             self.assertTrue(
                 mock_sleep.call_args_list == calls,
@@ -515,7 +514,7 @@ class TestShotgunClient(base.MockTestBase):
         """
         Test URLError response is retried when invoking _send_form
         """
-        mock_opener = mock.Mock()
+        mock_opener = unittest.mock.Mock()
         mock_opener.return_value.open.side_effect = urllib.error.URLError(
             "[WinError 10054] An existing connection was forcibly closed by the remote host"
         )
@@ -543,7 +542,7 @@ class TestShotgunClient(base.MockTestBase):
         """
         Test URLError response is retried when uploading to S3.
         """
-        self.sg._make_upload_request = mock.Mock(
+        self.sg._make_upload_request = unittest.mock.Mock(
             spec=api.Shotgun._make_upload_request,
             side_effect=urllib.error.URLError(
                 "[Errno 104] Connection reset by peer",
@@ -692,7 +691,7 @@ class TestShotgunClient(base.MockTestBase):
             },
         }
         url = "http://foo/files/0000/0000/0012/232/shot_thumb.jpg"
-        self.sg._build_thumb_url = mock.Mock(return_value=url)
+        self.sg._build_thumb_url = unittest.Mock(return_value=url)
 
         modified, txt = self.sg._parse_records([orig, "plain text"])
         self.assertEqual("plain text", txt, "non dict value is left as is")
