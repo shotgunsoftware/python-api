@@ -13,11 +13,12 @@
 import os
 import unittest
 from unittest import mock
+import urllib.request
+import urllib.error
 
 from .mock import patch
 import shotgun_api3 as api
 from shotgun_api3.shotgun import _is_mimetypes_broken
-from shotgun_api3.lib.six.moves import range, urllib
 from shotgun_api3.lib.httplib2 import Http, ssl_error_classes
 
 

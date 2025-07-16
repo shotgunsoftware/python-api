@@ -218,7 +218,7 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
             params = params.split("&")
             p = {"column_display_names": [], "cols": []}
             for arg in params:
-                key, value = map(six.moves.urllib.parse.unquote, arg.split("=", 1))
+                key, value = map(urllib.parse.unquote, arg.split("=", 1))
                 if key == "column_display_names" or key == "cols":
                     p[key].append(value)
                 else:
