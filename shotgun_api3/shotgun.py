@@ -35,7 +35,7 @@ import datetime
 import json
 import http.client  # Used for secure file upload
 import http.cookiejar  # used for attachment upload
-import io  # used for attachment upload
+import io
 import logging
 import mimetypes
 import os
@@ -56,7 +56,6 @@ from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 
 # Python 2/3 compatibility
 from .lib import six
-from .lib import sgsix
 from .lib import sgutils
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib.sgtimezone import SgTimezone
@@ -4699,7 +4698,7 @@ class FormPostHandler(urllib.request.BaseHandler):
             files = []
             params = []
             for key, value in data.items():
-                if isinstance(value, sgsix.file_types):
+                if isinstance(value, io.IOBase):
                     files.append((key, value))
                 else:
                     params.append((key, value))
