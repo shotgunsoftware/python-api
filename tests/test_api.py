@@ -29,7 +29,6 @@ import urllib.error
 import uuid
 import warnings
 
-from shotgun_api3.lib import six
 from shotgun_api3.lib.httplib2 import Http
 
 import shotgun_api3
@@ -267,44 +266,6 @@ class TestShotgunApi(base.LiveTestBase):
             "sg_uploaded_movie",
             tag_list="monkeys, everywhere, send, help",
         )
-        if six.PY2:
-            # In Python2, make sure that non-utf-8 encoded paths raise when they
-            # can't be converted to utf-8.  For Python3, we'll skip these tests
-            # since string encoding is handled differently.
-
-            # We need to touch the file we're going to test with first. We can't
-            # bundle a file with this filename in the repo due to some pip install
-            # problems on Windows. Note that the path below is utf-8 encoding of
-            # what we'll eventually encode as shift-jis.
-            file_path_s = os.path.join(this_dir, "./\xe3\x81\x94.shift-jis")
-            file_path_u = file_path_s.decode("utf-8")
-
-            with open(
-                file_path_u if sys.platform.startswith("win") else file_path_s, "w"
-            ) as fh:
-                fh.write("This is just a test file with some random data in it.")
-
-            self.assertRaises(
-                shotgun_api3.ShotgunError,
-                self.sg.upload,
-                "Version",
-                self.version["id"],
-                file_path_u.encode("shift-jis"),
-                "sg_uploaded_movie",
-                tag_list="monkeys, everywhere, send, help",
-            )
-
-            # But it should work in all cases if a unicode string is used.
-            self.sg.upload(
-                "Version",
-                self.version["id"],
-                file_path_u,
-                "sg_uploaded_movie",
-                tag_list="monkeys, everywhere, send, help",
-            )
-
-            # cleanup
-            os.remove(file_path_u)
 
         # cleanup
         os.remove(file_path)
