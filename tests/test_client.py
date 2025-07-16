@@ -13,6 +13,7 @@ CRUD functions. These tests always use a mock http connection so not not
 need a live server to run against."""
 
 import datetime
+import json
 import os
 import platform
 import re
@@ -23,14 +24,6 @@ import urllib.parse
 import urllib.error
 
 from shotgun_api3.lib import six, sgutils
-
-try:
-    import simplejson as json
-except ImportError:
-    try:
-        import json as json
-    except ImportError:
-        import shotgun_api3.lib.simplejson as json
 
 from . import mock
 
