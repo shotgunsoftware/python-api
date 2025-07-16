@@ -25,8 +25,6 @@ import unittest.mock
 import urllib.parse
 import urllib.error
 
-from shotgun_api3.lib import six, sgutils
-
 import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
