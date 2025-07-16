@@ -54,8 +54,6 @@ import uuid  # used for attachment upload
 # to be exposed as part of the API.
 from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 
-# Python 2/3 compatibility
-from .lib import six
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib.sgtimezone import SgTimezone
 
@@ -750,7 +748,7 @@ class Shotgun(object):
         In python 3.8 `urllib.parse.splituser` was deprecated warning devs to
         use `urllib.parse.urlparse`.
         """
-        if six.PY38:
+        if (sys.version_info.major, sys.version_info.minor) >= (3, 8):
             auth = None
             results = urllib.parse.urlparse(base_url)
             server = results.hostname
@@ -4620,7 +4618,7 @@ class CACertsHTTPSConnection(http.client.HTTPConnection):
         "Connect to a host on a given (SSL) port."
         super().connect(self)
         # Now that the regular HTTP socket has been created, wrap it with our SSL certs.
-        if six.PY38:
+        if (sys.version_info.major, sys.version_info.minor) >= (3, 8):
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
             context.verify_mode = ssl.CERT_REQUIRED
             context.check_hostname = False

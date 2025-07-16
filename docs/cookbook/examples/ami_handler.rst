@@ -95,7 +95,6 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
     # Imports
     # ---------------------------------------------------------------------------------------------
     import sys, os
-    import six
     import logging as logger
 
     # ---------------------------------------------------------------------------------------------
