@@ -29,6 +29,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+import base64
 import copy
 import datetime
 import json
@@ -58,11 +59,6 @@ from .lib import sgsix
 from .lib import sgutils
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib.sgtimezone import SgTimezone
-
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
 
 
 LOG = logging.getLogger("shotgun_api3")
@@ -709,11 +705,11 @@ class Shotgun(object):
         # and auth header
 
         # Do NOT self._split_url(self.base_url) here, as it contains the lower
-        # case version of the base_url argument. Doing so would base64encode
+        # case version of the base_url argument. Doing so would base64.encodebytes
         # the lowercase version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64encode(
+            auth = base64.encodebytes(
                 urllib.parse.unquote(auth).encode("utf-8")
             ).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()

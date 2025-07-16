@@ -12,6 +12,7 @@
 CRUD functions. These tests always use a mock http connection so not not
 need a live server to run against."""
 
+import base64
 import datetime
 import json
 import os
@@ -32,17 +33,12 @@ import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 from . import base
 
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
-
 
 def b64encode(val):
     if isinstance(val, str):
         val = val.encode("utf-8")
 
-    return base64encode(val).decode("utf-8")
+    return base64.encodebytes(val).decode("utf-8")
 
 
 class TestShotgunClient(base.MockTestBase):
