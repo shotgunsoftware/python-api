@@ -832,7 +832,8 @@ class TestShotgunApi(base.LiveTestBase):
         sg = shotgun_api3.Shotgun(self.config.server_url, **self.auth_args)
 
         # Mock the _http_request method so we can assert_called_with
-        sg._http_request = unittest.mock.MagicMock(return_value=((200, "OK"), {}, None))
+        sg._orig_http_request = sg._http_request
+        sg._http_request = unittest.mock.Mock(wraps=sg._orig_http_request)
 
         sg.find_one("Note", [["id", "is", "Noëlご"]])  # Force a non-ascii character
 
