@@ -330,8 +330,9 @@ class TestShotgunClient(base.MockTestBase):
             attempt_interval = self.sg.config.rpc_attempt_interval / 1000.0
             calls = [(attempt_interval,)]
             calls *= self.sg.config.max_rpc_attempts - 1
-            self.assertTrue(
-                mock_sleep.call_args_list == calls,
+            self.assertEqual(
+                mock_sleep.call_args_list,
+                calls,
                 "Call is repeated at correct interval.",
             )
 
