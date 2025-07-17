@@ -829,12 +829,10 @@ class TestShotgunApi(base.LiveTestBase):
 
     def test_json_dumps_default_ensure_ascii_disabled(self):
         """Make sure SG'payload is using ensure_ascii for json dumps"""
-        sg = shotgun_api3.Shotgun(
-            self.config.server_url, connect=False, **self.auth_args
-        )
+        sg = shotgun_api3.Shotgun(self.config.server_url, **self.auth_args)
 
         # Mock the _http_request method so we can assert_called_with
-        sg._http_request = unittest.mock.MagicMock(return_value=((200, "OK"), {}, ""))
+        sg._http_request = unittest.mock.MagicMock(return_value=((200, "OK"), {}, None))
 
         sg.find_one("Note", [["id", "is", "Noëlご"]])  # Force a non-ascii character
 
