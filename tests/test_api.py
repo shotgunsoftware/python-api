@@ -29,6 +29,7 @@ import urllib.error
 import uuid
 import warnings
 
+from shotgun_api3.lib import six
 from shotgun_api3.lib.httplib2 import Http
 
 import shotgun_api3
