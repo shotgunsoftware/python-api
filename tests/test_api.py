@@ -831,7 +831,7 @@ class TestShotgunApi(base.LiveTestBase):
         """Make sure SG'payload is using ensure_ascii for json dumps"""
         sg = shotgun_api3.Shotgun(self.config.server_url, **self.auth_args)
 
-        # Mock the _http_request method so we can assert_called_with
+        # Mock the _http_request method
         sg._orig_http_request = sg._http_request
         sg._http_request = unittest.mock.Mock(wraps=sg._orig_http_request)
 
@@ -840,11 +840,10 @@ class TestShotgunApi(base.LiveTestBase):
             [["content", "is", "Noëlご"]],  # Force a non-ascii character
         )
 
-        sg._http_request.assert_called_once_with(
-            "POST",  # verb
-            "api3/json",  # path
-            "",  # body
-            {},  # headers
+        sg._http_request.assert_called_once()
+        self.assertIn(
+            b"No\xc3\xabl\xe3\x81\x94",  # utf-8 encoded version of Noëlご
+            sg._http_request.call_args.args[2],  # Get the body of the request
         )
 
     def test_work_schedule(self):
