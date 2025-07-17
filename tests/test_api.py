@@ -355,6 +355,7 @@ class TestShotgunApi(base.LiveTestBase):
             display_name_to_send.startswith("b'") and display_name_to_send.endswith("'")
         )
 
+        mock_send_form.reset_mock()
         mock_send_form.return_value = "2\nIt can't be upload"
         self.assertRaises(
             shotgun_api3.ShotgunError,

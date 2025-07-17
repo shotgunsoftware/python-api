@@ -328,7 +328,7 @@ class TestShotgunClient(base.MockTestBase):
             )
             # Ensure that sleep was called with the retry interval between each attempt
             attempt_interval = self.sg.config.rpc_attempt_interval / 1000.0
-            calls = [unittest.mock.callargs(((attempt_interval,), {}))]
+            calls = [(attempt_interval,)]
             calls *= self.sg.config.max_rpc_attempts - 1
             self.assertTrue(
                 mock_sleep.call_args_list == calls,
@@ -691,7 +691,7 @@ class TestShotgunClient(base.MockTestBase):
             },
         }
         url = "http://foo/files/0000/0000/0012/232/shot_thumb.jpg"
-        self.sg._build_thumb_url = unittest.Mock(return_value=url)
+        self.sg._build_thumb_url = unittest.mock.Mock(return_value=url)
 
         modified, txt = self.sg._parse_records([orig, "plain text"])
         self.assertEqual("plain text", txt, "non dict value is left as is")
