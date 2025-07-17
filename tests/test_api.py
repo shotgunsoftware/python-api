@@ -288,10 +288,6 @@ class TestShotgunApi(base.LiveTestBase):
             "attachments",
             tag_list="monkeys, everywhere, send, help",
         )
-<<<<<<< HEAD
-=======
-
->>>>>>> 413afc6 (SSL)
         mock_send_form.assert_called_once()
         mock_send_form_args, _ = mock_send_form.call_args
         display_name_to_send = mock_send_form_args[1].get("display_name", "")
@@ -315,11 +311,7 @@ class TestShotgunApi(base.LiveTestBase):
             display_name_to_send.startswith("b'") and display_name_to_send.endswith("'")
         )
 
-<<<<<<< HEAD
         mock_send_form.reset_mock()
-=======
-        # mock_send_form.method.assert_called_once() ## CANOT work because was already called earlier....
->>>>>>> 413afc6 (SSL)
         mock_send_form.return_value = "2\nIt can't be upload"
         self.assertRaises(
             shotgun_api3.ShotgunError,
@@ -701,10 +693,6 @@ class TestShotgunApi(base.LiveTestBase):
     def test_share_thumbnail_returns_error(self, mock_send_form):
         """throw an exception if server returns an error code"""
 
-<<<<<<< HEAD
-=======
-        # mock_send_form.method.assert_called_once()  # never worked.....
->>>>>>> 413afc6 (SSL)
         mock_send_form.return_value = "1\nerror message.\n"
 
         self.assertRaises(
@@ -2260,7 +2248,7 @@ class TestErrors(base.TestBase):
         finally:
             self.sg.config.rpc_attempt_interval = bak_rpc_attempt_interval
 
-    @unittest.mock.patch.object(urllib.request.OpenerDirector, 'open')
+    @unittest.mock.patch.object(urllib.request.OpenerDirector, "open")
     def test_sanitized_auth_params(self, mock_open):
         # Simulate the server blowing up and giving us a 500 error
         mock_open.side_effect = urllib.error.HTTPError("url", 500, "message", {}, None)

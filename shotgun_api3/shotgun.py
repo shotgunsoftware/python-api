@@ -2246,9 +2246,9 @@ class Shotgun(object):
 
         # create ssl validation string based on settings
         self._user_agents = [
-            f"shotgun-json ({__version__})",
-            f"Python {self.client_caps.py_version} ({ua_platform})",
-            f"ssl {self.client_caps.ssl_version}",
+            "shotgun-json (%s)" % __version__,
+            "Python %s (%s)" % (self.client_caps.py_version, ua_platform),
+            "ssl %s" % (self.client_caps.ssl_version),
         ]
 
     def set_session_uuid(self, session_uuid):

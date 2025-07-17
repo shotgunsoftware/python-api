@@ -29,8 +29,6 @@ import urllib.error
 import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
-import shotgun_api3 as api
-import shotgun_api3.lib.httplib2 as httplib2
 
 
 def b64encode(val):
