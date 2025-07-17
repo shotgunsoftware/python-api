@@ -433,11 +433,10 @@ class TestShotgunClient(base.MockTestBase):
         expected = "rpc response with list result, first item"
         self.assertEqual(d["results"][0], rv, expected)
 
-        # Test unicode mixed with utf-8 as reported in Ticket #17959
+        # Test payload encoding with non-ascii characters (using utf-8 literal)
         d = {"results": ["foo", "bar"]}
         a = {
-            "utf_str": "\xe2\x88\x9a",
-            "unicode_str": "\xe2\x88\x9a",
+            "utf_literal": "\xe2\x88\x9a",
         }
         self._mock_http(d)
         rv = self.sg._call_rpc("list", a)
