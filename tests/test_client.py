@@ -12,6 +12,7 @@
 CRUD functions. These tests always use a mock http connection so not not
 need a live server to run against."""
 
+import configparser
 import base64
 import datetime
 import json
@@ -180,7 +181,7 @@ class TestShotgunClient(base.MockTestBase):
         """Validate that config values are properly coerced."""
         this_dir = os.path.dirname(os.path.realpath(__file__))
         config_path = os.path.join(this_dir, "test_config_file")
-        config = base.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(config_path)
         result = config.get("SERVER_INFO", "api_key")
         expected = "%abce"
