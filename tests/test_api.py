@@ -630,7 +630,7 @@ class TestShotgunApi(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_share_thumbnail(self):
         """share thumbnail between two entities"""
 
@@ -2934,7 +2934,7 @@ class TestNoteThreadRead(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_simple(self):
         """
         Test note reply thread API call
@@ -3013,7 +3013,7 @@ class TestNoteThreadRead(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_complex(self):
         """
         Test note reply thread API call with additional params
