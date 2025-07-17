@@ -713,8 +713,7 @@ class TestShotgunApi(base.LiveTestBase):
             shotgun_api3.ShotgunError, self.sg.share_thumbnail, [self.shot, self.asset]
         )
 
-    unittest.mock.patch("shotgun_api3.Shotgun._send_form")
-
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
     def test_share_thumbnail_not_ready(self, mock_send_form):
         """throw an exception if trying to share a transient thumbnail"""
 
@@ -2240,7 +2239,7 @@ class TestErrors(base.TestBase):
                     if my_side_effect.counter < 1:
                         raise Exception("not working")
 
-                    return mock.DEFAULT
+                    return unittest.mock.DEFAULT
                 finally:
                     my_side_effect.counter += 1
 
@@ -2270,7 +2269,7 @@ class TestErrors(base.TestBase):
                             "EOF occurred in violation of protocol (_ssl.c:2426)"
                         )
 
-                    return mock.DEFAULT
+                    return unittest.mock.DEFAULT
                 finally:
                     my_side_effect2.counter += 1
 

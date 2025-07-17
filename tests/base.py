@@ -151,7 +151,7 @@ class MockTestBase(TestBase):
         # also replace the function that is called to get the http connection
         # to avoid calling the server. OK to return a mock as we will not use
         # it
-        self.mock_conn = unittest.Mock(spec=api.lib.httplib2.Http)
+        self.mock_conn = unittest.mock.Mock(spec=api.lib.httplib2.Http)
         # The Http objects connection property is a dict of connections
         # it is holding
         self.mock_conn.connections = dict()
