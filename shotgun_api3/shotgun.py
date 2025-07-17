@@ -712,9 +712,9 @@ class Shotgun(object):
         # the lowercase version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64encode(
-                urllib.parse.unquote(auth).encode("utf-8")
-            ).decode("utf-8")
+            auth = base64encode(urllib.parse.unquote(auth).encode("utf-8")).decode(
+                "utf-8"
+            )
             self.config.authorization = "Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
