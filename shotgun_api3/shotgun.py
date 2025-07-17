@@ -319,9 +319,7 @@ class ClientCapabilities(object):
     :ivar str local_path_field: The PTR field used for local file paths. This is calculated using
         the value of ``platform``. Ex. ``local_path_mac``.
     :ivar str py_version: Simple version of Python executable as a string. Eg. ``3.9``.
-    :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``. This
-        info is only available in Python 2.7+ if the ssl module was imported successfully.
-        Defaults to ``unknown``
+    :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``.
     """
 
     def __init__(self):
@@ -342,13 +340,7 @@ class ClientCapabilities(object):
             self.local_path_field = None
 
         self.py_version = ".".join(str(x) for x in sys.version_info[:2])
-
-        # extract the OpenSSL version if we can.
-        self.ssl_version = "unknown"
-        try:
-            self.ssl_version = ssl.OPENSSL_VERSION
-        except AttributeError:
-            pass
+        self.ssl_version = ssl.OPENSSL_VERSION
 
     def __str__(self):
         return (
