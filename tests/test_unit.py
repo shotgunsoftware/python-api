@@ -18,7 +18,6 @@ import urllib.error
 
 from .mock import patch
 import shotgun_api3 as api
-from shotgun_api3.shotgun import _is_mimetypes_broken
 from shotgun_api3.lib.httplib2 import Http, ssl_error_classes
 
 
@@ -798,24 +797,6 @@ class TestCerts(unittest.TestCase):
         for url in self.test_urls:
             response = self._check_url_with_urllib(url)
             assert response is not None
-
-
-class TestMimetypesFix(unittest.TestCase):
-    """
-    Makes sure that the mimetypes fix will be imported.
-    """
-
-    @patch("shotgun_api3.shotgun.sys")
-    def _test_mimetypes_import(
-        self, platform, major, minor, patch_number, result, mock
-    ):
-        """
-        Mocks sys.platform and sys.version_info to test the mimetypes import code.
-        """
-
-        mock.version_info = [major, minor, patch_number]
-        mock.platform = platform
-        self.assertEqual(_is_mimetypes_broken(), result)
 
 
 if __name__ == "__main__":
