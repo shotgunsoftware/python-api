@@ -835,7 +835,10 @@ class TestShotgunApi(base.LiveTestBase):
         sg._orig_http_request = sg._http_request
         sg._http_request = unittest.mock.Mock(wraps=sg._orig_http_request)
 
-        sg.find_one("Note", [["id", "is", "Noëlご"]])  # Force a non-ascii character
+        sg.find_one(
+            "Note",
+            [["content", "is", "Noëlご"]],  # Force a non-ascii character
+        )
 
         sg._http_request.assert_called_once_with(
             "POST",  # verb
