@@ -4804,7 +4804,7 @@ class FormPostHandler(urllib.request.BaseHandler):
             fd.seek(0)
             shutil.copyfileobj(fd, buffer)
             buffer.write(b"\r\n")
-        buffer.write("--{boundary}--\r\n\r\n".encode("utf-8"))
+        buffer.write(f"--{boundary}--\r\n\r\n".encode("utf-8"))
         buffer = buffer.getvalue()
         return boundary, buffer
 
