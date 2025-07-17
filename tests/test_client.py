@@ -436,7 +436,7 @@ class TestShotgunClient(base.MockTestBase):
         # Test unicode mixed with utf-8 as reported in Ticket #17959
         d = {"results": ["foo", "bar"]}
         a = {
-            "utf_str": b"\xe2\x88\x9a",
+            "utf_str": "\xe2\x88\x9a",
             "unicode_str": "\xe2\x88\x9a",
         }
         self._mock_http(d)
