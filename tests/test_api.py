@@ -834,7 +834,7 @@ class TestShotgunApi(base.LiveTestBase):
         )
 
         # Mock the _http_request method so we can assert_called_with
-        sg._http_request(return_value=(200, {}, ""))
+        sg._http_request = unittest.mock.MagicMock(return_value=(200, {}, ""))
 
         sg.find_one("Note", [["id", "is", "Noëlご"]])  # Force a non-ascii character
 
