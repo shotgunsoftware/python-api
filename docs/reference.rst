@@ -15,7 +15,7 @@ The :mod:`~shotgun_api3.shotgun` module is a container for the :class:`~shotgun.
 class. There are a couple of useful attributes to note.
 
 .. automodule:: shotgun_api3.shotgun
-    :members: NO_SSL_VALIDATION, LOG
+    :members: LOG
     :private-members:
     :special-members:
 
