@@ -491,7 +491,6 @@ class Shotgun(object):
         api_key=None,
         convert_datetimes_to_utc=True,
         http_proxy=None,
-        ensure_ascii=True,
         connect=True,
         ca_certs=None,
         login=None,
@@ -708,9 +707,6 @@ class Shotgun(object):
             self.config.proxy_handler = urllib.request.ProxyHandler(
                 {self.config.scheme: proxy_addr}
             )
-
-        if ensure_ascii:
-            self._json_loads = self._json_loads_ascii
 
         self.client_caps = ClientCapabilities()
         # this relies on self.client_caps being set first
@@ -3981,35 +3977,6 @@ class Shotgun(object):
 
     def _json_loads(self, body):
         return json.loads(body)
-
-    def _json_loads_ascii(self, body):
-        """
-        See http://stackoverflow.com/questions/956867
-        """
-
-        def _decode_list(lst):
-            newlist = []
-            for i in lst:
-                if isinstance(i, str):
-                    i = sgutils.ensure_str(i)
-                elif isinstance(i, list):
-                    i = _decode_list(i)
-                newlist.append(i)
-            return newlist
-
-        def _decode_dict(dct):
-            newdict = {}
-            for k, v in dct.items():
-                if isinstance(k, str):
-                    k = sgutils.ensure_str(k)
-                if isinstance(v, str):
-                    v = sgutils.ensure_str(v)
-                elif isinstance(v, list):
-                    v = _decode_list(v)
-                newdict[k] = v
-            return newdict
-
-        return json.loads(body, object_hook=_decode_dict)
 
     def _response_errors(self, sg_response):
         """
