@@ -29,7 +29,7 @@
 """
 
 
-def ensure_binary(s, encoding='utf-8', errors='strict'):
+def ensure_binary(s, encoding='utf-8', errors='strict') -> bytes:
     """
     Coerce **s** to bytes.
 
@@ -44,7 +44,7 @@ def ensure_binary(s, encoding='utf-8', errors='strict'):
         raise TypeError(f"not expecting type '{type(s)}'")
     
 
-def ensure_str(s, encoding='utf-8', errors='strict'):
+def ensure_str(s, encoding='utf-8', errors='strict') -> str:
     """Coerce *s* to `str`.
 
       - `str` -> `str`
