@@ -176,13 +176,10 @@ class MockTestBase(TestBase):
             return
 
         if not isinstance(data, str):
-            if six.PY2:
-                data = json.dumps(data, ensure_ascii=False, encoding="utf-8")
-            else:
-                data = json.dumps(
-                    data,
-                    ensure_ascii=False,
-                )
+            data = json.dumps(
+                data,
+                ensure_ascii=False,
+            )
 
         resp_headers = {
             "cache-control": "no-cache",
