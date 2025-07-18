@@ -4541,22 +4541,6 @@ class CACertsHTTPSConnection(http.client.HTTPConnection):
             )
 
 
-class CACertsHTTPSHandler(urllib.request.HTTPHandler):
-    """
-    Handler that ensures https connections are created with the custom CA certs.
-    """
-
-    def __init__(self, cacerts):
-        super().__init__(self)
-        self.__ca_certs = cacerts
-
-    def https_open(self, req):
-        return self.do_open(self.create_https_connection, req)
-
-    def create_https_connection(self, *args, **kwargs):
-        return CACertsHTTPSConnection(*args, ca_certs=self.__ca_certs, **kwargs)
-
-
 # Helpers from the previous API, left as is.
 # Based on http://code.activestate.com/recipes/146306/
 class FormPostHandler(urllib.request.BaseHandler):
