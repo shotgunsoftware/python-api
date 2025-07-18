@@ -14,7 +14,11 @@ need a live server to run against."""
 
 import datetime
 import os
+import platform
 import re
+import sys
+import time
+import unittest
 
 from shotgun_api3.lib.six.moves import urllib
 from shotgun_api3.lib import six, sgutils
@@ -27,10 +31,6 @@ except ImportError:
     except ImportError:
         import shotgun_api3.lib.simplejson as json
 
-import platform
-import sys
-import time
-import unittest
 from . import mock
 
 import shotgun_api3.lib.httplib2 as httplib2

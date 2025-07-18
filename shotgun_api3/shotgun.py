@@ -29,27 +29,27 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+import copy
+import datetime
+import json
+import logging
+import os
+import re
+import shutil  # used for attachment download
+import ssl
+import stat  # used for attachment upload
+import sys
+import time
+import uuid  # used for attachment upload
+
 # Python 2/3 compatibility
 from .lib import six
 from .lib import sgsix
 from .lib import sgutils
 from .lib.six import BytesIO  # used for attachment upload
 from .lib.six.moves import map
-
 from .lib.six.moves import http_cookiejar  # used for attachment upload
-import datetime
-import logging
-import uuid  # used for attachment upload
-import os
-import re
-import copy
-import ssl
-import stat  # used for attachment upload
-import sys
-import time
-import json
 from .lib.six.moves import urllib
-import shutil  # used for attachment download
 from .lib.six.moves import http_client  # Used for secure file upload.
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib.sgtimezone import SgTimezone
