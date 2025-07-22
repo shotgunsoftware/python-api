@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# type: ignore
 """Small, fast HTTP client library for Python."""
 
 __author__ = "Joe Gregorio (joe@bitworking.org)"
