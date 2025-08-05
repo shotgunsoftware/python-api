@@ -1900,20 +1900,21 @@ class Shotgun(object):
 
         return self._call_rpc("work_schedule_update", params)
 
-    def export_page(self, page_id, format):
+    def export_page(self, page_id, format, layout_name=None):
         """
         Export the specified page to the given format.
         This method allows you to export a page to a specific format such as CSV.
-        >>> sg.export_page(12345, "csv")
+        >>> sg.export_page(12345, "csv", layout_name="My Layout")
         "ID,Name,Status\n1,Shot 001,ip\n2,Shot 002,rev\n"
-        :param str format: The format to export the page to. Supported formats are ``"csv"``
         :param int page_id: The ID of the page to export.
+        :param str format: The format to export the page to. Supported formats are ``"csv"``
+        :param str layout_name: The name of the layout to export this will map to the layout_display_name field. Defaults to ``None``.
         :returns: string containing data of the given page.
         :rtype: string
         """
 
         params = dict(
-            format=format, page_id=page_id
+            format=format, page_id=page_id, layout_name=layout_name
         )
 
         return self._call_rpc("export_page", params)
