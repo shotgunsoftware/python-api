@@ -798,6 +798,204 @@ class TestCerts(unittest.TestCase):
             assert response is not None
 
 
+class TestFilterDeduplication(unittest.TestCase):
+    """Test filter deduplication utility functions"""
+
+    def setUp(self):
+        """Set up test fixtures"""
+        from shotgun_api3.shotgun import (
+            normalize_filter,
+            complex_filter,
+            remove_duplicate_filters
+        )
+        self.normalize_filter = normalize_filter
+        self.complex_filter = complex_filter
+        self.remove_duplicate_filters = remove_duplicate_filters
+
+    def test_normalize_filter_simple_list(self):
+        """Test normalizing simple list-based filters"""
+        filter_obj = ["project", "is", {"type": "Project", "id": 123}]
+        result = self.normalize_filter(filter_obj)
+        expected = ("project", "is", (("id", 123), ("type", "Project")))
+        self.assertEqual(result, expected)
+
+    def test_normalize_filter_simple_dict(self):
+        """Test normalizing simple dict-based filters"""
+        filter_obj = {"path": "project", "relation": "is", "values": [{"type": "Project", "id": 123}]}
+        result = self.normalize_filter(filter_obj)
+
+        # Should be a tuple with sorted dict keys
+        result_str = str(result)
+        self.assertIsInstance(result, tuple)
+        self.assertIn("path", result_str)
+        self.assertIn("relation", result_str)
+        self.assertIn("values", result_str)
+
+    def test_normalize_filter_complex_nested(self):
+        """Test normalizing complex nested filters"""
+        complex_filter_obj = {
+            "filter_operator": "and",
+            "filters": [
+                ["project", "is", {"type": "Project", "id": 123}],
+                ["sg_status_list", "is", "rev"]
+            ]
+        }
+        result = self.normalize_filter(complex_filter_obj)
+
+        # Should contain sorted keys and nested normalized filters
+        result_str = str(result)
+        self.assertIsInstance(result, tuple)
+        self.assertIn("filter_operator", result_str)
+        self.assertIn("filters", result_str)
+
+    def test_complex_filter_detection_true(self):
+        """Test complex_filter() returns True for complex filters"""
+        complex_filters = [
+            {"filter_operator": "and", "filters": []},
+            {"filters": [["project", "is", {"type": "Project", "id": 123}]]},
+            {"filter_operator": "or", "filters": [["id", "is", 1]]}
+        ]
+        for f in complex_filters:
+            with self.subTest(filter=f):
+                self.assertTrue(self.complex_filter(f))
+
+    def test_complex_filter_detection_false(self):
+        """Test complex_filter() returns False for simple filters"""
+        simple_filters = [
+            ["project", "is", {"type": "Project", "id": 123}],
+            {"path": "id", "values": [1]},
+            {"path": "sg_status_list", "relation": "is", "values": ["rev"]},
+            "simple_string",
+            123,
+            None
+        ]
+        for f in simple_filters:
+            with self.subTest(filter=f):
+                self.assertFalse(self.complex_filter(f))
+
+    def test_remove_duplicate_filters_simple(self):
+        """Test removing duplicates from simple filter list"""
+        project_filter = ["project", "is", {"type": "Project", "id": 123}]
+        status_filter = ["sg_status_list", "is", "rev"]
+        filters = [
+            project_filter,
+            status_filter,
+            project_filter,  # duplicate
+            ["entity", "type_is", "Shot"],
+            project_filter   # duplicate
+        ]
+        result = self.remove_duplicate_filters(filters)
+
+        # Should have 3 unique sorted filters
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[0], project_filter)
+        self.assertEqual(result[1], status_filter)
+        self.assertEqual(result[2], ["entity", "type_is", "Shot"])
+
+    def test_remove_duplicate_filters_complex(self):
+        """Test removing duplicates with complex nested filters"""
+        simple_filter = ["project", "is", {"type": "Project", "id": 123}]
+        complex_filter_1 = {
+            "filter_operator": "and",
+            "filters": [
+                ["sg_status_list", "is", "rev"],
+                ["entity", "type_is", "Shot"]
+            ]
+        }
+        complex_filter_2 = {
+            "filter_operator": "or",
+            "filters": [["id", "is", 1]]
+        }
+        filters = [
+            simple_filter,
+            complex_filter_1,
+            simple_filter,      # duplicate
+            complex_filter_2,
+            complex_filter_1    # duplicate
+        ]
+        result = self.remove_duplicate_filters(filters)
+
+        # Should have 3 unique sorted filters
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[0], simple_filter)
+        self.assertEqual(result[1], complex_filter_1)
+        self.assertEqual(result[2], complex_filter_2)
+
+    def test_remove_duplicate_filters_preserves_order(self):
+        """Test that order is preserved for remaining filters"""
+        filter_a = ["field_a", "is", "value_a"]
+        filter_b = ["field_b", "is", "value_b"]
+        filter_c = ["field_c", "is", "value_c"]
+        filters = [filter_a, filter_b, filter_a, filter_c, filter_b]
+        result = self.remove_duplicate_filters(filters)
+        expected = [filter_a, filter_b, filter_c] # Should preserve order
+
+        self.assertEqual(result, expected)
+
+    def test_remove_duplicate_filters_edge_cases(self):
+        """Test edge cases: empty lists, single item, no duplicates"""
+        # Empty list
+        self.assertEqual(self.remove_duplicate_filters([]), [])
+
+        # Single item
+        single_filter = [["project", "is", {"type": "Project", "id": 123}]]
+        self.assertEqual(self.remove_duplicate_filters(single_filter), single_filter)
+
+        # No duplicates
+        unique_filters = [
+            ["project", "is", {"type": "Project", "id": 123}],
+            ["sg_status_list", "is", "rev"],
+            ["entity", "type_is", "Shot"]
+        ]
+        self.assertEqual(self.remove_duplicate_filters(unique_filters), unique_filters)
+
+    def test_deduplicate_nested_conditions(self):
+        """Test deduplicating nested conditions in complex filters - testing via remove_duplicate_filters"""
+        nested_filter = {
+            "filter_operator": "and",
+            "filters": [
+                ["project", "is", {"type": "Project", "id": 123}],
+                ["sg_status_list", "is", "rev"],
+                ["project", "is", {"type": "Project", "id": 123}]  # duplicate
+            ]
+        }
+        result = self.remove_duplicate_filters([nested_filter])
+
+        # Should have one complex filter with deduplicated nested conditions
+        result_filter = result[0]
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result_filter["filter_operator"], "and")
+        self.assertEqual(len(result_filter["filters"]), 2)
+        self.assertEqual(result_filter["filters"][0], ["project", "is", {"type": "Project", "id": 123}])
+        self.assertEqual(result_filter["filters"][1], ["sg_status_list", "is", "rev"])
+
+    def test_deduplicate_function_mixed_filters(self):
+        """Test main function with mixed simple and complex filters"""
+        project_filter = ["project", "is", {"type": "Project", "id": 123}]
+        complex_filter = {
+            "filter_operator": "and",
+            "filters": [
+                ["sg_status_list", "is", "rev"],
+                project_filter,  # Nested duplication
+                ["entity", "type_is", "Shot"]
+            ]
+        }
+        filters = [
+            project_filter,
+            complex_filter,
+            project_filter,  # Top-level duplication
+        ]
+        result = self.remove_duplicate_filters(filters)
+
+        # Should have 2 items (project_filter + deduplicated complex_filter)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], project_filter)
+
+        # Complex filter should be processed and nested duplicates removed
+        self.assertIsInstance(result[1], dict)
+        self.assertEqual(result[1]["filter_operator"], "and")
+
+
 class TestMimetypesFix(unittest.TestCase):
     """
     Makes sure that the mimetypes fix will be imported.

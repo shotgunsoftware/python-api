@@ -767,6 +767,27 @@ class TestShotgunApi(base.LiveTestBase):
         assert result["groups"][0]["summaries"]
         assert result["summaries"]
 
+    def test_summarize_with_duplicate_filters(self):
+        """Test that summarize() with duplicate filters returns same results as without duplicates"""
+        summaries = [{"field": "id", "type": "count"}]
+        grouping = [{"direction": "asc", "field": "id", "type": "exact"}]
+
+        # Baseline: test without duplicates
+        filters_clean = [["project", "is", self.project]]
+        result_clean = self.sg.summarize(
+            "Shot", filters=filters_clean, summary_fields=summaries, grouping=grouping
+        )
+
+        # Test with duplicates - should return deduplicated results
+        project_filter = ["project", "is", self.project]
+        filters_duplicated = [project_filter, project_filter]
+        result_deduplicated = self.sg.summarize(
+            "Shot", filters=filters_duplicated, summary_fields=summaries, grouping=grouping
+        )
+
+        # Results should be identical
+        self.assertEqual(result_clean, result_deduplicated)
+
     def test_summary_include_archived_projects(self):
         """Test summarize with archived project"""
         if self.sg.server_caps.version > (5, 3, 13):
@@ -1341,6 +1362,20 @@ class TestFind(base.LiveTestBase):
         version = self.sg.find_one("Version", filters, fields=fields)
         self.assertEqual("Version", version["type"])
         self.assertEqual(self.version["id"], version["id"])
+
+    def test_find_with_duplicate_filters(self):
+        """Test that find() with duplicate filters returns same results as without duplicates"""
+        # Baseline: test without duplicates
+        filters_clean = [["project", "is", self.project]]
+        result_clean = self.sg.find("Shot", filters_clean, ["id", "code"])
+
+        # Test with duplicates - should return deduplicated results
+        project_filter = ["project", "is", self.project]
+        filters_duplicated = [project_filter, project_filter, project_filter]
+        result_deduplicated = self.sg.find("Shot", filters_duplicated, ["id", "code"])
+
+        # Results should be identical
+        self.assertEqual(result_clean, result_deduplicated)
 
     def _id_in_result(self, entity_type, filters, expected_id):
         """
