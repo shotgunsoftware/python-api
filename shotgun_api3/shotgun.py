@@ -4836,9 +4836,11 @@ def _translate_filters_dict(sg_filter):
 
 
 def _translate_filters_list(filters):
+    # Deduplicate filters to avoid redundant conditions
+    deduplicated_filters = remove_duplicate_filters(filters)
     conditions = []
 
-    for sg_filter in filters:
+    for sg_filter in deduplicated_filters:
         if isinstance(sg_filter, (list, tuple)):
             conditions.append(_translate_filters_simple(sg_filter))
         elif isinstance(sg_filter, dict):
@@ -4849,6 +4851,95 @@ def _translate_filters_list(filters):
             )
 
     return conditions
+
+
+# =============================================================================
+# FILTER DEDUPLICATION UTILITIES
+# =============================================================================
+
+def normalize_filter(filter_obj):
+    """
+    Creates a canonical, comparable representation of a filter.
+    The key step is sorting dictionaries to ensure that different key orders
+    are treated as identical for comparison purposes.
+    """
+    if isinstance(filter_obj, dict):
+        return tuple(sorted((k, normalize_filter(v)) for k, v in filter_obj.items()))
+    elif isinstance(filter_obj, (list, tuple)):
+        return tuple(normalize_filter(item) for item in filter_obj)
+    else:
+        return filter_obj
+
+
+def complex_filter(filter_obj):
+    """
+    Checks if a filter is a complex group by looking for a 'filters' key.
+    Note: In Python API, complex filters use 'filters' key (input format),
+    not 'conditions' key (server format).
+
+    Examples:
+        complex_filter({"filter_operator": "and", "filters": []}) -> True
+        complex_filter({"path": "id", "values": [1]}) -> False
+    """
+    return isinstance(filter_obj, dict) and 'filters' in filter_obj
+
+
+def deduplicate_nested_conditions(sg_filter, unique_normalized_filters):
+    """
+    For a complex filter, returns a new version with its nested conditions deduplicated.
+    """
+    if not complex_filter(sg_filter):
+        return sg_filter
+
+    nested_conditions = deduplicate(sg_filter["filters"], unique_normalized_filters)
+    new_filter = sg_filter.copy()
+    new_filter["filters"] = nested_conditions
+    return new_filter
+
+
+def deduplicate(filters, unique_normalized_filters):
+    """
+    The recursive worker that processes a list of filters. It relies on the
+    shared unique_normalized_filters set to track and remove duplicates
+    across all levels of nesting.
+    """
+    deduplicated_filters = []
+
+    for sg_filter in filters:
+        # First, deduplicate any nested conditions within the current filter
+        prepared_filter = deduplicate_nested_conditions(sg_filter, unique_normalized_filters)
+
+        # Discard complex filters that become empty after their nested conditions are deduplicated
+        if complex_filter(prepared_filter) and not prepared_filter.get('filters'):
+            # But keep invalid filters for proper error handling
+            if prepared_filter.get('filter_operator') in ['all', 'and', 'any', 'or']:
+                continue
+
+        normalized_filter = normalize_filter(prepared_filter)
+
+        # The add() method returns None, but we check membership first
+        if normalized_filter not in unique_normalized_filters:
+            unique_normalized_filters.add(normalized_filter)
+            deduplicated_filters.append(prepared_filter)
+
+    return deduplicated_filters
+
+
+def remove_duplicate_filters(filters):
+    """
+    Remove duplicate filters from a list of filters while preserving order.
+
+    :param filters: List of filter objects to deduplicate
+    :returns: List with duplicates removed, preserving original order
+    """
+    try:
+        if not isinstance(filters, (list, tuple)):
+            return filters
+
+        return deduplicate(filters, set())
+    except Exception:
+        # Fail-safe: return original filters if deduplication fails to prevent a crash
+        return filters
 
 
 def _translate_filters_simple(sg_filter):
