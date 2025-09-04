@@ -1911,6 +1911,7 @@ class Shotgun(object):
         :param str layout_name: The name of the layout to export this will map to the layout_display_name field. Defaults to ``None``.
         :returns: string containing data of the given page.
         :rtype: string
+        
         """
 
         params = dict(
