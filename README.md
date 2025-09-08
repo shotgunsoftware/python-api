@@ -1,6 +1,7 @@
-[![VFX Platform](https://img.shields.io/badge/vfxplatform-2025%20%7C%202024%20%7C%202023%20%7C%202022-blue.svg)](http://www.vfxplatform.com/)
-[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.10%20%7C%203.9-blue.svg)](https://www.python.org/)
-[![Reference Documentation](http://img.shields.io/badge/doc-reference-blue.svg)](http://developer.shotgridsoftware.com/python-api)
+[![Supported VFX Platform: 2022 - 2025](https://img.shields.io/badge/VFX_Platform-2022_|_2023_|_2024_|_2025-blue)](http://www.vfxplatform.com/ "Supported VFX Platform")
+[![Supported Python versions: 3.9 - 3.11](https://img.shields.io/badge/Python-3.9_|_3.10_|_3.11-blue?logo=python&logoColor=f5f5f5)](https://www.python.org/ "Supported Python versions")
+[![Reference Documentation](http://img.shields.io/badge/Reference-documentation-blue.svg?logo=wikibooks&logoColor=f5f5f5)](http://developer.shotgridsoftware.com/python-api)
+
 [![Build Status](https://dev.azure.com/shotgun-ecosystem/Python%20API/_apis/build/status/shotgunsoftware.python-api?branchName=master)](https://dev.azure.com/shotgun-ecosystem/Python%20API/_build/latest?definitionId=108&branchName=master)
 [![Coverage Status](https://coveralls.io/repos/github/shotgunsoftware/python-api/badge.svg?branch=master)](https://coveralls.io/github/shotgunsoftware/python-api?branch=master)
 
