@@ -22,7 +22,7 @@ where `vX.Y.Z` is a release found on `httplib2`'s [release page](https://github.
     - Examples are always good especially if this a new feature or method.
     - Think about a new user to the API trying to figure out how to use the features you're documenting.
 3) Update the version value in `python-api/setup.py`  to match the version you are packaging. This controls what version users will get when installing via pip.
-4) Update the `__version__` value in `shotgun_api3/shotgun.py` to the version you're releasing. This identified the current version within the API itself.
+4) Update the `__version__` value in `shotgun_api3/shotgun.py` to the version you're releasing. This identifies the current version within the API itself.
 5) Commit these changes in master with a commit message like `packaging for the vx.x.x release`.
 6) Create a tag based off of the master branch called `vx.x.x` to match the version number you're releasing.
 7) Push master and your tag to Github.
