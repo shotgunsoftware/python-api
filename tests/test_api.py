@@ -22,6 +22,7 @@ import sys
 import time
 import types
 import unittest
+import unittest.mock
 import urllib.parse
 import urllib.request
 import urllib.error
@@ -39,8 +40,6 @@ from shotgun_api3.lib.sgsix import ShotgunSSLError
 import shotgun_api3
 
 from . import base
-from . import mock
-from .mock import patch, MagicMock
 
 
 class TestShotgunApi(base.LiveTestBase):
@@ -315,13 +314,12 @@ class TestShotgunApi(base.LiveTestBase):
         # cleanup
         os.remove(file_path)
 
-    @patch("shotgun_api3.Shotgun._send_form")
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
     def test_upload_to_sg(self, mock_send_form):
         """
         Upload an attachment tests for _upload_to_sg()
         """
         self.sg.server_info["s3_direct_uploads_enabled"] = False
-        mock_send_form.method.assert_called_once()
         mock_send_form.return_value = "1\n:123\nasd"
         this_dir, _ = os.path.split(__file__)
         u_path = os.path.abspath(
@@ -334,6 +332,7 @@ class TestShotgunApi(base.LiveTestBase):
             "attachments",
             tag_list="monkeys, everywhere, send, help",
         )
+        mock_send_form.assert_called_once()
         mock_send_form_args, _ = mock_send_form.call_args
         display_name_to_send = mock_send_form_args[1].get("display_name", "")
         self.assertTrue(isinstance(upload_id, int))
@@ -356,7 +355,7 @@ class TestShotgunApi(base.LiveTestBase):
             display_name_to_send.startswith("b'") and display_name_to_send.endswith("'")
         )
 
-        mock_send_form.method.assert_called_once()
+        mock_send_form.reset_mock()
         mock_send_form.return_value = "2\nIt can't be upload"
         self.assertRaises(
             shotgun_api3.ShotgunError,
@@ -367,6 +366,7 @@ class TestShotgunApi(base.LiveTestBase):
             "attachments",
             tag_list="monkeys, everywhere, send, help",
         )
+        mock_send_form.assert_called_once()
         self.sg.server_info["s3_direct_uploads_enabled"] = True
 
     def test_upload_thumbnail_in_create(self):
@@ -714,11 +714,10 @@ class TestShotgunApi(base.LiveTestBase):
             shotgun_api3.ShotgunError, self.sg.share_thumbnail, [self.shot, self.asset]
         )
 
-    @patch("shotgun_api3.Shotgun._send_form")
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
     def test_share_thumbnail_not_ready(self, mock_send_form):
         """throw an exception if trying to share a transient thumbnail"""
 
-        mock_send_form.method.assert_called_once()
         mock_send_form.return_value = (
             "2"
             "\nsource_entity image is a transient thumbnail that cannot be shared. "
@@ -732,11 +731,12 @@ class TestShotgunApi(base.LiveTestBase):
             source_entity=self.asset,
         )
 
-    @patch("shotgun_api3.Shotgun._send_form")
+        mock_send_form.assert_called_once()
+
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
     def test_share_thumbnail_returns_error(self, mock_send_form):
         """throw an exception if server returns an error code"""
 
-        mock_send_form.method.assert_called_once()
         mock_send_form.return_value = "1\nerror message.\n"
 
         self.assertRaises(
@@ -745,6 +745,8 @@ class TestShotgunApi(base.LiveTestBase):
             [self.version, self.shot],
             source_entity=self.asset,
         )
+
+        mock_send_form.assert_called_once()
 
     def test_deprecated_functions(self):
         """Deprecated functions raise errors"""
@@ -2194,17 +2196,17 @@ class TestErrors(base.TestBase):
         user = self.sg.find_one("HumanUser", [["login", "is", login]])
         self.sg.update("HumanUser", user["id"], {"locked_until": None})
 
-    @patch("shotgun_api3.shotgun.Http.request")
+    @unittest.mock.patch("shotgun_api3.shotgun.Http.request")
     def test_status_not_200(self, mock_request):
-        response = MagicMock(name="response mock", spec=dict)
+        response = unittest.mock.MagicMock(name="response mock", spec=dict)
         response.status = 300
         response.reason = "reason"
         mock_request.return_value = (response, {})
         self.assertRaises(shotgun_api3.ProtocolError, self.sg.find_one, "Shot", [])
 
-    @patch("shotgun_api3.shotgun.Http.request")
+    @unittest.mock.patch("shotgun_api3.shotgun.Http.request")
     def test_make_call_retry(self, mock_request):
-        response = MagicMock(name="response mock", spec=dict)
+        response = unittest.mock.MagicMock(name="response mock", spec=dict)
         response.status = 200
         response.reason = "reason"
         mock_request.return_value = (response, {})
@@ -2234,7 +2236,7 @@ class TestErrors(base.TestBase):
                             "EOF occurred in violation of protocol (_ssl.c:2426)"
                         )
 
-                    return mock.DEFAULT
+                    return unittest.mock.DEFAULT
                 finally:
                     my_side_effect2.counter += 1
 
@@ -2260,7 +2262,7 @@ class TestErrors(base.TestBase):
         finally:
             self.sg.config.rpc_attempt_interval = bak_rpc_attempt_interval
 
-    @patch("shotgun_api3.shotgun.Http.request")
+    @unittest.mock.patch("shotgun_api3.shotgun.Http.request")
     def test_sha2_error(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
         mock_request.side_effect = ShotgunSSLError(
@@ -2300,7 +2302,7 @@ class TestErrors(base.TestBase):
         if original_env_val is not None:
             os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
 
-    @patch("shotgun_api3.shotgun.Http.request")
+    @unittest.mock.patch("shotgun_api3.shotgun.Http.request")
     def test_sha2_error_with_strict(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
         mock_request.side_effect = ShotgunSSLError(
@@ -2331,7 +2333,7 @@ class TestErrors(base.TestBase):
         if original_env_val is not None:
             os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
 
-    @patch.object(urllib.request.OpenerDirector, "open")
+    @unittest.mock.patch.object(urllib.request.OpenerDirector, "open")
     def test_sanitized_auth_params(self, mock_open):
         # Simulate the server blowing up and giving us a 500 error
         mock_open.side_effect = urllib.error.HTTPError("url", 500, "message", {}, None)

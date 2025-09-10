@@ -8,9 +8,8 @@ import random
 import re
 import time
 import unittest
+import unittest.mock
 import urllib.error
-
-from . import mock
 
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities
@@ -133,12 +132,12 @@ class MockTestBase(TestBase):
         """Setup mocking on the ShotgunClient to stop it calling a live server"""
         # Replace the function used to make the final call to the server
         # eaiser than mocking the http connection + response
-        self.sg._http_request = mock.Mock(
+        self.sg._http_request = unittest.mock.Mock(
             spec=api.Shotgun._http_request, return_value=((200, "OK"), {}, None)
         )
         # Replace the function used to make the final call to the S3 server, and simulate
         # the exception HTTPError raised with 503 status errors
-        self.sg._make_upload_request = mock.Mock(
+        self.sg._make_upload_request = unittest.mock.Mock(
             spec=api.Shotgun._make_upload_request,
             side_effect=urllib.error.HTTPError(
                 "url",
@@ -152,12 +151,12 @@ class MockTestBase(TestBase):
         # also replace the function that is called to get the http connection
         # to avoid calling the server. OK to return a mock as we will not use
         # it
-        self.mock_conn = mock.Mock(spec=api.lib.httplib2.Http)
+        self.mock_conn = unittest.mock.Mock(spec=api.lib.httplib2.Http)
         # The Http objects connection property is a dict of connections
         # it is holding
         self.mock_conn.connections = dict()
         self.sg._connection = self.mock_conn
-        self.sg._get_connection = mock.Mock(return_value=self.mock_conn)
+        self.sg._get_connection = unittest.mock.Mock(return_value=self.mock_conn)
 
         # create the server caps directly to say we have the correct version
         self.sg._server_caps = ServerCapabilities(
@@ -173,7 +172,7 @@ class MockTestBase(TestBase):
         """
         # test for a mock object rather than config.mock as some tests
         # force the mock to be created
-        if not isinstance(self.sg._http_request, mock.Mock):
+        if not isinstance(self.sg._http_request, unittest.mock.Mock):
             return
 
         if not isinstance(data, str):
