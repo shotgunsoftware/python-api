@@ -323,7 +323,7 @@ class TestShotgunClient(base.MockTestBase):
         with unittest.mock.patch("time.sleep") as mock_sleep:
             self.assertRaises(httplib2.HttpLib2Error, self.sg.info)
             self.assertTrue(
-                self.sg.config.max_rpc_attempts == self.sg._http_request.call_count,
+                self.sg._http_request.call_count == 1,
                 "Call is repeated",
             )
             # Ensure that sleep was called with the retry interval between each attempt

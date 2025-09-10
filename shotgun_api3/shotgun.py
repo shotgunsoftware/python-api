@@ -2922,9 +2922,9 @@ class Shotgun(object):
                                 root = xml.etree.ElementTree.fromstring("".join(body))
                                 message_elem = root.find(".//Message")
                                 if message_elem is not None and message_elem.text:
-                                    err += f" - {message_elem.text}"
+                                    err = f"{err} - {message_elem.text}"
                             except xml.etree.ElementTree.ParseError:
-                                err += "\n%s\n" % "".join(body)
+                                err = f"{err}\n{''.join(body)}\n"
                 elif e.code == 409 or e.code == 410:
                     # we may be dealing with a file that is pending/failed a malware scan, e.g:
                     # 409: This file is undergoing a malware scan, please try again in a few minutes
@@ -3888,11 +3888,10 @@ class Shotgun(object):
                 if attempt == max_rpc_attempts:
                     LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
-            except Exception:
+            except Exception as e:
                 self._close_connection()
-                if attempt == max_rpc_attempts:
-                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
-                    raise
+                LOG.debug(f"Request failed.  Reason: {e}", exc_info=True)
+                raise
 
             LOG.debug(
                 "Request failed, attempt %d of %d.  Retrying in %.2f seconds..."
