@@ -35,7 +35,7 @@ import datetime
 import json
 import http.client  # Used for secure file upload
 import http.cookiejar  # used for attachment upload
-import io  # used for attachment upload
+import io
 import logging
 import mimetypes
 import os
@@ -49,6 +49,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import uuid  # used for attachment upload
+import xml.etree.ElementTree
 
 # Import Error and ResponseError (even though they're unused in this file) since they need
 # to be exposed as part of the API.
@@ -56,7 +57,6 @@ from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 
 # Python 2/3 compatibility
 from .lib import six
-from .lib import sgsix
 from .lib import sgutils
 from .lib.httplib2 import Http, ProxyInfo, socks
 from .lib.sgtimezone import SgTimezone
@@ -329,7 +329,7 @@ class ClientCapabilities(object):
         ``windows``, or ``None`` (if the current platform couldn't be determined).
     :ivar str local_path_field: The PTR field used for local file paths. This is calculated using
         the value of ``platform``. Ex. ``local_path_mac``.
-    :ivar str py_version: Simple version of Python executable as a string. Eg. ``2.7``.
+    :ivar str py_version: Simple version of Python executable as a string. Eg. ``3.9``.
     :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``. This
         info is only available in Python 2.7+ if the ssl module was imported successfully.
         Defaults to ``unknown``
@@ -567,18 +567,6 @@ class Shotgun(object):
                 :class:`~shotgun_api3.MissingTwoFactorAuthenticationFault` will be raised if the
                 ``auth_token`` is invalid.
             .. todo: Add this info to the Authentication section of the docs
-
-        .. note:: A note about proxy connections: If you are using Python <= v2.6.2, HTTPS
-            connections through a proxy server will not work due to a bug in the :mod:`urllib2`
-            library (see http://bugs.python.org/issue1424152). This will affect upload and
-            download-related methods in the Shotgun API (eg. :meth:`~shotgun_api3.Shotgun.upload`,
-            :meth:`~shotgun_api3.Shotgun.upload_thumbnail`,
-            :meth:`~shotgun_api3.Shotgun.upload_filmstrip_thumbnail`,
-            :meth:`~shotgun_api3.Shotgun.download_attachment`. Normal CRUD methods for passing JSON
-            data should still work fine. If you cannot upgrade your Python installation, you can see
-            the patch merged into Python v2.6.3 (http://hg.python.org/cpython/rev/0f57b30a152f/) and
-            try and hack it into your installation but YMMV. For older versions of Python there
-            are other patches that were proposed in the bug report that may help you as well.
         """
 
         # verify authentication arguments
@@ -617,13 +605,7 @@ class Shotgun(object):
             if script_name is not None or api_key is not None:
                 raise ValueError("cannot provide an auth_code with script_name/api_key")
 
-        # Can't use 'all' with python 2.4
-        if (
-            len(
-                [x for x in [session_token, script_name, api_key, login, password] if x]
-            )
-            == 0
-        ):
+        if not any([session_token, script_name, api_key, login, password]):
             if connect:
                 raise ValueError(
                     "must provide login/password, session_token or script_name/api_key"
@@ -2879,8 +2861,7 @@ class Shotgun(object):
                 This parameter exists only for backwards compatibility for scripts specifying
                 the parameter with keywords.
         :returns: If ``file_path`` is provided, returns the path to the file on disk.  If
-            ``file_path`` is ``None``, returns the actual data of the file, as str in Python 2 or
-            bytes in Python 3.
+            ``file_path`` is ``None``, returns the actual data of the file, as bytes.
         :rtype: str | bytes
         """
         # backwards compatibility when passed via keyword argument
@@ -2941,12 +2922,13 @@ class Shotgun(object):
                         ]
 
                         if body:
-                            xml = "".join(body)
-                            # Once python 2.4 support is not needed we can think about using
-                            # elementtree. The doc is pretty small so this shouldn't be an issue.
-                            match = re.search("<Message>(.*)</Message>", xml)
-                            if match:
-                                err += " - %s" % (match.group(1))
+                            try:
+                                root = xml.etree.ElementTree.fromstring("".join(body))
+                                message_elem = root.find(".//Message")
+                                if message_elem is not None and message_elem.text:
+                                    err = f"{err} - {message_elem.text}"
+                            except xml.etree.ElementTree.ParseError:
+                                err = f"{err}\n{''.join(body)}\n"
                 elif e.code == 409 or e.code == 410:
                     # we may be dealing with a file that is pending/failed a malware scan, e.g:
                     # 409: This file is undergoing a malware scan, please try again in a few minutes
@@ -4693,17 +4675,12 @@ class FormPostHandler(urllib.request.BaseHandler):
     handler_order = urllib.request.HTTPHandler.handler_order - 10  # needs to run first
 
     def http_request(self, request):
-        # get_data was removed in 3.4. since we're testing against 3.6 and
-        # 3.7, this should be sufficient.
-        if six.PY3:
-            data = request.data
-        else:
-            data = request.get_data()
+        data = request.data
         if data is not None and not isinstance(data, str):
             files = []
             params = []
             for key, value in data.items():
-                if isinstance(value, sgsix.file_types):
+                if isinstance(value, io.IOBase):
                     files.append((key, value))
                 else:
                     params.append((key, value))
@@ -4714,12 +4691,8 @@ class FormPostHandler(urllib.request.BaseHandler):
                 boundary, data = self.encode(params, files)
                 content_type = "multipart/form-data; boundary=%s" % boundary
                 request.add_unredirected_header("Content-Type", content_type)
-            # add_data was removed in 3.4. since we're testing against 3.6 and
-            # 3.7, this should be sufficient.
-            if six.PY3:
-                request.data = data
-            else:
-                request.add_data(data)
+            request.data = data
+
         return request
 
     def encode(self, params, files, boundary=None, buffer=None):

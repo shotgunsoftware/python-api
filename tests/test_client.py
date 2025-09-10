@@ -651,10 +651,7 @@ class TestShotgunClient(base.MockTestBase):
             connect=False,
         )
 
-        if six.PY3:
-            j = json.dumps(d, ensure_ascii=ensure_ascii)
-        else:
-            j = json.dumps(d, ensure_ascii=ensure_ascii, encoding="utf-8")
+        j = json.dumps(d, ensure_ascii=ensure_ascii)
         self.assertEqual(d, sg._decode_response(headers, j))
 
         headers["content-type"] = "text/javascript"

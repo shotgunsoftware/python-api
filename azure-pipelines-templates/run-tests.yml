@@ -33,9 +33,9 @@ parameters:
 
 jobs:
   # The job will be named after the OS and Azure will suffix the strategy to make it unique
-  # so we'll have a job name "Windows Python 2.7" for example. What's a strategy? Strategies are the
-  # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python 2.7" and
-  # "<OS> Python 3.7".
+  # so we'll have a job name "Windows Python 3.9" for example. What's a strategy? Strategies are the
+  # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python 3.9" and
+  # "<OS> Python 3.10".
 - job: ${{ parameters.name }}
   pool:
     vmImage: ${{ parameters.vm_image }}
@@ -68,8 +68,8 @@ jobs:
       versionSpec: '$(python.version)'
       addToPath: True
 
-  # Install all dependencies needed for running the tests. This command is good for
-  # Python 2 and 3, but also for all OSes
+  # Install all dependencies needed for running the tests. This command is good
+  # for all OSes
   - script: |
       python -m pip install --upgrade pip setuptools wheel
       python -m pip install -r tests/ci_requirements.txt

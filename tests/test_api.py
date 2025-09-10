@@ -32,11 +32,6 @@ import warnings
 from shotgun_api3.lib import six
 from shotgun_api3.lib.httplib2 import Http
 
-# To mock the correct exception when testion on Python 2 and 3, use the
-# ShotgunSSLError variable from sgsix that contains the appropriate exception
-# class for the current Python version.
-from shotgun_api3.lib.sgsix import ShotgunSSLError
-
 import shotgun_api3
 
 from . import base
@@ -272,44 +267,6 @@ class TestShotgunApi(base.LiveTestBase):
             "sg_uploaded_movie",
             tag_list="monkeys, everywhere, send, help",
         )
-        if six.PY2:
-            # In Python2, make sure that non-utf-8 encoded paths raise when they
-            # can't be converted to utf-8.  For Python3, we'll skip these tests
-            # since string encoding is handled differently.
-
-            # We need to touch the file we're going to test with first. We can't
-            # bundle a file with this filename in the repo due to some pip install
-            # problems on Windows. Note that the path below is utf-8 encoding of
-            # what we'll eventually encode as shift-jis.
-            file_path_s = os.path.join(this_dir, "./\xe3\x81\x94.shift-jis")
-            file_path_u = file_path_s.decode("utf-8")
-
-            with open(
-                file_path_u if sys.platform.startswith("win") else file_path_s, "w"
-            ) as fh:
-                fh.write("This is just a test file with some random data in it.")
-
-            self.assertRaises(
-                shotgun_api3.ShotgunError,
-                self.sg.upload,
-                "Version",
-                self.version["id"],
-                file_path_u.encode("shift-jis"),
-                "sg_uploaded_movie",
-                tag_list="monkeys, everywhere, send, help",
-            )
-
-            # But it should work in all cases if a unicode string is used.
-            self.sg.upload(
-                "Version",
-                self.version["id"],
-                file_path_u,
-                "sg_uploaded_movie",
-                tag_list="monkeys, everywhere, send, help",
-            )
-
-            # cleanup
-            os.remove(file_path_u)
 
         # cleanup
         os.remove(file_path)
@@ -2265,7 +2222,7 @@ class TestErrors(base.TestBase):
     @unittest.mock.patch("shotgun_api3.shotgun.Http.request")
     def test_sha2_error(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError(
+        mock_request.side_effect = ssl.SSLError(
             "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
             "encoding routines:ASN1_item_verify: unknown message digest "
             "algorithm"
@@ -2292,7 +2249,7 @@ class TestErrors(base.TestBase):
 
         try:
             self.sg.info()
-        except ShotgunSSLError:
+        except ssl.SSLError:
             # ensure the api has reset the values in the correct fallback behavior
             self.assertTrue(self.sg.config.no_ssl_validation)
             self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
@@ -2305,7 +2262,7 @@ class TestErrors(base.TestBase):
     @unittest.mock.patch("shotgun_api3.shotgun.Http.request")
     def test_sha2_error_with_strict(self, mock_request):
         # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError(
+        mock_request.side_effect = ssl.SSLError(
             "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
             "encoding routines:ASN1_item_verify: unknown message digest "
             "algorithm"
@@ -2322,7 +2279,7 @@ class TestErrors(base.TestBase):
 
         try:
             self.sg.info()
-        except ShotgunSSLError:
+        except ssl.SSLError:
             # ensure the api has NOT reset the values in the fallback behavior because we have
             # set the env variable to force validation
             self.assertFalse(self.sg.config.no_ssl_validation)
