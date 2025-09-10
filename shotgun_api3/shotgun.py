@@ -78,14 +78,6 @@ SG_TIMEZONE = SgTimezone()
 
 SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = False
 
-NO_SSL_VALIDATION = False
-"""
-Turns off hostname matching validation for SSL certificates
-
-Sometimes there are cases where certificate validation should be disabled. For example, if you
-have a self-signed internal certificate that isn't included in our certificate bundle, you may
-not require the added security provided by enforcing this.
-"""
 
 # ----------------------------------------------------------------------------
 # Version
@@ -327,9 +319,7 @@ class ClientCapabilities(object):
     :ivar str local_path_field: The PTR field used for local file paths. This is calculated using
         the value of ``platform``. Ex. ``local_path_mac``.
     :ivar str py_version: Simple version of Python executable as a string. Eg. ``3.9``.
-    :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``. This
-        info is only available in Python 2.7+ if the ssl module was imported successfully.
-        Defaults to ``unknown``
+    :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``.
     """
 
     def __init__(self):
@@ -350,14 +340,7 @@ class ClientCapabilities(object):
             self.local_path_field = None
 
         self.py_version = ".".join(str(x) for x in sys.version_info[:2])
-
-        # extract the OpenSSL version if we can. The version is only available in Python 2.7 and
-        # only if we successfully imported ssl
-        self.ssl_version = "unknown"
-        try:
-            self.ssl_version = ssl.OPENSSL_VERSION
-        except (AttributeError, NameError):
-            pass
+        self.ssl_version = ssl.OPENSSL_VERSION
 
     def __str__(self):
         return (
@@ -425,7 +408,6 @@ class _Config(object):
         self.proxy_pass = None
         self.session_token = None
         self.authorization = None
-        self.no_ssl_validation = False
         self.localized = False
 
     def set_server_params(self, base_url):
@@ -616,7 +598,6 @@ class Shotgun(object):
         self.config.session_token = session_token
         self.config.sudo_as_login = sudo_as_login
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
-        self.config.no_ssl_validation = NO_SSL_VALIDATION
         self.config.raw_http_proxy = http_proxy
 
         try:
@@ -2264,14 +2245,10 @@ class Shotgun(object):
             ua_platform = self.client_caps.platform.capitalize()
 
         # create ssl validation string based on settings
-        validation_str = "validate"
-        if self.config.no_ssl_validation:
-            validation_str = "no-validate"
-
         self._user_agents = [
             "shotgun-json (%s)" % __version__,
             "Python %s (%s)" % (self.client_caps.py_version, ua_platform),
-            "ssl %s (%s)" % (self.client_caps.ssl_version, validation_str),
+            "ssl %s" % (self.client_caps.ssl_version),
         ]
 
     def set_session_uuid(self, session_uuid):
@@ -3543,8 +3520,14 @@ class Shotgun(object):
         Build urllib2 opener with appropriate proxy handler.
         """
         handlers = []
-        if self.__ca_certs and not NO_SSL_VALIDATION:
-            handlers.append(CACertsHTTPSHandler(self.__ca_certs))
+        if self.__ca_certs:
+            handlers.append(
+                urllib.request.HTTPSHandler(
+                    context=ssl.create_default_context(
+                        cafile=self.__ca_certs,
+                    ),
+                ),
+            )
 
         if self.config.proxy_handler:
             handlers.append(self.config.proxy_handler)
@@ -3612,23 +3595,6 @@ class Shotgun(object):
             # Now add the rest of the path to the cert file.
             cert_file = os.path.join(cur_dir, "lib", "certifi", "cacert.pem")
             return cert_file
-
-    def _turn_off_ssl_validation(self):
-        """
-        Turn off SSL certificate validation.
-        """
-        global NO_SSL_VALIDATION
-        self.config.no_ssl_validation = True
-        NO_SSL_VALIDATION = True
-        # reset ssl-validation in user-agents
-        self._user_agents = [
-            (
-                "ssl %s (no-validate)" % self.client_caps.ssl_version
-                if ua.startswith("ssl ")
-                else ua
-            )
-            for ua in self._user_agents
-        ]
 
     # Deprecated methods from old wrapper
     def schema(self, entity_type):
@@ -3843,44 +3809,7 @@ class Shotgun(object):
                 if attempt == max_rpc_attempts:
                     LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
-                # This is the exact same block as the "except Exception" bellow.
-                # We need to do it here because the next except will match it
-                # otherwise and will not re-attempt.
-                # When we drop support of Python 2 and we will probably drop the
-                # next except, we might want to remove this except too.
             except (ssl.SSLError, ssl.CertificateError) as e:
-                # Test whether the exception is due to the fact that this is an older version of
-                # Python that cannot validate certificates encrypted with SHA-2. If it is, then
-                # fall back on disabling the certificate validation and try again - unless the
-                # SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable has been set by the
-                # user. In that case we simply raise the exception. Any other exceptions simply
-                # get raised as well.
-                #
-                # For more info see:
-                # https://www.shotgridsoftware.com/blog/important-ssl-certificate-renewal-and-sha-2/
-                #
-                # SHA-2 errors look like this:
-                #   [Errno 1] _ssl.c:480: error:0D0C50A1:asn1 encoding routines:ASN1_item_verify:
-                #   unknown message digest algorithm
-                #
-                # Any other exceptions simply get raised.
-                if (
-                    "unknown message digest algorithm" not in str(e)
-                    or "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ
-                ):
-                    raise
-
-                if self.config.no_ssl_validation is False:
-                    LOG.warning(
-                        "SSL Error: this Python installation is incompatible with "
-                        "certificates signed with SHA-2. Disabling certificate validation. "
-                        "For more information, see https://www.shotgridsoftware.com/blog/"
-                        "important-ssl-certificate-renewal-and-sha-2/"
-                    )
-                    self._turn_off_ssl_validation()
-                    # reload user agent to reflect that we have turned off ssl validation
-                    req_headers["user-agent"] = "; ".join(self._user_agents)
-
                 self._close_connection()
                 if attempt == max_rpc_attempts:
                     LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
@@ -4142,14 +4071,12 @@ class Shotgun(object):
                 timeout=self.config.timeout_secs,
                 ca_certs=self.__ca_certs,
                 proxy_info=pi,
-                disable_ssl_certificate_validation=self.config.no_ssl_validation,
             )
         else:
             self._connection = Http(
                 timeout=self.config.timeout_secs,
                 ca_certs=self.__ca_certs,
                 proxy_info=None,
-                disable_ssl_certificate_validation=self.config.no_ssl_validation,
             )
 
         return self._connection
@@ -4611,22 +4538,6 @@ class CACertsHTTPSConnection(http.client.HTTPConnection):
             self.sock = ssl.wrap_socket(
                 self.sock, ca_certs=self.__ca_certs, cert_reqs=ssl.CERT_REQUIRED
             )
-
-
-class CACertsHTTPSHandler(urllib.request.HTTPHandler):
-    """
-    Handler that ensures https connections are created with the custom CA certs.
-    """
-
-    def __init__(self, cacerts):
-        super().__init__(self)
-        self.__ca_certs = cacerts
-
-    def https_open(self, req):
-        return self.do_open(self.create_https_connection, req)
-
-    def create_https_connection(self, *args, **kwargs):
-        return CACertsHTTPSConnection(*args, ca_certs=self.__ca_certs, **kwargs)
 
 
 # Helpers from the previous API, left as is.
