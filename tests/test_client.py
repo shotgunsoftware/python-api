@@ -647,7 +647,6 @@ class TestShotgunClient(base.MockTestBase):
             self.config.script_name,
             self.config.api_key,
             http_proxy=self.config.http_proxy,
-            ensure_ascii=ensure_ascii,
             connect=False,
         )
 
