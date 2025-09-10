@@ -11,13 +11,14 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
+import ssl
 import unittest
 from unittest import mock
 import urllib.request
 import urllib.error
 
 import shotgun_api3 as api
-from shotgun_api3.lib.httplib2 import Http, ssl_error_classes
+from shotgun_api3.lib.httplib2 import Http
 
 
 class TestShotgunInit(unittest.TestCase):
@@ -771,7 +772,7 @@ class TestCerts(unittest.TestCase):
         """
         # First check that we get an error when trying to connect to a known dummy bad URL
         self.assertRaises(
-            ssl_error_classes,
+            (ssl.SSLError, ssl.CertificateError),
             self._check_url_with_sg_api_httplib2,
             self.bad_url,
             self.certs,
