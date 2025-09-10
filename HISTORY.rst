@@ -4,11 +4,11 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
-v3.8.6 (2025 Sep 10)
+v3.9.0 (2025 Sep 10)
 ===================
 
 - Removed Python 2 code.
-- Removed six module. Note: review any custom code that may rely on six through python-api.
+- Removed six module. Note: Please review if your code depends on six library included on this package. In this case you need to update your code as this is not supported anymore.
 
 v3.8.5 (2025 Jul 31)
 ===================
