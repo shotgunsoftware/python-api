@@ -29,9 +29,13 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+import base64
 import copy
 import datetime
 import json
+import http.client  # Used for secure file upload
+import http.cookiejar  # used for attachment upload
+import io  # used for attachment upload
 import logging
 import os
 import re
@@ -40,28 +44,21 @@ import ssl
 import stat  # used for attachment upload
 import sys
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
 import uuid  # used for attachment upload
+
+# Import Error and ResponseError (even though they're unused in this file) since they need
+# to be exposed as part of the API.
+from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 
 # Python 2/3 compatibility
 from .lib import six
 from .lib import sgsix
 from .lib import sgutils
-from .lib.six import BytesIO  # used for attachment upload
-from .lib.six.moves import map
-from .lib.six.moves import http_cookiejar  # used for attachment upload
-from .lib.six.moves import urllib
-from .lib.six.moves import http_client  # Used for secure file upload.
 from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
 from .lib.sgtimezone import SgTimezone
-
-# Import Error and ResponseError (even though they're unused in this file) since they need
-# to be exposed as part of the API.
-from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError  # noqa
-
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
 
 
 LOG = logging.getLogger("shotgun_api3")
@@ -708,13 +705,13 @@ class Shotgun(object):
         # and auth header
 
         # Do NOT self._split_url(self.base_url) here, as it contains the lower
-        # case version of the base_url argument. Doing so would base64encode
+        # case version of the base_url argument. Doing so would base64.encodebytes
         # the lowercase version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64encode(urllib.parse.unquote(auth).encode("utf-8")).decode(
-                "utf-8"
-            )
+            auth = base64.encodebytes(
+                urllib.parse.unquote(auth).encode("utf-8")
+            ).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
@@ -3003,8 +3000,8 @@ class Shotgun(object):
         This is used internally for downloading attachments from FPTR.
         """
         sid = self.get_session_token()
-        cj = http_cookiejar.LWPCookieJar()
-        c = http_cookiejar.Cookie(
+        cj = http.cookiejar.LWPCookieJar()
+        c = http.cookiejar.Cookie(
             "0",
             "_session_id",
             sid,
@@ -4432,7 +4429,7 @@ class Shotgun(object):
                 data_size = len(data)
                 # keep data as a stream so that we don't need to worry how it was
                 # encoded.
-                data = BytesIO(data)
+                data = io.BytesIO(data)
                 bytes_read += data_size
                 part_url = self._get_upload_part_link(
                     upload_info, filename, part_number
@@ -4662,13 +4659,13 @@ class Shotgun(object):
             raise ShotgunError("Max attemps limit reached.")
 
 
-class CACertsHTTPSConnection(http_client.HTTPConnection):
+class CACertsHTTPSConnection(http.client.HTTPConnection):
     """ "
     This class allows to create an HTTPS connection that uses the custom certificates
     passed in.
     """
 
-    default_port = http_client.HTTPS_PORT
+    default_port = http.client.HTTPS_PORT
 
     def __init__(self, *args, **kwargs):
         """
@@ -4760,7 +4757,7 @@ class FormPostHandler(urllib.request.BaseHandler):
             # We'll do this across both python 2/3 rather than add more branching.
             boundary = uuid.uuid4()
         if buffer is None:
-            buffer = BytesIO()
+            buffer = io.BytesIO()
         for key, value in params:
             if isinstance(key, bytes):
                 key = key.decode("utf-8")

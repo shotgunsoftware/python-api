@@ -12,24 +12,20 @@
 CRUD functions. These tests always use a mock http connection so not not
 need a live server to run against."""
 
+import configparser
+import base64
 import datetime
+import json
 import os
 import platform
 import re
 import sys
 import time
 import unittest
+import urllib.parse
+import urllib.error
 
-from shotgun_api3.lib.six.moves import urllib
 from shotgun_api3.lib import six, sgutils
-
-try:
-    import simplejson as json
-except ImportError:
-    try:
-        import json as json
-    except ImportError:
-        import shotgun_api3.lib.simplejson as json
 
 from . import mock
 
@@ -38,17 +34,12 @@ import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 from . import base
 
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
-
 
 def b64encode(val):
     if isinstance(val, str):
         val = val.encode("utf-8")
 
-    return base64encode(val).decode("utf-8")
+    return base64.encodebytes(val).decode("utf-8")
 
 
 class TestShotgunClient(base.MockTestBase):
@@ -190,7 +181,7 @@ class TestShotgunClient(base.MockTestBase):
         """Validate that config values are properly coerced."""
         this_dir = os.path.dirname(os.path.realpath(__file__))
         config_path = os.path.join(this_dir, "test_config_file")
-        config = base.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(config_path)
         result = config.get("SERVER_INFO", "api_key")
         expected = "%abce"

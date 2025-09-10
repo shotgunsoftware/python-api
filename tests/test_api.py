@@ -22,6 +22,9 @@ import sys
 import time
 import types
 import unittest
+import urllib.parse
+import urllib.request
+import urllib.error
 import uuid
 import warnings
 
@@ -32,8 +35,6 @@ from shotgun_api3.lib.httplib2 import Http
 # ShotgunSSLError variable from sgsix that contains the appropriate exception
 # class for the current Python version.
 from shotgun_api3.lib.sgsix import ShotgunSSLError
-
-from shotgun_api3.lib.six.moves import range, urllib
 
 import shotgun_api3
 
@@ -629,7 +630,7 @@ class TestShotgunApi(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_share_thumbnail(self):
         """share thumbnail between two entities"""
 
@@ -2899,7 +2900,7 @@ class TestNoteThreadRead(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_simple(self):
         """
         Test note reply thread API call
@@ -2978,7 +2979,7 @@ class TestNoteThreadRead(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_complex(self):
         """
         Test note reply thread API call with additional params
