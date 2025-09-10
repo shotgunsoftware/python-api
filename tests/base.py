@@ -13,7 +13,6 @@ import urllib.error
 
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities
-from shotgun_api3.lib import six
 
 
 THUMBNAIL_MAX_ATTEMPTS = 30
