@@ -16,29 +16,31 @@ test_api_long for other tests.
 
 from __future__ import print_function
 import datetime
-import sys
+import glob
 import os
-from . import mock
-from .mock import patch, MagicMock
 import ssl
+import sys
 import time
 import types
-import uuid
 import unittest
-from shotgun_api3.lib.six.moves import range, urllib
+import uuid
 import warnings
-import glob
 
-import shotgun_api3
-from shotgun_api3.lib.httplib2 import Http
 from shotgun_api3.lib import six
+from shotgun_api3.lib.httplib2 import Http
 
 # To mock the correct exception when testion on Python 2 and 3, use the
 # ShotgunSSLError variable from sgsix that contains the appropriate exception
 # class for the current Python version.
 from shotgun_api3.lib.sgsix import ShotgunSSLError
 
+from shotgun_api3.lib.six.moves import range, urllib
+
+import shotgun_api3
+
 from . import base
+from . import mock
+from .mock import patch, MagicMock
 
 
 class TestShotgunApi(base.LiveTestBase):
