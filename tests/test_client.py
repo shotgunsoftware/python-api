@@ -45,14 +45,17 @@ else:
 
 
 def b64encode(val):
-    return base64encode(sgutils.ensure_binary(val)).decode("utf-8")
+    if isinstance(val, str):
+        val = val.encode("utf-8")
+
+    return base64encode(val).decode("utf-8")
 
 
 class TestShotgunClient(base.MockTestBase):
     """Test case for shotgun api with server interactions mocked."""
 
     def setUp(self):
-        super(TestShotgunClient, self).setUp()
+        super().setUp()
         # get domain and uri scheme
         match = re.search("(https?://)(.*)", self.server_url)
         self.uri_prefix = match.group(1)
@@ -422,11 +425,10 @@ class TestShotgunClient(base.MockTestBase):
         expected = "rpc response with list result, first item"
         self.assertEqual(d["results"][0], rv, expected)
 
-        # Test unicode mixed with utf-8 as reported in Ticket #17959
+        # Test payload encoding with non-ascii characters (using utf-8 literal)
         d = {"results": ["foo", "bar"]}
         a = {
-            "utf_str": "\xe2\x88\x9a",
-            "unicode_str": sgutils.ensure_text("\xe2\x88\x9a"),
+            "utf_literal": "\xe2\x88\x9a",
         }
         self._mock_http(d)
         rv = self.sg._call_rpc("list", a)
@@ -640,9 +642,7 @@ class TestShotgunClient(base.MockTestBase):
         self.assertTrue(isinstance(j, bytes))
 
     def test_decode_response_ascii(self):
-        self._assert_decode_resonse(
-            True, sgutils.ensure_str("my data \u00e0", encoding="utf8")
-        )
+        self._assert_decode_resonse(True, "my data \u00e0")
 
     def test_decode_response_unicode(self):
         self._assert_decode_resonse(False, "my data \u00e0")

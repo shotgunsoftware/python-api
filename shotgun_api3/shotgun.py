@@ -712,9 +712,9 @@ class Shotgun(object):
         # the lowercase version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64encode(
-                sgutils.ensure_binary(urllib.parse.unquote(auth))
-            ).decode("utf-8")
+            auth = base64encode(urllib.parse.unquote(auth).encode("utf-8")).decode(
+                "utf-8"
+            )
             self.config.authorization = "Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
@@ -2270,8 +2270,7 @@ class Shotgun(object):
             "type": entity_type,
             "field_name": field_name,
             "properties": [
-                {"property_name": k, "value": v}
-                for k, v in six.iteritems((properties or {}))
+                {"property_name": k, "value": v} for k, v in (properties or {}).items()
             ],
         }
         params = self._add_project_param(params, project_entity)
@@ -2966,7 +2965,11 @@ class Shotgun(object):
                         url.find("s3.amazonaws.com") != -1
                         and e.headers["content-type"] == "application/xml"
                     ):
-                        body = [sgutils.ensure_text(line) for line in e.readlines()]
+                        body = [
+                            line.decode("utf-8") if isinstance(line, bytes) else line
+                            for line in e.readlines()
+                        ]
+
                         if body:
                             xml = "".join(body)
                             # Once python 2.4 support is not needed we can think about using
@@ -3328,7 +3331,7 @@ class Shotgun(object):
             raise ValueError("entity_types parameter must be a dictionary")
 
         api_entity_types = {}
-        for entity_type, filter_list in six.iteritems(entity_types):
+        for entity_type, filter_list in entity_types.items():
 
             if isinstance(filter_list, (list, tuple)):
                 resolved_filters = _translate_filters(filter_list, filter_operator=None)
@@ -3859,8 +3862,7 @@ class Shotgun(object):
         be in a single byte encoding to go over the wire.
         """
 
-        wire = json.dumps(payload, ensure_ascii=False)
-        return sgutils.ensure_binary(wire)
+        return json.dumps(payload, ensure_ascii=False).encode("utf-8")
 
     def _make_call(self, verb, path, body, headers):
         """
@@ -3964,7 +3966,7 @@ class Shotgun(object):
         resp, content = conn.request(url, method=verb, body=body, headers=headers)
         # http response code is handled else where
         http_status = (resp.status, resp.reason)
-        resp_headers = dict((k.lower(), v) for k, v in six.iteritems(resp))
+        resp_headers = dict((k.lower(), v) for k, v in resp.items())
         resp_body = content
 
         LOG.debug("Response status is %s %s" % http_status)
@@ -4044,7 +4046,7 @@ class Shotgun(object):
 
         def _decode_dict(dct):
             newdict = {}
-            for k, v in six.iteritems(dct):
+            for k, v in dct.items():
                 if isinstance(k, str):
                     k = sgutils.ensure_str(k)
                 if isinstance(v, str):
@@ -4118,7 +4120,7 @@ class Shotgun(object):
             return tuple(recursive(i, visitor) for i in data)
 
         if isinstance(data, dict):
-            return dict((k, recursive(v, visitor)) for k, v in six.iteritems(data))
+            return dict((k, recursive(v, visitor)) for k, v in data.items())
 
         return visitor(data)
 
@@ -4164,10 +4166,6 @@ class Shotgun(object):
                 if _change_tz:
                     value = _change_tz(value)
                 return value.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-            # ensure return is six.text_type
-            if isinstance(value, str):
-                return sgutils.ensure_text(value)
 
             return value
 
@@ -4287,7 +4285,7 @@ class Shotgun(object):
                 continue
 
             # iterate over each item and check each field for possible injection
-            for k, v in six.iteritems(rec):
+            for k, v in rec.items():
                 if not v:
                     continue
 
@@ -4375,7 +4373,7 @@ class Shotgun(object):
         [{'field_name': 'foo', 'value': 'bar', 'thing1': 'value1'}]
         """
         ret = []
-        for k, v in six.iteritems((d or {})):
+        for k, v in (d or {}).items():
             d = {key_name: k, value_name: v}
             d.update((extra_data or {}).get(k, {}))
             ret.append(d)
@@ -4388,7 +4386,7 @@ class Shotgun(object):
 
         e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
         """
-        return dict([(k, {key_name: v}) for (k, v) in six.iteritems((d or {}))])
+        return dict([(k, {key_name: v}) for (k, v) in (d or {}).items()])
 
     def _upload_file_to_storage(self, path, storage_url):
         """
@@ -4656,7 +4654,10 @@ class Shotgun(object):
                 else:
                     raise ShotgunError("Unanticipated error occurred %s" % (e))
 
-            return sgutils.ensure_text(result)
+            if isinstance(result, bytes):
+                result = result.decode("utf-8")
+
+            return result
         else:
             raise ShotgunError("Max attemps limit reached.")
 
@@ -4737,9 +4738,8 @@ class FormPostHandler(urllib.request.BaseHandler):
                 else:
                     params.append((key, value))
             if not files:
-                data = sgutils.ensure_binary(
-                    urllib.parse.urlencode(params, True)
-                )  # sequencing on
+                data = urllib.parse.urlencode(params, True).encode("utf-8")
+                # sequencing on
             else:
                 boundary, data = self.encode(params, files)
                 content_type = "multipart/form-data; boundary=%s" % boundary
@@ -4762,42 +4762,48 @@ class FormPostHandler(urllib.request.BaseHandler):
         if buffer is None:
             buffer = BytesIO()
         for key, value in params:
-            if not isinstance(value, str):
+            if isinstance(key, bytes):
+                key = key.decode("utf-8")
+
+            if isinstance(value, bytes):
+                value = value.decode("utf-8")
+            elif not isinstance(value, str):
                 # If value is not a string (e.g. int) cast to text
                 value = str(value)
-            value = sgutils.ensure_text(value)
-            key = sgutils.ensure_text(key)
 
-            buffer.write(sgutils.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(f"--{boundary}\r\n".encode("utf-8"))
             buffer.write(
-                sgutils.ensure_binary('Content-Disposition: form-data; name="%s"' % key)
+                f'Content-Disposition: form-data; name="{key}"'.encode("utf-8")
             )
-            buffer.write(sgutils.ensure_binary("\r\n\r\n%s\r\n" % value))
+            buffer.write(f"\r\n\r\n{value}\r\n".encode("utf-8"))
         for key, fd in files:
             # On Windows, it's possible that we were forced to open a file
             # with non-ascii characters as unicode. In that case, we need to
             # encode it as a utf-8 string to remove unicode from the equation.
             # If we don't, the mix of unicode and strings going into the
             # buffer can cause UnicodeEncodeErrors to be raised.
-            filename = fd.name
-            filename = sgutils.ensure_text(filename)
+            filename = (
+                fd.name.decode("utf-8") if isinstance(fd.name, bytes) else fd.name
+            )
             filename = filename.split("/")[-1]
-            key = sgutils.ensure_text(key)
+            if isinstance(key, bytes):
+                key = key.decode("utf-8")
+
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or "application/octet-stream"
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-            buffer.write(sgutils.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(f"--{boundary}\r\n".encode("utf-8"))
             c_dis = 'Content-Disposition: form-data; name="%s"; filename="%s"%s'
             content_disposition = c_dis % (key, filename, "\r\n")
-            buffer.write(sgutils.ensure_binary(content_disposition))
-            buffer.write(sgutils.ensure_binary("Content-Type: %s\r\n" % content_type))
-            buffer.write(sgutils.ensure_binary("Content-Length: %s\r\n" % file_size))
+            buffer.write(content_disposition.encode("utf-8"))
+            buffer.write(f"Content-Type: {content_type}\r\n".encode("utf-8"))
+            buffer.write(f"Content-Length: {file_size}\r\n".encode("utf-8"))
 
-            buffer.write(sgutils.ensure_binary("\r\n"))
+            buffer.write(b"\r\n")
             fd.seek(0)
             shutil.copyfileobj(fd, buffer)
-            buffer.write(sgutils.ensure_binary("\r\n"))
-        buffer.write(sgutils.ensure_binary("--%s--\r\n\r\n" % boundary))
+            buffer.write(b"\r\n")
+        buffer.write(f"--{boundary}--\r\n\r\n".encode("utf-8"))
         buffer = buffer.getvalue()
         return boundary, buffer
 
