@@ -8,7 +8,7 @@ v3.9.0 (2025 Sep 10)
 ===================
 
 - Removed Python 2 code.
-- Removed six module. Note: Please review if your code depends on six library included on this package. In this case you need to update your code as this is not supported anymore.
+- Removed the six module. Note: if your code depends on the six library previously included in this package, you will need to update it, as it is no longer supported.
 
 v3.8.5 (2025 Jul 31)
 ===================
