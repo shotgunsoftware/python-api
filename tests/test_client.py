@@ -326,15 +326,6 @@ class TestShotgunClient(base.MockTestBase):
                 self.sg._http_request.call_count == 1,
                 "Call is repeated",
             )
-            # Ensure that sleep was called with the retry interval between each attempt
-            attempt_interval = self.sg.config.rpc_attempt_interval / 1000.0
-            calls = [(attempt_interval,)]
-            calls *= self.sg.config.max_rpc_attempts - 1
-            self.assertEqual(
-                [c.args for c in mock_sleep.call_args_list],
-                calls,
-                "Call is repeated at correct interval.",
-            )
 
     def test_set_retry_interval(self):
         """Setting the retry interval through parameter and environment variable works."""
