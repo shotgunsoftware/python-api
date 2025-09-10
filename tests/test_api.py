@@ -40,6 +40,8 @@ from shotgun_api3.lib.sgsix import ShotgunSSLError
 import shotgun_api3
 
 from . import base
+from . import mock
+from .mock import patch, MagicMock
 
 
 class TestShotgunApi(base.LiveTestBase):
@@ -2223,12 +2225,8 @@ class TestErrors(base.TestBase):
 
             self.assertEqual(cm2.exception.args[0], "not working")
             log_content = "\n".join(cm1.output)
-            for i in [1, 2]:
-                self.assertIn(
-                    f"Request failed, attempt {i} of 3.  Retrying",
-                    log_content,
-                )
             self.assertIn(
+<<<<<<< HEAD
                 "Request failed.  Giving up after 3 attempts.",
                 log_content,
             )
@@ -2259,6 +2257,9 @@ class TestErrors(base.TestBase):
             )
             self.assertNotIn(
                 "Request failed, attempt 2 of 3.  Retrying",
+=======
+                "Request failed.  Reason: not working",
+>>>>>>> 8c5ef90ea9fa39440974d672788133889fc614c7
                 log_content,
             )
 
