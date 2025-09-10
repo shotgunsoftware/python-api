@@ -40,8 +40,6 @@ from shotgun_api3.lib.sgsix import ShotgunSSLError
 import shotgun_api3
 
 from . import base
-from . import mock
-from .mock import patch, MagicMock
 
 
 class TestShotgunApi(base.LiveTestBase):
