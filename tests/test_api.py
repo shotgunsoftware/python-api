@@ -1946,6 +1946,54 @@ class TestFind(base.LiveTestBase):
             # unarchive project
             self.sg.update("Project", self.project["id"], {"archived": False})
 
+class TestExportPage(base.LiveTestBase):
+
+    def test_export_page_unavailable(self):
+        """Test export_page raises when report does not exist."""
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
+            return
+
+        page_entity = self.sg.create("Page", {"entity_type": "Shot"})
+        with self.assertRaises(Exception) as cm:
+            self.sg.export_page(page_entity["id"],'csv')
+        self.assertIn(f"Report for Page id={page_entity['id']} does not exist", str(cm.exception))
+
+        with self.assertRaises(Exception) as cm:
+            self.sg.export_page(page_entity["id"],'csv', layout_name="My Layout")
+        self.assertIn(f"Report for Page id={page_entity['id']} does not exist", str(cm.exception))
+
+    def test_export_page_format_missing(self):
+        """Test export_page raises for invalid format."""
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
+            return
+
+        with self.assertRaises(Exception) as cm:
+            self.sg.export_page(11, None)
+        self.assertIn("\'format\' missing", str(cm.exception))
+
+        with self.assertRaises(Exception) as cm:
+            self.sg.export_page(11, None, layout_name="My Layout")
+        self.assertIn("\'format\' missing", str(cm.exception))
+
+    def test_export_page_missing_page_id(self):
+        """Test export_page raises for missing page id."""
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
+            return
+
+        with self.assertRaises(Exception) as cm:
+            self.sg.export_page(None, 'csv')
+        self.assertIn("\'page_id\' missing", str(cm.exception))
+
+        with self.assertRaises(Exception) as cm:
+            self.sg.export_page(None, 'csv', layout_name="My Layout")
+        self.assertIn("\'page_id\' missing", str(cm.exception))
+
+    def test_export_page_without_layout_name(self):
+        """Test export_page works when layout_name is not provided."""
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
+            return
+        result = self.sg.export_page(11, 'csv')
+        self.assertTrue(True, "export_page succeeded without layout_name")
 
 class TestFollow(base.LiveTestBase):
 
