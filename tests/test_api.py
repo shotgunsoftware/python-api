@@ -1997,6 +1997,9 @@ class TestFind(base.LiveTestBase):
 
 class TestExportPage(base.LiveTestBase):
 
+    def setUp(self):
+        super(TestExportPage, self).setUp("HumanUser")
+
     def test_export_page_unavailable(self):
         """
         Test export_page raises when report does not exist.
