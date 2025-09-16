@@ -1049,7 +1049,73 @@ class TestShotgunApi(base.LiveTestBase):
 
         expected = {"date_component_order": "month_day", "support_local_storage": True}
         self.assertEqual(expected, resp)
+    
+    def test_export_page_unavailable(self):
+        """
+        Test export_page raises when report does not exist.
+        """
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
+            return
 
+        page_entity = self.sg.create("Page", {"entity_type": "Shot"})
+        with self.assertRaises(Exception) as cm:
+            self.sg.export_page(page_entity["id"], "csv")
+        self.assertIn(
+            f"Export for Page id={page_entity['id']} not available", str(cm.exception)
+        )
+
+        with self.assertRaises(Exception) as cm:
+            self.sg.export_page(page_entity["id"], "csv", layout_name="My Layout")
+        self.assertIn(
+            f"Export for Page id={page_entity['id']} not available", str(cm.exception)
+        )
+    
+    def test_export_page_format_missing(self):
+        """
+        Test export_page raises for invalid format.
+        """
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
+            return
+
+        with self.assertRaises(Exception) as cm:
+            self.sg.export_page(11, None)
+        self.assertIn("'format' missing", str(cm.exception))
+
+        with self.assertRaises(Exception) as cm:
+            self.sg.export_page(11, None, layout_name="My Layout")
+        self.assertIn("'format' missing", str(cm.exception))
+
+    def test_export_page_missing_page_id(self):
+        """
+        Test export_page raises for missing page id.
+        """
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
+            return
+
+        with self.assertRaises(Exception) as cm:
+            self.sg.export_page(None, "csv")
+        self.assertIn("'page_id' missing", str(cm.exception))
+
+        with self.assertRaises(Exception) as cm:
+            self.sg.export_page(None, "csv", layout_name="My Layout")
+        self.assertIn("'page_id' missing", str(cm.exception))
+
+    def test_export_page_without_layout_name(self):
+        """
+        Test export_page works when layout_name is not provided.
+        """
+
+        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
+            return
+
+        # Mock the low-level HTTP call to return CSV content with appropriate headers
+        csv_body = "ID,Name,Status\n1,Shot 001,ip\n2,Shot 002,rev\n"
+        resp_headers = {"content-type": "text/csv; charset=utf-8"}
+        status = (200, "OK")
+        self.sg._http_request = mock.Mock(return_value=(status, resp_headers, csv_body))
+        result = self.sg.export_page(11, "csv")
+        self.assertIsInstance(result, str)
+        self.assertTrue(result.startswith("ID,Name,Status"))
 
 class TestDataTypes(base.LiveTestBase):
     """Test fields representing the different data types mapped on the server side.
@@ -1993,77 +2059,6 @@ class TestFind(base.LiveTestBase):
 
             # unarchive project
             self.sg.update("Project", self.project["id"], {"archived": False})
-
-
-class TestExportPage(base.LiveTestBase):
-
-    def test_export_page_unavailable(self):
-        """
-        Test export_page raises when report does not exist.
-        """
-        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
-            return
-
-        page_entity = self.sg.create("Page", {"entity_type": "Shot"})
-        with self.assertRaises(Exception) as cm:
-            self.sg.export_page(page_entity["id"], "csv")
-        self.assertIn(
-            f"Export for Page id={page_entity['id']} not available", str(cm.exception)
-        )
-
-        with self.assertRaises(Exception) as cm:
-            self.sg.export_page(page_entity["id"], "csv", layout_name="My Layout")
-        self.assertIn(
-            f"Export for Page id={page_entity['id']} not available", str(cm.exception)
-        )
-
-    def test_export_page_format_missing(self):
-        """
-        Test export_page raises for invalid format.
-        """
-        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
-            return
-
-        with self.assertRaises(Exception) as cm:
-            self.sg.export_page(11, None)
-        self.assertIn("'format' missing", str(cm.exception))
-
-        with self.assertRaises(Exception) as cm:
-            self.sg.export_page(11, None, layout_name="My Layout")
-        self.assertIn("'format' missing", str(cm.exception))
-
-    def test_export_page_missing_page_id(self):
-        """
-        Test export_page raises for missing page id.
-        """
-        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
-            return
-
-        with self.assertRaises(Exception) as cm:
-            self.sg.export_page(None, "csv")
-        self.assertIn("'page_id' missing", str(cm.exception))
-
-        with self.assertRaises(Exception) as cm:
-            self.sg.export_page(None, "csv", layout_name="My Layout")
-        self.assertIn("'page_id' missing", str(cm.exception))
-
-    def test_export_page_without_layout_name(self):
-        """
-        Test export_page works when layout_name is not provided.
-        """
-
-        if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
-            return
-
-        # Mock the low-level HTTP call to return CSV content with appropriate headers
-        csv_body = "ID,Name,Status\n1,Shot 001,ip\n2,Shot 002,rev\n"
-        resp_headers = {"content-type": "text/csv; charset=utf-8"}
-        status = (200, "OK")
-        self.sg._http_request = mock.Mock(return_value=(status, resp_headers, csv_body))
-        result = self.sg.export_page(11, "csv")
-        self.assertIsInstance(result, str)
-        self.assertTrue(result.startswith("ID,Name,Status"))
-
 
 class TestFollow(base.LiveTestBase):
 
