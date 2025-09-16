@@ -1913,9 +1913,7 @@ class Shotgun(object):
         :rtype: string
         """
 
-        params = dict(
-            format=format, page_id=page_id, layout_name=layout_name
-        )
+        params = dict(format=format, page_id=page_id, layout_name=layout_name)
 
         return self._call_rpc("export_page", params)
 
