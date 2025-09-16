@@ -13,11 +13,9 @@
 Includes the schema functions and the automated searching for all entity types
 """
 
-from __future__ import print_function
 from . import base
 import random
 import shotgun_api3
-from shotgun_api3.lib import six
 
 
 class TestShotgunApiLong(base.LiveTestBase):
@@ -56,7 +54,7 @@ class TestShotgunApiLong(base.LiveTestBase):
             # pivot_column fields aren't valid for sorting so ensure we're
             # not using one.
             order_field = None
-            for field_name, field in six.iteritems(fields):
+            for field_name, field in fields.items():
                 # Restrict sorting to only types we know will always be sortable
                 # Since no_sorting is not exposed to us, we'll have to rely on
                 # this as a safeguard against trying to sort by a field with

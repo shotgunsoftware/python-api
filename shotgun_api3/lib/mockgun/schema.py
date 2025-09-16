@@ -30,8 +30,8 @@
 -----------------------------------------------------------------------------
 """
 
-from ..six.moves import cPickle as pickle
 import os
+import pickle
 
 from .errors import MockgunError
 

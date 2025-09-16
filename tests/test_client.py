@@ -12,47 +12,38 @@
 CRUD functions. These tests always use a mock http connection so not not
 need a live server to run against."""
 
+import configparser
+import base64
 import datetime
+import json
 import os
-import re
-
-from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib import six, sgutils
-
-try:
-    import simplejson as json
-except ImportError:
-    try:
-        import json as json
-    except ImportError:
-        import shotgun_api3.lib.simplejson as json
-
 import platform
+import re
 import sys
 import time
 import unittest
-from . import mock
+import unittest.mock
+import urllib.parse
+import urllib.error
 
 import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 from . import base
 
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
-
 
 def b64encode(val):
-    return base64encode(sgutils.ensure_binary(val)).decode("utf-8")
+    if isinstance(val, str):
+        val = val.encode("utf-8")
+
+    return base64.encodebytes(val).decode("utf-8")
 
 
 class TestShotgunClient(base.MockTestBase):
     """Test case for shotgun api with server interactions mocked."""
 
     def setUp(self):
-        super(TestShotgunClient, self).setUp()
+        super().setUp()
         # get domain and uri scheme
         match = re.search("(https?://)(.*)", self.server_url)
         self.uri_prefix = match.group(1)
@@ -187,7 +178,7 @@ class TestShotgunClient(base.MockTestBase):
         """Validate that config values are properly coerced."""
         this_dir = os.path.dirname(os.path.realpath(__file__))
         config_path = os.path.join(this_dir, "test_config_file")
-        config = base.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(config_path)
         result = config.get("SERVER_INFO", "api_key")
         expected = "%abce"
@@ -278,12 +269,11 @@ class TestShotgunClient(base.MockTestBase):
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
         ssl_validate_lut = {True: "no-validate", False: "validate"}
-        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s)" % (
+        expected = "shotgun-json (%s); Python %s (%s); ssl %s" % (
             api.__version__,
             client_caps.py_version,
             client_caps.platform.capitalize(),
             client_caps.ssl_version,
-            ssl_validate_lut[config.no_ssl_validation],
         )
         self.assertEqual(expected, headers.get("user-agent"))
 
@@ -292,12 +282,11 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.info()
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s); test-agent" % (
+        expected = "shotgun-json (%s); Python %s (%s); ssl %s; test-agent" % (
             api.__version__,
             client_caps.py_version,
             client_caps.platform.capitalize(),
             client_caps.ssl_version,
-            ssl_validate_lut[config.no_ssl_validation],
         )
         self.assertEqual(expected, headers.get("user-agent"))
 
@@ -306,12 +295,11 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.info()
         args, _ = self.sg._http_request.call_args
         (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s)" % (
+        expected = "shotgun-json (%s); Python %s (%s); ssl %s" % (
             api.__version__,
             client_caps.py_version,
             client_caps.platform.capitalize(),
             client_caps.ssl_version,
-            ssl_validate_lut[config.no_ssl_validation],
         )
         self.assertEqual(expected, headers.get("user-agent"))
 
@@ -327,19 +315,11 @@ class TestShotgunClient(base.MockTestBase):
         """Network failure is retried, with a sleep call between retries."""
         self.sg._http_request.side_effect = httplib2.HttpLib2Error
 
-        with mock.patch("time.sleep") as mock_sleep:
+        with unittest.mock.patch("time.sleep") as mock_sleep:
             self.assertRaises(httplib2.HttpLib2Error, self.sg.info)
             self.assertTrue(
-                self.sg.config.max_rpc_attempts == self.sg._http_request.call_count,
+                self.sg._http_request.call_count == 1,
                 "Call is repeated",
-            )
-            # Ensure that sleep was called with the retry interval between each attempt
-            attempt_interval = self.sg.config.rpc_attempt_interval / 1000.0
-            calls = [mock.callargs(((attempt_interval,), {}))]
-            calls *= self.sg.config.max_rpc_attempts - 1
-            self.assertTrue(
-                mock_sleep.call_args_list == calls,
-                "Call is repeated at correct interval.",
             )
 
     def test_set_retry_interval(self):
@@ -430,11 +410,10 @@ class TestShotgunClient(base.MockTestBase):
         expected = "rpc response with list result, first item"
         self.assertEqual(d["results"][0], rv, expected)
 
-        # Test unicode mixed with utf-8 as reported in Ticket #17959
+        # Test payload encoding with non-ascii characters (using utf-8 literal)
         d = {"results": ["foo", "bar"]}
         a = {
-            "utf_str": "\xe2\x88\x9a",
-            "unicode_str": sgutils.ensure_text("\xe2\x88\x9a"),
+            "utf_literal": "\xe2\x88\x9a",
         }
         self._mock_http(d)
         rv = self.sg._call_rpc("list", a)
@@ -522,7 +501,7 @@ class TestShotgunClient(base.MockTestBase):
         """
         Test URLError response is retried when invoking _send_form
         """
-        mock_opener = mock.Mock()
+        mock_opener = unittest.mock.Mock()
         mock_opener.return_value.open.side_effect = urllib.error.URLError(
             "[WinError 10054] An existing connection was forcibly closed by the remote host"
         )
@@ -550,7 +529,7 @@ class TestShotgunClient(base.MockTestBase):
         """
         Test URLError response is retried when uploading to S3.
         """
-        self.sg._make_upload_request = mock.Mock(
+        self.sg._make_upload_request = unittest.mock.Mock(
             spec=api.Shotgun._make_upload_request,
             side_effect=urllib.error.URLError(
                 "[Errno 104] Connection reset by peer",
@@ -587,7 +566,12 @@ class TestShotgunClient(base.MockTestBase):
         now = datetime.datetime.fromtimestamp(timestamp).replace(
             microsecond=0, tzinfo=SG_TIMEZONE.local
         )
-        utc_now = datetime.datetime.utcfromtimestamp(timestamp).replace(microsecond=0)
+        utc_now = (
+            datetime.datetime.fromtimestamp(timestamp, tz=datetime.timezone.utc)
+            .replace(microsecond=0)
+            .astimezone(None)
+            .replace(tzinfo=None)
+        )
         local = {"date": now.strftime("%Y-%m-%d"), "datetime": now, "time": now.time()}
         # date will still be the local date, because they are not transformed
         utc = {
@@ -643,9 +627,7 @@ class TestShotgunClient(base.MockTestBase):
         self.assertTrue(isinstance(j, bytes))
 
     def test_decode_response_ascii(self):
-        self._assert_decode_resonse(
-            True, sgutils.ensure_str("my data \u00e0", encoding="utf8")
-        )
+        self._assert_decode_resonse(True, "my data \u00e0")
 
     def test_decode_response_unicode(self):
         self._assert_decode_resonse(False, "my data \u00e0")
@@ -660,14 +642,10 @@ class TestShotgunClient(base.MockTestBase):
             self.config.script_name,
             self.config.api_key,
             http_proxy=self.config.http_proxy,
-            ensure_ascii=ensure_ascii,
             connect=False,
         )
 
-        if six.PY3:
-            j = json.dumps(d, ensure_ascii=ensure_ascii)
-        else:
-            j = json.dumps(d, ensure_ascii=ensure_ascii, encoding="utf-8")
+        j = json.dumps(d, ensure_ascii=ensure_ascii)
         self.assertEqual(d, sg._decode_response(headers, j))
 
         headers["content-type"] = "text/javascript"
@@ -696,7 +674,7 @@ class TestShotgunClient(base.MockTestBase):
             },
         }
         url = "http://foo/files/0000/0000/0012/232/shot_thumb.jpg"
-        self.sg._build_thumb_url = mock.Mock(return_value=url)
+        self.sg._build_thumb_url = unittest.mock.Mock(return_value=url)
 
         modified, txt = self.sg._parse_records([orig, "plain text"])
         self.assertEqual("plain text", txt, "non dict value is left as is")

@@ -14,36 +14,31 @@ Includes short run tests, like simple crud and single finds. See
 test_api_long for other tests.
 """
 
-from __future__ import print_function
 import datetime
-import sys
+import glob
 import os
-from . import mock
-from .mock import patch, MagicMock
 import ssl
+import sys
 import time
 import types
-import uuid
 import unittest
-from shotgun_api3.lib.six.moves import range, urllib
+import unittest.mock
+import urllib.parse
+import urllib.request
+import urllib.error
+import uuid
 import warnings
-import glob
+
+from shotgun_api3.lib.httplib2 import Http
 
 import shotgun_api3
-from shotgun_api3.lib.httplib2 import Http
-from shotgun_api3.lib import six
-
-# To mock the correct exception when testion on Python 2 and 3, use the
-# ShotgunSSLError variable from sgsix that contains the appropriate exception
-# class for the current Python version.
-from shotgun_api3.lib.sgsix import ShotgunSSLError
 
 from . import base
 
 
 class TestShotgunApi(base.LiveTestBase):
     def setUp(self):
-        super(TestShotgunApi, self).setUp()
+        super().setUp()
         # give note unicode content
         self.sg.update("Note", self.note["id"], {"content": "La Pe\xf1a"})
 
@@ -245,9 +240,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         # test upload of non-ascii, unicode path
         u_path = os.path.abspath(
-            os.path.expanduser(
-                glob.glob(os.path.join(six.text_type(this_dir), "Noëlご.jpg"))[0]
-            )
+            os.path.expanduser(glob.glob(os.path.join(this_dir, "Noëlご.jpg"))[0])
         )
 
         # If this is a problem, it'll raise with a UnicodeEncodeError. We
@@ -273,61 +266,20 @@ class TestShotgunApi(base.LiveTestBase):
             "sg_uploaded_movie",
             tag_list="monkeys, everywhere, send, help",
         )
-        if six.PY2:
-            # In Python2, make sure that non-utf-8 encoded paths raise when they
-            # can't be converted to utf-8.  For Python3, we'll skip these tests
-            # since string encoding is handled differently.
-
-            # We need to touch the file we're going to test with first. We can't
-            # bundle a file with this filename in the repo due to some pip install
-            # problems on Windows. Note that the path below is utf-8 encoding of
-            # what we'll eventually encode as shift-jis.
-            file_path_s = os.path.join(this_dir, "./\xe3\x81\x94.shift-jis")
-            file_path_u = file_path_s.decode("utf-8")
-
-            with open(
-                file_path_u if sys.platform.startswith("win") else file_path_s, "w"
-            ) as fh:
-                fh.write("This is just a test file with some random data in it.")
-
-            self.assertRaises(
-                shotgun_api3.ShotgunError,
-                self.sg.upload,
-                "Version",
-                self.version["id"],
-                file_path_u.encode("shift-jis"),
-                "sg_uploaded_movie",
-                tag_list="monkeys, everywhere, send, help",
-            )
-
-            # But it should work in all cases if a unicode string is used.
-            self.sg.upload(
-                "Version",
-                self.version["id"],
-                file_path_u,
-                "sg_uploaded_movie",
-                tag_list="monkeys, everywhere, send, help",
-            )
-
-            # cleanup
-            os.remove(file_path_u)
 
         # cleanup
         os.remove(file_path)
 
-    @patch("shotgun_api3.Shotgun._send_form")
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
     def test_upload_to_sg(self, mock_send_form):
         """
         Upload an attachment tests for _upload_to_sg()
         """
         self.sg.server_info["s3_direct_uploads_enabled"] = False
-        mock_send_form.method.assert_called_once()
         mock_send_form.return_value = "1\n:123\nasd"
         this_dir, _ = os.path.split(__file__)
         u_path = os.path.abspath(
-            os.path.expanduser(
-                glob.glob(os.path.join(six.text_type(this_dir), "Noëlご.jpg"))[0]
-            )
+            os.path.expanduser(glob.glob(os.path.join(this_dir, "Noëlご.jpg"))[0])
         )
         upload_id = self.sg.upload(
             "Version",
@@ -336,6 +288,7 @@ class TestShotgunApi(base.LiveTestBase):
             "attachments",
             tag_list="monkeys, everywhere, send, help",
         )
+        mock_send_form.assert_called_once()
         mock_send_form_args, _ = mock_send_form.call_args
         display_name_to_send = mock_send_form_args[1].get("display_name", "")
         self.assertTrue(isinstance(upload_id, int))
@@ -358,7 +311,7 @@ class TestShotgunApi(base.LiveTestBase):
             display_name_to_send.startswith("b'") and display_name_to_send.endswith("'")
         )
 
-        mock_send_form.method.assert_called_once()
+        mock_send_form.reset_mock()
         mock_send_form.return_value = "2\nIt can't be upload"
         self.assertRaises(
             shotgun_api3.ShotgunError,
@@ -369,6 +322,7 @@ class TestShotgunApi(base.LiveTestBase):
             "attachments",
             tag_list="monkeys, everywhere, send, help",
         )
+        mock_send_form.assert_called_once()
         self.sg.server_info["s3_direct_uploads_enabled"] = True
 
     def test_upload_thumbnail_in_create(self):
@@ -417,7 +371,7 @@ class TestShotgunApi(base.LiveTestBase):
 
         url = new_version.get("filmstrip_image")
         data = self.sg.download_attachment({"url": url})
-        self.assertTrue(isinstance(data, six.binary_type))
+        self.assertTrue(isinstance(data, bytes))
 
         self.sg.delete("Version", new_version["id"])
 
@@ -632,7 +586,7 @@ class TestShotgunApi(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_share_thumbnail(self):
         """share thumbnail between two entities"""
 
@@ -716,11 +670,10 @@ class TestShotgunApi(base.LiveTestBase):
             shotgun_api3.ShotgunError, self.sg.share_thumbnail, [self.shot, self.asset]
         )
 
-    @patch("shotgun_api3.Shotgun._send_form")
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
     def test_share_thumbnail_not_ready(self, mock_send_form):
         """throw an exception if trying to share a transient thumbnail"""
 
-        mock_send_form.method.assert_called_once()
         mock_send_form.return_value = (
             "2"
             "\nsource_entity image is a transient thumbnail that cannot be shared. "
@@ -734,11 +687,12 @@ class TestShotgunApi(base.LiveTestBase):
             source_entity=self.asset,
         )
 
-    @patch("shotgun_api3.Shotgun._send_form")
+        mock_send_form.assert_called_once()
+
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
     def test_share_thumbnail_returns_error(self, mock_send_form):
         """throw an exception if server returns an error code"""
 
-        mock_send_form.method.assert_called_once()
         mock_send_form.return_value = "1\nerror message.\n"
 
         self.assertRaises(
@@ -747,6 +701,8 @@ class TestShotgunApi(base.LiveTestBase):
             [self.version, self.shot],
             source_entity=self.asset,
         )
+
+        mock_send_form.assert_called_once()
 
     def test_deprecated_functions(self):
         """Deprecated functions raise errors"""
@@ -871,28 +827,24 @@ class TestShotgunApi(base.LiveTestBase):
             sorted(result["groups"], key=lambda x: x["group_name"]), groups
         )
 
-    def test_ensure_ascii(self):
-        """test_ensure_ascii tests ensure_unicode flag."""
-        sg_ascii = shotgun_api3.Shotgun(
-            self.config.server_url, ensure_ascii=True, **self.auth_args
+    def test_json_dumps_default_ensure_ascii_disabled(self):
+        """Make sure SG'payload is using ensure_ascii for json dumps"""
+        sg = shotgun_api3.Shotgun(self.config.server_url, **self.auth_args)
+
+        # Mock the _http_request method
+        sg._orig_http_request = sg._http_request
+        sg._http_request = unittest.mock.Mock(wraps=sg._orig_http_request)
+
+        sg.find_one(
+            "Note",
+            [["content", "is", "Noëlご"]],  # Force a non-ascii character
         )
 
-        result = sg_ascii.find_one(
-            "Note", [["id", "is", self.note["id"]]], fields=["content"]
+        sg._http_request.assert_called_once()
+        self.assertIn(
+            b"No\xc3\xabl\xe3\x81\x94",  # utf-8 encoded version of Noëlご
+            sg._http_request.call_args.args[2],  # Get the body of the request
         )
-        if six.PY2:
-            # In Python3 there isn't a separate unicode type.
-            self.assertFalse(_has_unicode(result))
-
-    def test_ensure_unicode(self):
-        """test_ensure_unicode tests ensure_unicode flag."""
-        sg_unicode = shotgun_api3.Shotgun(
-            self.config.server_url, ensure_ascii=False, **self.auth_args
-        )
-        result = sg_unicode.find_one(
-            "Note", [["id", "is", self.note["id"]]], fields=["content"]
-        )
-        self.assertTrue(_has_unicode(result))
 
     def test_work_schedule(self):
         """test_work_schedule tests WorkDayRules api"""
@@ -1059,7 +1011,7 @@ class TestDataTypes(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestDataTypes, self).setUp()
+        super().setUp()
 
     def test_set_checkbox(self):
         entity = "HumanUser"
@@ -1269,7 +1221,7 @@ class TestUtc(base.LiveTestBase):
     """Test utc options"""
 
     def setUp(self):
-        super(TestUtc, self).setUp()
+        super().setUp()
         utc = shotgun_api3.shotgun.SG_TIMEZONE.utc
         self.datetime_utc = datetime.datetime(2008, 10, 13, 23, 10, tzinfo=utc)
         local = shotgun_api3.shotgun.SG_TIMEZONE.local
@@ -1311,7 +1263,7 @@ class TestUtc(base.LiveTestBase):
 
 class TestFind(base.LiveTestBase):
     def setUp(self):
-        super(TestFind, self).setUp()
+        super().setUp()
         # We will need the created_at field for the shot
         fields = list(self.shot.keys())[:]
         fields.append("created_at")
@@ -2164,7 +2116,7 @@ class TestFollow(base.LiveTestBase):
 class TestErrors(base.TestBase):
     def setUp(self):
         auth_mode = "HumanUser" if self.config.jenkins else "ApiUser"
-        super(TestErrors, self).setUp(auth_mode)
+        super().setUp(auth_mode)
 
     def test_bad_auth(self):
         """test_bad_auth invalid script name or api key raises fault"""
@@ -2253,17 +2205,17 @@ class TestErrors(base.TestBase):
         user = self.sg.find_one("HumanUser", [["login", "is", login]])
         self.sg.update("HumanUser", user["id"], {"locked_until": None})
 
-    @patch("shotgun_api3.shotgun.Http.request")
+    @unittest.mock.patch("shotgun_api3.shotgun.Http.request")
     def test_status_not_200(self, mock_request):
-        response = MagicMock(name="response mock", spec=dict)
+        response = unittest.mock.MagicMock(name="response mock", spec=dict)
         response.status = 300
         response.reason = "reason"
         mock_request.return_value = (response, {})
         self.assertRaises(shotgun_api3.ProtocolError, self.sg.find_one, "Shot", [])
 
-    @patch("shotgun_api3.shotgun.Http.request")
+    @unittest.mock.patch("shotgun_api3.shotgun.Http.request")
     def test_make_call_retry(self, mock_request):
-        response = MagicMock(name="response mock", spec=dict)
+        response = unittest.mock.MagicMock(name="response mock", spec=dict)
         response.status = 200
         response.reason = "reason"
         mock_request.return_value = (response, {})
@@ -2280,42 +2232,8 @@ class TestErrors(base.TestBase):
 
             self.assertEqual(cm2.exception.args[0], "not working")
             log_content = "\n".join(cm1.output)
-            for i in [1, 2]:
-                self.assertIn(
-                    f"Request failed, attempt {i} of 3.  Retrying",
-                    log_content,
-                )
             self.assertIn(
-                "Request failed.  Giving up after 3 attempts.",
-                log_content,
-            )
-
-            # Then, make the exception happening only once and prove the
-            # retry works
-            def my_side_effect(*args, **kwargs):
-                try:
-                    if my_side_effect.counter < 1:
-                        raise Exception("not working")
-
-                    return mock.DEFAULT
-                finally:
-                    my_side_effect.counter += 1
-
-            my_side_effect.counter = 0
-            mock_request.side_effect = my_side_effect
-            with self.assertLogs("shotgun_api3", level="DEBUG") as cm:
-                self.assertIsInstance(
-                    self.sg.info(),
-                    dict,
-                )
-
-            log_content = "\n".join(cm.output)
-            self.assertIn(
-                "Request failed, attempt 1 of 3.  Retrying",
-                log_content,
-            )
-            self.assertNotIn(
-                "Request failed, attempt 2 of 3.  Retrying",
+                "Request failed.  Reason: not working",
                 log_content,
             )
 
@@ -2327,7 +2245,7 @@ class TestErrors(base.TestBase):
                             "EOF occurred in violation of protocol (_ssl.c:2426)"
                         )
 
-                    return mock.DEFAULT
+                    return unittest.mock.DEFAULT
                 finally:
                     my_side_effect2.counter += 1
 
@@ -2353,78 +2271,7 @@ class TestErrors(base.TestBase):
         finally:
             self.sg.config.rpc_attempt_interval = bak_rpc_attempt_interval
 
-    @patch("shotgun_api3.shotgun.Http.request")
-    def test_sha2_error(self, mock_request):
-        # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError(
-            "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
-            "encoding routines:ASN1_item_verify: unknown message digest "
-            "algorithm"
-        )
-
-        # save the original state
-        original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
-
-        # ensure we're starting with the right values
-        self.sg.reset_user_agent()
-
-        # ensure the initial settings are correct. These will be different depending on whether
-        # the ssl module imported successfully or not.
-        if "ssl" in sys.modules:
-            self.assertFalse(self.sg.config.no_ssl_validation)
-            self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
-            self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
-        else:
-            self.assertTrue(self.sg.config.no_ssl_validation)
-            self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertFalse("(validate)" in " ".join(self.sg._user_agents))
-            self.assertTrue("(no-validate)" in " ".join(self.sg._user_agents))
-
-        try:
-            self.sg.info()
-        except ShotgunSSLError:
-            # ensure the api has reset the values in the correct fallback behavior
-            self.assertTrue(self.sg.config.no_ssl_validation)
-            self.assertTrue(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertFalse("(validate)" in " ".join(self.sg._user_agents))
-            self.assertTrue("(no-validate)" in " ".join(self.sg._user_agents))
-
-        if original_env_val is not None:
-            os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
-
-    @patch("shotgun_api3.shotgun.Http.request")
-    def test_sha2_error_with_strict(self, mock_request):
-        # Simulate the exception raised with SHA-2 errors
-        mock_request.side_effect = ShotgunSSLError(
-            "[Errno 1] _ssl.c:480: error:0D0C50A1:asn1 "
-            "encoding routines:ASN1_item_verify: unknown message digest "
-            "algorithm"
-        )
-
-        # save the original state
-        original_env_val = os.environ.pop("SHOTGUN_FORCE_CERTIFICATE_VALIDATION", None)
-        os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = "1"
-
-        # ensure we're starting with the right values
-        self.sg.config.no_ssl_validation = False
-        shotgun_api3.shotgun.NO_SSL_VALIDATION = False
-        self.sg.reset_user_agent()
-
-        try:
-            self.sg.info()
-        except ShotgunSSLError:
-            # ensure the api has NOT reset the values in the fallback behavior because we have
-            # set the env variable to force validation
-            self.assertFalse(self.sg.config.no_ssl_validation)
-            self.assertFalse(shotgun_api3.shotgun.NO_SSL_VALIDATION)
-            self.assertFalse("(no-validate)" in " ".join(self.sg._user_agents))
-            self.assertTrue("(validate)" in " ".join(self.sg._user_agents))
-
-        if original_env_val is not None:
-            os.environ["SHOTGUN_FORCE_CERTIFICATE_VALIDATION"] = original_env_val
-
-    @patch.object(urllib.request.OpenerDirector, "open")
+    @unittest.mock.patch.object(urllib.request.OpenerDirector, "open")
     def test_sanitized_auth_params(self, mock_open):
         # Simulate the server blowing up and giving us a 500 error
         mock_open.side_effect = urllib.error.HTTPError("url", 500, "message", {}, None)
@@ -2490,7 +2337,7 @@ class TestErrors(base.TestBase):
 
 class TestScriptUserSudoAuth(base.LiveTestBase):
     def setUp(self):
-        super(TestScriptUserSudoAuth, self).setUp()
+        super().setUp()
 
         self.sg.update(
             "HumanUser",
@@ -2531,7 +2378,7 @@ class TestScriptUserSudoAuth(base.LiveTestBase):
 
 class TestHumanUserSudoAuth(base.TestBase):
     def setUp(self):
-        super(TestHumanUserSudoAuth, self).setUp("HumanUser")
+        super().setUp("HumanUser")
 
     def test_human_user_sudo_auth_fails(self):
         """
@@ -2802,7 +2649,7 @@ class TestActivityStream(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestActivityStream, self).setUp()
+        super().setUp()
         self._prefix = uuid.uuid4().hex
 
         self._shot = self.sg.create(
@@ -2852,7 +2699,7 @@ class TestActivityStream(base.LiveTestBase):
         )
         self.sg.batch(batch_data)
 
-        super(TestActivityStream, self).tearDown()
+        super().tearDown()
 
     def test_simple(self):
         """
@@ -2925,7 +2772,7 @@ class TestNoteThreadRead(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestNoteThreadRead, self).setUp()
+        super().setUp()
 
         # get path to our std attahcment
         this_dir, _ = os.path.split(__file__)
@@ -2993,7 +2840,7 @@ class TestNoteThreadRead(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_simple(self):
         """
         Test note reply thread API call
@@ -3072,7 +2919,7 @@ class TestNoteThreadRead(base.LiveTestBase):
 
     # For now skip tests that are erroneously failling on some sites to
     # allow CI to pass until the known issue causing this is resolved.
-    @base.skip("Skipping test that erroneously fails on some sites.")
+    @unittest.skip("Skipping test that erroneously fails on some sites.")
     def test_complex(self):
         """
         Test note reply thread API call with additional params
@@ -3136,7 +2983,7 @@ class TestTextSearch(base.LiveTestBase):
     """
 
     def setUp(self):
-        super(TestTextSearch, self).setUp()
+        super().setUp()
 
         # create 5 shots and 5 assets to search for
         self._prefix = uuid.uuid4().hex
@@ -3176,7 +3023,7 @@ class TestTextSearch(base.LiveTestBase):
             )
         self.sg.batch(batch_data)
 
-        super(TestTextSearch, self).tearDown()
+        super().tearDown()
 
     def test_simple(self):
         """
@@ -3525,10 +3372,6 @@ class TestLibImports(base.LiveTestBase):
     def test_import_httplib(self):
         """
         Ensure that httplib2 is importable and objects are available
-
-        This is important, because httplib2 imports switch between
-        the Python 2 and 3 compatible versions, and the module imports are
-        proxied to allow this.
         """
         from shotgun_api3.lib import httplib2
 
@@ -3536,17 +3379,6 @@ class TestLibImports(base.LiveTestBase):
         # the httplib2 module contents are importable.
         self.assertTrue(hasattr(httplib2, "Http"))
         self.assertTrue(isinstance(httplib2.Http, object))
-
-        # Ensure that the version of httplib2 compatible with the current Python
-        # version was imported.
-        # (The last module name for __module__ should be either python2 or
-        # python3, depending on what has been imported.  Make sure we got the
-        # right one.)
-        httplib2_compat_version = httplib2.Http.__module__.split(".")[-1]
-        if six.PY2:
-            self.assertEqual(httplib2_compat_version, "python2")
-        elif six.PY3:
-            self.assertTrue(httplib2_compat_version, "python3")
 
         # Ensure that socks submodule is present and importable using a from
         # import -- this is a good indication that external httplib2 imports
@@ -3556,15 +3388,6 @@ class TestLibImports(base.LiveTestBase):
         self.assertTrue(isinstance(socks, types.ModuleType))
         # Make sure that objects in socks are available as expected
         self.assertTrue(hasattr(socks, "HTTPError"))
-
-
-def _has_unicode(data):
-    for k, v in data.items():
-        if isinstance(k, six.text_type):
-            return True
-        if isinstance(v, six.text_type):
-            return True
-    return False
 
 
 def _get_path(url):

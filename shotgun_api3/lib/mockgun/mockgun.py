@@ -177,7 +177,6 @@ class Shotgun(object):
                  api_key=None,
                  convert_datetimes_to_utc=True,
                  http_proxy=None,
-                 ensure_ascii=True,
                  connect=True,
                  ca_certs=None,
                  login=None,

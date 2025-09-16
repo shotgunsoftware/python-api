@@ -1,31 +1,18 @@
 """Base class for Flow Production Tracking API tests."""
 
+import configparser
 import contextlib
+import json
 import os
 import random
 import re
 import time
 import unittest
-
-from . import mock
+import unittest.mock
+import urllib.error
 
 import shotgun_api3 as api
-from shotgun_api3.shotgun import json
 from shotgun_api3.shotgun import ServerCapabilities
-from shotgun_api3.lib import six
-from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib.six.moves.configparser import ConfigParser
-
-try:
-    # Attempt to import skip from unittest.  Since this was added in Python 2.7
-    # in the case that we're running on Python 2.6 we'll need a decorator to
-    # provide some equivalent functionality.
-    from unittest import skip
-except ImportError:
-    # On Python 2.6 we'll just have to ignore tests that are skipped -- we won't
-    # mark them as skipped, but we will not fail on them.
-    def skip(f):
-        return lambda self: None
 
 
 THUMBNAIL_MAX_ATTEMPTS = 30
@@ -135,7 +122,7 @@ class MockTestBase(TestBase):
     """Test base for tests mocking server interactions."""
 
     def setUp(self):
-        super(MockTestBase, self).setUp()
+        super().setUp()
         # TODO see if there is another way to stop sg connecting
         self._setup_mock()
         self._setup_mock_data()
@@ -144,12 +131,12 @@ class MockTestBase(TestBase):
         """Setup mocking on the ShotgunClient to stop it calling a live server"""
         # Replace the function used to make the final call to the server
         # eaiser than mocking the http connection + response
-        self.sg._http_request = mock.Mock(
+        self.sg._http_request = unittest.mock.Mock(
             spec=api.Shotgun._http_request, return_value=((200, "OK"), {}, None)
         )
         # Replace the function used to make the final call to the S3 server, and simulate
         # the exception HTTPError raised with 503 status errors
-        self.sg._make_upload_request = mock.Mock(
+        self.sg._make_upload_request = unittest.mock.Mock(
             spec=api.Shotgun._make_upload_request,
             side_effect=urllib.error.HTTPError(
                 "url",
@@ -163,12 +150,12 @@ class MockTestBase(TestBase):
         # also replace the function that is called to get the http connection
         # to avoid calling the server. OK to return a mock as we will not use
         # it
-        self.mock_conn = mock.Mock(spec=api.lib.httplib2.Http)
+        self.mock_conn = unittest.mock.Mock(spec=api.lib.httplib2.Http)
         # The Http objects connection property is a dict of connections
         # it is holding
         self.mock_conn.connections = dict()
         self.sg._connection = self.mock_conn
-        self.sg._get_connection = mock.Mock(return_value=self.mock_conn)
+        self.sg._get_connection = unittest.mock.Mock(return_value=self.mock_conn)
 
         # create the server caps directly to say we have the correct version
         self.sg._server_caps = ServerCapabilities(
@@ -184,17 +171,14 @@ class MockTestBase(TestBase):
         """
         # test for a mock object rather than config.mock as some tests
         # force the mock to be created
-        if not isinstance(self.sg._http_request, mock.Mock):
+        if not isinstance(self.sg._http_request, unittest.mock.Mock):
             return
 
         if not isinstance(data, str):
-            if six.PY2:
-                data = json.dumps(data, ensure_ascii=False, encoding="utf-8")
-            else:
-                data = json.dumps(
-                    data,
-                    ensure_ascii=False,
-                )
+            data = json.dumps(
+                data,
+                ensure_ascii=False,
+            )
 
         resp_headers = {
             "cache-control": "no-cache",
@@ -252,7 +236,7 @@ class LiveTestBase(TestBase):
     def setUp(self, auth_mode=None):
         if not auth_mode:
             auth_mode = "HumanUser" if self.config.jenkins else "ApiUser"
-        super(LiveTestBase, self).setUp(auth_mode)
+        super().setUp(auth_mode)
         if (
             self.sg.server_caps.version
             and self.sg.server_caps.version >= (3, 3, 0)
@@ -410,7 +394,7 @@ class HumanUserAuthLiveTestBase(LiveTestBase):
     """
 
     def setUp(self):
-        super(HumanUserAuthLiveTestBase, self).setUp("HumanUser")
+        super().setUp("HumanUser")
 
 
 class SessionTokenAuthLiveTestBase(LiveTestBase):
@@ -420,7 +404,7 @@ class SessionTokenAuthLiveTestBase(LiveTestBase):
     """
 
     def setUp(self):
-        super(SessionTokenAuthLiveTestBase, self).setUp("SessionToken")
+        super().setUp("SessionToken")
 
 
 class SgTestConfig(object):
@@ -456,7 +440,7 @@ class SgTestConfig(object):
         ]
 
     def read_config(self, config_path):
-        config_parser = ConfigParser()
+        config_parser = configparser.ConfigParser()
         config_parser.read(config_path)
         for section in config_parser.sections():
             for option in config_parser.options(section):

@@ -15,7 +15,7 @@ The :mod:`~shotgun_api3.shotgun` module is a container for the :class:`~shotgun.
 class. There are a couple of useful attributes to note.
 
 .. automodule:: shotgun_api3.shotgun
-    :members: NO_SSL_VALIDATION, LOG
+    :members: LOG
     :private-members:
     :special-members:
 
@@ -803,8 +803,13 @@ Additional keys exist for local file links
       'local_path_linux': "string" | None,
       'local_path_mac': "string" | None,
       'local_path_windows': "string" | None,
-      'local_storage': {dictionary},
+      'local_storage': {
+        'type': 'LocalStorage',
+        'id': int | None,
+        'name': "string" | None,
+      },
       'name': "string",
+      'relative_path': "string" | None
       'url': "string",
     }
     API versions < v3.0.3:
@@ -1029,6 +1034,3 @@ Example for a user whose language preference is set to Japanese:
     },
     ...
     }
-
-.. note::
-    If needed, the encoding of the returned localized string can be ensured regardless the Python version using shotgun_api3.lib.six.ensure_text().

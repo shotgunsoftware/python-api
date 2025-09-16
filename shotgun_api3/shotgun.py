@@ -29,39 +29,34 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-# Python 2/3 compatibility
-from .lib import six
-from .lib import sgsix
-from .lib import sgutils
-from .lib.six import BytesIO  # used for attachment upload
-from .lib.six.moves import map
-
-from .lib.six.moves import http_cookiejar  # used for attachment upload
+import base64
+import copy
 import datetime
+import json
+import http.client  # Used for secure file upload
+import http.cookiejar  # used for attachment upload
+import io
 import logging
-import uuid  # used for attachment upload
+import mimetypes
 import os
 import re
-import copy
+import shutil  # used for attachment download
 import ssl
 import stat  # used for attachment upload
 import sys
 import time
-import json
-from .lib.six.moves import urllib
-import shutil  # used for attachment download
-from .lib.six.moves import http_client  # Used for secure file upload.
-from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
-from .lib.sgtimezone import SgTimezone
+import urllib.error
+import urllib.parse
+import urllib.request
+import uuid  # used for attachment upload
+import xml.etree.ElementTree
 
 # Import Error and ResponseError (even though they're unused in this file) since they need
 # to be exposed as part of the API.
-from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError  # noqa
+from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
+from .lib.httplib2 import Http, ProxyInfo, socks
+from .lib.sgtimezone import SgTimezone
 
 
 LOG = logging.getLogger("shotgun_api3")
@@ -75,34 +70,6 @@ handler associated with it.
 """
 LOG.setLevel(logging.WARN)
 
-
-def _is_mimetypes_broken():
-    """
-    Checks if this version of Python ships with a broken version of mimetypes
-
-    :returns: True if the version of mimetypes is broken, False otherwise.
-    """
-    # mimetypes is broken on Windows only and for Python 2.7.0 to 2.7.9 inclusively.
-    # We're bundling the version from 2.7.10.
-    # See bugs :
-    # http://bugs.python.org/issue9291  <- Fixed in 2.7.7
-    # http://bugs.python.org/issue21652 <- Fixed in 2.7.8
-    # http://bugs.python.org/issue22028 <- Fixed in 2.7.10
-    return (
-        sys.platform == "win32"
-        and sys.version_info[0] == 2
-        and sys.version_info[1] == 7
-        and sys.version_info[2] >= 0
-        and sys.version_info[2] <= 9
-    )
-
-
-if _is_mimetypes_broken():
-    from .lib import mimetypes as mimetypes
-else:
-    import mimetypes
-
-
 # mimetypes imported in version specific imports
 mimetypes.add_type("video/webm", ".webm")  # webm and mp4 seem to be missing
 mimetypes.add_type("video/mp4", ".mp4")  # from some OS/distros
@@ -111,18 +78,10 @@ SG_TIMEZONE = SgTimezone()
 
 SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = False
 
-NO_SSL_VALIDATION = False
-"""
-Turns off hostname matching validation for SSL certificates
-
-Sometimes there are cases where certificate validation should be disabled. For example, if you
-have a self-signed internal certificate that isn't included in our certificate bundle, you may
-not require the added security provided by enforcing this.
-"""
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.8.2"
+__version__ = "3.9.0"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -359,10 +318,8 @@ class ClientCapabilities(object):
         ``windows``, or ``None`` (if the current platform couldn't be determined).
     :ivar str local_path_field: The PTR field used for local file paths. This is calculated using
         the value of ``platform``. Ex. ``local_path_mac``.
-    :ivar str py_version: Simple version of Python executable as a string. Eg. ``2.7``.
-    :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``. This
-        info is only available in Python 2.7+ if the ssl module was imported successfully.
-        Defaults to ``unknown``
+    :ivar str py_version: Simple version of Python executable as a string. Eg. ``3.9``.
+    :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``.
     """
 
     def __init__(self):
@@ -383,14 +340,7 @@ class ClientCapabilities(object):
             self.local_path_field = None
 
         self.py_version = ".".join(str(x) for x in sys.version_info[:2])
-
-        # extract the OpenSSL version if we can. The version is only available in Python 2.7 and
-        # only if we successfully imported ssl
-        self.ssl_version = "unknown"
-        try:
-            self.ssl_version = ssl.OPENSSL_VERSION
-        except (AttributeError, NameError):
-            pass
+        self.ssl_version = ssl.OPENSSL_VERSION
 
     def __str__(self):
         return (
@@ -458,7 +408,6 @@ class _Config(object):
         self.proxy_pass = None
         self.session_token = None
         self.authorization = None
-        self.no_ssl_validation = False
         self.localized = False
 
     def set_server_params(self, base_url):
@@ -521,7 +470,6 @@ class Shotgun(object):
         api_key=None,
         convert_datetimes_to_utc=True,
         http_proxy=None,
-        ensure_ascii=True,
         connect=True,
         ca_certs=None,
         login=None,
@@ -597,18 +545,6 @@ class Shotgun(object):
                 :class:`~shotgun_api3.MissingTwoFactorAuthenticationFault` will be raised if the
                 ``auth_token`` is invalid.
             .. todo: Add this info to the Authentication section of the docs
-
-        .. note:: A note about proxy connections: If you are using Python <= v2.6.2, HTTPS
-            connections through a proxy server will not work due to a bug in the :mod:`urllib2`
-            library (see http://bugs.python.org/issue1424152). This will affect upload and
-            download-related methods in the Shotgun API (eg. :meth:`~shotgun_api3.Shotgun.upload`,
-            :meth:`~shotgun_api3.Shotgun.upload_thumbnail`,
-            :meth:`~shotgun_api3.Shotgun.upload_filmstrip_thumbnail`,
-            :meth:`~shotgun_api3.Shotgun.download_attachment`. Normal CRUD methods for passing JSON
-            data should still work fine. If you cannot upgrade your Python installation, you can see
-            the patch merged into Python v2.6.3 (http://hg.python.org/cpython/rev/0f57b30a152f/) and
-            try and hack it into your installation but YMMV. For older versions of Python there
-            are other patches that were proposed in the bug report that may help you as well.
         """
 
         # verify authentication arguments
@@ -647,13 +583,7 @@ class Shotgun(object):
             if script_name is not None or api_key is not None:
                 raise ValueError("cannot provide an auth_code with script_name/api_key")
 
-        # Can't use 'all' with python 2.4
-        if (
-            len(
-                [x for x in [session_token, script_name, api_key, login, password] if x]
-            )
-            == 0
-        ):
+        if not any([session_token, script_name, api_key, login, password]):
             if connect:
                 raise ValueError(
                     "must provide login/password, session_token or script_name/api_key"
@@ -668,7 +598,6 @@ class Shotgun(object):
         self.config.session_token = session_token
         self.config.sudo_as_login = sudo_as_login
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
-        self.config.no_ssl_validation = NO_SSL_VALIDATION
         self.config.raw_http_proxy = http_proxy
 
         try:
@@ -708,12 +637,12 @@ class Shotgun(object):
         # and auth header
 
         # Do NOT self._split_url(self.base_url) here, as it contains the lower
-        # case version of the base_url argument. Doing so would base64encode
+        # case version of the base_url argument. Doing so would base64.encodebytes
         # the lowercase version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64encode(
-                sgutils.ensure_binary(urllib.parse.unquote(auth))
+            auth = base64.encodebytes(
+                urllib.parse.unquote(auth).encode("utf-8")
             ).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
 
@@ -757,9 +686,6 @@ class Shotgun(object):
                 {self.config.scheme: proxy_addr}
             )
 
-        if ensure_ascii:
-            self._json_loads = self._json_loads_ascii
-
         self.client_caps = ClientCapabilities()
         # this relies on self.client_caps being set first
         self.reset_user_agent()
@@ -786,7 +712,7 @@ class Shotgun(object):
         In python 3.8 `urllib.parse.splituser` was deprecated warning devs to
         use `urllib.parse.urlparse`.
         """
-        if six.PY38:
+        if (sys.version_info.major, sys.version_info.minor) >= (3, 8):
             auth = None
             results = urllib.parse.urlparse(base_url)
             server = results.hostname
@@ -2287,8 +2213,7 @@ class Shotgun(object):
             "type": entity_type,
             "field_name": field_name,
             "properties": [
-                {"property_name": k, "value": v}
-                for k, v in six.iteritems((properties or {}))
+                {"property_name": k, "value": v} for k, v in (properties or {}).items()
             ],
         }
         params = self._add_project_param(params, project_entity)
@@ -2337,14 +2262,10 @@ class Shotgun(object):
             ua_platform = self.client_caps.platform.capitalize()
 
         # create ssl validation string based on settings
-        validation_str = "validate"
-        if self.config.no_ssl_validation:
-            validation_str = "no-validate"
-
         self._user_agents = [
             "shotgun-json (%s)" % __version__,
             "Python %s (%s)" % (self.client_caps.py_version, ua_platform),
-            "ssl %s (%s)" % (self.client_caps.ssl_version, validation_str),
+            "ssl %s" % (self.client_caps.ssl_version),
         ]
 
     def set_session_uuid(self, session_uuid):
@@ -2927,8 +2848,7 @@ class Shotgun(object):
                 This parameter exists only for backwards compatibility for scripts specifying
                 the parameter with keywords.
         :returns: If ``file_path`` is provided, returns the path to the file on disk.  If
-            ``file_path`` is ``None``, returns the actual data of the file, as str in Python 2 or
-            bytes in Python 3.
+            ``file_path`` is ``None``, returns the actual data of the file, as bytes.
         :rtype: str | bytes
         """
         # backwards compatibility when passed via keyword argument
@@ -2983,14 +2903,19 @@ class Shotgun(object):
                         url.find("s3.amazonaws.com") != -1
                         and e.headers["content-type"] == "application/xml"
                     ):
-                        body = [sgutils.ensure_text(line) for line in e.readlines()]
+                        body = [
+                            line.decode("utf-8") if isinstance(line, bytes) else line
+                            for line in e.readlines()
+                        ]
+
                         if body:
-                            xml = "".join(body)
-                            # Once python 2.4 support is not needed we can think about using
-                            # elementtree. The doc is pretty small so this shouldn't be an issue.
-                            match = re.search("<Message>(.*)</Message>", xml)
-                            if match:
-                                err += " - %s" % (match.group(1))
+                            try:
+                                root = xml.etree.ElementTree.fromstring("".join(body))
+                                message_elem = root.find(".//Message")
+                                if message_elem is not None and message_elem.text:
+                                    err = f"{err} - {message_elem.text}"
+                            except xml.etree.ElementTree.ParseError:
+                                err = f"{err}\n{''.join(body)}\n"
                 elif e.code == 409 or e.code == 410:
                     # we may be dealing with a file that is pending/failed a malware scan, e.g:
                     # 409: This file is undergoing a malware scan, please try again in a few minutes
@@ -3017,8 +2942,8 @@ class Shotgun(object):
         This is used internally for downloading attachments from FPTR.
         """
         sid = self.get_session_token()
-        cj = http_cookiejar.LWPCookieJar()
-        c = http_cookiejar.Cookie(
+        cj = http.cookiejar.LWPCookieJar()
+        c = http.cookiejar.Cookie(
             "0",
             "_session_id",
             sid,
@@ -3345,7 +3270,7 @@ class Shotgun(object):
             raise ValueError("entity_types parameter must be a dictionary")
 
         api_entity_types = {}
-        for entity_type, filter_list in six.iteritems(entity_types):
+        for entity_type, filter_list in entity_types.items():
 
             if isinstance(filter_list, (list, tuple)):
                 resolved_filters = _translate_filters(filter_list, filter_operator=None)
@@ -3612,8 +3537,14 @@ class Shotgun(object):
         Build urllib2 opener with appropriate proxy handler.
         """
         handlers = []
-        if self.__ca_certs and not NO_SSL_VALIDATION:
-            handlers.append(CACertsHTTPSHandler(self.__ca_certs))
+        if self.__ca_certs:
+            handlers.append(
+                urllib.request.HTTPSHandler(
+                    context=ssl.create_default_context(
+                        cafile=self.__ca_certs,
+                    ),
+                ),
+            )
 
         if self.config.proxy_handler:
             handlers.append(self.config.proxy_handler)
@@ -3681,23 +3612,6 @@ class Shotgun(object):
             # Now add the rest of the path to the cert file.
             cert_file = os.path.join(cur_dir, "lib", "certifi", "cacert.pem")
             return cert_file
-
-    def _turn_off_ssl_validation(self):
-        """
-        Turn off SSL certificate validation.
-        """
-        global NO_SSL_VALIDATION
-        self.config.no_ssl_validation = True
-        NO_SSL_VALIDATION = True
-        # reset ssl-validation in user-agents
-        self._user_agents = [
-            (
-                "ssl %s (no-validate)" % self.client_caps.ssl_version
-                if ua.startswith("ssl ")
-                else ua
-            )
-            for ua in self._user_agents
-        ]
 
     # Deprecated methods from old wrapper
     def schema(self, entity_type):
@@ -3876,8 +3790,7 @@ class Shotgun(object):
         be in a single byte encoding to go over the wire.
         """
 
-        wire = json.dumps(payload, ensure_ascii=False)
-        return sgutils.ensure_binary(wire)
+        return json.dumps(payload, ensure_ascii=False).encode("utf-8")
 
     def _make_call(self, verb, path, body, headers):
         """
@@ -3913,53 +3826,15 @@ class Shotgun(object):
                 if attempt == max_rpc_attempts:
                     LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
-                # This is the exact same block as the "except Exception" bellow.
-                # We need to do it here because the next except will match it
-                # otherwise and will not re-attempt.
-                # When we drop support of Python 2 and we will probably drop the
-                # next except, we might want to remove this except too.
-            except ssl_error_classes as e:
-                # Test whether the exception is due to the fact that this is an older version of
-                # Python that cannot validate certificates encrypted with SHA-2. If it is, then
-                # fall back on disabling the certificate validation and try again - unless the
-                # SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable has been set by the
-                # user. In that case we simply raise the exception. Any other exceptions simply
-                # get raised as well.
-                #
-                # For more info see:
-                # https://www.shotgridsoftware.com/blog/important-ssl-certificate-renewal-and-sha-2/
-                #
-                # SHA-2 errors look like this:
-                #   [Errno 1] _ssl.c:480: error:0D0C50A1:asn1 encoding routines:ASN1_item_verify:
-                #   unknown message digest algorithm
-                #
-                # Any other exceptions simply get raised.
-                if (
-                    "unknown message digest algorithm" not in str(e)
-                    or "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ
-                ):
-                    raise
-
-                if self.config.no_ssl_validation is False:
-                    LOG.warning(
-                        "SSL Error: this Python installation is incompatible with "
-                        "certificates signed with SHA-2. Disabling certificate validation. "
-                        "For more information, see https://www.shotgridsoftware.com/blog/"
-                        "important-ssl-certificate-renewal-and-sha-2/"
-                    )
-                    self._turn_off_ssl_validation()
-                    # reload user agent to reflect that we have turned off ssl validation
-                    req_headers["user-agent"] = "; ".join(self._user_agents)
-
+            except (ssl.SSLError, ssl.CertificateError) as e:
                 self._close_connection()
                 if attempt == max_rpc_attempts:
                     LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
-            except Exception:
+            except Exception as e:
                 self._close_connection()
-                if attempt == max_rpc_attempts:
-                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
-                    raise
+                LOG.debug(f"Request failed.  Reason: {e}", exc_info=True)
+                raise
 
             LOG.debug(
                 "Request failed, attempt %d of %d.  Retrying in %.2f seconds..."
@@ -3982,7 +3857,7 @@ class Shotgun(object):
         resp, content = conn.request(url, method=verb, body=body, headers=headers)
         # http response code is handled else where
         http_status = (resp.status, resp.reason)
-        resp_headers = dict((k.lower(), v) for k, v in six.iteritems(resp))
+        resp_headers = dict((k.lower(), v) for k, v in resp.items())
         resp_body = content
 
         LOG.debug("Response status is %s %s" % http_status)
@@ -4044,35 +3919,6 @@ class Shotgun(object):
 
     def _json_loads(self, body):
         return json.loads(body)
-
-    def _json_loads_ascii(self, body):
-        """
-        See http://stackoverflow.com/questions/956867
-        """
-
-        def _decode_list(lst):
-            newlist = []
-            for i in lst:
-                if isinstance(i, str):
-                    i = sgutils.ensure_str(i)
-                elif isinstance(i, list):
-                    i = _decode_list(i)
-                newlist.append(i)
-            return newlist
-
-        def _decode_dict(dct):
-            newdict = {}
-            for k, v in six.iteritems(dct):
-                if isinstance(k, str):
-                    k = sgutils.ensure_str(k)
-                if isinstance(v, str):
-                    v = sgutils.ensure_str(v)
-                elif isinstance(v, list):
-                    v = _decode_list(v)
-                newdict[k] = v
-            return newdict
-
-        return json.loads(body, object_hook=_decode_dict)
 
     def _response_errors(self, sg_response):
         """
@@ -4136,7 +3982,7 @@ class Shotgun(object):
             return tuple(recursive(i, visitor) for i in data)
 
         if isinstance(data, dict):
-            return dict((k, recursive(v, visitor)) for k, v in six.iteritems(data))
+            return dict((k, recursive(v, visitor)) for k, v in data.items())
 
         return visitor(data)
 
@@ -4182,10 +4028,6 @@ class Shotgun(object):
                 if _change_tz:
                     value = _change_tz(value)
                 return value.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-            # ensure return is six.text_type
-            if isinstance(value, str):
-                return sgutils.ensure_text(value)
 
             return value
 
@@ -4246,14 +4088,12 @@ class Shotgun(object):
                 timeout=self.config.timeout_secs,
                 ca_certs=self.__ca_certs,
                 proxy_info=pi,
-                disable_ssl_certificate_validation=self.config.no_ssl_validation,
             )
         else:
             self._connection = Http(
                 timeout=self.config.timeout_secs,
                 ca_certs=self.__ca_certs,
                 proxy_info=None,
-                disable_ssl_certificate_validation=self.config.no_ssl_validation,
             )
 
         return self._connection
@@ -4305,7 +4145,7 @@ class Shotgun(object):
                 continue
 
             # iterate over each item and check each field for possible injection
-            for k, v in six.iteritems(rec):
+            for k, v in rec.items():
                 if not v:
                     continue
 
@@ -4393,7 +4233,7 @@ class Shotgun(object):
         [{'field_name': 'foo', 'value': 'bar', 'thing1': 'value1'}]
         """
         ret = []
-        for k, v in six.iteritems((d or {})):
+        for k, v in (d or {}).items():
             d = {key_name: k, value_name: v}
             d.update((extra_data or {}).get(k, {}))
             ret.append(d)
@@ -4406,7 +4246,7 @@ class Shotgun(object):
 
         e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
         """
-        return dict([(k, {key_name: v}) for (k, v) in six.iteritems((d or {}))])
+        return dict([(k, {key_name: v}) for (k, v) in (d or {}).items()])
 
     def _upload_file_to_storage(self, path, storage_url):
         """
@@ -4452,7 +4292,7 @@ class Shotgun(object):
                 data_size = len(data)
                 # keep data as a stream so that we don't need to worry how it was
                 # encoded.
-                data = BytesIO(data)
+                data = io.BytesIO(data)
                 bytes_read += data_size
                 part_url = self._get_upload_part_link(
                     upload_info, filename, part_number
@@ -4674,18 +4514,21 @@ class Shotgun(object):
                 else:
                     raise ShotgunError("Unanticipated error occurred %s" % (e))
 
-            return sgutils.ensure_text(result)
+            if isinstance(result, bytes):
+                result = result.decode("utf-8")
+
+            return result
         else:
             raise ShotgunError("Max attemps limit reached.")
 
 
-class CACertsHTTPSConnection(http_client.HTTPConnection):
+class CACertsHTTPSConnection(http.client.HTTPConnection):
     """ "
     This class allows to create an HTTPS connection that uses the custom certificates
     passed in.
     """
 
-    default_port = http_client.HTTPS_PORT
+    default_port = http.client.HTTPS_PORT
 
     def __init__(self, *args, **kwargs):
         """
@@ -4701,7 +4544,7 @@ class CACertsHTTPSConnection(http_client.HTTPConnection):
         "Connect to a host on a given (SSL) port."
         super().connect(self)
         # Now that the regular HTTP socket has been created, wrap it with our SSL certs.
-        if six.PY38:
+        if (sys.version_info.major, sys.version_info.minor) >= (3, 8):
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
             context.verify_mode = ssl.CERT_REQUIRED
             context.check_hostname = False
@@ -4714,22 +4557,6 @@ class CACertsHTTPSConnection(http_client.HTTPConnection):
             )
 
 
-class CACertsHTTPSHandler(urllib.request.HTTPHandler):
-    """
-    Handler that ensures https connections are created with the custom CA certs.
-    """
-
-    def __init__(self, cacerts):
-        super().__init__(self)
-        self.__ca_certs = cacerts
-
-    def https_open(self, req):
-        return self.do_open(self.create_https_connection, req)
-
-    def create_https_connection(self, *args, **kwargs):
-        return CACertsHTTPSConnection(*args, ca_certs=self.__ca_certs, **kwargs)
-
-
 # Helpers from the previous API, left as is.
 # Based on http://code.activestate.com/recipes/146306/
 class FormPostHandler(urllib.request.BaseHandler):
@@ -4740,34 +4567,24 @@ class FormPostHandler(urllib.request.BaseHandler):
     handler_order = urllib.request.HTTPHandler.handler_order - 10  # needs to run first
 
     def http_request(self, request):
-        # get_data was removed in 3.4. since we're testing against 3.6 and
-        # 3.7, this should be sufficient.
-        if six.PY3:
-            data = request.data
-        else:
-            data = request.get_data()
+        data = request.data
         if data is not None and not isinstance(data, str):
             files = []
             params = []
             for key, value in data.items():
-                if isinstance(value, sgsix.file_types):
+                if isinstance(value, io.IOBase):
                     files.append((key, value))
                 else:
                     params.append((key, value))
             if not files:
-                data = sgutils.ensure_binary(
-                    urllib.parse.urlencode(params, True)
-                )  # sequencing on
+                data = urllib.parse.urlencode(params, True).encode("utf-8")
+                # sequencing on
             else:
                 boundary, data = self.encode(params, files)
                 content_type = "multipart/form-data; boundary=%s" % boundary
                 request.add_unredirected_header("Content-Type", content_type)
-            # add_data was removed in 3.4. since we're testing against 3.6 and
-            # 3.7, this should be sufficient.
-            if six.PY3:
-                request.data = data
-            else:
-                request.add_data(data)
+            request.data = data
+
         return request
 
     def encode(self, params, files, boundary=None, buffer=None):
@@ -4778,44 +4595,50 @@ class FormPostHandler(urllib.request.BaseHandler):
             # We'll do this across both python 2/3 rather than add more branching.
             boundary = uuid.uuid4()
         if buffer is None:
-            buffer = BytesIO()
+            buffer = io.BytesIO()
         for key, value in params:
-            if not isinstance(value, str):
+            if isinstance(key, bytes):
+                key = key.decode("utf-8")
+
+            if isinstance(value, bytes):
+                value = value.decode("utf-8")
+            elif not isinstance(value, str):
                 # If value is not a string (e.g. int) cast to text
                 value = str(value)
-            value = sgutils.ensure_text(value)
-            key = sgutils.ensure_text(key)
 
-            buffer.write(sgutils.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(f"--{boundary}\r\n".encode("utf-8"))
             buffer.write(
-                sgutils.ensure_binary('Content-Disposition: form-data; name="%s"' % key)
+                f'Content-Disposition: form-data; name="{key}"'.encode("utf-8")
             )
-            buffer.write(sgutils.ensure_binary("\r\n\r\n%s\r\n" % value))
+            buffer.write(f"\r\n\r\n{value}\r\n".encode("utf-8"))
         for key, fd in files:
             # On Windows, it's possible that we were forced to open a file
             # with non-ascii characters as unicode. In that case, we need to
             # encode it as a utf-8 string to remove unicode from the equation.
             # If we don't, the mix of unicode and strings going into the
             # buffer can cause UnicodeEncodeErrors to be raised.
-            filename = fd.name
-            filename = sgutils.ensure_text(filename)
+            filename = (
+                fd.name.decode("utf-8") if isinstance(fd.name, bytes) else fd.name
+            )
             filename = filename.split("/")[-1]
-            key = sgutils.ensure_text(key)
+            if isinstance(key, bytes):
+                key = key.decode("utf-8")
+
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or "application/octet-stream"
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-            buffer.write(sgutils.ensure_binary("--%s\r\n" % boundary))
+            buffer.write(f"--{boundary}\r\n".encode("utf-8"))
             c_dis = 'Content-Disposition: form-data; name="%s"; filename="%s"%s'
             content_disposition = c_dis % (key, filename, "\r\n")
-            buffer.write(sgutils.ensure_binary(content_disposition))
-            buffer.write(sgutils.ensure_binary("Content-Type: %s\r\n" % content_type))
-            buffer.write(sgutils.ensure_binary("Content-Length: %s\r\n" % file_size))
+            buffer.write(content_disposition.encode("utf-8"))
+            buffer.write(f"Content-Type: {content_type}\r\n".encode("utf-8"))
+            buffer.write(f"Content-Length: {file_size}\r\n".encode("utf-8"))
 
-            buffer.write(sgutils.ensure_binary("\r\n"))
+            buffer.write(b"\r\n")
             fd.seek(0)
             shutil.copyfileobj(fd, buffer)
-            buffer.write(sgutils.ensure_binary("\r\n"))
-        buffer.write(sgutils.ensure_binary("--%s--\r\n\r\n" % boundary))
+            buffer.write(b"\r\n")
+        buffer.write(f"--{boundary}--\r\n\r\n".encode("utf-8"))
         buffer = buffer.getvalue()
         return boundary, buffer
 
