@@ -2004,11 +2004,11 @@ class TestExportPage(base.LiveTestBase):
         page_entity = self.sg.create("Page", {"entity_type": "Shot"})
         with self.assertRaises(Exception) as cm:
             self.sg.export_page(page_entity["id"],'csv')
-        self.assertIn(f"Report for Page id={page_entity['id']} does not exist", str(cm.exception))
+        self.assertIn(f"Export for Page id={page_entity['id']} not available", str(cm.exception))
 
         with self.assertRaises(Exception) as cm:
             self.sg.export_page(page_entity["id"],'csv', layout_name="My Layout")
-        self.assertIn(f"Report for Page id={page_entity['id']} does not exist", str(cm.exception))
+        self.assertIn(f"Export for Page id={page_entity['id']} not available", str(cm.exception))
 
     def test_export_page_format_missing(self):
         """Test export_page raises for invalid format."""
@@ -2035,13 +2035,18 @@ class TestExportPage(base.LiveTestBase):
         with self.assertRaises(Exception) as cm:
             self.sg.export_page(None, 'csv', layout_name="My Layout")
         self.assertIn("\'page_id\' missing", str(cm.exception))
-
-    def test_export_page_without_layout_name(self):
+    
+    @patch("shotgun_api3.Shotgun._call_rpc")
+    def test_export_page_without_layout_name(self, mock_call_rpc):
         """Test export_page works when layout_name is not provided."""
+        
         if not self.sg.server_caps.version or self.sg.server_caps.version < (5, 1, 22):
             return
+        
+        mock_call_rpc.method.assert_called_once()
+        mock_call_rpc.return_value = "ID,Name,Status\n1,Shot 001,ip\n2,Shot 002,rev\n"
         result = self.sg.export_page(11, 'csv')
-        self.assertTrue(True, "export_page succeeded without layout_name")
+        self.assertTrue(isinstance(result, str))
 
 class TestFollow(base.LiveTestBase):
 
