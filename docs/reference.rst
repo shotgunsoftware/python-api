@@ -66,6 +66,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.work_schedule_read
     Shotgun.work_schedule_update
     Shotgun.preferences_read
+    Shotgun.export_page
 
 .. rubric:: Working With Files
 
@@ -150,6 +151,7 @@ also some specialized convenience methods for accessing particular types of info
 .. automethod:: Shotgun.work_schedule_read
 .. automethod:: Shotgun.work_schedule_update
 .. automethod:: Shotgun.preferences_read
+.. automethod:: Shotgun.export_page
 
 Working With Files
 ==================

@@ -81,7 +81,7 @@ SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = False
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.9.0"
+__version__ = "3.9.1"
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -1830,10 +1830,12 @@ class Shotgun(object):
         """
         Export the specified page to the given format.
         This method allows you to export a page to a specific format such as CSV.
-        >>> sg.export_page(12345, "csv", layout_name="My Layout")
-        "ID,Name,Status\n1,Shot 001,ip\n2,Shot 002,rev\n"
+
+            >>> sg.export_page(12345, "csv", layout_name="My Layout")
+            "ID,Name,Status\\n1,Shot 001,ip\\n2,Shot 002,rev\\n"
+
         :param int page_id: The ID of the page to export.
-        :param str format: The format to export the page to. Supported formats are ``"csv"``
+        :param str format: The format to export the page to. Supported format is ``"csv"``.
         :param str layout_name: The name of the layout to export this will map to the layout_display_name field. Defaults to ``None``.
         :returns: string containing data of the given page.
         :rtype: string
