@@ -1829,14 +1829,19 @@ class Shotgun(object):
     def export_page(self, page_id, format, layout_name=None):
         """
         Export the specified page to the given format.
-        This method allows you to export a page to a specific format such as CSV.
+        This method allows you to export a page to CSV.
+        Respective layout or page should be marked as API Exportable in the Shotgun UI. << link to the web documentaion>>
+
+        If ``layout_name`` is not passed in, the default layout name will be used.
 
             >>> sg.export_page(12345, "csv", layout_name="My Layout")
+            "ID,Name,Status\\n1,Shot 001,ip\\n2,    Shot 002,rev\\n"
+            >>> sg.export_page(12345, "csv")
             "ID,Name,Status\\n1,Shot 001,ip\\n2,Shot 002,rev\\n"
 
         :param int page_id: The ID of the page to export.
         :param str format: The format to export the page to. Supported format is ``"csv"``.
-        :param str layout_name: The name of the layout to export this will map to the layout_display_name field. Defaults to ``None``.
+        :param str layout_name: optional layout name. This should be the name of the layout seen in the Shotgun UI.
         :returns: string containing data of the given page.
         :rtype: string
         """
