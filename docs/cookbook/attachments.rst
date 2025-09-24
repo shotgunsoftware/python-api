@@ -304,7 +304,7 @@ defaults. Any other keys that are provided will be ignored.
     Alternative to ``local_path``
 
 Example 1: Using ``local_path``
-------------------------------
+-------------------------------
 
 ::
 
@@ -345,7 +345,7 @@ the most appropriate specific LocalStorage match and assigned it to local_storag
 
 
 Example 2: Using ``relative_path``
----------------------------------
+----------------------------------
 
 ::
 
