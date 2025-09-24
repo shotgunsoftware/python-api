@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>shotgun_api3.shotgun &mdash; python-api v3.8.3 documentation</title>
+  <title>shotgun_api3.shotgun &mdash; python-api v3.9.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.8.3.<br>
+    <b>python-api</b> v3.9.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -156,39 +156,34 @@
 <span class="sd">OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="c1"># Python 2/3 compatibility</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">six</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">sgsix</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">sgutils</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.lib.six</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>  <span class="c1"># used for attachment upload</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.lib.six.moves</span><span class="w"> </span><span class="kn">import</span> <span class="nb">map</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">.lib.six.moves</span><span class="w"> </span><span class="kn">import</span> <span class="n">http_cookiejar</span>  <span class="c1"># used for attachment upload</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">http.client</span>  <span class="c1"># Used for secure file upload</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">http.cookiejar</span>  <span class="c1"># used for attachment upload</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>  <span class="c1"># used for attachment upload</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mimetypes</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>  <span class="c1"># used for attachment download</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ssl</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">stat</span>  <span class="c1"># used for attachment upload</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.lib.six.moves</span><span class="w"> </span><span class="kn">import</span> <span class="n">urllib</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>  <span class="c1"># used for attachment download</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.lib.six.moves</span><span class="w"> </span><span class="kn">import</span> <span class="n">http_client</span>  <span class="c1"># Used for secure file upload.</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.lib.httplib2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Http</span><span class="p">,</span> <span class="n">ProxyInfo</span><span class="p">,</span> <span class="n">socks</span><span class="p">,</span> <span class="n">ssl_error_classes</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.lib.sgtimezone</span><span class="w"> </span><span class="kn">import</span> <span class="n">SgTimezone</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib.error</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib.parse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>  <span class="c1"># used for attachment upload</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span>
 
 <span class="c1"># Import Error and ResponseError (even though they&#39;re unused in this file) since they need</span>
 <span class="c1"># to be exposed as part of the API.</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.lib.six.moves.xmlrpc_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Error</span><span class="p">,</span> <span class="n">ProtocolError</span><span class="p">,</span> <span class="n">ResponseError</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xmlrpc.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Error</span><span class="p">,</span> <span class="n">ProtocolError</span><span class="p">,</span> <span class="n">ResponseError</span>  <span class="c1"># noqa</span>
 
-<span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">PY3</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">base64</span><span class="w"> </span><span class="kn">import</span> <span class="n">encodebytes</span> <span class="k">as</span> <span class="n">base64encode</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">base64</span><span class="w"> </span><span class="kn">import</span> <span class="n">encodestring</span> <span class="k">as</span> <span class="n">base64encode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.lib.httplib2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Http</span><span class="p">,</span> <span class="n">ProxyInfo</span><span class="p">,</span> <span class="n">socks</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.lib.sgtimezone</span><span class="w"> </span><span class="kn">import</span> <span class="n">SgTimezone</span>
 
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;shotgun_api3&quot;</span><span class="p">)</span>
@@ -202,34 +197,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="n">LOG</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARN</span><span class="p">)</span>
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_is_mimetypes_broken</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Checks if this version of Python ships with a broken version of mimetypes</span>
-
-<span class="sd">    :returns: True if the version of mimetypes is broken, False otherwise.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># mimetypes is broken on Windows only and for Python 2.7.0 to 2.7.9 inclusively.</span>
-    <span class="c1"># We&#39;re bundling the version from 2.7.10.</span>
-    <span class="c1"># See bugs :</span>
-    <span class="c1"># http://bugs.python.org/issue9291  &lt;- Fixed in 2.7.7</span>
-    <span class="c1"># http://bugs.python.org/issue21652 &lt;- Fixed in 2.7.8</span>
-    <span class="c1"># http://bugs.python.org/issue22028 &lt;- Fixed in 2.7.10</span>
-    <span class="k">return</span> <span class="p">(</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span>
-        <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
-        <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">7</span>
-        <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span>
-        <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">9</span>
-    <span class="p">)</span>
-
-
-<span class="k">if</span> <span class="n">_is_mimetypes_broken</span><span class="p">():</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">.lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">mimetypes</span> <span class="k">as</span> <span class="n">mimetypes</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">mimetypes</span>
-
-
 <span class="c1"># mimetypes imported in version specific imports</span>
 <span class="n">mimetypes</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;video/webm&quot;</span><span class="p">,</span> <span class="s2">&quot;.webm&quot;</span><span class="p">)</span>  <span class="c1"># webm and mp4 seem to be missing</span>
 <span class="n">mimetypes</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="s2">&quot;video/mp4&quot;</span><span class="p">,</span> <span class="s2">&quot;.mp4&quot;</span><span class="p">)</span>  <span class="c1"># from some OS/distros</span>
@@ -238,18 +205,10 @@
 
 <span class="n">SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION</span> <span class="o">=</span> <span class="kc">False</span>
 
-<span class="n">NO_SSL_VALIDATION</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Turns off hostname matching validation for SSL certificates</span>
-
-<span class="sd">Sometimes there are cases where certificate validation should be disabled. For example, if you</span>
-<span class="sd">have a self-signed internal certificate that isn&#39;t included in our certificate bundle, you may</span>
-<span class="sd">not require the added security provided by enforcing this.</span>
-<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.8.2&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.9.0&quot;</span>
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Errors</span>
@@ -486,10 +445,8 @@
 <span class="sd">        ``windows``, or ``None`` (if the current platform couldn&#39;t be determined).</span>
 <span class="sd">    :ivar str local_path_field: The PTR field used for local file paths. This is calculated using</span>
 <span class="sd">        the value of ``platform``. Ex. ``local_path_mac``.</span>
-<span class="sd">    :ivar str py_version: Simple version of Python executable as a string. Eg. ``2.7``.</span>
-<span class="sd">    :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``. This</span>
-<span class="sd">        info is only available in Python 2.7+ if the ssl module was imported successfully.</span>
-<span class="sd">        Defaults to ``unknown``</span>
+<span class="sd">    :ivar str py_version: Simple version of Python executable as a string. Eg. ``3.9``.</span>
+<span class="sd">    :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -510,14 +467,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">local_path_field</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">py_version</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
-
-        <span class="c1"># extract the OpenSSL version if we can. The version is only available in Python 2.7 and</span>
-        <span class="c1"># only if we successfully imported ssl</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ssl_version</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ssl_version</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OPENSSL_VERSION</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">NameError</span><span class="p">):</span>
-            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssl_version</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OPENSSL_VERSION</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
@@ -585,7 +535,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">proxy_pass</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session_token</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">authorization</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">no_ssl_validation</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">localized</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">set_server_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
@@ -648,7 +597,6 @@
         <span class="n">api_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">convert_datetimes_to_utc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">http_proxy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">connect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">ca_certs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">login</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -724,18 +672,6 @@
 <span class="sd">                :class:`~shotgun_api3.MissingTwoFactorAuthenticationFault` will be raised if the</span>
 <span class="sd">                ``auth_token`` is invalid.</span>
 <span class="sd">            .. todo: Add this info to the Authentication section of the docs</span>
-
-<span class="sd">        .. note:: A note about proxy connections: If you are using Python &lt;= v2.6.2, HTTPS</span>
-<span class="sd">            connections through a proxy server will not work due to a bug in the :mod:`urllib2`</span>
-<span class="sd">            library (see http://bugs.python.org/issue1424152). This will affect upload and</span>
-<span class="sd">            download-related methods in the Shotgun API (eg. :meth:`~shotgun_api3.Shotgun.upload`,</span>
-<span class="sd">            :meth:`~shotgun_api3.Shotgun.upload_thumbnail`,</span>
-<span class="sd">            :meth:`~shotgun_api3.Shotgun.upload_filmstrip_thumbnail`,</span>
-<span class="sd">            :meth:`~shotgun_api3.Shotgun.download_attachment`. Normal CRUD methods for passing JSON</span>
-<span class="sd">            data should still work fine. If you cannot upgrade your Python installation, you can see</span>
-<span class="sd">            the patch merged into Python v2.6.3 (http://hg.python.org/cpython/rev/0f57b30a152f/) and</span>
-<span class="sd">            try and hack it into your installation but YMMV. For older versions of Python there</span>
-<span class="sd">            are other patches that were proposed in the bug report that may help you as well.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># verify authentication arguments</span>
@@ -774,13 +710,7 @@
             <span class="k">if</span> <span class="n">script_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">api_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cannot provide an auth_code with script_name/api_key&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Can&#39;t use &#39;all&#39; with python 2.4</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="nb">len</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">session_token</span><span class="p">,</span> <span class="n">script_name</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">login</span><span class="p">,</span> <span class="n">password</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="p">]</span>
-            <span class="p">)</span>
-            <span class="o">==</span> <span class="mi">0</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="n">session_token</span><span class="p">,</span> <span class="n">script_name</span><span class="p">,</span> <span class="n">api_key</span><span class="p">,</span> <span class="n">login</span><span class="p">,</span> <span class="n">password</span><span class="p">]):</span>
             <span class="k">if</span> <span class="n">connect</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;must provide login/password, session_token or script_name/api_key&quot;</span>
@@ -795,7 +725,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">session_token</span> <span class="o">=</span> <span class="n">session_token</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">sudo_as_login</span> <span class="o">=</span> <span class="n">sudo_as_login</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">convert_datetimes_to_utc</span> <span class="o">=</span> <span class="n">convert_datetimes_to_utc</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">no_ssl_validation</span> <span class="o">=</span> <span class="n">NO_SSL_VALIDATION</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">raw_http_proxy</span> <span class="o">=</span> <span class="n">http_proxy</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -835,12 +764,12 @@
         <span class="c1"># and auth header</span>
 
         <span class="c1"># Do NOT self._split_url(self.base_url) here, as it contains the lower</span>
-        <span class="c1"># case version of the base_url argument. Doing so would base64encode</span>
+        <span class="c1"># case version of the base_url argument. Doing so would base64.encodebytes</span>
         <span class="c1"># the lowercase version of the credentials.</span>
         <span class="n">auth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_url</span><span class="p">(</span><span class="n">base_url</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">auth</span><span class="p">:</span>
-            <span class="n">auth</span> <span class="o">=</span> <span class="n">base64encode</span><span class="p">(</span>
-                <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">unquote</span><span class="p">(</span><span class="n">auth</span><span class="p">))</span>
+            <span class="n">auth</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">encodebytes</span><span class="p">(</span>
+                <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">unquote</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
             <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">authorization</span> <span class="o">=</span> <span class="s2">&quot;Basic &quot;</span> <span class="o">+</span> <span class="n">auth</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
@@ -884,9 +813,6 @@
                 <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scheme</span><span class="p">:</span> <span class="n">proxy_addr</span><span class="p">}</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">ensure_ascii</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_json_loads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_json_loads_ascii</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">client_caps</span> <span class="o">=</span> <span class="n">ClientCapabilities</span><span class="p">()</span>
         <span class="c1"># this relies on self.client_caps being set first</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_user_agent</span><span class="p">()</span>
@@ -913,7 +839,7 @@
 <span class="sd">        In python 3.8 `urllib.parse.splituser` was deprecated warning devs to</span>
 <span class="sd">        use `urllib.parse.urlparse`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">PY38</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span>
             <span class="n">auth</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">base_url</span><span class="p">)</span>
             <span class="n">server</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">hostname</span>
@@ -2397,8 +2323,7 @@
             <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">entity_type</span><span class="p">,</span>
             <span class="s2">&quot;field_name&quot;</span><span class="p">:</span> <span class="n">field_name</span><span class="p">,</span>
             <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="p">{</span><span class="s2">&quot;property_name&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">}</span>
-                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">((</span><span class="n">properties</span> <span class="ow">or</span> <span class="p">{}))</span>
+                <span class="p">{</span><span class="s2">&quot;property_name&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">}</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">properties</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">],</span>
         <span class="p">}</span>
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_project_param</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">project_entity</span><span class="p">)</span>
@@ -2447,14 +2372,10 @@
             <span class="n">ua_platform</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_caps</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
 
         <span class="c1"># create ssl validation string based on settings</span>
-        <span class="n">validation_str</span> <span class="o">=</span> <span class="s2">&quot;validate&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">no_ssl_validation</span><span class="p">:</span>
-            <span class="n">validation_str</span> <span class="o">=</span> <span class="s2">&quot;no-validate&quot;</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_user_agents</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;shotgun-json (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">__version__</span><span class="p">,</span>
             <span class="s2">&quot;Python </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client_caps</span><span class="o">.</span><span class="n">py_version</span><span class="p">,</span> <span class="n">ua_platform</span><span class="p">),</span>
-            <span class="s2">&quot;ssl </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client_caps</span><span class="o">.</span><span class="n">ssl_version</span><span class="p">,</span> <span class="n">validation_str</span><span class="p">),</span>
+            <span class="s2">&quot;ssl </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client_caps</span><span class="o">.</span><span class="n">ssl_version</span><span class="p">),</span>
         <span class="p">]</span></div>
 
 <div class="viewcode-block" id="Shotgun.set_session_uuid"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.set_session_uuid">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_session_uuid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_uuid</span><span class="p">):</span>
@@ -3037,8 +2958,7 @@
 <span class="sd">                This parameter exists only for backwards compatibility for scripts specifying</span>
 <span class="sd">                the parameter with keywords.</span>
 <span class="sd">        :returns: If ``file_path`` is provided, returns the path to the file on disk.  If</span>
-<span class="sd">            ``file_path`` is ``None``, returns the actual data of the file, as str in Python 2 or</span>
-<span class="sd">            bytes in Python 3.</span>
+<span class="sd">            ``file_path`` is ``None``, returns the actual data of the file, as bytes.</span>
 <span class="sd">        :rtype: str | bytes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># backwards compatibility when passed via keyword argument</span>
@@ -3093,14 +3013,19 @@
                         <span class="n">url</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;s3.amazonaws.com&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span>
                         <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;content-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;application/xml&quot;</span>
                     <span class="p">):</span>
-                        <span class="n">body</span> <span class="o">=</span> <span class="p">[</span><span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_text</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
+                        <span class="n">body</span> <span class="o">=</span> <span class="p">[</span>
+                            <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span> <span class="k">else</span> <span class="n">line</span>
+                            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+                        <span class="p">]</span>
+
                         <span class="k">if</span> <span class="n">body</span><span class="p">:</span>
-                            <span class="n">xml</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
-                            <span class="c1"># Once python 2.4 support is not needed we can think about using</span>
-                            <span class="c1"># elementtree. The doc is pretty small so this shouldn&#39;t be an issue.</span>
-                            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;&lt;Message&gt;(.*)&lt;/Message&gt;&quot;</span><span class="p">,</span> <span class="n">xml</span><span class="p">)</span>
-                            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                                <span class="n">err</span> <span class="o">+=</span> <span class="s2">&quot; - </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="n">root</span> <span class="o">=</span> <span class="n">xml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">body</span><span class="p">))</span>
+                                <span class="n">message_elem</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;.//Message&quot;</span><span class="p">)</span>
+                                <span class="k">if</span> <span class="n">message_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">message_elem</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                                    <span class="n">err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">message_elem</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="k">except</span> <span class="n">xml</span><span class="o">.</span><span class="n">etree</span><span class="o">.</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">ParseError</span><span class="p">:</span>
+                                <span class="n">err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">body</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">409</span> <span class="ow">or</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="mi">410</span><span class="p">:</span>
                     <span class="c1"># we may be dealing with a file that is pending/failed a malware scan, e.g:</span>
                     <span class="c1"># 409: This file is undergoing a malware scan, please try again in a few minutes</span>
@@ -3127,8 +3052,8 @@
 <span class="sd">        This is used internally for downloading attachments from FPTR.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_session_token</span><span class="p">()</span>
-        <span class="n">cj</span> <span class="o">=</span> <span class="n">http_cookiejar</span><span class="o">.</span><span class="n">LWPCookieJar</span><span class="p">()</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">http_cookiejar</span><span class="o">.</span><span class="n">Cookie</span><span class="p">(</span>
+        <span class="n">cj</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">cookiejar</span><span class="o">.</span><span class="n">LWPCookieJar</span><span class="p">()</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">cookiejar</span><span class="o">.</span><span class="n">Cookie</span><span class="p">(</span>
             <span class="s2">&quot;0&quot;</span><span class="p">,</span>
             <span class="s2">&quot;_session_id&quot;</span><span class="p">,</span>
             <span class="n">sid</span><span class="p">,</span>
@@ -3455,7 +3380,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;entity_types parameter must be a dictionary&quot;</span><span class="p">)</span>
 
         <span class="n">api_entity_types</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">filter_list</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">entity_types</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">entity_type</span><span class="p">,</span> <span class="n">filter_list</span> <span class="ow">in</span> <span class="n">entity_types</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_list</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
                 <span class="n">resolved_filters</span> <span class="o">=</span> <span class="n">_translate_filters</span><span class="p">(</span><span class="n">filter_list</span><span class="p">,</span> <span class="n">filter_operator</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -3722,8 +3647,14 @@
 <span class="sd">        Build urllib2 opener with appropriate proxy handler.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">handlers</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">NO_SSL_VALIDATION</span><span class="p">:</span>
-            <span class="n">handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CACertsHTTPSHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span><span class="p">:</span>
+            <span class="n">handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">HTTPSHandler</span><span class="p">(</span>
+                    <span class="n">context</span><span class="o">=</span><span class="n">ssl</span><span class="o">.</span><span class="n">create_default_context</span><span class="p">(</span>
+                        <span class="n">cafile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">proxy_handler</span><span class="p">:</span>
             <span class="n">handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">proxy_handler</span><span class="p">)</span>
@@ -3791,23 +3722,6 @@
             <span class="c1"># Now add the rest of the path to the cert file.</span>
             <span class="n">cert_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cur_dir</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;certifi&quot;</span><span class="p">,</span> <span class="s2">&quot;cacert.pem&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">cert_file</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_turn_off_ssl_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Turn off SSL certificate validation.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">global</span> <span class="n">NO_SSL_VALIDATION</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">no_ssl_validation</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">NO_SSL_VALIDATION</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="c1"># reset ssl-validation in user-agents</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_user_agents</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">(</span>
-                <span class="s2">&quot;ssl </span><span class="si">%s</span><span class="s2"> (no-validate)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_caps</span><span class="o">.</span><span class="n">ssl_version</span>
-                <span class="k">if</span> <span class="n">ua</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ssl &quot;</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">ua</span>
-            <span class="p">)</span>
-            <span class="k">for</span> <span class="n">ua</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_agents</span>
-        <span class="p">]</span>
 
     <span class="c1"># Deprecated methods from old wrapper</span>
 <div class="viewcode-block" id="Shotgun.schema"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.schema">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity_type</span><span class="p">):</span>
@@ -3986,8 +3900,7 @@
 <span class="sd">        be in a single byte encoding to go over the wire.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">wire</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="n">wire</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_make_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verb</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">headers</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4023,53 +3936,15 @@
                 <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="n">max_rpc_attempts</span><span class="p">:</span>
                     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Request failed.  Giving up after </span><span class="si">%d</span><span class="s2"> attempts.&quot;</span> <span class="o">%</span> <span class="n">attempt</span><span class="p">)</span>
                     <span class="k">raise</span>
-                <span class="c1"># This is the exact same block as the &quot;except Exception&quot; bellow.</span>
-                <span class="c1"># We need to do it here because the next except will match it</span>
-                <span class="c1"># otherwise and will not re-attempt.</span>
-                <span class="c1"># When we drop support of Python 2 and we will probably drop the</span>
-                <span class="c1"># next except, we might want to remove this except too.</span>
-            <span class="k">except</span> <span class="n">ssl_error_classes</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="c1"># Test whether the exception is due to the fact that this is an older version of</span>
-                <span class="c1"># Python that cannot validate certificates encrypted with SHA-2. If it is, then</span>
-                <span class="c1"># fall back on disabling the certificate validation and try again - unless the</span>
-                <span class="c1"># SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable has been set by the</span>
-                <span class="c1"># user. In that case we simply raise the exception. Any other exceptions simply</span>
-                <span class="c1"># get raised as well.</span>
-                <span class="c1">#</span>
-                <span class="c1"># For more info see:</span>
-                <span class="c1"># https://www.shotgridsoftware.com/blog/important-ssl-certificate-renewal-and-sha-2/</span>
-                <span class="c1">#</span>
-                <span class="c1"># SHA-2 errors look like this:</span>
-                <span class="c1">#   [Errno 1] _ssl.c:480: error:0D0C50A1:asn1 encoding routines:ASN1_item_verify:</span>
-                <span class="c1">#   unknown message digest algorithm</span>
-                <span class="c1">#</span>
-                <span class="c1"># Any other exceptions simply get raised.</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="s2">&quot;unknown message digest algorithm&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-                    <span class="ow">or</span> <span class="s2">&quot;SHOTGUN_FORCE_CERTIFICATE_VALIDATION&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
-                <span class="p">):</span>
-                    <span class="k">raise</span>
-
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">no_ssl_validation</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                    <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                        <span class="s2">&quot;SSL Error: this Python installation is incompatible with &quot;</span>
-                        <span class="s2">&quot;certificates signed with SHA-2. Disabling certificate validation. &quot;</span>
-                        <span class="s2">&quot;For more information, see https://www.shotgridsoftware.com/blog/&quot;</span>
-                        <span class="s2">&quot;important-ssl-certificate-renewal-and-sha-2/&quot;</span>
-                    <span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_turn_off_ssl_validation</span><span class="p">()</span>
-                    <span class="c1"># reload user agent to reflect that we have turned off ssl validation</span>
-                    <span class="n">req_headers</span><span class="p">[</span><span class="s2">&quot;user-agent&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_agents</span><span class="p">)</span>
-
+            <span class="k">except</span> <span class="p">(</span><span class="n">ssl</span><span class="o">.</span><span class="n">SSLError</span><span class="p">,</span> <span class="n">ssl</span><span class="o">.</span><span class="n">CertificateError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_close_connection</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="n">max_rpc_attempts</span><span class="p">:</span>
                     <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Request failed.  Giving up after </span><span class="si">%d</span><span class="s2"> attempts.&quot;</span> <span class="o">%</span> <span class="n">attempt</span><span class="p">)</span>
                     <span class="k">raise</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_close_connection</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="n">max_rpc_attempts</span><span class="p">:</span>
-                    <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Request failed.  Giving up after </span><span class="si">%d</span><span class="s2"> attempts.&quot;</span> <span class="o">%</span> <span class="n">attempt</span><span class="p">)</span>
-                    <span class="k">raise</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Request failed.  Reason: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">raise</span>
 
             <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="s2">&quot;Request failed, attempt </span><span class="si">%d</span><span class="s2"> of </span><span class="si">%d</span><span class="s2">.  Retrying in </span><span class="si">%.2f</span><span class="s2"> seconds...&quot;</span>
@@ -4092,7 +3967,7 @@
         <span class="n">resp</span><span class="p">,</span> <span class="n">content</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">verb</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
         <span class="c1"># http response code is handled else where</span>
         <span class="n">http_status</span> <span class="o">=</span> <span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">reason</span><span class="p">)</span>
-        <span class="n">resp_headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">resp</span><span class="p">))</span>
+        <span class="n">resp_headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
         <span class="n">resp_body</span> <span class="o">=</span> <span class="n">content</span>
 
         <span class="n">LOG</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Response status is </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">http_status</span><span class="p">)</span>
@@ -4154,35 +4029,6 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_json_loads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_json_loads_ascii</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        See http://stackoverflow.com/questions/956867</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">_decode_list</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
-            <span class="n">newlist</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">i</span> <span class="o">=</span> <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                    <span class="n">i</span> <span class="o">=</span> <span class="n">_decode_list</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-                <span class="n">newlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">newlist</span>
-
-        <span class="k">def</span><span class="w"> </span><span class="nf">_decode_dict</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
-            <span class="n">newdict</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">dct</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">k</span> <span class="o">=</span> <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">v</span> <span class="o">=</span> <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                    <span class="n">v</span> <span class="o">=</span> <span class="n">_decode_list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-                <span class="n">newdict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-            <span class="k">return</span> <span class="n">newdict</span>
-
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="n">_decode_dict</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_response_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sg_response</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4246,7 +4092,7 @@
             <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">recursive</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">visitor</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">recursive</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">visitor</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">recursive</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">visitor</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
 
         <span class="k">return</span> <span class="n">visitor</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
@@ -4292,10 +4138,6 @@
                 <span class="k">if</span> <span class="n">_change_tz</span><span class="p">:</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="n">_change_tz</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%SZ&quot;</span><span class="p">)</span>
-
-            <span class="c1"># ensure return is six.text_type</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_text</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">value</span>
 
@@ -4356,14 +4198,12 @@
                 <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">timeout_secs</span><span class="p">,</span>
                 <span class="n">ca_certs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span><span class="p">,</span>
                 <span class="n">proxy_info</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span>
-                <span class="n">disable_ssl_certificate_validation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">no_ssl_validation</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="n">Http</span><span class="p">(</span>
                 <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">timeout_secs</span><span class="p">,</span>
                 <span class="n">ca_certs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span><span class="p">,</span>
                 <span class="n">proxy_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="n">disable_ssl_certificate_validation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">no_ssl_validation</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span>
@@ -4415,7 +4255,7 @@
                 <span class="k">continue</span>
 
             <span class="c1"># iterate over each item and check each field for possible injection</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">rec</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">rec</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
                     <span class="k">continue</span>
 
@@ -4503,7 +4343,7 @@
 <span class="sd">        [{&#39;field_name&#39;: &#39;foo&#39;, &#39;value&#39;: &#39;bar&#39;, &#39;thing1&#39;: &#39;value1&#39;}]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">((</span><span class="n">d</span> <span class="ow">or</span> <span class="p">{})):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">d</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="n">key_name</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="n">value_name</span><span class="p">:</span> <span class="n">v</span><span class="p">}</span>
             <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">((</span><span class="n">extra_data</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">{}))</span>
             <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
@@ -4516,7 +4356,7 @@
 
 <span class="sd">        e.g. d {&#39;foo&#39; : &#39;bar&#39;} changed to {&#39;foo&#39;: {&quot;value&quot;: &#39;bar&#39;}]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">k</span><span class="p">,</span> <span class="p">{</span><span class="n">key_name</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">((</span><span class="n">d</span> <span class="ow">or</span> <span class="p">{}))])</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">k</span><span class="p">,</span> <span class="p">{</span><span class="n">key_name</span><span class="p">:</span> <span class="n">v</span><span class="p">})</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">d</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_upload_file_to_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">storage_url</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4562,7 +4402,7 @@
                 <span class="n">data_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
                 <span class="c1"># keep data as a stream so that we don&#39;t need to worry how it was</span>
                 <span class="c1"># encoded.</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
                 <span class="n">bytes_read</span> <span class="o">+=</span> <span class="n">data_size</span>
                 <span class="n">part_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_upload_part_link</span><span class="p">(</span>
                     <span class="n">upload_info</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">part_number</span>
@@ -4784,18 +4624,21 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Unanticipated error occurred </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">))</span>
 
-            <span class="k">return</span> <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_text</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">result</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ShotgunError</span><span class="p">(</span><span class="s2">&quot;Max attemps limit reached.&quot;</span><span class="p">)</span></div>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">CACertsHTTPSConnection</span><span class="p">(</span><span class="n">http_client</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CACertsHTTPSConnection</span><span class="p">(</span><span class="n">http</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;</span>
 <span class="sd">    This class allows to create an HTTPS connection that uses the custom certificates</span>
 <span class="sd">    passed in.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">default_port</span> <span class="o">=</span> <span class="n">http_client</span><span class="o">.</span><span class="n">HTTPS_PORT</span>
+    <span class="n">default_port</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">HTTPS_PORT</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4811,7 +4654,7 @@
         <span class="s2">&quot;Connect to a host on a given (SSL) port.&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="c1"># Now that the regular HTTP socket has been created, wrap it with our SSL certs.</span>
-        <span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">PY38</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">minor</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">):</span>
             <span class="n">context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">SSLContext</span><span class="p">(</span><span class="n">ssl</span><span class="o">.</span><span class="n">PROTOCOL_TLS_CLIENT</span><span class="p">)</span>
             <span class="n">context</span><span class="o">.</span><span class="n">verify_mode</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">CERT_REQUIRED</span>
             <span class="n">context</span><span class="o">.</span><span class="n">check_hostname</span> <span class="o">=</span> <span class="kc">False</span>
@@ -4824,22 +4667,6 @@
             <span class="p">)</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">CACertsHTTPSHandler</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">HTTPHandler</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Handler that ensures https connections are created with the custom CA certs.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cacerts</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span> <span class="o">=</span> <span class="n">cacerts</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">https_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_https_connection</span><span class="p">,</span> <span class="n">req</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">create_https_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">CACertsHTTPSConnection</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">ca_certs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__ca_certs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-
 <span class="c1"># Helpers from the previous API, left as is.</span>
 <span class="c1"># Based on http://code.activestate.com/recipes/146306/</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FormPostHandler</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">BaseHandler</span><span class="p">):</span>
@@ -4850,34 +4677,24 @@
     <span class="n">handler_order</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">HTTPHandler</span><span class="o">.</span><span class="n">handler_order</span> <span class="o">-</span> <span class="mi">10</span>  <span class="c1"># needs to run first</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">http_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
-        <span class="c1"># get_data was removed in 3.4. since we&#39;re testing against 3.6 and</span>
-        <span class="c1"># 3.7, this should be sufficient.</span>
-        <span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">PY3</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span>
         <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">sgsix</span><span class="o">.</span><span class="n">file_types</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">):</span>
                     <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">files</span><span class="p">:</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span>
-                    <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-                <span class="p">)</span>  <span class="c1"># sequencing on</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+                <span class="c1"># sequencing on</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">boundary</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
                 <span class="n">content_type</span> <span class="o">=</span> <span class="s2">&quot;multipart/form-data; boundary=</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">boundary</span>
                 <span class="n">request</span><span class="o">.</span><span class="n">add_unredirected_header</span><span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="n">content_type</span><span class="p">)</span>
-            <span class="c1"># add_data was removed in 3.4. since we&#39;re testing against 3.6 and</span>
-            <span class="c1"># 3.7, this should be sufficient.</span>
-            <span class="k">if</span> <span class="n">six</span><span class="o">.</span><span class="n">PY3</span><span class="p">:</span>
-                <span class="n">request</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">request</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
         <span class="k">return</span> <span class="n">request</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -4888,44 +4705,50 @@
             <span class="c1"># We&#39;ll do this across both python 2/3 rather than add more branching.</span>
             <span class="n">boundary</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">buffer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">buffer</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+            <span class="n">buffer</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="c1"># If value is not a string (e.g. int) cast to text</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_text</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_text</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
-            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="s2">&quot;--</span><span class="si">%s</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">))</span>
+            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--</span><span class="si">{</span><span class="n">boundary</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
             <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="s1">&#39;Content-Disposition: form-data; name=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s1">&#39;Content-Disposition: form-data; name=&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n\r\n</span><span class="si">%s</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">value</span><span class="p">))</span>
+            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\r\n\r\n</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fd</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
             <span class="c1"># On Windows, it&#39;s possible that we were forced to open a file</span>
             <span class="c1"># with non-ascii characters as unicode. In that case, we need to</span>
             <span class="c1"># encode it as a utf-8 string to remove unicode from the equation.</span>
             <span class="c1"># If we don&#39;t, the mix of unicode and strings going into the</span>
             <span class="c1"># buffer can cause UnicodeEncodeErrors to be raised.</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">name</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_text</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span> <span class="k">else</span> <span class="n">fd</span><span class="o">.</span><span class="n">name</span>
+            <span class="p">)</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_text</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
             <span class="n">content_type</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">content_type</span> <span class="o">=</span> <span class="n">content_type</span> <span class="ow">or</span> <span class="s2">&quot;application/octet-stream&quot;</span>
             <span class="n">file_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fstat</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">fileno</span><span class="p">())[</span><span class="n">stat</span><span class="o">.</span><span class="n">ST_SIZE</span><span class="p">]</span>
-            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="s2">&quot;--</span><span class="si">%s</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">))</span>
+            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--</span><span class="si">{</span><span class="n">boundary</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
             <span class="n">c_dis</span> <span class="o">=</span> <span class="s1">&#39;Content-Disposition: form-data; name=&quot;</span><span class="si">%s</span><span class="s1">&quot;; filename=&quot;</span><span class="si">%s</span><span class="s1">&quot;</span><span class="si">%s</span><span class="s1">&#39;</span>
             <span class="n">content_disposition</span> <span class="o">=</span> <span class="n">c_dis</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="n">content_disposition</span><span class="p">))</span>
-            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="s2">&quot;Content-Type: </span><span class="si">%s</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">content_type</span><span class="p">))</span>
-            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="s2">&quot;Content-Length: </span><span class="si">%s</span><span class="se">\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">file_size</span><span class="p">))</span>
+            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content_disposition</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Content-Type: </span><span class="si">{</span><span class="n">content_type</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Content-Length: </span><span class="si">{</span><span class="n">file_size</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
 
-            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">))</span>
+            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span>
-            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">))</span>
-        <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sgutils</span><span class="o">.</span><span class="n">ensure_binary</span><span class="p">(</span><span class="s2">&quot;--</span><span class="si">%s</span><span class="s2">--</span><span class="se">\r\n\r\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">boundary</span><span class="p">))</span>
+            <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--</span><span class="si">{</span><span class="n">boundary</span><span class="si">}</span><span class="s2">--</span><span class="se">\r\n\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
         <span class="n">buffer</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">boundary</span><span class="p">,</span> <span class="n">buffer</span>
 

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>logging &mdash; python-api v3.8.3 documentation</title>
+  <title>logging &mdash; python-api v3.9.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.8.3.<br>
+    <b>python-api</b> v3.9.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -125,7 +125,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for logging</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright 2001-2019 by Vinay Sajip. All Rights Reserved.</span>
+<span></span><span class="c1"># Copyright 2001-2022 by Vinay Sajip. All Rights Reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Permission to use, copy, modify, and distribute this software and its</span>
 <span class="c1"># documentation for any purpose and without fee is hereby granted,</span>
@@ -145,13 +145,14 @@
 <span class="sd">Logging package for Python. Based on PEP 282 and comments thereto in</span>
 <span class="sd">comp.lang.python.</span>
 
-<span class="sd">Copyright (C) 2001-2019 Vinay Sajip. All Rights Reserved.</span>
+<span class="sd">Copyright (C) 2001-2022 Vinay Sajip. All Rights Reserved.</span>
 
 <span class="sd">To use, simply &#39;import logging&#39; and log away!</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">time</span><span class="o">,</span><span class="w"> </span><span class="nn">io</span><span class="o">,</span><span class="w"> </span><span class="nn">re</span><span class="o">,</span><span class="w"> </span><span class="nn">traceback</span><span class="o">,</span><span class="w"> </span><span class="nn">warnings</span><span class="o">,</span><span class="w"> </span><span class="nn">weakref</span><span class="o">,</span><span class="w"> </span><span class="nn">collections.abc</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenericAlias</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Formatter</span> <span class="k">as</span> <span class="n">StrFormatter</span>
 
@@ -164,7 +165,8 @@
            <span class="s1">&#39;exception&#39;</span><span class="p">,</span> <span class="s1">&#39;fatal&#39;</span><span class="p">,</span> <span class="s1">&#39;getLevelName&#39;</span><span class="p">,</span> <span class="s1">&#39;getLogger&#39;</span><span class="p">,</span> <span class="s1">&#39;getLoggerClass&#39;</span><span class="p">,</span>
            <span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;makeLogRecord&#39;</span><span class="p">,</span> <span class="s1">&#39;setLoggerClass&#39;</span><span class="p">,</span> <span class="s1">&#39;shutdown&#39;</span><span class="p">,</span>
            <span class="s1">&#39;warn&#39;</span><span class="p">,</span> <span class="s1">&#39;warning&#39;</span><span class="p">,</span> <span class="s1">&#39;getLogRecordFactory&#39;</span><span class="p">,</span> <span class="s1">&#39;setLogRecordFactory&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;lastResort&#39;</span><span class="p">,</span> <span class="s1">&#39;raiseExceptions&#39;</span><span class="p">]</span>
+           <span class="s1">&#39;lastResort&#39;</span><span class="p">,</span> <span class="s1">&#39;raiseExceptions&#39;</span><span class="p">,</span> <span class="s1">&#39;getLevelNamesMapping&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;getHandlerByName&#39;</span><span class="p">,</span> <span class="s1">&#39;getHandlerNames&#39;</span><span class="p">]</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 
@@ -190,19 +192,24 @@
 <span class="n">raiseExceptions</span> <span class="o">=</span> <span class="kc">True</span>
 
 <span class="c1">#</span>
-<span class="c1"># If you don&#39;t want threading information in the log, set this to zero</span>
+<span class="c1"># If you don&#39;t want threading information in the log, set this to False</span>
 <span class="c1">#</span>
 <span class="n">logThreads</span> <span class="o">=</span> <span class="kc">True</span>
 
 <span class="c1">#</span>
-<span class="c1"># If you don&#39;t want multiprocessing information in the log, set this to zero</span>
+<span class="c1"># If you don&#39;t want multiprocessing information in the log, set this to False</span>
 <span class="c1">#</span>
 <span class="n">logMultiprocessing</span> <span class="o">=</span> <span class="kc">True</span>
 
 <span class="c1">#</span>
-<span class="c1"># If you don&#39;t want process information in the log, set this to zero</span>
+<span class="c1"># If you don&#39;t want process information in the log, set this to False</span>
 <span class="c1">#</span>
 <span class="n">logProcesses</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1">#</span>
+<span class="c1"># If you don&#39;t want asyncio task information in the log, set this to False</span>
+<span class="c1">#</span>
+<span class="n">logAsyncioTasks</span> <span class="o">=</span> <span class="kc">True</span>
 
 <span class="c1">#---------------------------------------------------------------------------</span>
 <span class="c1">#   Level related stuff</span>
@@ -242,6 +249,9 @@
     <span class="s1">&#39;DEBUG&#39;</span><span class="p">:</span> <span class="n">DEBUG</span><span class="p">,</span>
     <span class="s1">&#39;NOTSET&#39;</span><span class="p">:</span> <span class="n">NOTSET</span><span class="p">,</span>
 <span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">getLevelNamesMapping</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">_nameToLevel</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">getLevelName</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -283,15 +293,15 @@
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">_releaseLock</span><span class="p">()</span>
 
-<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s1">&#39;_getframe&#39;</span><span class="p">):</span>
-    <span class="n">currentframe</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s2">&quot;_getframe&quot;</span><span class="p">):</span>
+    <span class="n">currentframe</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span> <span class="c1">#pragma: no cover</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">currentframe</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the frame object for the caller&#39;s stack frame.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">tb_frame</span><span class="o">.</span><span class="n">f_back</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">exc</span><span class="o">.</span><span class="n">__traceback__</span><span class="o">.</span><span class="n">tb_frame</span><span class="o">.</span><span class="n">f_back</span>
 
 <span class="c1">#</span>
 <span class="c1"># _srcfile is used when walking the stack to check when we&#39;ve got the first</span>
@@ -308,13 +318,18 @@
 <span class="n">_srcfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">addLevelName</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_filename</span><span class="p">)</span>
 
 <span class="c1"># _srcfile is only used in conjunction with sys._getframe().</span>
-<span class="c1"># To provide compatibility with older versions of Python, set _srcfile</span>
-<span class="c1"># to None if _getframe() is not available; this value will prevent</span>
-<span class="c1"># findCaller() from being called. You can also do this if you want to avoid</span>
-<span class="c1"># the overhead of fetching caller information, even when _getframe() is</span>
-<span class="c1"># available.</span>
-<span class="c1">#if not hasattr(sys, &#39;_getframe&#39;):</span>
-<span class="c1">#    _srcfile = None</span>
+<span class="c1"># Setting _srcfile to None will prevent findCaller() from being called. This</span>
+<span class="c1"># way, you can avoid the overhead of fetching caller information.</span>
+
+<span class="c1"># The following is based on warnings._is_internal_frame. It makes sure that</span>
+<span class="c1"># frames of the import mechanism are skipped when logging at module level and</span>
+<span class="c1"># using a stacklevel value greater than one.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_internal_frame</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Signal whether the frame is a CPython or logging module internal.&quot;&quot;&quot;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">filename</span> <span class="o">==</span> <span class="n">_srcfile</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="s2">&quot;importlib&quot;</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">and</span> <span class="s2">&quot;_bootstrap&quot;</span> <span class="ow">in</span> <span class="n">filename</span>
+    <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_checkLevel</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
@@ -478,6 +493,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">taskName</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">logAsyncioTasks</span><span class="p">:</span>
+            <span class="n">asyncio</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;asyncio&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">asyncio</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">taskName</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">current_task</span><span class="p">()</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;&lt;LogRecord: </span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">, &quot;</span><span class="si">%s</span><span class="s1">&quot;&gt;&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">levelno</span><span class="p">,</span>
@@ -684,6 +708,7 @@
 <span class="sd">                        (typically at application startup time)</span>
 <span class="sd">    %(thread)d          Thread ID (if available)</span>
 <span class="sd">    %(threadName)s      Thread name (if available)</span>
+<span class="sd">    %(taskName)s        Task name (if available)</span>
 <span class="sd">    %(process)d         Process ID (if available)</span>
 <span class="sd">    %(message)s         The result of record.getMessage(), computed just as</span>
 <span class="sd">                        the record is emitted</span>
@@ -935,23 +960,36 @@
 <span class="sd">        Determine if a record is loggable by consulting all the filters.</span>
 
 <span class="sd">        The default is to allow the record to be logged; any filter can veto</span>
-<span class="sd">        this and the record is then dropped. Returns a zero value if a record</span>
-<span class="sd">        is to be dropped, else non-zero.</span>
+<span class="sd">        this by returning a false value.</span>
+<span class="sd">        If a filter attached to a handler returns a log record instance,</span>
+<span class="sd">        then that instance is used in place of the original log record in</span>
+<span class="sd">        any further processing of the event by that handler.</span>
+<span class="sd">        If a filter returns any other true value, the original log record</span>
+<span class="sd">        is used in any further processing of the event by that handler.</span>
+
+<span class="sd">        If none of the filters return false values, this method returns</span>
+<span class="sd">        a log record.</span>
+<span class="sd">        If any of the filters return a false value, this method returns</span>
+<span class="sd">        a false value.</span>
 
 <span class="sd">        .. versionchanged:: 3.2</span>
 
 <span class="sd">           Allow filters to be just callables.</span>
+
+<span class="sd">        .. versionchanged:: 3.12</span>
+<span class="sd">           Allow filters to return a LogRecord instead of</span>
+<span class="sd">           modifying it in place.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">rv</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;filter&#39;</span><span class="p">):</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="c1"># assume callable - will raise if not</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
-                <span class="n">rv</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">break</span>
-        <span class="k">return</span> <span class="n">rv</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">LogRecord</span><span class="p">):</span>
+                <span class="n">record</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="n">record</span>
 
 <span class="c1">#---------------------------------------------------------------------------</span>
 <span class="c1">#   Handler classes and functions</span>
@@ -972,8 +1010,9 @@
     <span class="k">if</span> <span class="n">acquire</span> <span class="ow">and</span> <span class="n">release</span> <span class="ow">and</span> <span class="n">handlers</span><span class="p">:</span>
         <span class="n">acquire</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">wr</span> <span class="ow">in</span> <span class="n">handlers</span><span class="p">:</span>
-                <span class="n">handlers</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wr</span><span class="p">)</span>
+            <span class="n">handlers</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wr</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">release</span><span class="p">()</span>
 
@@ -986,6 +1025,23 @@
         <span class="n">_handlerList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">_removeHandlerRef</span><span class="p">))</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">_releaseLock</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">getHandlerByName</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a handler with the specified *name*, or None if there isn&#39;t one with</span>
+<span class="sd">    that name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_handlers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">getHandlerNames</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return all known handler names as an immutable set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_handlers</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">return</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Handler</span><span class="p">(</span><span class="n">Filterer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1085,10 +1141,14 @@
 
 <span class="sd">        Emission depends on filters which may have been added to the handler.</span>
 <span class="sd">        Wrap the actual emission of the record with acquisition/release of</span>
-<span class="sd">        the I/O thread lock. Returns whether the filter passed the record for</span>
-<span class="sd">        emission.</span>
+<span class="sd">        the I/O thread lock.</span>
+
+<span class="sd">        Returns an instance of the log record that was emitted</span>
+<span class="sd">        if it passed all filters, otherwise a false value is returned.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">rv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rv</span><span class="p">,</span> <span class="n">LogRecord</span><span class="p">):</span>
+            <span class="n">record</span> <span class="o">=</span> <span class="n">rv</span>
         <span class="k">if</span> <span class="n">rv</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
             <span class="k">try</span><span class="p">:</span>
@@ -1262,6 +1322,8 @@
         <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span>
         <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">(</span><span class="si">%s</span><span class="s1">)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+
+    <span class="n">__class_getitem__</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">GenericAlias</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">FileHandler</span><span class="p">(</span><span class="n">StreamHandler</span><span class="p">):</span>
@@ -1586,7 +1648,7 @@
 <span class="sd">        To pass exception information, use the keyword argument exc_info with</span>
 <span class="sd">        a true value, e.g.</span>
 
-<span class="sd">        logger.debug(&quot;Houston, we have a %s&quot;, &quot;thorny problem&quot;, exc_info=1)</span>
+<span class="sd">        logger.debug(&quot;Houston, we have a %s&quot;, &quot;thorny problem&quot;, exc_info=True)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1598,7 +1660,7 @@
 <span class="sd">        To pass exception information, use the keyword argument exc_info with</span>
 <span class="sd">        a true value, e.g.</span>
 
-<span class="sd">        logger.info(&quot;Houston, we have a %s&quot;, &quot;interesting problem&quot;, exc_info=1)</span>
+<span class="sd">        logger.info(&quot;Houston, we have a %s&quot;, &quot;notable problem&quot;, exc_info=True)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">INFO</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1610,7 +1672,7 @@
 <span class="sd">        To pass exception information, use the keyword argument exc_info with</span>
 <span class="sd">        a true value, e.g.</span>
 
-<span class="sd">        logger.warning(&quot;Houston, we have a %s&quot;, &quot;bit of a problem&quot;, exc_info=1)</span>
+<span class="sd">        logger.warning(&quot;Houston, we have a %s&quot;, &quot;bit of a problem&quot;, exc_info=True)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">WARNING</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">WARNING</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1627,7 +1689,7 @@
 <span class="sd">        To pass exception information, use the keyword argument exc_info with</span>
 <span class="sd">        a true value, e.g.</span>
 
-<span class="sd">        logger.error(&quot;Houston, we have a %s&quot;, &quot;major problem&quot;, exc_info=1)</span>
+<span class="sd">        logger.error(&quot;Houston, we have a %s&quot;, &quot;major problem&quot;, exc_info=True)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">ERROR</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1645,7 +1707,7 @@
 <span class="sd">        To pass exception information, use the keyword argument exc_info with</span>
 <span class="sd">        a true value, e.g.</span>
 
-<span class="sd">        logger.critical(&quot;Houston, we have a %s&quot;, &quot;major disaster&quot;, exc_info=1)</span>
+<span class="sd">        logger.critical(&quot;Houston, we have a %s&quot;, &quot;major disaster&quot;, exc_info=True)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">CRITICAL</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">CRITICAL</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1663,7 +1725,7 @@
 <span class="sd">        To pass exception information, use the keyword argument exc_info with</span>
 <span class="sd">        a true value, e.g.</span>
 
-<span class="sd">        logger.log(level, &quot;We have a %s&quot;, &quot;mysterious problem&quot;, exc_info=1)</span>
+<span class="sd">        logger.log(level, &quot;We have a %s&quot;, &quot;mysterious problem&quot;, exc_info=True)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">raiseExceptions</span><span class="p">:</span>
@@ -1681,33 +1743,31 @@
         <span class="n">f</span> <span class="o">=</span> <span class="n">currentframe</span><span class="p">()</span>
         <span class="c1">#On some versions of IronPython, currentframe() returns None if</span>
         <span class="c1">#IronPython isn&#39;t run with -X:Frames.</span>
-        <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_back</span>
-        <span class="n">orig_f</span> <span class="o">=</span> <span class="n">f</span>
-        <span class="k">while</span> <span class="n">f</span> <span class="ow">and</span> <span class="n">stacklevel</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_back</span>
-            <span class="n">stacklevel</span> <span class="o">-=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="n">orig_f</span>
-        <span class="n">rv</span> <span class="o">=</span> <span class="s2">&quot;(unknown file)&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;(unknown function)&quot;</span><span class="p">,</span> <span class="kc">None</span>
-        <span class="k">while</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;f_code&quot;</span><span class="p">):</span>
-            <span class="n">co</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_code</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">co</span><span class="o">.</span><span class="n">co_filename</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="n">_srcfile</span><span class="p">:</span>
-                <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_back</span>
-                <span class="k">continue</span>
-            <span class="n">sinfo</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="n">stack_info</span><span class="p">:</span>
-                <span class="n">sio</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
-                <span class="n">sio</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Stack (most recent call last):</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;(unknown file)&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;(unknown function)&quot;</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">while</span> <span class="n">stacklevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">next_f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_back</span>
+            <span class="k">if</span> <span class="n">next_f</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1">## We&#39;ve got options here.</span>
+                <span class="c1">## If we want to use the last (deepest) frame:</span>
+                <span class="k">break</span>
+                <span class="c1">## If we want to mimic the warnings module:</span>
+                <span class="c1">#return (&quot;sys&quot;, 1, &quot;(unknown function)&quot;, None)</span>
+                <span class="c1">## If we want to be pedantic:</span>
+                <span class="c1">#raise ValueError(&quot;call stack is not deep enough&quot;)</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">next_f</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_internal_frame</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                <span class="n">stacklevel</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">co</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_code</span>
+        <span class="n">sinfo</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">stack_info</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span> <span class="k">as</span> <span class="n">sio</span><span class="p">:</span>
+                <span class="n">sio</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Stack (most recent call last):</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">traceback</span><span class="o">.</span><span class="n">print_stack</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sio</span><span class="p">)</span>
                 <span class="n">sinfo</span> <span class="o">=</span> <span class="n">sio</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">sinfo</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
                     <span class="n">sinfo</span> <span class="o">=</span> <span class="n">sinfo</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">sio</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="n">rv</span> <span class="o">=</span> <span class="p">(</span><span class="n">co</span><span class="o">.</span><span class="n">co_filename</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">f_lineno</span><span class="p">,</span> <span class="n">co</span><span class="o">.</span><span class="n">co_name</span><span class="p">,</span> <span class="n">sinfo</span><span class="p">)</span>
-            <span class="k">break</span>
-        <span class="k">return</span> <span class="n">rv</span>
+        <span class="k">return</span> <span class="n">co</span><span class="o">.</span><span class="n">co_filename</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">f_lineno</span><span class="p">,</span> <span class="n">co</span><span class="o">.</span><span class="n">co_name</span><span class="p">,</span> <span class="n">sinfo</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">makeRecord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">lno</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">exc_info</span><span class="p">,</span>
                    <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1757,8 +1817,14 @@
 <span class="sd">        This method is used for unpickled records received from a socket, as</span>
 <span class="sd">        well as those created locally. Logger-level filtering is applied.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">disabled</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">record</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">callHandlers</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">disabled</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">maybe_record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">maybe_record</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">maybe_record</span><span class="p">,</span> <span class="n">LogRecord</span><span class="p">):</span>
+            <span class="n">record</span> <span class="o">=</span> <span class="n">maybe_record</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callHandlers</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">addHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hdlr</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1889,13 +1955,30 @@
             <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">suffix</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">getChildren</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_hierlevel</span><span class="p">(</span><span class="n">logger</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="n">logger</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">root</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">logger</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">loggerDict</span>
+        <span class="n">_acquireLock</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># exclude PlaceHolders - the last check is to ensure that lower-level</span>
+            <span class="c1"># descendants aren&#39;t returned - if there are placeholders, a logger&#39;s</span>
+            <span class="c1"># parent field might point to a grandparent or ancestor thereof.</span>
+            <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                       <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">self</span> <span class="ow">and</span>
+                       <span class="n">_hierlevel</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">_hierlevel</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">_releaseLock</span><span class="p">()</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">level</span> <span class="o">=</span> <span class="n">getLevelName</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">())</span>
         <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># In general, only the root logger will not be accessible via its name.</span>
-        <span class="c1"># However, the root logger&#39;s class has its own __reduce__ method.</span>
         <span class="k">if</span> <span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
             <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
             <span class="k">raise</span> <span class="n">pickle</span><span class="o">.</span><span class="n">PicklingError</span><span class="p">(</span><span class="s1">&#39;logger cannot be pickled&#39;</span><span class="p">)</span>
@@ -2029,18 +2112,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stack_info</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Low-level log implementation, proxied to allow nested logger adapters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
-            <span class="n">level</span><span class="p">,</span>
-            <span class="n">msg</span><span class="p">,</span>
-            <span class="n">args</span><span class="p">,</span>
-            <span class="n">exc_info</span><span class="o">=</span><span class="n">exc_info</span><span class="p">,</span>
-            <span class="n">extra</span><span class="o">=</span><span class="n">extra</span><span class="p">,</span>
-            <span class="n">stack_info</span><span class="o">=</span><span class="n">stack_info</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">manager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2058,6 +2134,8 @@
         <span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
         <span class="n">level</span> <span class="o">=</span> <span class="n">getLevelName</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">())</span>
         <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">logger</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+
+    <span class="n">__class_getitem__</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">GenericAlias</span><span class="p">)</span>
 
 <span class="n">root</span> <span class="o">=</span> <span class="n">RootLogger</span><span class="p">(</span><span class="n">WARNING</span><span class="p">)</span>
 <span class="n">Logger</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
@@ -2098,7 +2176,7 @@
 <span class="sd">              that this argument is incompatible with &#39;filename&#39; - if both</span>
 <span class="sd">              are present, &#39;stream&#39; is ignored.</span>
 <span class="sd">    handlers  If specified, this should be an iterable of already created</span>
-<span class="sd">              handlers, which will be added to the root handler. Any handler</span>
+<span class="sd">              handlers, which will be added to the root logger. Any handler</span>
 <span class="sd">              in the list which does not have a formatter assigned will be</span>
 <span class="sd">              assigned the formatter created in this function.</span>
 <span class="sd">    force     If this keyword  is specified as true, any existing handlers</span>
@@ -2306,7 +2384,11 @@
             <span class="k">if</span> <span class="n">h</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">h</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
-                    <span class="n">h</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                    <span class="c1"># MemoryHandlers might not want to be flushed on close,</span>
+                    <span class="c1"># but circular imports prevent us scoping this to just</span>
+                    <span class="c1"># those handlers.  hence the default to True.</span>
+                    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="s1">&#39;flushOnClose&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                        <span class="n">h</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
                     <span class="n">h</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                 <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
                     <span class="c1"># Ignore errors which might be caused</span>
@@ -2369,7 +2451,9 @@
         <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;py.warnings&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">NullHandler</span><span class="p">())</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="c1"># bpo-46557: Log str(s) as msg instead of logger.warning(&quot;%s&quot;, s)</span>
+        <span class="c1"># since some log aggregation tools group logs by the msg arg</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">captureWarnings</span><span class="p">(</span><span class="n">capture</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>

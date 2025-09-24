@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Handling Action Menu Item Calls &mdash; python-api v3.8.3 documentation</title>
+  <title>Handling Action Menu Item Calls &mdash; python-api v3.9.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -102,7 +102,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.8.3.<br>
+    <b>python-api</b> v3.9.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -231,7 +231,6 @@ select a lot of rows and launch your custom protocol, you may encounter
 <span class="c1"># Imports</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">six</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">logger</span>
 
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
@@ -354,7 +353,7 @@ select a lot of rows and launch your custom protocol, you may encounter
         <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">)</span>
         <span class="n">p</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;column_display_names&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;cols&quot;</span><span class="p">:</span> <span class="p">[]}</span>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">unquote</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">unquote</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;column_display_names&quot;</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;cols&quot;</span><span class="p">:</span>
                 <span class="n">p</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
