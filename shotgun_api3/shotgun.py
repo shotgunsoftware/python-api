@@ -4521,11 +4521,11 @@ class CACertsHTTPSConnection(http.client.HTTPConnection):
         """
         # Pop that argument,
         self.__ca_certs = kwargs.pop("ca_certs")
-        super().__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def connect(self):
         "Connect to a host on a given (SSL) port."
-        super().connect(self)
+        super().connect()
         # Now that the regular HTTP socket has been created, wrap it with our SSL certs.
         if (sys.version_info.major, sys.version_info.minor) >= (3, 8):
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
