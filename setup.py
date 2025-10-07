@@ -24,7 +24,7 @@ setup(
     description="Flow Production Tracking Python API",
     long_description=readme,
     author="Autodesk",
-    author_email="https://www.autodesk.com/support/contact-support",
+    author_email="https://www.autodesk.com/support",
     url="https://github.com/shotgunsoftware/python-api",
     license=license,
     packages=find_packages(exclude=("tests",)),
