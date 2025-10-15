@@ -4502,7 +4502,7 @@ class Shotgun(object):
 
             return result
         else:
-            raise ShotgunError("Max attemps limit reached.")
+            raise ShotgunError("Max attempts limit reached.")
 
 
 # Helpers from the previous API, left as is.
