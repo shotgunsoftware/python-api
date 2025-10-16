@@ -4382,7 +4382,7 @@ class Shotgun(object):
             else:
                 break
         else:
-            raise ShotgunError("Max attemps limit reached.")
+            raise ShotgunError("Max attempts limit reached.")
 
         etag = result.info()["Etag"]
         LOG.debug("Part upload completed successfully.")
@@ -4502,42 +4502,7 @@ class Shotgun(object):
 
             return result
         else:
-            raise ShotgunError("Max attemps limit reached.")
-
-
-class CACertsHTTPSConnection(http.client.HTTPConnection):
-    """ "
-    This class allows to create an HTTPS connection that uses the custom certificates
-    passed in.
-    """
-
-    default_port = http.client.HTTPS_PORT
-
-    def __init__(self, *args, **kwargs):
-        """
-        :param args: Positional arguments passed down to the base class.
-        :param ca_certs: Path to the custom CA certs file.
-        :param kwargs: Keyword arguments passed down to the bas class
-        """
-        # Pop that argument,
-        self.__ca_certs = kwargs.pop("ca_certs")
-        super().__init__(self, *args, **kwargs)
-
-    def connect(self):
-        "Connect to a host on a given (SSL) port."
-        super().connect(self)
-        # Now that the regular HTTP socket has been created, wrap it with our SSL certs.
-        if (sys.version_info.major, sys.version_info.minor) >= (3, 8):
-            context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-            context.verify_mode = ssl.CERT_REQUIRED
-            context.check_hostname = False
-            if self.__ca_certs:
-                context.load_verify_locations(self.__ca_certs)
-            self.sock = context.wrap_socket(self.sock)
-        else:
-            self.sock = ssl.wrap_socket(
-                self.sock, ca_certs=self.__ca_certs, cert_reqs=ssl.CERT_REQUIRED
-            )
+            raise ShotgunError("Max attempts limit reached.")
 
 
 # Helpers from the previous API, left as is.

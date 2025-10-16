@@ -523,7 +523,7 @@ class TestShotgunClient(base.MockTestBase):
 
         # Test the exception message
         the_exception = cm.exception
-        self.assertEqual(str(the_exception), "Max attemps limit reached.")
+        self.assertEqual(str(the_exception), "Max attempts limit reached.")
 
     def test_upload_s3_urlerror__upload_to_storage(self):
         """
@@ -557,7 +557,7 @@ class TestShotgunClient(base.MockTestBase):
 
         # Test the exception message
         the_exception = cm.exception
-        self.assertEqual(str(the_exception), "Max attemps limit reached.")
+        self.assertEqual(str(the_exception), "Max attempts limit reached.")
 
     def test_transform_data(self):
         """Outbound data is transformed"""
