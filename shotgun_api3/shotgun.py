@@ -4382,7 +4382,7 @@ class Shotgun(object):
             else:
                 break
         else:
-            raise ShotgunError("Max attemps limit reached.")
+            raise ShotgunError("Max attempts limit reached.")
 
         etag = result.info()["Etag"]
         LOG.debug("Part upload completed successfully.")
