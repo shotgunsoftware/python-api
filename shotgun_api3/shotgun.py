@@ -4351,7 +4351,7 @@ class Shotgun(object):
                 request.get_method = lambda: "PUT"
                 result = self._make_upload_request(request, opener)
 
-                LOG.debug("Completed request to %s" % request.get_method())
+                LOG.debug(f"Completed request to {safe_short_url(storage_url)}")
 
             except urllib.error.HTTPError as e:
                 if attempt != self.MAX_ATTEMPTS and e.code in [500, 503]:
@@ -4679,3 +4679,23 @@ def _get_type_and_id_from_value(value):
         LOG.debug(f"Could not optimize entity value {value}")
 
     return value
+
+
+def safe_short_url(url: str, max_path_length: int = 80) -> str:
+    u = urllib.parse.urlparse(url)
+
+    # If the path is longer than the max_path_length, truncate it in the middle
+    if len(u.path) > max_path_length:
+        half_length = max_path_length // 2
+
+        u = u._replace(
+            path=u.path[: half_length - 3] + "[...]" + u.path[-half_length + 3 :]
+        )
+
+    return urllib.parse.urlunparse(
+        u._replace(
+            netloc=u.hostname,  # Sanitize possible in URL credentials - HTTP Basic Auth
+            query="",  # Sanitize possible in URL credentials - API keys
+            fragment="",
+        )
+    )
