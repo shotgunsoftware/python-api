@@ -4481,7 +4481,7 @@ class Shotgun(object):
         :param str content_type: Content type of the data stream.
         :param int size: Number of bytes in the data stream.
         :param str storage_url: Target URL for the uploaded file.
-        :returns: upload url.
+        :returns: etag of the uploaded file (hash of the file content).
         :rtype: str
         """
 
