@@ -4345,10 +4345,16 @@ class Shotgun(object):
             try:
                 opener = self._build_opener(urllib.request.HTTPHandler)
 
-                request = urllib.request.Request(storage_url, data=data)
-                request.add_header("Content-Type", content_type)
-                request.add_header("Content-Length", size)
-                request.get_method = lambda: "PUT"
+                request = urllib.request.Request(
+                    storage_url,
+                    method="PUT",
+                    headers={
+                        "Content-Type": content_type,
+                        "Content-Length": size,
+                    },
+                    data=data,
+                )
+
                 result = self._make_upload_request(request, opener)
 
                 LOG.debug(f"Completed request to {safe_short_url(storage_url)}")
