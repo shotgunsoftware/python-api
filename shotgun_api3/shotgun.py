@@ -360,7 +360,9 @@ class _Config(object):
         :param sg: Shotgun connection.
         """
         self._sg = sg
+
         self.max_rpc_attempts = 3
+
         # rpc_attempt_interval stores the number of milliseconds to wait between
         # request retries.  By default, this will be 3000 milliseconds. You can
         # override this by setting this property on the config like so:
@@ -372,11 +374,15 @@ class _Config(object):
         # In the case that the environment variable is already set, setting the
         # property on the config will override it.
         self.rpc_attempt_interval = 3000
-        # From http://docs.python.org/2.6/library/httplib.html:
+
+        # From https://docs.python.org/3.9/library/http.client.html:
         # If the optional timeout parameter is given, blocking operations
         # (like connection attempts) will timeout after that many seconds
         # (if it is not given, the global default timeout setting is used)
         self.timeout_secs = None
+
+        self.http_error_codes_to_retry = [502, 503, 504]  # Should we add 500 ??
+
         self.api_ver = "api3"
         self.convert_datetimes_to_utc = True
         self._records_per_page = None
@@ -460,8 +466,6 @@ class Shotgun(object):
     )
 
     _MULTIPART_UPLOAD_CHUNK_SIZE = 20000000
-    MAX_ATTEMPTS = 3  # Retries on failure
-    BACKOFF = 0.75  # Seconds to wait before retry, times the attempt number
 
     def __init__(
         self,
@@ -470,6 +474,7 @@ class Shotgun(object):
         api_key=None,
         convert_datetimes_to_utc=True,
         http_proxy=None,
+        http_error_codes_to_retry: None | list[int] = None,
         connect=True,
         ca_certs=None,
         login=None,
@@ -615,6 +620,28 @@ class Shotgun(object):
                 "Value of SHOTGUN_API_RETRY_INTERVAL must be positive, "
                 "got '%s'." % self.config.rpc_attempt_interval
             )
+
+        # Handle new config  parameter for retry on HTTP
+        config_value = os.environ.get("SHOTGUN_API_HTTP_ERROR_CODES_TO_RETRY")
+        if config_value:
+            values = config_value.strip()
+            # TODO how to pass an empty list to say we don't want to retry any errors?
+            adding_mode = False
+            if values.startswith("+"):
+                # If starts with a + that means we hadd the codes to the existing list
+                # Otherwise, we start with an empty list
+                adding_mode = True
+                values = values[1:].strip()
+
+            # TODO check if int all
+            codes = [int(code.strip()) for code in values.split(",")]
+
+            if not adding_mode:
+                self.config.http_error_codes_to_retry = []
+
+            self.config.http_error_codes_to_retry.extend(codes)
+        elif http_error_codes_to_retry is not None:
+            self.config.http_error_codes_to_retry = http_error_codes_to_retry
 
         global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
         if (
@@ -3637,8 +3664,16 @@ class Shotgun(object):
         if self.config.localized is True:
             req_headers["locale"] = "auto"
 
-        attempt = 1
-        while attempt <= self.MAX_ATTEMPTS:
+        max_rpc_attempts = self.config.max_rpc_attempts
+        rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
+
+        attempt = 0
+        while attempt < max_rpc_attempts:
+            if attempt:
+                time.sleep(attempt * rpc_attempt_interval)
+
+            attempt += 1
+
             http_status, resp_headers, body = self._make_call(
                 "POST",
                 self.config.api_path,
@@ -3656,10 +3691,15 @@ class Shotgun(object):
                 # We've seen some rare instances of PTR returning 502 for issues that
                 # appear to be caused by something internal to PTR. We're going to
                 # allow for limited retries for those specifically.
-                if attempt != self.MAX_ATTEMPTS and e.errcode in [502, 504]:
-                    LOG.debug("Got a 502 or 504 response. Waiting and retrying...")
-                    time.sleep(float(attempt) * self.BACKOFF)
-                    attempt += 1
+                if (
+                    attempt < max_rpc_attempts
+                    and e.errcode in self.config.http_error_codes_to_retry
+                ):
+                    # TODO  if status[0] == 503:
+                    # errmsg = "Flow Production Tracking is currently down for maintenance or too busy to reply. Please try again later."
+                    LOG.debug(
+                        f"Got a {e.errcode} HTTP response. Waiting and retrying..."
+                    )
                     continue
                 elif e.errcode == 403:
                     # 403 is returned with custom error page when api access is blocked
@@ -3795,6 +3835,9 @@ class Shotgun(object):
         rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
 
         while attempt < max_rpc_attempts:
+            if attempt:
+                time.sleep(attempt * rpc_attempt_interval)
+
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
@@ -3814,6 +3857,7 @@ class Shotgun(object):
                 if attempt == max_rpc_attempts:
                     LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
+                # TODO create only one attempt for SSL errors.
             except Exception as e:
                 self._close_connection()
                 LOG.debug(f"Request failed.  Reason: {e}", exc_info=True)
@@ -3823,7 +3867,6 @@ class Shotgun(object):
                 "Request failed, attempt %d of %d.  Retrying in %.2f seconds..."
                 % (attempt, max_rpc_attempts, rpc_attempt_interval)
             )
-            time.sleep(rpc_attempt_interval)
 
     def _http_request(self, verb, path, body, headers):
         """
@@ -3854,12 +3897,7 @@ class Shotgun(object):
         Open the given request object, return the
         response, raises URLError on protocol errors.
         """
-        try:
-            result = opener.open(request)
-
-        except urllib.error.HTTPError:
-            raise
-        return result
+        return opener.open(request)
 
     def _parse_http_status(self, status):
         """
@@ -3873,8 +3911,6 @@ class Shotgun(object):
 
         if status[0] >= 300:
             headers = "HTTP error from server"
-            if status[0] == 503:
-                errmsg = "Flow Production Tracking is currently down for maintenance or too busy to reply. Please try again later."
             raise ProtocolError(self.config.server, error_code, errmsg, headers)
 
         return
@@ -4341,30 +4377,48 @@ class Shotgun(object):
         :param str content_type: Content type of the data stream.
         :param int size: Number of bytes in the data stream.
         :param str storage_url: Target URL for the uploaded file.
-        :returns: upload url.
+        :returns: upload url - NO! Return the AWS object ID.
         :rtype: str
         """
 
-        attempt = 1
-        while attempt <= self.MAX_ATTEMPTS:
+        ## TODO - add unitests for those cases
+        # storage_url = "https://untrusted-root.badssl.com/"
+        # storage_url = "https://wrong.host.badssl.com/"
+        # storage_url = "https://expired.badssl.com/"
+
+        attempt = 0
+        max_rpc_attempts = self.config.max_rpc_attempts
+        rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
+
+        while attempt <= max_rpc_attempts:
+            if attempt:
+                time.sleep(attempt * rpc_attempt_interval)
+
+            attempt += 1
+
             try:
                 opener = self._build_opener(urllib.request.HTTPHandler)
 
-                request = urllib.request.Request(storage_url, data=data)
-                request.add_header("Content-Type", content_type)
-                request.add_header("Content-Length", size)
-                request.get_method = lambda: "PUT"
+                request = urllib.request.Request(
+                    storage_url,
+                    method="PUT",
+                    headers={
+                        "Content-Type": content_type,
+                        "Content-Length": size,
+                    },
+                    data=data,
+                )
+
                 result = self._make_upload_request(request, opener)
 
-                LOG.debug("Completed request to %s" % request.get_method())
+                LOG.debug(f"Completed request to {safe_short_url(storage_url)}")
 
             except urllib.error.HTTPError as e:
-                if attempt != self.MAX_ATTEMPTS and e.code in [500, 503]:
-                    LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
-                    time.sleep(float(attempt) * self.BACKOFF)
-                    attempt += 1
-                    continue
-                elif e.code in [500, 503]:
+                if e.code in self.config.http_error_codes_to_retry:
+                    if attempt < max_rpc_attempts:
+                        LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
+                        continue
+
                     raise ShotgunError(
                         "Got a %s response when uploading to %s: %s"
                         % (e.code, storage_url, e)
@@ -4375,9 +4429,20 @@ class Shotgun(object):
                         % (storage_url, e)
                     )
             except urllib.error.URLError as e:
+                if isinstance(e.reason, ssl.SSLError):
+                    ssl_err = e.reason
+
+                    LOG.debug(
+                        f"Received an SSL error during request to {safe_short_url(storage_url)}"
+                    )
+
+                    if isinstance(ssl_err, ssl.SSLCertVerificationError):
+                        LOG.debug(f"SSL certificate error occurred: {ssl_err}")
+                    else:
+                        LOG.debug(f"SSL error occurred: {ssl_err}")
+                    raise
+
                 LOG.debug("Got a '%s' response. Waiting and retrying..." % e)
-                time.sleep(float(attempt) * self.BACKOFF)
-                attempt += 1
                 continue
             else:
                 break
@@ -4474,21 +4539,28 @@ class Shotgun(object):
 
         params.update(self._auth_params())
 
-        attempt = 1
-        while attempt <= self.MAX_ATTEMPTS:
+        max_rpc_attempts = self.config.max_rpc_attempts
+        rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
+
+        attempt = 0
+        while attempt < max_rpc_attempts:
+            if attempt:
+                time.sleep(attempt * rpc_attempt_interval)
+
+            attempt += 1
+
             # Perform the request
             try:
                 opener = self._build_opener(FormPostHandler)
                 resp = opener.open(url, params)
                 result = resp.read()
                 # response headers are in str(resp.info()).splitlines()
-            except urllib.error.URLError as e:
-                LOG.debug("Got a %s response. Waiting and retrying..." % e)
-                time.sleep(float(attempt) * self.BACKOFF)
-                attempt += 1
-                continue
             except urllib.error.HTTPError as e:
-                if e.code == 500:
+                if e.code in self.config.http_error_codes_to_retry:
+                    if attempt < max_rpc_attempts:
+                        LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
+                        continue
+
                     raise ShotgunError(
                         "Server encountered an internal error. "
                         "\n%s\n(%s)\n%s\n\n"
@@ -4496,6 +4568,10 @@ class Shotgun(object):
                     )
                 else:
                     raise ShotgunError("Unanticipated error occurred %s" % (e))
+
+            except urllib.error.URLError as e:
+                LOG.debug("Got a %s response. Waiting and retrying..." % e)
+                continue
 
             if isinstance(result, bytes):
                 result = result.decode("utf-8")
@@ -4684,3 +4760,23 @@ def _get_type_and_id_from_value(value):
         LOG.debug(f"Could not optimize entity value {value}")
 
     return value
+
+
+def safe_short_url(url: str, max_path_length: int = 80) -> str:
+    u = urllib.parse.urlparse(url)
+
+    # If the path is longer than the max_path_length, truncate it in the middle
+    if len(u.path) > max_path_length:
+        half_length = max_path_length // 2
+
+        u = u._replace(
+            path=u.path[: half_length - 3] + "[...]" + u.path[-half_length + 3 :]
+        )
+
+    return urllib.parse.urlunparse(
+        u._replace(
+            netloc=u.hostname,  # Sanitize possible in URL credentials - HTTP Basic Auth
+            query="",  # Sanitize possible in URL credentials - API keys
+            fragment="",
+        )
+    )

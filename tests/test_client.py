@@ -470,6 +470,9 @@ class TestShotgunClient(base.MockTestBase):
             f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times",
         )
 
+    # TODO change attempt num
+    # TODO add 504. in config
+
     def test_upload_s3_500(self):
         """
         Test 500 response is retried when uploading to S3.
