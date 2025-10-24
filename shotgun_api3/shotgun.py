@@ -3938,6 +3938,7 @@ class Shotgun(object):
                 if attempt == max_rpc_attempts:
                     LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
+                # TODO create only one attempt for SSL errors.
             except Exception as e:
                 self._close_connection()
                 LOG.debug(f"Request failed.  Reason: {e}", exc_info=True)
@@ -4482,7 +4483,8 @@ class Shotgun(object):
 
         ## TODO - add unitests for those cases
         # storage_url = "https://untrusted-root.badssl.com/"
-        storage_url = "https://wrong.host.badssl.com/"
+        # storage_url = "https://wrong.host.badssl.com/"
+        # storage_url = "https://expired.badssl.com/"
 
         attempt = 1
         while attempt <= self.MAX_ATTEMPTS:
@@ -4503,8 +4505,6 @@ class Shotgun(object):
 
                 LOG.debug("Completed request to %s", safe_short_url(storage_url))
 
-            # FIXME - why don't we capture SSL errors here?
-
             except urllib.error.HTTPError as e:
                 if attempt != self.MAX_ATTEMPTS and e.code in [500, 503]:
                     LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
@@ -4522,6 +4522,19 @@ class Shotgun(object):
                         % (storage_url, e)
                     )
             except urllib.error.URLError as e:
+                if isinstance(e.reason, ssl.SSLError):
+                    ssl_err = e.reason
+
+                    LOG.debug(
+                        f"Received an SSL error during request to {safe_short_url(storage_url)}"
+                    )
+
+                    if isinstance(ssl_err, ssl.SSLCertVerificationError):
+                        LOG.debug(f"SSL certificate error occurred: {ssl_err}")
+                    else:
+                        LOG.debug(f"SSL error occurred: {ssl_err}")
+                    raise
+
                 LOG.debug("Got a '%s' response. Waiting and retrying..." % e)
                 time.sleep(float(attempt) * self.BACKOFF)
                 attempt += 1
