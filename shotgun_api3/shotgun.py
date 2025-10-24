@@ -4340,6 +4340,10 @@ class Shotgun(object):
         :rtype: str
         """
 
+        ## TODO - add unitests for those cases
+        # storage_url = "https://untrusted-root.badssl.com/"
+        storage_url = "https://wrong.host.badssl.com/"
+
         attempt = 1
         while attempt <= self.MAX_ATTEMPTS:
             try:
@@ -4358,6 +4362,8 @@ class Shotgun(object):
                 result = self._make_upload_request(request, opener)
 
                 LOG.debug(f"Completed request to {safe_short_url(storage_url)}")
+
+            # FIXME - why don't we capture SSL errors here?
 
             except urllib.error.HTTPError as e:
                 if attempt != self.MAX_ATTEMPTS and e.code in [500, 503]:
