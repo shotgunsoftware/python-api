@@ -381,6 +381,8 @@ class _Config(object):
         # (if it is not given, the global default timeout setting is used)
         self.timeout_secs = None
 
+        self.http_error_codes_to_retry = [502, 503, 504]  # Should we add 500 ??
+
         self.api_ver = "api3"
         self.convert_datetimes_to_utc = True
         self._records_per_page = None
@@ -472,6 +474,7 @@ class Shotgun(object):
         api_key=None,
         convert_datetimes_to_utc=True,
         http_proxy=None,
+        http_error_codes_to_retry: None | list[int] = None,
         connect=True,
         ca_certs=None,
         login=None,
@@ -617,6 +620,28 @@ class Shotgun(object):
                 "Value of SHOTGUN_API_RETRY_INTERVAL must be positive, "
                 "got '%s'." % self.config.rpc_attempt_interval
             )
+
+        # Handle new config  parameter for retry on HTTP
+        config_value = os.environ.get("SHOTGUN_API_HTTP_ERROR_CODES_TO_RETRY")
+        if config_value:
+            values = config_value.strip()
+            # TODO how to pass an empty list to say we don't want to retry any errors?
+            adding_mode = False
+            if values.startswith("+"):
+                # If starts with a + that means we hadd the codes to the existing list
+                # Otherwise, we start with an empty list
+                adding_mode = True
+                values = values[1:].strip()
+
+            # TODO check if int all
+            codes = [int(code.strip()) for code in values.split(",")]
+
+            if not adding_mode:
+                self.config.http_error_codes_to_retry = []
+
+            self.config.http_error_codes_to_retry.extend(codes)
+        elif http_error_codes_to_retry is not None:
+            self.config.http_error_codes_to_retry = http_error_codes_to_retry
 
         global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
         if (
@@ -3666,8 +3691,15 @@ class Shotgun(object):
                 # We've seen some rare instances of PTR returning 502 for issues that
                 # appear to be caused by something internal to PTR. We're going to
                 # allow for limited retries for those specifically.
-                if attempt < max_rpc_attempts and e.errcode in [502, 504]:
-                    LOG.debug("Got a 502 or 504 response. Waiting and retrying...")
+                if (
+                    attempt < max_rpc_attempts
+                    and e.errcode in self.config.http_error_codes_to_retry
+                ):
+                    # TODO  if status[0] == 503:
+                    # errmsg = "Flow Production Tracking is currently down for maintenance or too busy to reply. Please try again later."
+                    LOG.debug(
+                        f"Got a {e.errcode} HTTP response. Waiting and retrying..."
+                    )
                     continue
                 elif e.errcode == 403:
                     # 403 is returned with custom error page when api access is blocked
@@ -3879,8 +3911,6 @@ class Shotgun(object):
 
         if status[0] >= 300:
             headers = "HTTP error from server"
-            if status[0] == 503:
-                errmsg = "Flow Production Tracking is currently down for maintenance or too busy to reply. Please try again later."
             raise ProtocolError(self.config.server, error_code, errmsg, headers)
 
         return
@@ -4384,10 +4414,11 @@ class Shotgun(object):
                 LOG.debug(f"Completed request to {safe_short_url(storage_url)}")
 
             except urllib.error.HTTPError as e:
-                if attempt < max_rpc_attempts and e.code in [500, 503]:
-                    LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
-                    continue
-                elif e.code in [500, 503]:
+                if e.code in self.config.http_error_codes_to_retry:
+                    if attempt < max_rpc_attempts:
+                        LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
+                        continue
+
                     raise ShotgunError(
                         "Got a %s response when uploading to %s: %s"
                         % (e.code, storage_url, e)
@@ -4524,11 +4555,12 @@ class Shotgun(object):
                 resp = opener.open(url, params)
                 result = resp.read()
                 # response headers are in str(resp.info()).splitlines()
-            except urllib.error.URLError as e:
-                LOG.debug("Got a %s response. Waiting and retrying..." % e)
-                continue
             except urllib.error.HTTPError as e:
-                if e.code == 500:
+                if e.code in self.config.http_error_codes_to_retry:
+                    if attempt < max_rpc_attempts:
+                        LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
+                        continue
+
                     raise ShotgunError(
                         "Server encountered an internal error. "
                         "\n%s\n(%s)\n%s\n\n"
@@ -4536,6 +4568,10 @@ class Shotgun(object):
                     )
                 else:
                     raise ShotgunError("Unanticipated error occurred %s" % (e))
+
+            except urllib.error.URLError as e:
+                LOG.debug("Got a %s response. Waiting and retrying..." % e)
+                continue
 
             if isinstance(result, bytes):
                 result = result.decode("utf-8")
