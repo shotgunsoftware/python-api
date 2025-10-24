@@ -124,17 +124,22 @@ will vary.
 
     ::
 
-      { 'content_type': 'video/quicktime',
+      {
+        'content_type': 'video/quicktime',
         'link_type': 'local',
+        'local_path': '/Users/kp/Movies/testing/test_movie_002.mov',
+        'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov',
+        'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov',
+        'local_path_windows': 'M:\\macusers\\kp\\Movies\\testing\\test_movie_002.mov',
+        'local_storage': {
+          'id': 1,
+          'name': 'Dailies Directories',
+          'type': 'LocalStorage'
+        },
         'name': 'my_test_movie.mov',
-        'local_path': '/Users/kp/Movies/testing/test_movie_002.mov'
-        'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov'
-        'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov'
-        'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov'
-        'local_storage': {'id': 1,
-                          'name': 'Dailies Directories',
-                          'type': 'LocalStorage'},
-        'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'}
+        'relative_path': 'testing/test_movie_002.mov',
+        'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov',
+      }
 
 
 ********************
@@ -237,6 +242,9 @@ are available:
 - **local_storage** (:obj:`dict`) *read-only*:
     A dictionary representing which LocalStorage entity is applied for this local file link.
 
+- **relative_path** (:obj:`str`) *read-only*:
+    The path to the file relative ``local_storage`` root.
+
 - **url** (:obj:`str`) *read-only*:
     A file URI (``file://``) path provided for convenience pointing to the value in the ``local_path``
 
@@ -250,19 +258,26 @@ Reading Local File Fields
 
 Returns::
 
-    {'id':123,
-     'sg_uploaded_movie': { 'content_type': None,
-                            'link_type': 'local',
-                            'name': 'my_test_movie.mov',
-                            'local_path': '/Users/kp/Movies/testing/test_movie_001_.mov'
-                            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_001_.mov'
-                            'local_path_mac': '/Users/kp/Movies/testing/test_movie_001_.mov'
-                            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_001_.mov'
-                            'local_storage': {'id': 1,
-                                              'name': 'Dailies Directories',
-                                              'type': 'LocalStorage'},
-                            'url': 'file:///Users/kp/Movies/testing/test_movie_001_.mov'},
-     'type': 'Version'}
+    {
+        'id': 123,
+        'sg_uploaded_movie': {
+            'content_type': None,
+            'link_type': 'local',
+            'local_path': '/Users/kp/Movies/testing/test_movie_001_.mov',
+            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_001_.mov',
+            'local_path_mac': '/Users/kp/Movies/testing/test_movie_001_.mov',
+            'local_path_windows': 'M:\\macusers\\kp\\Movies\\testing\\test_movie_001_.mov',
+            'local_storage': {
+                'id': 1,
+                'name': 'Dailies Directories',
+                'type': 'LocalStorage'
+            },
+            'relative_path': 'testing/test_movie_001_.mov',
+            'name': 'my_test_movie.mov',
+            'url': 'file:///Users/kp/Movies/testing/test_movie_001_.mov',
+        },
+        'type': 'Version'
+    }
 
 .. note::
     When viewing results that include file/link fields with local file link values, all of the
@@ -335,7 +350,8 @@ Returns::
                 'name': 'Dailies Directories',
                 'type': 'LocalStorage'
             },
-            'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'
+            'relative_path': 'testing/test_movie_002.mov',
+            'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov',
         },
         'type': 'Version',
     }
@@ -379,6 +395,7 @@ Returns::
                 'name': 'Dailies Directories',
                 'type': 'LocalStorage'
             },
+            'relative_path': 'testing/test_movie_002.mov',
             'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'
         },
         'type': 'Version',
