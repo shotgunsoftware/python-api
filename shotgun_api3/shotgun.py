@@ -495,8 +495,6 @@ class Shotgun(object):
     )
 
     _MULTIPART_UPLOAD_CHUNK_SIZE = 20000000
-    MAX_ATTEMPTS = 3  # Retries on failure
-    BACKOFF = 0.75  # Seconds to wait before retry, times the attempt number
 
     def __init__(
         self,
@@ -3757,8 +3755,16 @@ class Shotgun(object):
         if self.config.localized is True:
             req_headers["locale"] = "auto"
 
-        attempt = 1
-        while attempt <= self.MAX_ATTEMPTS:
+        max_rpc_attempts = self.config.max_rpc_attempts
+        rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
+
+        attempt = 0
+        while attempt < max_rpc_attempts:
+            if attempt:
+                time.sleep(attempt * rpc_attempt_interval)
+
+            attempt += 1
+
             http_status, resp_headers, body = self._make_call(
                 "POST",
                 self.config.api_path,
@@ -3776,10 +3782,8 @@ class Shotgun(object):
                 # We've seen some rare instances of PTR returning 502 for issues that
                 # appear to be caused by something internal to PTR. We're going to
                 # allow for limited retries for those specifically.
-                if attempt != self.MAX_ATTEMPTS and e.errcode in [502, 504]:
+                if attempt < max_rpc_attempts and e.errcode in [502, 504]:
                     LOG.debug("Got a 502 or 504 response. Waiting and retrying...")
-                    time.sleep(float(attempt) * self.BACKOFF)
-                    attempt += 1
                     continue
                 elif e.errcode == 403:
                     # 403 is returned with custom error page when api access is blocked
@@ -3919,6 +3923,9 @@ class Shotgun(object):
         rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
 
         while attempt < max_rpc_attempts:
+            if attempt:
+                time.sleep(attempt * rpc_attempt_interval)
+
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
@@ -3948,7 +3955,6 @@ class Shotgun(object):
                 "Request failed, attempt %d of %d.  Retrying in %.2f seconds..."
                 % (attempt, max_rpc_attempts, rpc_attempt_interval)
             )
-            time.sleep(rpc_attempt_interval)
 
     def _http_request(
         self, verb: str, path: str, body, headers: dict[str, Any]
@@ -4486,8 +4492,16 @@ class Shotgun(object):
         # storage_url = "https://wrong.host.badssl.com/"
         # storage_url = "https://expired.badssl.com/"
 
-        attempt = 1
-        while attempt <= self.MAX_ATTEMPTS:
+        attempt = 0
+        max_rpc_attempts = self.config.max_rpc_attempts
+        rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
+
+        while attempt <= max_rpc_attempts:
+            if attempt:
+                time.sleep(attempt * rpc_attempt_interval)
+
+            attempt += 1
+
             try:
                 opener = self._build_opener(urllib.request.HTTPHandler)
 
@@ -4506,10 +4520,8 @@ class Shotgun(object):
                 LOG.debug("Completed request to %s", safe_short_url(storage_url))
 
             except urllib.error.HTTPError as e:
-                if attempt != self.MAX_ATTEMPTS and e.code in [500, 503]:
+                if attempt < max_rpc_attempts and e.code in [500, 503]:
                     LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
-                    time.sleep(float(attempt) * self.BACKOFF)
-                    attempt += 1
                     continue
                 elif e.code in [500, 503]:
                     raise ShotgunError(
@@ -4536,8 +4548,6 @@ class Shotgun(object):
                     raise
 
                 LOG.debug("Got a '%s' response. Waiting and retrying..." % e)
-                time.sleep(float(attempt) * self.BACKOFF)
-                attempt += 1
                 continue
             else:
                 break
@@ -4638,8 +4648,16 @@ class Shotgun(object):
 
         params.update(self._auth_params())
 
-        attempt = 1
-        while attempt <= self.MAX_ATTEMPTS:
+        max_rpc_attempts = self.config.max_rpc_attempts
+        rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
+
+        attempt = 0
+        while attempt < max_rpc_attempts:
+            if attempt:
+                time.sleep(attempt * rpc_attempt_interval)
+
+            attempt += 1
+
             # Perform the request
             try:
                 opener = self._build_opener(FormPostHandler)
@@ -4658,8 +4676,6 @@ class Shotgun(object):
 
             except urllib.error.URLError as e:
                 LOG.debug("Got a %s response. Waiting and retrying...", e)
-                time.sleep(float(attempt) * self.BACKOFF)
-                attempt += 1
                 continue
 
             if isinstance(result, bytes):
