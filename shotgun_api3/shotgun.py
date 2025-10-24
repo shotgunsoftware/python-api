@@ -3982,12 +3982,7 @@ class Shotgun(object):
         Open the given request object, return the
         response, raises URLError on protocol errors.
         """
-        try:
-            result = opener.open(request)
-
-        except urllib.error.HTTPError:
-            raise
-        return result
+        return opener.open(request)
 
     def _parse_http_status(self, status: tuple) -> None:
         """
