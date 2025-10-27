@@ -8,6 +8,19 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import sys
+import warnings
+
+if sys.version_info < (3, 9):
+    warnings.warn(
+        "Python versions older than 3.9 are no longer supported since 2025-03 "
+        "and compatibility will be removed at any time after 2026-01. "
+        "Please update to Python 3.9 or a newer supported version.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
+
 from .shotgun import (
     Shotgun,
     ShotgunError,
