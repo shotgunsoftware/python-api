@@ -17,46 +17,50 @@ Let's create a couple of Tasks and create dependencies between them. First we'll
 Task for our Shot::
 
     data = {
-        'project': {'type':'Project', 'id':65},
-        'content': 'Layout',
-        'start_date': '2010-04-28',
-        'due_date': '2010-05-05',
-        'entity': {'type':'Shot', 'id':860}
-        }
-    result = sg.create(Task, data)
+        "project": {"type": "Project", "id": 65},
+        "content": "Layout",
+        "start_date": "2010-04-28",
+        "due_date": "2010-05-05",
+        "entity": {"type": "Shot", "id": 860},
+    }
+    result = sg.create("Task", data)
 
 
 Returns::
 
-    {'content': 'Layout',
-     'due_date': '2010-05-05',
-     'entity': {'id': 860, 'name': 'bunny_010_0010', 'type': 'Shot'},
-     'id': 556,
-     'project': {'id': 65, 'name': 'Demo Animation Project', 'type': 'Project'},
-     'start_date': '2010-04-28',
-     'type': 'Task'}
+    {
+        "content": "Layout",
+        "due_date": "2010-05-05",
+        "entity": {"id": 860, "name": "bunny_010_0010", "type": "Shot"},
+        "id": 556,
+        "project": {"id": 65, "name": "Demo Animation Project", "type": "Project"},
+        "start_date": "2010-04-28",
+        "type": "Task",
+    }
 
 
 Now let's create an "Anm" Task for our Shot::
 
     data = {
-        'project': {'type':'Project', 'id':65},
-        'content': 'Anm',
-        'start_date': '2010-05-06',
-        'due_date': '2010-05-12',
-        'entity': {'type':'Shot', 'id':860}
-        }
-    result = sg.create(Task, data)
+        "project": {"type": "Project", "id": 65},
+        "content": "Anm",
+        "start_date": "2010-05-06",
+        "due_date": "2010-05-12",
+        "entity": {"type": "Shot", "id": 860},
+    }
+    result = sg.create("Task", data)
 
 Returns::
 
-    {'content': 'Anm',
-     'due_date': '2010-05-12',
-     'entity': {'id': 860, 'name': 'bunny_010_0010', 'type': 'Shot'},
-     'id': 557,
-     'project': {'id': 65, 'name': 'Demo Animation Project', 'type': 'Project'},
-     'start_date': '2010-05-06,
-     'type': 'Task'}
+    {
+        "content": "Anm",
+        "due_date": "2010-05-12",
+        "entity": {"id": 860, "name": "bunny_010_0010", "type": "Shot"},
+        "id": 557,
+        "project": {"id": 65, "name": "Demo Animation Project", "type": "Project"},
+        "start_date": "2010-05-06",
+        "type": "Task",
+    }
 
 
 *******************
@@ -70,19 +74,29 @@ There are four dependency types from which you can choose: ``finish-to-start-nex
 If no dependency type is provided the default ``finish-to-start-next-day`` will be used.
 Here is how to create a dependency between our "Layout" and "Anm" Tasks::
 
-    # make 'Layout' an upstream Task to 'Anm'. (aka, make 'Anm' dependent on 'Layout') with finish-to-start-next-day dependency type
+    # make "Layout" an upstream Task to "Anm". (aka, make "Anm" dependent on "Layout") with finish-to-start-next-day dependency type
     data = {
-        'upstream_tasks':[{'type':'Task','id':556, 'dependency_type': 'finish-to-start-next-day'}]
+        "upstream_tasks": [
+            {
+                "type": "Task",
+                "id": 556,
+                "dependency_type": "finish-to-start-next-day",
+            }
+        ],
     }
-    result = sg.update('Task', 557, data)
+    result = sg.update("Task", 557, data)
 
 Returns::
 
-    [{'id': 557,
-      'type': 'Task',
-      'upstream_tasks': [{'id': 556, 'name': 'Layout', 'type': 'Task'}]}]
+    [
+        {
+            "id": 557,
+            "type": "Task",
+            "upstream_tasks": [{"id": 556, "name": "Layout", "type": "Task"}],
+        }
+    ]
 
-This will also automatically update the `downstream_tasks` field on 'Layout' to include the 'Anm' Task.
+This will also automatically update the `downstream_tasks` field on "Layout" to include the "Anm" Task.
 
 ***********************
 Query Task Dependencies

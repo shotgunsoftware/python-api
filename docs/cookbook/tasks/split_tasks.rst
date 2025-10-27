@@ -17,7 +17,10 @@ in the ``YYYY-mm-dd`` format.
 
 ::
 
-    [{'start': '2012-12-11', 'end': '2012-12-12'}, {'start': '2012-12-18', 'end': '2012-12-19'}]
+    [
+        {"start": "2012-12-11", "end": "2012-12-12"},
+        {"start": "2012-12-18", "end": "2012-12-19"},
+    ]
 
 - Splits should be ordered from eldest to newest.
 - There should be gaps between each split.
@@ -28,7 +31,17 @@ in the ``YYYY-mm-dd`` format.
 If there are multiple splits but there between two or more splits there is no gap, an error will be
 raised. For example::
 
-    >>> sg.update('Task', 2088, {'splits':[{'start':'2012-12-10', 'end':'2012-12-11'}, {'start':'2012-12-12', 'end':'2012-12-14'}, {'start':'2012-12-19', 'end':'2012-12-20'}]})
+    >>> sg.update(
+    ...     "Task",
+    ...     2088,
+    ...     {
+    ...         "splits": [
+    ...             {"start": "2012-12-10", "end": "2012-12-11"},
+    ...             {"start": "2012-12-12", "end": "2012-12-14"},
+    ...             {"start": "2012-12-19", "end": "2012-12-20"},
+    ...         ]
+    ...     },
+    ... )
     Traceback (most recent call last):
       File "<stdin>", line 1, in <module>
       File "/shotgun/src/python-api/shotgun_api3/shotgun.py", line 600, in update
@@ -71,24 +84,28 @@ start_date, due_date and duration being ignored
 
 ::
 
-    sg.update('Task', 2088, {
-        'start_date': '2012-12-06',
-        'due_date': '2012-12-23',
-        'duration': 3600,
-        'splits': [
-            {'start': '2012-12-11', 'end': '2012-12-12'},
-            {'start': '2012-12-18', 'end': '2012-12-19'}
-        ]
-    })
+    sg.update(
+        "Task",
+        2088,
+        {
+            "start_date": "2012-12-06",
+            "due_date": "2012-12-23",
+            "duration": 3600,
+            "splits": [
+                {"start": "2012-12-11", "end": "2012-12-12"},
+                {"start": "2012-12-18", "end": "2012-12-19"},
+            ],
+        },
+    )
 
     # Task = {
-    #     'start_date': '2012-12-11',
-    #     'due_date': '2012-12-19',
-    #     'duration': 2400,
-    #     'splits': [
-    #         {'start': '2012-12-11', 'end': '2012-12-12'},
-    #         {'start': '2012-12-18', 'end': '2012-12-19'}
-    #     ]
+    #     "start_date": "2012-12-11",
+    #     "due_date": "2012-12-19",
+    #     "duration": 2400,
+    #     "splits": [
+    #         {"start": "2012-12-11", "end": "2012-12-12"},
+    #         {"start": "2012-12-18", "end": "2012-12-19"},
+    #     ],
     # }
 
 Result:
@@ -100,17 +117,15 @@ Moving the start_date of a split task
 
 ::
 
-    sg.update('Task', 2088, {
-        'start_date': '2012-12-10'
-    })
+    sg.update("Task", 2088, {"start_date": "2012-12-10"})
 
     # Task = {
-    #     'start_date': '2012-12-10',
-    #     'due_date': '2012-12-18',
-    #     'splits': [
-    #         {'start': '2012-12-10', 'end': '2012-12-11'},
-    #         {'start': '2012-12-14', 'end': '2012-12-18'}
-    #     ]
+    #     "start_date": "2012-12-10",
+    #     "due_date": "2012-12-18",
+    #     "splits": [
+    #         {"start": "2012-12-10", "end": "2012-12-11"},
+    #         {"start": "2012-12-14", "end": "2012-12-18"},
+    #     ],
     # }
 
 Result:
@@ -122,17 +137,15 @@ Moving the due_date of a split task
 
 ::
 
-    sg.update('Task', 2088, {
-        'due_date': '2012-12-19'
-    })
+    sg.update("Task", 2088, {"due_date": "2012-12-19"})
 
     # Task = {
-    #     'start_date': '2012-12-10',
-    #     'due_date': '2012-12-19',
-    #     'splits': [
-    #         {'start': '2012-12-10', 'end': '2012-12-11'},
-    #         {'start': '2012-12-14', 'end': '2012-12-19'}
-    #     ]
+    #     "start_date": "2012-12-10",
+    #     "due_date": "2012-12-19",
+    #     "splits": [
+    #         {"start": "2012-12-10", "end": "2012-12-11"},
+    #         {"start": "2012-12-14", "end": "2012-12-19"},
+    #     ],
     # }
 
 Result:
@@ -144,18 +157,16 @@ Setting a longer duration
 
 ::
 
-    sg.update('Task', 2088, {
-        'duration': 4200
-    })
+    sg.update("Task", 2088, {"duration": 4200})
 
     # Task = {
-    #     'start_date': '2012-12-10',
-    #     'due_date': '2012-12-21',
-    #     'duration': 4200,
-    #     'splits': [
-    #         {'start': '2012-12-10', 'end': '2012-12-11'},
-    #         {'start': '2012-12-14', 'end': '2012-12-21'}
-    #     ]
+    #     "start_date": "2012-12-10",
+    #     "due_date": "2012-12-21",
+    #     "duration": 4200,
+    #     "splits": [
+    #         {"start": "2012-12-10", "end": "2012-12-11"},
+    #         {"start": "2012-12-14", "end": "2012-12-21"},
+    #     ],
     # }
 
 Result:
@@ -167,18 +178,16 @@ Setting a shorter duration
 
 ::
 
-    sg.update('Task', 2088, {
-        'duration': 2400
-    })
+    sg.update("Task", 2088, {"duration": 2400})
 
     # Task = {
-    #     'start_date': '2012-12-10',
-    #     'due_date': '2012-12-18',
-    #     'duration': 2400,
-    #     'splits': [
-    #         {'start': '2012-12-10', 'end': '2012-12-11'},
-    #         {'start': '2012-12-14', 'end': '2012-12-18'}
-    #     ]
+    #     "start_date": "2012-12-10",
+    #     "due_date": "2012-12-18",
+    #     "duration": 2400,
+    #     "splits": [
+    #         {"start": "2012-12-10", "end": "2012-12-11"},
+    #         {"start": "2012-12-14", "end": "2012-12-18"},
+    #     ],
     # }
 
 Result:
@@ -195,18 +204,16 @@ who's duration we will shorten past the last split.
 
 ::
 
-    sg.update('Task', 2088, {
-        'duration': 1800
-    })
+    sg.update("Task", 2088, {"duration": 1800})
 
     # Task = {
-    #     'start_date': '2012-12-10',
-    #     'due_date': '2012-12-18',
-    #     'duration': 2400,
-    #     'splits': [
-    #         {'start': '2012-12-10', 'end': '2012-12-11'},
-    #         {'start': '2012-12-14', 'end': '2012-12-18'}
-    #     ]
+    #     "start_date": "2012-12-10",
+    #     "due_date": "2012-12-18",
+    #     "duration": 2400,
+    #     "splits": [
+    #         {"start": "2012-12-10", "end": "2012-12-11"},
+    #         {"start": "2012-12-14", "end": "2012-12-18"},
+    #     ],
     # }
 
 Result:
@@ -225,18 +232,16 @@ For this example let's assume as a starting point the result of the 5th example:
 
 ::
 
-    sg.update('Task', 2088, {
-        'due_date': '2012-12-13'
-    })
+    sg.update("Task", 2088, {"due_date": "2012-12-13"})
 
     # Task = {
-    #     'start_date': '2012-12-10',
-    #     'due_date': '2012-12-13',
-    #     'duration': 1800,
-    #     'splits': [
-    #         {'start': '2012-12-10', 'end': '2012-12-11'},
-    #         {'start': '2012-12-13', 'end': '2012-12-13'}
-    #     ]
+    #     "start_date": "2012-12-10",
+    #     "due_date": "2012-12-13",
+    #     "duration": 1800,
+    #     "splits": [
+    #         {"start": "2012-12-10", "end": "2012-12-11"},
+    #         {"start": "2012-12-13", "end": "2012-12-13"},
+    #     ],
     # }
 
 Result:
