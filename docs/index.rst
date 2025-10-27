@@ -32,28 +32,42 @@ Quicktimes, etc.
 
 **Example**::
 
-    sg = shotgun_api3.Shotgun("https://my-site.shotgrid.autodesk.com",
-                              login="rhendriks",
-                              password="c0mPre$Hi0n")
-    sg.find("Shot", filters=[["sg_status_list", "is", "ip"]], fields=["code", "sg_status_list"])
+    sg = shotgun_api3.Shotgun(
+        "https://my-site.shotgrid.autodesk.com",
+        login="rhendriks",
+        password="c0mPre$Hi0n",
+    )
+    sg.find(
+        "Shot",
+        filters=[["sg_status_list", "is", "ip"]],
+        fields=["code", "sg_status_list"],
+    )
 
 **Output**::
 
-    [{'code': 'bunny_020_0170',
-      'id': 896,
-      'sg_sequence': {'id': 5, 'name': 'bunny_020', 'type': 'Sequence'},
-      'sg_status_list': 'ip',
-      'type': 'Shot'},
-     {'code': 'bunny_020_0200',
-      'id': 899,
-      'sg_sequence': {'id': 5, 'name': 'bunny_020', 'type': 'Sequence'},
-      'sg_status_list': 'ip',
-      'type': 'Shot'},
-     {'code': 'bunny_030_0080',
-      'id': 907,
-      'sg_sequence': {'id': 6, 'name': 'bunny_030', 'type': 'Sequence'},
-      'sg_status_list': 'ip',
-      'type': 'Shot'}]
+    [
+        {
+            "code": "bunny_020_0170",
+            "id": 896,
+            "sg_sequence": {"id": 5, "name": "bunny_020", "type": "Sequence"},
+            "sg_status_list": "ip",
+            "type": "Shot",
+        },
+        {
+            "code": "bunny_020_0200",
+            "id": 899,
+            "sg_sequence": {"id": 5, "name": "bunny_020", "type": "Sequence"},
+            "sg_status_list": "ip",
+            "type": "Shot",
+        },
+        {
+            "code": "bunny_030_0080",
+            "id": 907,
+            "sg_sequence": {"id": 6, "name": "bunny_030", "type": "Sequence"},
+            "sg_status_list": "ip",
+            "type": "Shot",
+        },
+    ]
 
 
 **********

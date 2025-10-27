@@ -100,10 +100,12 @@ will vary.
 
     ::
 
-      {'content_type': 'image/jpeg',
-       'link_type': 'upload',
-       'name': 'western1FULL.jpg',
-       'url': 'https://my-site.shotgrid.autodesk.com/file_serve/attachment/538'}
+        {
+            "content_type": "image/jpeg",
+            "link_type": "upload",
+            "name": "western1FULL.jpg",
+            "url": "https://my-site.shotgrid.autodesk.com/file_serve/attachment/538",
+        }
 
 - **Web links**
     Designated by ``link_type: 'web'``, this is represents a url link. Examples include an
@@ -111,10 +113,12 @@ will vary.
     like ``rvlink://`` or ``cinesync://``
     ::
 
-      {'content_type': None,
-       'link_type': 'web',
-       'name': 'Join GUN12158',
-       'url': 'cinesync://session/GUN12158'}
+        {
+            "content_type": None,
+            "link_type": "web",
+            "name": "Join GUN12158",
+            "url": "cinesync://session/GUN12158",
+        }
 
 - **Local Files**
     Designated by ``link_type: 'local'``, this is represents a local file link. Additional keys
@@ -124,17 +128,21 @@ will vary.
 
     ::
 
-      { 'content_type': 'video/quicktime',
-        'link_type': 'local',
-        'name': 'my_test_movie.mov',
-        'local_path': '/Users/kp/Movies/testing/test_movie_002.mov'
-        'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov'
-        'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov'
-        'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov'
-        'local_storage': {'id': 1,
-                          'name': 'Dailies Directories',
-                          'type': 'LocalStorage'},
-        'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'}
+        {
+            "content_type": "video/quicktime",
+            "link_type": "local",
+            "name": "my_test_movie.mov",
+            "local_path": "/Users/kp/Movies/testing/test_movie_002.mov",
+            "local_path_linux": "/home/users/macusers/kp/Movies/testing/test_movie_002.mov",
+            "local_path_mac": "/Users/kp/Movies/testing/test_movie_002.mov",
+            "local_path_windows": "M:\\macusers\kp\Movies\testing\test_movie_002.mov",
+            "local_storage": {
+                "id": 1,
+                "name": "Dailies Directories",
+                "type": "LocalStorage",
+            },
+            "url": "file:///Users/kp/Movies/testing/test_movie_002.mov",
+        }
 
 
 ********************
@@ -146,14 +154,14 @@ Web Links
 ::
 
     myurl = {
-      'url': 'http://apple.com/itunes',
-      'name': 'Apple: iTunes'
+        "url": "http://apple.com/itunes",
+        "name": "Apple: iTunes",
     }
     data = {
-        'this_file': myurl,
-        'project': {'type':'Project','id':64}
+        "this_file": myurl,
+        "project": {"type": "Project", "id": 64},
     }
-    result = sg.create('Attachment', data)
+    result = sg.create("Attachment", data)
 
 
 Uploads
@@ -245,24 +253,30 @@ Reading Local File Fields
 
 ::
 
-    fields = ['sg_uploaded_movie']
-    result = sg.find('Version', [['id', 'is', 123]], fields)
+    fields = ["sg_uploaded_movie"]
+    result = sg.find("Version", [["id", "is", 123]], fields)
 
 Returns::
 
-    {'id':123,
-     'sg_uploaded_movie': { 'content_type': None,
-                            'link_type': 'local',
-                            'name': 'my_test_movie.mov',
-                            'local_path': '/Users/kp/Movies/testing/test_movie_001_.mov'
-                            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_001_.mov'
-                            'local_path_mac': '/Users/kp/Movies/testing/test_movie_001_.mov'
-                            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_001_.mov'
-                            'local_storage': {'id': 1,
-                                              'name': 'Dailies Directories',
-                                              'type': 'LocalStorage'},
-                            'url': 'file:///Users/kp/Movies/testing/test_movie_001_.mov'},
-     'type': 'Version'}
+    {
+        "id": 123,
+        "sg_uploaded_movie": {
+            "content_type": None,
+            "link_type": "local",
+            "name": "my_test_movie.mov",
+            "local_path": "/Users/kp/Movies/testing/test_movie_001_.mov",
+            "local_path_linux": "/home/users/macusers/kp/Movies/testing/test_movie_001_.mov",
+            "local_path_mac": "/Users/kp/Movies/testing/test_movie_001_.mov",
+            "local_path_windows": "M:\\macusers\kp\Movies\testing\test_movie_001_.mov",
+            "local_storage": {
+                "id": 1,
+                "name": "Dailies Directories",
+                "type": "LocalStorage",
+            },
+            "url": "file:///Users/kp/Movies/testing/test_movie_001_.mov",
+        },
+        "type": "Version",
+    }
 
 .. note::
     When viewing results that include file/link fields with local file link values, all of the
@@ -309,35 +323,36 @@ Example 1: Using ``local_path``
 ::
 
     result = sg.update(
-        'Version',
+        "Version",
         123,
         {
-            'sg_uploaded_movie': {
-                'local_path': '/Users/kp/Movies/testing/test_movie_002.mov',
-                'name': 'Better Movie',
+            "sg_uploaded_movie": {
+                "local_path": "/Users/kp/Movies/testing/test_movie_002.mov",
+                "name": "Better Movie",
             }
-        )
+        },
+    )
 
 Returns::
 
     {
-        'id':123,
-        'sg_uploaded_movie': {
-            'content_type': 'video/quicktime',
-            'link_type': 'local',
-            'name': 'my_test_movie.mov',
-            'local_path': '/Users/kp/Movies/testing/test_movie_002.mov'
-            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov'
-            'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov'
-            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov'
-            'local_storage': {
-                'id': 1,
-                'name': 'Dailies Directories',
-                'type': 'LocalStorage'
+        "id": 123,
+        "sg_uploaded_movie": {
+            "content_type": "video/quicktime",
+            "link_type": "local",
+            "name": "my_test_movie.mov",
+            "local_path": "/Users/kp/Movies/testing/test_movie_002.mov",
+            "local_path_linux": "/home/users/macusers/kp/Movies/testing/test_movie_002.mov",
+            "local_path_mac": "/Users/kp/Movies/testing/test_movie_002.mov",
+            "local_path_windows": "M:\\macusers\kp\Movies\testing\test_movie_002.mov",
+            "local_storage": {
+                "id": 1,
+                "name": "Dailies Directories",
+                "type": "LocalStorage",
             },
-            'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'
+            "url": "file:///Users/kp/Movies/testing/test_movie_002.mov",
         },
-        'type': 'Version',
+        "type": "Version",
     }
 
 The ``content_type`` was assigned a best-guess value based on the file extension. Flow Production Tracking selected
@@ -350,38 +365,39 @@ Example 2: Using ``relative_path``
 ::
 
     result = sg.update(
-        'Version',
+        "Version",
         123,
         {
-            'sg_uploaded_movie': {
-                'local_storage': {
-                    'type': 'LocalStorage',
-                    'name': 'Dailies Directories',
+            "sg_uploaded_movie": {
+                "local_storage": {
+                    "type": "LocalStorage",
+                    "name": "Dailies Directories",
                 },
-                'relative_path': 'testing/test_movie_002.mov',
+                "relative_path": "testing/test_movie_002.mov",
             }
-        )
+        },
+    )
 
 Returns::
 
     {
-        'id':123,
-        'sg_uploaded_movie': {
-            'content_type': 'video/quicktime',
-            'link_type': 'local',
-            'name': 'my_test_movie.mov',
-            'local_path': '/Users/kp/Movies/testing/test_movie_002.mov',
-            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov',
-            'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov',
-            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov',
-            'local_storage': {
-                'id': 1,
-                'name': 'Dailies Directories',
-                'type': 'LocalStorage'
+        "id": 123,
+        "sg_uploaded_movie": {
+            "content_type": "video/quicktime",
+            "link_type": "local",
+            "name": "my_test_movie.mov",
+            "local_path": "/Users/kp/Movies/testing/test_movie_002.mov",
+            "local_path_linux": "/home/users/macusers/kp/Movies/testing/test_movie_002.mov",
+            "local_path_mac": "/Users/kp/Movies/testing/test_movie_002.mov",
+            "local_path_windows": "M:\\macusers\kp\Movies\testing\test_movie_002.mov",
+            "local_storage": {
+                "id": 1,
+                "name": "Dailies Directories",
+                "type": "LocalStorage",
             },
-            'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'
+            "url": "file:///Users/kp/Movies/testing/test_movie_002.mov",
         },
-        'type': 'Version',
+        "type": "Version",
     }
 
 
@@ -390,11 +406,13 @@ Un-setting local file field values
 
 Removing a a local file field value is simple. Just set the value to ``None``::
 
-    data = {'sg_uploaded_movie': None}
-    result = sg.update('Version', 123, data)
+    data = {"sg_uploaded_movie": None}
+    result = sg.update("Version", 123, data)
 
 Returns::
 
-    {'id':123,
-     'sg_uploaded_movie': None,
-     'type': 'Version'}]
+    {
+        "id": 123,
+        "sg_uploaded_movie": None,
+        "type": "Version",
+    }
