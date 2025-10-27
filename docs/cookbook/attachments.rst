@@ -243,7 +243,7 @@ are available:
     A dictionary representing which LocalStorage entity is applied for this local file link.
 
 - **relative_path** (:obj:`str`) *read-only*:
-    The path to the file relative ``local_storage`` root.
+    The path to the file relative to the ``local_storage`` root.
 
 - **url** (:obj:`str`) *read-only*:
     A file URI (``file://``) path provided for convenience pointing to the value in the ``local_path``
