@@ -227,7 +227,7 @@ It is intended to be used in conjunction with the script dicussed in :ref:`ami_h
         for e in entities:
             if not e[file_field]:
                 logger.info(
-                    "%s #%s: No file exists. Skippinsa."
+                    "%s #%s: No file exists. Skipping."
                     % (sa.params["entity_type"], e["id"])
                 )
             else:
