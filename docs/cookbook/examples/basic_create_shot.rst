@@ -15,12 +15,12 @@ To create a Shot, you need to provide the following values:
 Example::
 
     data = {
-        'project': {"type":"Project","id": 4},
-        'code': '100_010',
-        'description': 'Open on a beautiful field with fuzzy bunnies',
-        'sg_status_list': 'ip'
+        "project": {"type": "Project", "id": 4},
+        "code": "100_010",
+        "description": "Open on a beautiful field with fuzzy bunnies",
+        "sg_status_list": "ip",
     }
-    result = sg.create('Shot', data)
+    result = sg.create("Shot", data)
 
 
 This will create a new Shot named "100_010" in the Project "Gunslinger" (which has an ``id`` of 4).
@@ -36,12 +36,12 @@ This will create a new Shot named "100_010" in the Project "Gunslinger" (which h
 The variable ``result`` now contains a dictionary hash with the Shot information you created.::
 
     {
-        'code': '100_010',
-        'description': 'Open on a beautiful field with fuzzy bunnies',
-        'id': 40435,
-        'project': {'id': 4, 'name': 'Demo Project', 'type': 'Project'},
-        'sg_status_list': 'ip',
-        'type': 'Shot'
+        "code": "100_010",
+        "description": "Open on a beautiful field with fuzzy bunnies",
+        "id": 40435,
+        "project": {"id": 4, "name": "Demo Project", "type": "Project"},
+        "sg_status_list": "ip",
+        "type": "Shot",
     }
 
 In addition, Flow Production Tracking has returned the ``id`` that it has assigned to the Shot, as well as a
@@ -61,20 +61,20 @@ The Complete Example for creating a Shot
     # Imports
     # --------------------------------------
     import shotgun_api3
-    from pprint import pprint # useful for debugging
+    from pprint import pprint  # useful for debugging
 
     # --------------------------------------
     # Globals
     # --------------------------------------
     # make sure to change this to match your Flow Production Tracking server and auth credentials.
     SERVER_PATH = "https://my-site.shotgrid.autodesk.com"
-    SCRIPT_NAME = 'my_script'
-    SCRIPT_KEY = '27b65d7063f46b82e670fe807bd2b6f3fd1676c1'
+    SCRIPT_NAME = "my_script"
+    SCRIPT_KEY = "27b65d7063f46b82e670fe807bd2b6f3fd1676c1"
 
     # --------------------------------------
     # Main
     # --------------------------------------
-    if __name__ == '__main__':
+    if __name__ == "__main__":
 
         sg = shotgun_api3.Shotgun(SERVER_PATH, SCRIPT_NAME, SCRIPT_KEY)
 
@@ -82,21 +82,23 @@ The Complete Example for creating a Shot
         # Create a Shot with data
         # --------------------------------------
         data = {
-            'project': {"type":"Project","id": 4},
-            'code': '100_010',
-            'description': 'Open on a beautiful field with fuzzy bunnies',
-            'sg_status_list': 'ip'
+            "project": {"type": "Project", "id": 4},
+            "code": "100_010",
+            "description": "Open on a beautiful field with fuzzy bunnies",
+            "sg_status_list": "ip",
         }
-        result = sg.create('Shot', data)
+        result = sg.create("Shot", data)
         pprint(result)
-        print("The id of the {} is {}.".format(result['type'], result['id']))
+        print("The id of the {} is {}.".format(result["type"], result["id"]))
 
 And here is the output::
 
-    {'code': '100_010',
-     'description': 'Open on a beautiful field with fuzzy bunnies',
-     'id': 40435,
-     'project': {'id': 4, 'name': 'Demo Project', 'type': 'Project'},
-     'sg_status_list': 'ip',
-     'type': 'Shot'}
+    {
+        "code": "100_010",
+        "description": "Open on a beautiful field with fuzzy bunnies",
+        "id": 40435,
+        "project": {"id": 4, "name": "Demo Project", "type": "Project"},
+        "sg_status_list": "ip",
+        "type": "Shot",
+    }
     The id of the Shot is 40435.

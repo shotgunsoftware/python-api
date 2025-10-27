@@ -45,30 +45,29 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
 
     In a more human-readable state that would translate to something like this:
     {
-        'project_name': 'Demo Project',
-         'user_id': '24',
-         'title': 'All Versions',
-         'user_login': 'shotgun',
-         'sort_column': 'created_at',
-         'entity_type': 'Version',
-         'cols': 'created_at',
-         'ids': '5,2',
-         'selected_ids': '2,5',
-         'sort_direction': 'desc',
-         'project_id': '4',
-         'session_uuid': 'd8592bd6-fc41-11e1-b2c5-000c297a5f50',
-         'column_display_names':
-        [
-            'Version Name',
-             'Thumbnail',
-             'Link',
-             'Artist',
-             'Description',
-             'Status',
-             'Path to frames',
-             'QT',
-             'Date Created'
-        ]
+        "project_name": "Demo Project",
+        "user_id": "24",
+        "title": "All Versions",
+        "user_login": "shotgun",
+        "sort_column": "created_at",
+        "entity_type": "Version",
+        "cols": "created_at",
+        "ids": "5,2",
+        "selected_ids": "2,5",
+        "sort_direction": "desc",
+        "project_id": "4",
+        "session_uuid": "d8592bd6-fc41-11e1-b2c5-000c297a5f50",
+        "column_display_names": [
+            "Version Name",
+            "Thumbnail",
+            "Link",
+            "Artist",
+            "Description",
+            "Status",
+            "Path to frames",
+            "QT",
+            "Date Created",
+        ],
     }
 
     This simple class parses the url into easy to access types variables from the parameters,
@@ -83,18 +82,19 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
     The parameters variable will be returned as a dictionary of string key/value pairs. Here's
     how to instantiate:
 
-      sa = ShotgunAction(sys.argv[1]) # sys.argv[1]
+      sa = ShotgunAction(sys.argv[1])  # sys.argv[1]
 
-      sa.params['user_login'] # returns 'miled'
-      sa.params['user_id'] # returns 123
-      sa.protocol # returns 'myCoolProtocol'
+      sa.params["user_login"]  # returns "miled"
+      sa.params["user_id"]  # returns 123
+      sa.protocol  # returns "myCoolProtocol"
     """
 
 
     # ---------------------------------------------------------------------------------------------
     # Imports
     # ---------------------------------------------------------------------------------------------
-    import sys, os
+    import sys
+    import os
     import logging as logger
 
     # ---------------------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
             logger.info("action: %s" % action)
 
             # extract the parameters
-            # 'column_display_names' and 'cols' occurs once for each column displayed so we store it as a list
+            # "column_display_names" and "cols" occurs once for each column displayed so we store it as a list
             params = params.split("&")
             p = {"column_display_names": [], "cols": []}
             for arg in params:

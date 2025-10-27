@@ -83,45 +83,54 @@ link to the Revision.
     # ---------------------------------------------------------------------------------------------
     # Globals - update all of these values to those of your studio
     # ---------------------------------------------------------------------------------------------
-    SERVER_PATH = 'https ://my-site.shotgrid.autodesk.com' # or http:
-    SCRIPT_USER = 'script_name'
-    SCRIPT_KEY = '3333333333333333333333333333333333333333'
-    REVISIONS_PATH = 'https ://serveraddress/trac/changeset/' # or other web-based UI
-    PROJECT = {'type':'Project', 'id':27}
+    SERVER_PATH = "https://my-site.shotgrid.autodesk.com"  # or http:
+    SCRIPT_USER = "script_name"
+    SCRIPT_KEY = "3333333333333333333333333333333333333333"
+    REVISIONS_PATH = "https://serveraddress/trac/changeset/"  # or other web-based UI
+    PROJECT = {"type": "Project", "id": 27}
 
     # ---------------------------------------------------------------------------------------------
     # Main
     # ---------------------------------------------------------------------------------------------
-    if __name__ == '__main__':
+    if __name__ == "__main__":
 
-       sg = Shotgun(SERVER_PATH, SCRIPT_USER, SCRIPT_KEY)
+        sg = Shotgun(SERVER_PATH, SCRIPT_USER, SCRIPT_KEY)
 
-       # Set Python variables from the environment objects
-       revision_code = os.environ['REV']
-       repository = os.environ['REPOS']
-       description = os.environ['COMMENT']
-       author = os.environ['AUTHOR']
+        # Set Python variables from the environment objects
+        revision_code = os.environ["REV"]
+        repository = os.environ["REPOS"]
+        description = os.environ["COMMENT"]
+        author = os.environ["AUTHOR"]
 
-       # Set the Trac path for this specific revision
-       revision_url = REVISIONS_PATH + revision_code
+        # Set the Trac path for this specific revision
+        revision_url = REVISIONS_PATH + revision_code
 
-       # Validate that author is a valid Flow Production Tracking HumanUser
-       result = sg.find_one("HumanUser", [['login', 'is', author]])
-       if result:
-           # Create Revision
-           url = {'content_type':'http_url', 'url':revision_url, 'name':'Trac'}
-           parameters = {'project':PROJECT,
-                           'code':str(revision_code),
-                           'description':description,
-                           'attachment':url,
-                           'created_by':{"type":"HumanUser", "id":result['id']}
-                           }
-           revision = sg.create("Revision", parameters)
-           print("created Revision #"+str(revision_code))
+        # Validate that author is a valid Flow Production Tracking HumanUser
+        result = sg.find_one("HumanUser", [["login", "is", author]])
+        if result:
+            # Create Revision
+            url = {
+                "content_type": "http_url",
+                "url": revision_url,
+                "name": "Trac",
+            }
+            parameters = {
+                "project": PROJECT,
+                "code": str(revision_code),
+                "description": description,
+                "attachment": url,
+                "created_by": {"type": "HumanUser", "id": result["id"]},
+            }
+            revision = sg.create("Revision", parameters)
+            print("created Revision #" + str(revision_code))
 
-       # Send error message if valid HumanUser is not found
-       else:
-           print("Unable to find a valid Flow Production Tracking User with login: {}, Revision not created in Flow Production Tracking.".format(author))
+        # Send error message if valid HumanUser is not found
+        else:
+            print(
+                "Unable to find a valid Flow Production Tracking User with login: {}, Revision not created in Flow Production Tracking.".format(
+                    author
+                )
+            )
 
 
 
