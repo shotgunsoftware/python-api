@@ -92,7 +92,7 @@ Then when you're writing scripts, you don't need to worry about remembering whic
     )
     result = sg.find(
         studio_globals.ENTITY_WIDGET,
-        filters=[["sg_status_list", "is", "ip"]],
+        [["sg_status_list", "is", "ip"]], # filters
         fields=["code", "sg_shot"],
     )
 
@@ -125,7 +125,7 @@ To find information about your Versions in the Playlist "Director Review" (let's
         "version.Version.entity",
     ]
     order = [{"column": "sg_sort_order", "direction": "asc"}]
-    result = sg.find("PlaylistVersionConnection", filters, fields, order)
+    result = sg.find("PlaylistVersionConnection", filters, fields=fields, order=order)
 
 
 Which returns the following::
@@ -318,12 +318,12 @@ then use that data for your follow up query, like so::
 
 With "field hopping" you can combine these queries into::
 
-    # Get all shots on 'Big Buck Bunny' project
+    # Get all shots on "Big Buck Bunny" project
     project_name = "Big Buck Bunny"
     sg_shots = sg.find(
         "Shot",
-        [["project.Project.name", "is", project_name]],
-        ["code"],
+        [["project.Project.name", "is", project_name]], # filters
+        fields=["code"],
     )
 
 As you can see above, the syntax is to use "``.``" dot notation, joining field names to entity
@@ -337,8 +337,8 @@ by adding the status of each Sequence entity associated with each Shot in our pr
     project_name = "Big Buck Bunny"
     sg_shots = sg.find(
         "Shot",
-        [["project.Project.name", "is", project_name]],
-        ["code", "sg_sequence.Sequence.sg_status_list"],
+        [["project.Project.name", "is", project_name]], # filters
+        fields=["code", "sg_sequence.Sequence.sg_status_list"],
     )
 
 The previous examples use the :meth:`~shotgun_api3.Shotgun.find` method. However, it's also applicable

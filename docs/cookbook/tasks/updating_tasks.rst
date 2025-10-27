@@ -74,8 +74,8 @@ Regardless of current values on the Task, this behavior rules::
 
 ::
 
-    sg.update ('Task', 123, {'start_date':'2011-05-25', 'duration':3600})
-    # Task = {'start_date': '2011-05-25', 'due_date': '2011-06-01', 'duration': 3600, 'id':123}
+    sg.update ("Task", 123, {"start_date":"2011-05-25", "duration":3600})
+    # Task = {"start_date": "2011-05-25", "due_date": "2011-06-01", "duration": 3600, "id":123}
 
 - ``start_date`` is updated.
 - ``duration`` is updated.
@@ -85,8 +85,8 @@ Regardless of current values on the Task, this behavior rules::
 
 ::
 
-    sg.update ('Task', 123, {'due_date': '2011-05-20', 'duration':3600})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-20', 'duration': 600, 'id':123}
+    sg.update ("Task", 123, {"due_date": "2011-05-20", "duration":3600})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-20", "duration": 600, "id":123}
 
 - ``duration`` is updated.
 - ``due_date`` is updated.
@@ -104,14 +104,14 @@ will behave.
 
 ::
 
-    Task = {'start_date': '2011-05-20', 'due_date': None, 'duration': None, 'id':123}
+    Task = {"start_date": "2011-05-20", "due_date": None, "duration": None, "id":123}
 
 **Update start_date**
 
 ::
 
-    sg.update ('Task', 123, {'start_date':'2011-05-25'})
-    # Task = {'start_date': '2011-05-25', 'due_date': None, 'duration': None, 'id':123}
+    sg.update ("Task", 123, {"start_date":"2011-05-25"})
+    # Task = {"start_date": "2011-05-25", "due_date": None, "duration": None, "id":123}
 
 - Only ``start_date`` is updated.
 
@@ -119,8 +119,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'due_date':'2011-05-25'})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-25', 'duration': 2400, 'id':123}
+    sg.update ("Task", 123, {"due_date":"2011-05-25"})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-25", "duration": 2400, "id":123}
 
 - ``due_date`` is updated.
 - ``duration`` is updated to (``due_date`` - ``start_date``).
@@ -129,8 +129,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'duration':2400})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-25', 'duration': 2400, 'id':123}
+    sg.update ("Task", 123, {"duration":2400})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-25", "duration": 2400, "id":123}
 
 - ``duration`` is updated.
 - ``due_date`` is set to (``start_date`` + ``duration``)
@@ -145,14 +145,14 @@ will behave.
 
 ::
 
-    # Task = {'start_date': None, 'due_date': '2011-05-25', 'duration': None, 'id':123}
+    # Task = {"start_date": None, "due_date": "2011-05-25", "duration": None, "id":123}
 
 **Update start_date**
 
 ::
 
-    sg.update ('Task', 123, {'start_date':'2011-05-20'})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-25', 'duration': 2400, 'id':123}
+    sg.update ("Task", 123, {"start_date":"2011-05-20"})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-25", "duration": 2400, "id":123}
 
 - ``start_date`` is updated.
 - ``duration`` is updated to (``due_date`` - ``start_date``).
@@ -161,8 +161,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'due_date':'2011-05-20'})
-    # Task = {'start_date': None, 'due_date': '2011-05-20', 'duration': None, 'id':123}
+    sg.update ("Task", 123, {"due_date":"2011-05-20"})
+    # Task = {"start_date": None, "due_date": "2011-05-20", "duration": None, "id":123}
 
 - only ``due_date`` is updated.
 
@@ -170,8 +170,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'duration':2400})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-25', 'duration': 2400, 'id':123}
+    sg.update ("Task", 123, {"duration":2400})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-25", "duration": 2400, "id":123}
 
 - ``duration`` is updated.
 - ``start_date`` is set to (``due_date`` - ``duration``)
@@ -186,14 +186,14 @@ will behave.
 
 ::
 
-    # Task = {'start_date': None, 'due_date': None, 'duration': 2400, 'id':123}
+    # Task = {"start_date": None, "due_date": None, "duration": 2400, "id":123}
 
 **Update start_date**
 
 ::
 
-    sg.update ('Task', 123, {'start_date':'2011-05-20'})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-25', 'duration': 2400, 'id':123}
+    sg.update ("Task", 123, {"start_date":"2011-05-20"})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-25", "duration": 2400, "id":123}
 
 - ``start_date`` is updated.
 - ``due_date`` is updated to (``start_date`` + ``duration``).
@@ -202,8 +202,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'due_date':'2011-05-25'})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-25', 'duration': 2400, 'id':123}
+    sg.update ("Task", 123, {"due_date":"2011-05-25"})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-25", "duration": 2400, "id":123}
 
 - ``due_date`` is updated.
 - ``start_date`` is updated to (``due_date`` - ``duration``)
@@ -212,8 +212,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'duration':3600})
-    # Task = {'start_date': None, 'due_date': None, 'duration': 3600, 'id':123}
+    sg.update ("Task", 123, {"duration":3600})
+    # Task = {"start_date": None, "due_date": None, "duration": 3600, "id":123}
 
 - only ``duration`` is updated.
 
@@ -227,14 +227,14 @@ will behave.
 
 ::
 
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-25', 'duration': None, 'id':123}
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-25", "duration": None, "id":123}
 
 **Update start_date**
 
 ::
 
-    sg.update ('Task', 123, {'start_date':'2011-05-25'})
-    # Task = {'start_date': '2011-05-25', 'due_date': '2011-05-25', 'duration': 600, 'id':123}
+    sg.update ("Task", 123, {"start_date":"2011-05-25"})
+    # Task = {"start_date": "2011-05-25", "due_date": "2011-05-25", "duration": 600, "id":123}
 
 - ``start_date`` is updated.
 - ``duration`` is updated to (``due_date`` - ``start_date``).
@@ -243,8 +243,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'due_date':'2011-05-30'})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-30', 'duration': 4200, 'id':123}
+    sg.update ("Task", 123, {"due_date":"2011-05-30"})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-30", "duration": 4200, "id":123}
 
 - ``due_date`` is updated.
 - ``duration`` is updated to (``due_date`` - ``start_date``)
@@ -253,8 +253,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'duration':3600})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-27', 'duration': 3600, 'id':123}
+    sg.update ("Task", 123, {"duration":3600})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-27", "duration": 3600, "id":123}
 
 - ``duration`` is updated.
 - ``due_date`` is updated to (``start_date`` + ``duration``)
@@ -269,14 +269,14 @@ will behave.
 
 ::
 
-    # Task = {'start_date': '2011-05-20', 'due_date': None, 'duration': 2400, 'id':123}
+    # Task = {"start_date": "2011-05-20", "due_date": None, "duration": 2400, "id":123}
 
 **Update start_date**
 
 ::
 
-    sg.update ('Task', 123, {'start_date':'2011-05-25'})
-    # Task = {'start_date': '2011-05-25', 'due_date': '2011-05-30', 'duration': 2400, 'id':123}
+    sg.update ("Task", 123, {"start_date":"2011-05-25"})
+    # Task = {"start_date": "2011-05-25", "due_date": "2011-05-30", "duration": 2400, "id":123}
 
 - ``start_date`` is updated.
 - ``due_date`` is updated to (``start_date`` +``duration``).
@@ -285,8 +285,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'due_date':'2011-05-30'})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-30', 'duration': 4200, 'id':123}
+    sg.update ("Task", 123, {"due_date":"2011-05-30"})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-30", "duration": 4200, "id":123}
 
 - ``due_date`` is updated.
 - ``duration`` is updated to (``due_date`` - ``start_date``).
@@ -295,8 +295,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'duration':3600})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-27', 'duration': 3600, 'id':123}
+    sg.update ("Task", 123, {"duration":3600})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-27", "duration": 3600, "id":123}
 
 - ``duration`` is updated.
 - ``due_date`` is updated to (``start_date`` + ``duration``)
@@ -311,14 +311,14 @@ will behave.
 
 ::
 
-    # Task = {'start_date': None, 'due_date': '2011-05-25', 'duration': 2400, 'id':123}
+    # Task = {"start_date": None, "due_date": "2011-05-25", "duration": 2400, "id":123}
 
 **Update start_date**
 
 ::
 
-    sg.update ('Task', 123, {'start_date':'2011-05-25'})
-    # Task = {'start_date': '2011-05-25', 'due_date': '2011-05-30', 'duration': 2400, 'id':123}
+    sg.update ("Task", 123, {"start_date":"2011-05-25"})
+    # Task = {"start_date": "2011-05-25", "due_date": "2011-05-30", "duration": 2400, "id":123}
 
 - ``start_date`` is updated.
 - ``due_date`` is updated to (``start_date`` + ``duration``).
@@ -327,8 +327,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'due_date':'2011-05-30'})
-    # Task = {'start_date': '2011-05-25', 'due_date': '2011-05-30', 'duration': 2400, 'id':123}
+    sg.update ("Task", 123, {"due_date":"2011-05-30"})
+    # Task = {"start_date": "2011-05-25", "due_date": "2011-05-30", "duration": 2400, "id":123}
 
 - ``due_date`` is updated.
 - ``start_date`` is updated to (``due_date`` - ``duration``).
@@ -337,8 +337,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'duration':3600})
-    # Task = {'start_date': '2011-05-18', 'due_date': '2011-05-25', 'duration': 3600, 'id':123}
+    sg.update ("Task", 123, {"duration":3600})
+    # Task = {"start_date": "2011-05-18", "due_date": "2011-05-25", "duration": 3600, "id":123}
 
 - ``duration`` is updated.
 - ``start_date`` is updated to (``due_date`` - ``duration``)
@@ -353,14 +353,14 @@ will behave.
 
 ::
 
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-25', 'duration': 2400, 'id':123}
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-25", "duration": 2400, "id":123}
 
 **Update start_date**
 
 ::
 
-    sg.update ('Task', 123, {'start_date':'2011-05-25'})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-30', 'duration': 2400, 'id':123}
+    sg.update ("Task", 123, {"start_date":"2011-05-25"})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-30", "duration": 2400, "id":123}
 
 - ``start_date`` is updated.
 - ``due_date`` is updated to (``start_date`` + ``duration``).
@@ -369,8 +369,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'due_date':'2011-05-30'})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-30', 'duration': 4200, 'id':123}
+    sg.update ("Task", 123, {"due_date":"2011-05-30"})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-30", "duration": 4200, "id":123}
 
 - ``due_date`` is updated.
 - ``duration`` is updated to (``due_date`` - ``start_date``)
@@ -379,8 +379,8 @@ will behave.
 
 ::
 
-    sg.update ('Task', 123, {'duration':3600})
-    # Task = {'start_date': '2011-05-20', 'due_date': '2011-05-27', 'duration': 3600, 'id':123}
+    sg.update ("Task", 123, {"duration":3600})
+    # Task = {"start_date": "2011-05-20", "due_date": "2011-05-27", "duration": 3600, "id":123}
 
 - ``duration`` is updated.
 - ``due_date`` is updated to (``start_date`` + ``duration``)

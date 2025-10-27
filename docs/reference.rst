@@ -241,11 +241,13 @@ Basic Example
 Using the default filter_operator ``"all"``, the following filters will return all Shots whose status
 is "ip" AND is linked to Asset #9::
 
-    filters = [
-        ["sg_status_list", "is", "ip"],
-        ["assets", "is", {"type": "Asset", "id": 9}]
-    ]
-    result = sg.find("Shot", filters)
+    sg.find(
+        "Shot",
+        [ # filters
+            ["sg_status_list", "is", "ip"],
+            ["assets", "is", {"type": "Asset", "id": 9}],
+        ]
+    )
 
 
 Complex Filters
@@ -262,17 +264,20 @@ Complex Example
 Using the default filter_operator ``"all"``, the following filters will return all Shots whose status
 is "ip" AND is linked to either Asset #9 OR Asset #23::
 
-    filters = [
-        ["sg_status_list", "is", "ip"],
-        {
-            "filter_operator": "any",
-            "filters": [
-                ["assets", "is", {"type": "Asset", "id": 9}],
-                ["assets", "is", {"type": "Asset", "id": 23}]
-            ]
-        }
-    ]
-    result = sg.find("Shot", filters)
+    sg.find(
+        "Shot",
+        [ # filters
+            ["sg_status_list", "is", "ip"],
+            {
+                "filter_operator": "any",
+                "filters": [
+                    ["assets", "is", {"type": "Asset", "id": 9}],
+                    ["assets", "is", {"type": "Asset", "id": 23}],
+                ],
+            },
+        ],
+    )
+
 
 
 Operators and Arguments
@@ -496,13 +501,13 @@ created::
     additional_filter_presets = [
         {
             "preset_name": "LATEST",
-            "latest_by":   "ENTITIES_CREATED_AT"
+            "latest_by":   "ENTITIES_CREATED_AT",
         }
     ]
 
     filters = [['code', 'is', 'ABC']]
 
-    result = sg.find('Version', filters = filters, additional_filter_presets = additional_filter_presets)
+    sg.find('Version', filters, additional_filter_presets = additional_filter_presets)
 
 
 The following query will find all CutItems associated to Cut #1 and return all Versions associated
@@ -515,7 +520,7 @@ to the Shot linked to each of these CutItems::
         }
     ]
 
-    result = sg.find('Version', additional_filter_presets = additional_filter_presets)
+    result = sg.find('Version', additional_filter_presets = additional_filter_presets) # TODO not working
 
 Available Filter Presets by Entity Type
 ---------------------------------------
@@ -610,11 +615,11 @@ List of dicts::
 
     [
       {
-        'type': 'HumanUser' | 'Group',
-        'id': int,
-        ...
+        "type": "HumanUser" | "Group",
+        "id": int,
+        # ...
       },
-      ...
+      # ...
     ]
 
 checkbox
@@ -669,9 +674,9 @@ entity
 ::
 
     {
-      'type': "string",
-      'id': int,
-      ...
+      "type": "string",
+      "id": int,
+      # ...
     }
 
 float
@@ -714,11 +719,11 @@ List of dicts
 
     [
       {
-        'type': "string",
-        'id': int,
-        ...
+        "type": "string",
+        "id": int,
+        # ...
       },
-      ...
+      # ...
     ]
 
 number
@@ -781,10 +786,10 @@ url (file/link field)
 ::
 
     {
-      'content_type': "string",
-      'link_type': "local" | "url" | "upload",
-      'name': "string",
-      'url': "string"
+      "content_type": "string",
+      "link_type": "local" | "url" | "upload",
+      "name": "string",
+      "url": "string"
     }
 
 Local File Links
@@ -797,27 +802,27 @@ Additional keys exist for local file links
 ::
 
     {
-      'content_type': "string",
-      'link_type': "local",
-      'local_path': "string" | None,
-      'local_path_linux': "string" | None,
-      'local_path_mac': "string" | None,
-      'local_path_windows': "string" | None,
-      'local_storage': {
-        'type': 'LocalStorage',
-        'id': int | None,
-        'name': "string" | None,
+      "content_type": "string",
+      "link_type": "local",
+      "local_path": "string" | None,
+      "local_path_linux": "string" | None,
+      "local_path_mac": "string" | None,
+      "local_path_windows": "string" | None,
+      "local_storage": {
+        "type": "LocalStorage",
+        "id": int | None,
+        "name": "string" | None,
       },
-      'name': "string",
-      'relative_path': "string" | None
-      'url': "string",
+      "name": "string",
+      "relative_path": "string" | None
+      "url": "string",
     }
     API versions < v3.0.3:
 
     {
-      'url': "string",
-      'name': "string",
-      'content_type': "string"
+      "url": "string",
+      "name": "string",
+      "content_type": "string"
     }
 
 .. _interpreting_image_field_strings:
@@ -978,12 +983,12 @@ For example, a ``find`` call like this:
 
 .. code-block:: python
 
-    sg.find('Asset', [['project', 'is', {
-        'created_at': datetime.datetime(2015, 12, 16, 11, 2, 10, tzinfo),
-        'id': 9999,
-        'name': 'Demo: Game',
-        'type': 'Project',
-        # More entity attributes
+    sg.find("Asset", [["project", "is", {
+        "created_at": datetime.datetime(2015, 12, 16, 11, 2, 10, tzinfo),
+        "id": 9999,
+        "name": "Demo: Game",
+        "type": "Project",
+        # ...
     }]])
 
 
@@ -991,7 +996,7 @@ Will internally be transformed as if you invoked something like this:
 
 .. code-block:: python
 
-    sg.find('Asset', [['project', 'is', {'id': 999, 'type': 'Project'}]])
+    sg.find("Asset", [["project", "is", {"id": 999, "type": "Project"}]])
 
 
 ************
@@ -1013,24 +1018,30 @@ Example for a user whose language preference is set to Japanese:
     >>> sg = Shotgun(site_name, script_name, script_key)
     >>> sg.config.localized # checking that localization is disabled
     False
-    >>> sg.schema_field_read('Shot')
+    >>> sg.schema_field_read("Shot")
     {
-    'sg_vendor_groups': {
-        'mandatory': {'editable': False, 'value': False},
-        # the value field (display name) is not localized
-        'name': {'editable': True, 'value': 'Vendor Groups'},
-        ...
-    },
-    ...
+        "sg_vendor_groups": {
+            "mandatory": {
+                "editable": False,
+                "value": False,
+            },
+            # the value field (display name) is not localized
+            "name": {"editable": True, "value": "Vendor Groups"},
+            # ...
+        },
+        # ...
     }
     >>> sg.config.localized = True # enabling the localization
-    >>> sg.schema_field_read('Shot')
+    >>> sg.schema_field_read("Shot")
     {
-    'sg_vendor_groups': {
-        'mandatory': {'editable': False, 'value': False},
-        # the value field (display name) is localized
-        'name': {'editable': True, 'value': '\xe3\x83\x99\xe3\x83\xb3\xe3\x83\x80\xe3\x83\xbc \xe3\x82\xb0\xe3\x83\xab\xe3\x83\xbc\xe3\x83\x97'},
-        ...
-    },
-    ...
+        "sg_vendor_groups": {
+            "mandatory": {"editable": False, "value": False},
+            # the value field (display name) is localized
+            "name": {
+                "editable": True,
+                "value": "\xe3\x83\x99\xe3\x83\xb3\xe3\x83\x80\xe3\x83\xbc \xe3\x82\xb0\xe3\x83\xab\xe3\x83\xbc\xe3\x83\x97",
+            },
+            # ...
+        },
+        # ...
     }

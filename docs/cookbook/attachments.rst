@@ -253,8 +253,11 @@ Reading Local File Fields
 
 ::
 
-    fields = ["sg_uploaded_movie"]
-    result = sg.find("Version", [["id", "is", 123]], fields)
+    sg.find(
+        "Version",
+        [["id", "is", 123]], # filters
+        fields = ["sg_uploaded_movie"],
+    )
 
 Returns::
 
@@ -322,10 +325,10 @@ Example 1: Using ``local_path``
 
 ::
 
-    result = sg.update(
-        "Version",
-        123,
-        {
+    sg.update(
+        "Version", # entity_type
+        123, # entity_id
+        { # data
             "sg_uploaded_movie": {
                 "local_path": "/Users/kp/Movies/testing/test_movie_002.mov",
                 "name": "Better Movie",
@@ -364,10 +367,10 @@ Example 2: Using ``relative_path``
 
 ::
 
-    result = sg.update(
-        "Version",
-        123,
-        {
+    sg.update(
+        "Version", # entity_type
+        123, # entity_id
+        { # data
             "sg_uploaded_movie": {
                 "local_storage": {
                     "type": "LocalStorage",
@@ -406,8 +409,7 @@ Un-setting local file field values
 
 Removing a a local file field value is simple. Just set the value to ``None``::
 
-    data = {"sg_uploaded_movie": None}
-    result = sg.update("Version", 123, data)
+    sg.update("Version", 123, {"sg_uploaded_movie": None})
 
 Returns::
 

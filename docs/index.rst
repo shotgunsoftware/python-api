@@ -37,9 +37,10 @@ Quicktimes, etc.
         login="rhendriks",
         password="c0mPre$Hi0n",
     )
+
     sg.find(
         "Shot",
-        filters=[["sg_status_list", "is", "ip"]],
+        [["sg_status_list", "is", "ip"]], # filters
         fields=["code", "sg_status_list"],
     )
 
