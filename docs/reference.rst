@@ -814,7 +814,7 @@ Additional keys exist for local file links
         "name": "string" | None,
       },
       "name": "string",
-      "relative_path": "string" | None
+      "relative_path": "string" | None,
       "url": "string",
     }
     API versions < v3.0.3:
