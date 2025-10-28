@@ -740,7 +740,7 @@ class Shotgun(object):
             self.config.user_password = None
             self.config.auth_token = None
 
-    def _split_url(self, base_url: str) -> tuple[str, str]:
+    def _split_url(self, base_url: str) -> tuple[Optional[str], Optional[str]]:
         """
         Extract the hostname:port and username/password/token from base_url
         sent when connect to the API.
@@ -2041,7 +2041,7 @@ class Shotgun(object):
             The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
         """
 
-        params = {}
+        params: dict[str, Any] = {}
 
         params = self._add_project_param(params, project_entity)
 
@@ -2115,7 +2115,7 @@ class Shotgun(object):
             The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
         """
 
-        params = {}
+        params: dict[str, Any] = {}
 
         params = self._add_project_param(params, project_entity)
 
@@ -3102,7 +3102,7 @@ class Shotgun(object):
 
     def authenticate_human_user(
         self, user_login: str, user_password: str, auth_token: Optional[str] = None
-    ) -> dict[str, Any]:
+    ) -> Union[dict[str, Any], None]:
         """
         Authenticate Shotgun HumanUser.
 
@@ -4808,14 +4808,14 @@ def _translate_filters_simple(sg_filter):
     return condition
 
 
-def _version_str(version: tuple[int]) -> str:
+def _version_str(version) -> str:
     """
     Convert a tuple of int's to a '.' separated str.
     """
     return ".".join(map(str, version))
 
 
-def _get_type_and_id_from_value(value: T) -> T:
+def _get_type_and_id_from_value(value):
     """
     For an entity dictionary, returns a new dictionary with only the type and id keys.
     If any of these keys are not present, the original dictionary is returned.
