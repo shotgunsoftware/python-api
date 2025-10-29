@@ -134,7 +134,7 @@ will vary.
         'local_storage': {
           'id': 1,
           'name': 'Dailies Directories',
-          'type': 'LocalStorage'
+          'type': 'LocalStorage',
         },
         'name': 'my_test_movie.mov',
         'relative_path': 'testing/test_movie_002.mov',
@@ -270,13 +270,13 @@ Returns::
             'local_storage': {
                 'id': 1,
                 'name': 'Dailies Directories',
-                'type': 'LocalStorage'
+                'type': 'LocalStorage',
             },
             'relative_path': 'testing/test_movie_001_.mov',
             'name': 'my_test_movie.mov',
             'url': 'file:///Users/kp/Movies/testing/test_movie_001_.mov',
         },
-        'type': 'Version'
+        'type': 'Version',
     }
 
 .. note::
