@@ -55,12 +55,10 @@ from typing import (
     BinaryIO,
     Iterable,
     Literal,
-    NoReturn,
     Optional,
     TypedDict,
     TypeVar,
     Union,
-    TYPE_CHECKING,
 )
 
 # Import Error and ResponseError (even though they're unused in this file) since they need
