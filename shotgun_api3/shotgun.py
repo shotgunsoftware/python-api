@@ -4813,17 +4813,27 @@ def _version_str(version) -> str:
     return ".".join(map(str, version))
 
 
-def _get_type_and_id_from_value(value):
+def _get_type_and_id_from_value(field_value):
     """
     For an entity dictionary, returns a new dictionary with only the type and id keys.
     If any of these keys are not present, the original dictionary is returned.
     """
+    allowed_keys = {
+        "id",
+        "type",
+        "url",
+        "name",
+        "content_type",
+        "local_path",
+        "storage",
+        "relative_path",
+    }
     try:
-        if isinstance(value, dict):
-            return {"type": value["type"], "id": value["id"]}
-        elif isinstance(value, list):
-            return [{"type": v["type"], "id": v["id"]} for v in value]
+        if isinstance(field_value, dict):
+            return {key: field_value[key] for key in allowed_keys if key in field_value}
+        elif isinstance(field_value, list):
+            return [{k: v[k] for k in allowed_keys if k in v} for v in field_value]
     except (KeyError, TypeError):
-        LOG.debug(f"Could not optimize entity value {value}")
+        LOG.debug(f"Could not optimize entity value {field_value}")
 
-    return value
+    return field_value
