@@ -14,8 +14,8 @@ import warnings
 if sys.version_info < (3, 9):
     warnings.warn(
         "Python versions older than 3.9 are no longer supported since 2025-03 "
-        "and compatibility will be removed at any time after 2026-01. "
-        "Please update to Python 3.9 or a newer supported version.",
+        "and compatibility will be removed at any time after end of March 2026. "
+        "Please update to Python 3.11 or any other supported version.",
         DeprecationWarning,
         stacklevel=2,
     )
