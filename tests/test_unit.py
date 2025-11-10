@@ -675,13 +675,13 @@ class TestFilters(unittest.TestCase):
             "sg_status_list": "ip",
             "project": {"id": 70, "type": "Project", "name": "disposable name 70"},
             "sg_vvv": [
-                {"id": 6441, "type": "Asset", "name": "disposable name 6441"},
+                {"id": 6441, "type": "Asset", "custom_name": "disposable name 6441"},
                 {"id": 6440, "type": "Asset"},
             ],
             "sg_class": {
                 "id": 1,
                 "type": "CustomEntity53",
-                "name": "disposable name 1",
+                "custom_name": "disposable name 1",
             },
         }
         expected = {
@@ -689,7 +689,14 @@ class TestFilters(unittest.TestCase):
             "id": 6626,
             "fields": [
                 {"field_name": "sg_status_list", "value": "ip"},
-                {"field_name": "project", "value": {"type": "Project", "id": 70}},
+                {
+                    "field_name": "project",
+                    "value": {
+                        "type": "Project",
+                        "id": 70,
+                        "name": "disposable name 70",
+                    },
+                },
                 {
                     "field_name": "sg_vvv",
                     "value": [
