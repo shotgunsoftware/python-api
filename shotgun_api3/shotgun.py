@@ -4837,6 +4837,10 @@ def _get_type_and_id_from_value(field_value):
             return {key: field_value[key] for key in allowed_keys if key in field_value}
 
         elif isinstance(field_value, list):
+            if not all(isinstance(v, dict) for v in field_value):
+                # `type` and `id` keys are required in all inner dicts
+                return field_value
+
             return [{k: v[k] for k in allowed_keys if k in v} for v in field_value]
 
     except (KeyError, TypeError):
