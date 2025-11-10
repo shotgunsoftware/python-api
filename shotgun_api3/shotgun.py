@@ -4830,9 +4830,15 @@ def _get_type_and_id_from_value(field_value):
     }
     try:
         if isinstance(field_value, dict):
+            if {"type", "id"} & field_value.keys() != {"type", "id"}:
+                # `type` and `id` keys are required to do the optimization
+                return field_value
+
             return {key: field_value[key] for key in allowed_keys if key in field_value}
+
         elif isinstance(field_value, list):
             return [{k: v[k] for k in allowed_keys if k in v} for v in field_value]
+
     except (KeyError, TypeError):
         LOG.debug(f"Could not optimize entity value {field_value}")
 
