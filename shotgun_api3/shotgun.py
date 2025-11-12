@@ -4815,7 +4815,7 @@ def _version_str(version) -> str:
 
 def _optimize_filter_field(field_value: Union[dict, list]) -> Union[dict, list]:
     """
-    For an entity dictionary, returns a new dictionary with only the type,
+    For an FPT entity, returns a new dictionary with only the type,
     id, and other allowed keys.
     If case of any processing error, the original dictionary is returned.
 
@@ -4832,16 +4832,15 @@ def _optimize_filter_field(field_value: Union[dict, list]) -> Union[dict, list]:
         "relative_path",
     }
     try:
-        if isinstance(field_value, dict):
-            if {"type", "id"} & field_value.keys() != {"type", "id"}:
-                return field_value
-
+        if isinstance(field_value, dict) and {"type", "id"} & field_value.keys() == {
+            "type",
+            "id",
+        }:
             return {key: field_value[key] for key in allowed_keys if key in field_value}
 
-        elif isinstance(field_value, list):
-            if not all(isinstance(v, dict) for v in field_value):
-                return field_value
-
+        elif isinstance(field_value, list) and all(
+            isinstance(v, dict) for v in field_value
+        ):
             return [{k: v[k] for k in allowed_keys if k in v} for v in field_value]
 
     except (KeyError, TypeError):
