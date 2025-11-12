@@ -1194,7 +1194,7 @@ class Shotgun(object):
         def optimize_field(field_dict):
             if SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION:
                 return field_dict
-            return {k: _get_type_and_id_from_value(v) for k, v in field_dict.items()}
+            return {k: _optimize_filter_field(v) for k, v in field_dict.items()}
 
         full_fields = self._dict_to_list(
             data,
@@ -4799,7 +4799,7 @@ def _translate_filters_simple(sg_filter):
         and condition["relation"] in ["is", "is_not", "in", "not_in"]
         and isinstance(values[0], dict)
     ):
-        values = [_get_type_and_id_from_value(v) for v in values]
+        values = [_optimize_filter_field(v) for v in values]
 
     condition["values"] = values
 
@@ -4813,10 +4813,13 @@ def _version_str(version) -> str:
     return ".".join(map(str, version))
 
 
-def _get_type_and_id_from_value(field_value):
+def _optimize_filter_field(field_value: Union[dict, list]) -> Union[dict, list]:
     """
-    For an entity dictionary, returns a new dictionary with only the type and id keys.
-    If any of these keys are not present, the original dictionary is returned.
+    For an entity dictionary, returns a new dictionary with only the type,
+    id, and other allowed keys.
+    If case of any processing error, the original dictionary is returned.
+
+    At least `type` and `id` keys are required to do the optimization
     """
     allowed_keys = {
         "id",
@@ -4831,14 +4834,12 @@ def _get_type_and_id_from_value(field_value):
     try:
         if isinstance(field_value, dict):
             if {"type", "id"} & field_value.keys() != {"type", "id"}:
-                # `type` and `id` keys are required to do the optimization
                 return field_value
 
             return {key: field_value[key] for key in allowed_keys if key in field_value}
 
         elif isinstance(field_value, list):
             if not all(isinstance(v, dict) for v in field_value):
-                # `type` and `id` keys are required in all inner dicts
                 return field_value
 
             return [{k: v[k] for k in allowed_keys if k in v} for v in field_value]
