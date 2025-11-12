@@ -4838,10 +4838,14 @@ def _optimize_filter_field(field_value: Union[dict, list]) -> Union[dict, list]:
         }:
             return {key: field_value[key] for key in allowed_keys if key in field_value}
 
-        elif isinstance(field_value, list) and all(
-            isinstance(v, dict) for v in field_value
-        ):
-            return [{k: v[k] for k in allowed_keys if k in v} for v in field_value]
+        elif isinstance(field_value, list):
+            new_value = []
+            for fv in field_value:
+                if isinstance(fv, dict):
+                    fv = {key: fv[key] for key in allowed_keys if key in fv}
+
+                new_value.append(fv)
+            return new_value
 
     except (KeyError, TypeError):
         LOG.debug(f"Could not optimize entity value {field_value}")
