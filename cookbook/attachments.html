@@ -308,17 +308,22 @@ are provided in order to give access to the relative path information on other p
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#id1"><span class="std std-ref">Working With Local File Types</span></a></p>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;video/quicktime&#39;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="s1">&#39;video/quicktime&#39;</span><span class="p">,</span>
   <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;local_path_linux&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/users/macusers/kp/Movies/testing/test_movie_002.mov&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;local_path_mac&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;local_path_windows&#39;</span><span class="p">:</span> <span class="s1">&#39;M:</span><span class="se">\\</span><span class="s1">macusers</span><span class="se">\\</span><span class="s1">kp</span><span class="se">\\</span><span class="s1">Movies</span><span class="se">\\</span><span class="s1">testing</span><span class="se">\\</span><span class="s1">test_movie_002.mov&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;local_storage&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dailies Directories&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;LocalStorage&#39;</span><span class="p">,</span>
+  <span class="p">},</span>
   <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_test_movie.mov&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
-  <span class="s1">&#39;local_path_linux&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/users/macusers/kp/Movies/testing/test_movie_002.mov&#39;</span>
-  <span class="s1">&#39;local_path_mac&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
-  <span class="s1">&#39;local_path_windows&#39;</span><span class="p">:</span> <span class="s1">&#39;M:</span><span class="se">\\</span><span class="s1">macusers\kp\Movies</span><span class="se">\t</span><span class="s1">esting</span><span class="se">\t</span><span class="s1">est_movie_002.mov&#39;</span>
-  <span class="s1">&#39;local_storage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dailies Directories&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;LocalStorage&#39;</span><span class="p">},</span>
-  <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_002.mov&#39;</span><span class="p">}</span>
+  <span class="s1">&#39;relative_path&#39;</span><span class="p">:</span> <span class="s1">&#39;testing/test_movie_002.mov&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_002.mov&#39;</span><span class="p">,</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </dd>
@@ -432,6 +437,11 @@ is set)</p>
 </dl>
 </li>
 <li><dl class="simple">
+<dt><strong>relative_path</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt><dd><p>The path to the file relative to the <code class="docutils literal notranslate"><span class="pre">local_storage</span></code> root.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
 <dt><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3.9/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>) <em>read-only</em>:</dt><dd><p>A file URI (<code class="docutils literal notranslate"><span class="pre">file://</span></code>) path provided for convenience pointing to the value in the <code class="docutils literal notranslate"><span class="pre">local_path</span></code></p>
 </dd>
 </dl>
@@ -445,19 +455,26 @@ is set)</p>
 </pre></div>
 </div>
 <p>Returns:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">123</span><span class="p">,</span>
- <span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_test_movie.mov&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_001_.mov&#39;</span>
-                        <span class="s1">&#39;local_path_linux&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/users/macusers/kp/Movies/testing/test_movie_001_.mov&#39;</span>
-                        <span class="s1">&#39;local_path_mac&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_001_.mov&#39;</span>
-                        <span class="s1">&#39;local_path_windows&#39;</span><span class="p">:</span> <span class="s1">&#39;M:</span><span class="se">\\</span><span class="s1">macusers\kp\Movies</span><span class="se">\t</span><span class="s1">esting</span><span class="se">\t</span><span class="s1">est_movie_001_.mov&#39;</span>
-                        <span class="s1">&#39;local_storage&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                                          <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dailies Directories&#39;</span><span class="p">,</span>
-                                          <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;LocalStorage&#39;</span><span class="p">},</span>
-                        <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_001_.mov&#39;</span><span class="p">},</span>
- <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">123</span><span class="p">,</span>
+    <span class="s1">&#39;sg_uploaded_movie&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;content_type&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;link_type&#39;</span><span class="p">:</span> <span class="s1">&#39;local&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;local_path&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_001_.mov&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;local_path_linux&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/users/macusers/kp/Movies/testing/test_movie_001_.mov&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;local_path_mac&#39;</span><span class="p">:</span> <span class="s1">&#39;/Users/kp/Movies/testing/test_movie_001_.mov&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;local_path_windows&#39;</span><span class="p">:</span> <span class="s1">&#39;M:</span><span class="se">\\</span><span class="s1">macusers</span><span class="se">\\</span><span class="s1">kp</span><span class="se">\\</span><span class="s1">Movies</span><span class="se">\\</span><span class="s1">testing</span><span class="se">\\</span><span class="s1">test_movie_001_.mov&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;local_storage&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dailies Directories&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;LocalStorage&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;relative_path&#39;</span><span class="p">:</span> <span class="s1">&#39;testing/test_movie_001_.mov&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_test_movie.mov&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_001_.mov&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">,</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -538,7 +555,8 @@ Alternative to <code class="docutils literal notranslate"><span class="pre">loca
             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dailies Directories&#39;</span><span class="p">,</span>
             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;LocalStorage&#39;</span>
         <span class="p">},</span>
-        <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
+        <span class="s1">&#39;relative_path&#39;</span><span class="p">:</span> <span class="s1">&#39;testing/test_movie_002.mov&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_002.mov&#39;</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">,</span>
 <span class="p">}</span>
@@ -579,6 +597,7 @@ the most appropriate specific LocalStorage match and assigned it to local_storag
             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dailies Directories&#39;</span><span class="p">,</span>
             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;LocalStorage&#39;</span>
         <span class="p">},</span>
+        <span class="s1">&#39;relative_path&#39;</span><span class="p">:</span> <span class="s1">&#39;testing/test_movie_002.mov&#39;</span><span class="p">,</span>
         <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="s1">&#39;file:///Users/kp/Movies/testing/test_movie_002.mov&#39;</span>
     <span class="p">},</span>
     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Version&#39;</span><span class="p">,</span>
