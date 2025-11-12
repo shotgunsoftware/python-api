@@ -9,9 +9,11 @@ User-based Authentication
 *************************
 When authenticating as a user, you provide your normal login and password when instantiating your :class:`shotgun_api3.Shotgun` object. The actions performed by this instance will be limited to your permission level just as they are in the  web application. ::
 
-    sg = shotgun_api3.Shotgun("https://my-site.shotgrid.autodesk.com",
-                              login="rhendriks",
-                              password="c0mPre$Hi0n")
+    sg = shotgun_api3.Shotgun(
+        "https://my-site.shotgrid.autodesk.com",
+        login="rhendriks",
+        password="c0mPre$Hi0n",
+    )
 
 
 ***************************
@@ -19,9 +21,11 @@ Script-based Authentication
 ***************************
 In order to authenticate as a script, your script must be :ref:`registered with Flow Production Tracking and have a valid API key <setting_up_shotgrid>`. When creating your :class:`shotgun_api3.Shotgun` object, provide the ``script_name`` and ``api_key``.::
 
-    sg = shotgun_api3.Shotgun("https://my-site.shotgrid.autodesk.com",
-                              script_name="compress",
-                              api_key="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef")
+    sg = shotgun_api3.Shotgun(
+        "https://my-site.shotgrid.autodesk.com",
+        script_name="compress",
+        api_key="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    )
 
 .. note:: When using script-based authentication, we **strongly** recommend you register each script separately with Flow Production Tracking and have individual API keys for each. This allows you to track down each of your scripts and the actions they are performing much more accurately in the event logs.
 

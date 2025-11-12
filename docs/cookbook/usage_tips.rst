@@ -41,7 +41,7 @@ When you do a :meth:`~shotgun_api3.Shotgun.find` or a :meth:`~shotgun_api3.Shotg
 that returns a field of type **entity** or **multi-entity** (for example the 'Assets' column on Shot),
 the entities are returned in a standard dictionary::
 
-    {'type': 'Asset', 'name': 'redBall', 'id': 1}
+    {"type": "Asset", "name": "redBall", "id": 1}
 
 For each entity returned, you will get a ``type``, ``name``, and ``id`` key. This does not mean
 there are fields named ``type`` and ``name`` on the Asset. These are only used to provide a
@@ -69,15 +69,15 @@ Something like the following::
     # studio_globals.py
 
     entity_type_map = {
-      'Widget': 'CustomEntity01',
-      'Foobar': 'CustomEntity02',
-      'Baz': 'CustomNonProjectEntity01,
+        "Widget": "CustomEntity01",
+        "Foobar": "CustomEntity02",
+        "Baz": "CustomNonProjectEntity01",
     }
 
     # or even simpler, you could use a global like this
-    ENTITY_WIDGET = 'CustomEntity01'
-    ENTITY_FOOBAR = 'CustomEntity02'
-    ENTITY_BAZ = 'CustomNonProjectEntity01'
+    ENTITY_WIDGET = "CustomEntity01"
+    ENTITY_FOOBAR = "CustomEntity02"
+    ENTITY_BAZ = "CustomNonProjectEntity01"
 
 Then when you're writing scripts, you don't need to worry about remembering which Custom Entity
 "Foobars" are, you just use your global::
@@ -85,10 +85,16 @@ Then when you're writing scripts, you don't need to worry about remembering whic
     import shotgun_api3
     import studio_globals
 
-    sg = shotgun_api3.Shotgun('https://my-site.shotgrid.autodesk.com', 'script_name', '0123456789abcdef0123456789abcdef0123456')
-    result = sg.find(studio_globals.ENTITY_WIDGET,
-                     filters=[['sg_status_list', 'is', 'ip']],
-                     fields=['code', 'sg_shot'])
+    sg = shotgun_api3.Shotgun(
+        "https://my-site.shotgrid.autodesk.com",
+        "script_name",
+        "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    )
+    result = sg.find(
+        studio_globals.ENTITY_WIDGET,
+        [["sg_status_list", "is", "ip"]], # filters
+        fields=["code", "sg_shot"],
+    )
 
 .. _connection_entities:
 
@@ -110,59 +116,87 @@ entities in Shtogun and are accessible just like any other entity type in Flow P
 To find information about your Versions in the Playlist "Director Review" (let's say it has an
 ``id`` of 4). We'd run a query like so::
 
-    filters = [['playlist', 'is', {'type':'Playlist', 'id':4}]]
-    fields = ['playlist.Playlist.code', 'sg_sort_order', 'version.Version.code', 'version.Version.user', 'version.Version.entity']
-    order=[{'column':'sg_sort_order','direction':'asc'}]
-    result = sg.find('PlaylistVersionConnection', filters, fields, order)
+    filters = [["playlist", "is", {"type": "Playlist", "id": 4}]]
+    fields = [
+        "playlist.Playlist.code",
+        "sg_sort_order",
+        "version.Version.code",
+        "version.Version.user",
+        "version.Version.entity",
+    ]
+    order = [{"column": "sg_sort_order", "direction": "asc"}]
+    result = sg.find("PlaylistVersionConnection", filters, fields=fields, order=order)
 
 
 Which returns the following::
 
-    [{'id': 28,
-      'playlist.Playlist.code': 'Director Review',
-      'sg_sort_order': 1.0,
-      'type': 'PlaylistVersionConnection',
-      'version.Version.code': 'bunny_020_0010_comp_v003',
-      'version.Version.entity': {'id': 880,
-                                 'name': 'bunny_020_0010',
-                                 'type': 'Shot'},
-      'version.Version.user': {'id': 19, 'name': 'Artist 1', 'type': 'HumanUser'}},
-     {'id': 29,
-      'playlist.Playlist.code': 'Director Review',
-      'sg_sort_order': 2.0,
-      'type': 'PlaylistVersionConnection',
-      'version.Version.code': 'bunny_020_0020_comp_v003',
-      'version.Version.entity': {'id': 881,
-                                 'name': 'bunny_020_0020',
-                                 'type': 'Shot'},
-      'version.Version.user': {'id': 12, 'name': 'Artist 8', 'type': 'HumanUser'}},
-     {'id': 30,
-      'playlist.Playlist.code': 'Director Review',
-      'sg_sort_order': 3.0,
-      'type': 'PlaylistVersionConnection',
-      'version.Version.code': 'bunny_020_0030_comp_v003',
-      'version.Version.entity': {'id': 882,
-                                 'name': 'bunny_020_0030',
-                                 'type': 'Shot'},
-      'version.Version.user': {'id': 33, 'name': 'Admin 5', 'type': 'HumanUser'}},
-     {'id': 31,
-      'playlist.Playlist.code': 'Director Review',
-      'sg_sort_order': 4.0,
-      'type': 'PlaylistVersionConnection',
-      'version.Version.code': 'bunny_020_0040_comp_v003',
-      'version.Version.entity': {'id': 883,
-                                 'name': 'bunny_020_0040',
-                                 'type': 'Shot'},
-      'version.Version.user': {'id': 18, 'name': 'Artist 2', 'type': 'HumanUser'}},
-     {'id': 32,
-      'playlist.Playlist.code': 'Director Review',
-      'sg_sort_order': 5.0,
-      'type': 'PlaylistVersionConnection',
-      'version.Version.code': 'bunny_020_0050_comp_v003',
-      'version.Version.entity': {'id': 884,
-                                 'name': 'bunny_020_0050',
-                                 'type': 'Shot'},
-      'version.Version.user': {'id': 15, 'name': 'Artist 5', 'type': 'HumanUser'}}]
+    [
+        {
+            "id": 28,
+            "playlist.Playlist.code": "Director Review",
+            "sg_sort_order": 1.0,
+            "type": "PlaylistVersionConnection",
+            "version.Version.code": "bunny_020_0010_comp_v003",
+            "version.Version.entity": {
+                "id": 880,
+                "name": "bunny_020_0010",
+                "type": "Shot",
+            },
+            "version.Version.user": {"id": 19, "name": "Artist 1", "type": "HumanUser"},
+        },
+        {
+            "id": 29,
+            "playlist.Playlist.code": "Director Review",
+            "sg_sort_order": 2.0,
+            "type": "PlaylistVersionConnection",
+            "version.Version.code": "bunny_020_0020_comp_v003",
+            "version.Version.entity": {
+                "id": 881,
+                "name": "bunny_020_0020",
+                "type": "Shot",
+            },
+            "version.Version.user": {"id": 12, "name": "Artist 8", "type": "HumanUser"},
+        },
+        {
+            "id": 30,
+            "playlist.Playlist.code": "Director Review",
+            "sg_sort_order": 3.0,
+            "type": "PlaylistVersionConnection",
+            "version.Version.code": "bunny_020_0030_comp_v003",
+            "version.Version.entity": {
+                "id": 882,
+                "name": "bunny_020_0030",
+                "type": "Shot",
+            },
+            "version.Version.user": {"id": 33, "name": "Admin 5", "type": "HumanUser"},
+        },
+        {
+            "id": 31,
+            "playlist.Playlist.code": "Director Review",
+            "sg_sort_order": 4.0,
+            "type": "PlaylistVersionConnection",
+            "version.Version.code": "bunny_020_0040_comp_v003",
+            "version.Version.entity": {
+                "id": 883,
+                "name": "bunny_020_0040",
+                "type": "Shot",
+            },
+            "version.Version.user": {"id": 18, "name": "Artist 2", "type": "HumanUser"},
+        },
+        {
+            "id": 32,
+            "playlist.Playlist.code": "Director Review",
+            "sg_sort_order": 5.0,
+            "type": "PlaylistVersionConnection",
+            "version.Version.code": "bunny_020_0050_comp_v003",
+            "version.Version.entity": {
+                "id": 884,
+                "name": "bunny_020_0050",
+                "type": "Shot",
+            },
+            "version.Version.user": {"id": 15, "name": "Artist 5", "type": "HumanUser"},
+        },
+    ]
 
 
 - ``version`` is the Version record for this connection instance.
@@ -248,14 +282,14 @@ To write logging output from the Flow Production Tracking API to a file, define 
 
     import logging
     import shotgun_api3 as shotgun
-    logging.basicConfig(level=logging.DEBUG, filename='/path/to/your/log')
+    logging.basicConfig(level=logging.DEBUG, filename="/path/to/your/log")
 
 To suppress the logging output from the API in a script which uses logging, set the level of the
 Flow Production Tracking logger to a higher level::
 
     import logging
     import shotgun_api3 as shotgun
-    sg_log = logging.getLogger('shotgun_api3')
+    sg_log = logging.getLogger("shotgun_api3")
     sg_log.setLevel(logging.ERROR)
 
 *************
@@ -276,17 +310,21 @@ associated with. Without using "field hopping" in an API call, you would first g
 then use that data for your follow up query, like so::
 
     # Get the project
-    project_name = 'Big Buck Bunny'
-    sg_project = sg.find("Project", [['name', 'is', project_name]])
+    project_name = "Big Buck Bunny"
+    sg_project = sg.find("Project", [["name", "is", project_name]])
 
     # Use project result to get associated shots
-    sg_shots = sg.find("Shot", [['project', 'is', sg_project]], ['code'])
+    sg_shots = sg.find("Shot", [["project", "is", sg_project]], ["code"])
 
 With "field hopping" you can combine these queries into::
 
-    # Get all shots on 'Big Buck Bunny' project
-    project_name = 'Big Buck Bunny'
-    sg_shots = sg.find("Shot", [['project.Project.name', 'is', project_name]], ['code'])
+    # Get all shots on "Big Buck Bunny" project
+    project_name = "Big Buck Bunny"
+    sg_shots = sg.find(
+        "Shot",
+        [["project.Project.name", "is", project_name]], # filters
+        fields=["code"],
+    )
 
 As you can see above, the syntax is to use "``.``" dot notation, joining field names to entity
 types in a chain. In this example we start with the field ``project`` on the ``Shot`` entity, then
@@ -296,9 +334,12 @@ Now that we've demonstrated querying using dot notation, let's take a look at re
 by adding the status of each Sequence entity associated with each Shot in our previous query::
 
     # Get shot codes and sequence status all in one query
-    project_name = 'Big Buck Bunny'
-    sg_shots = sg.find("Shot", [['project.Project.name', 'is', project_name]],
-                       ['code', 'sg_sequence.Sequence.sg_status_list'])
+    project_name = "Big Buck Bunny"
+    sg_shots = sg.find(
+        "Shot",
+        [["project.Project.name", "is", project_name]], # filters
+        fields=["code", "sg_sequence.Sequence.sg_status_list"],
+    )
 
 The previous examples use the :meth:`~shotgun_api3.Shotgun.find` method. However, it's also applicable
 to the :meth:`~shotgun_api3.Shotgun.create` method.

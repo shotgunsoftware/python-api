@@ -23,20 +23,20 @@ The Complete Example for deleting a Shot
     # Imports
     # --------------------------------------
     import shotgun_api3
-    from pprint import pprint # useful for debugging
+    from pprint import pprint  # useful for debugging
 
     # --------------------------------------
     # Globals
     # --------------------------------------
     # make sure to change this to match your Flow Production Tracking server and auth credentials.
     SERVER_PATH = "https://my-site.shotgrid.autodesk.com"
-    SCRIPT_NAME = 'my_script'
-    SCRIPT_KEY = '27b65d7063f46b82e670fe807bd2b6f3fd1676c1'
+    SCRIPT_NAME = "my_script"
+    SCRIPT_KEY = "27b65d7063f46b82e670fe807bd2b6f3fd1676c1"
 
     # --------------------------------------
     # Main
     # --------------------------------------
-    if __name__ == '__main__':
+    if __name__ == "__main__":
 
         sg = shotgun_api3.Shotgun(SERVER_PATH, SCRIPT_NAME, SCRIPT_KEY)
 

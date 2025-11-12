@@ -44,17 +44,9 @@ If you wish to install the current master, use the following command::
 Installing A specific Version From Github
 =========================================
 To install a specific version of the package from Github, run the following command. This example
-installs the v3.0.26 tag, replace the version tag with the one you want::
+installs the ``v3.0.26`` tag, replace the version tag with the one you want::
 
     pip install git+https://github.com/shotgunsoftware/python-api.git@v3.0.26
-
-
-``requirements.txt``
-~~~~~~~~~~~~~~~~~~~~
-If you're using pip with `requirements.txt`, add the following line::
-
-    git+https://github.com/shotgunsoftware/python-api.git
-
 
 ****************************
 Installing with ``setup.py``

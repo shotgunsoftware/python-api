@@ -9,9 +9,11 @@ First we need to find the Shot since we'll need to know know its ``id`` in order
 to it.
 ::
 
-    filters = [ ['project', 'is', {'type': 'Project', 'id': 4}],
-                ['code', 'is', '100_010'] ]
-    shot = sg.find_one('Shot', filters)
+    filters = [
+        ["project", "is", {"type": "Project", "id": 4}],
+        ["code", "is", "100_010"],
+    ]
+    shot = sg.find_one("Shot", filters)
 
 
 Find the Task
@@ -21,10 +23,12 @@ Version we're creating. For this search we'll use the Shot ``id`` (which we have
 variable from the previous search) and the Task Name, which maps to the ``content`` field.
 ::
 
-    filters = [ ['project', 'is', {'type': 'Project', 'id': 4}],
-                ['entity', 'is',{'type':'Shot', 'id': shot['id']}],
-                ['content', 'is', 'Animation'] ]
-    task = sg.find_one('Task', filters)
+    filters = [
+        ["project", "is", {"type": "Project", "id": 4}],
+        ["entity", "is", {"type": "Shot", "id": shot["id"]}],
+        ["content", "is", "Animation"],
+    ]
+    task = sg.find_one("Task", filters)
 
 .. note:: Linking a Task to the Version is good practice. By doing so it is easy for users to see
     at what stage a particular Version was created, and opens up other possibilities for tracking
@@ -34,15 +38,17 @@ Create the Version
 ------------------
 Now we can create the Version with the link to the Shot and the Task::
 
-    data = { 'project': {'type': 'Project','id': 4},
-             'code': '100_010_anim_v1',
-             'description': 'first pass at opening shot with bunnies',
-             'sg_path_to_frames': '/v1/gun/s100/010/frames/anim/100_010_animv1_jack.#.jpg',
-             'sg_status_list': 'rev',
-             'entity': {'type': 'Shot', 'id': shot['id']},
-             'sg_task': {'type': 'Task', 'id': task['id']},
-             'user': {'type': 'HumanUser', 'id': 165} }
-    result = sg.create('Version', data)
+    data = {
+        "project": {"type": "Project", "id": 4},
+        "code": "100_010_anim_v1",
+        "description": "first pass at opening shot with bunnies",
+        "sg_path_to_frames": "/v1/gun/s100/010/frames/anim/100_010_animv1_jack.#.jpg",
+        "sg_status_list": "rev",
+        "entity": {"type": "Shot", "id": shot["id"]},
+        "sg_task": {"type": "Task", "id": task["id"]},
+        "user": {"type": "HumanUser", "id": 165},
+    }
+    result = sg.create("Version", data)
 
 This will create a new Version named '100_010_anim_v1' linked to the 'Animation' Task for Shot
 '100_010' in the Project 'Gunslinger'.
@@ -62,8 +68,8 @@ This will create a new Version named '100_010_anim_v1' linked to the 'Animation'
   this example, I know the 'id' that corresponds to this user, but if you don't know the id you can
   look it up by searching on any of the fields, similar to what we did for the Shot above, like::
 
-    filters = [['login', 'is', 'jschmoe']]
-    user = sg.find('HumanUser', filters)
+    filters = [["login", "is", "jschmoe"]]
+    user = sg.find("HumanUser", filters)
 
 The ``result`` variable now contains the ``id`` of the new Version that was created::
 
