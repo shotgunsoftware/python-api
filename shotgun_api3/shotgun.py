@@ -4842,7 +4842,7 @@ def _optimize_filter_field(field_value: Union[dict, list]) -> Union[dict, list]:
         elif isinstance(field_value, list):
             new_value = []
             for fv in field_value:
-                if isinstance(fv, dict):
+                if isinstance(fv, dict) and "id" in fv and "type" in fv:
                     fv = {key: fv[key] for key in allowed_keys if key in fv}
 
                 new_value.append(fv)
