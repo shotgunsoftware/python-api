@@ -4813,7 +4813,9 @@ def _version_str(version) -> str:
     return ".".join(map(str, version))
 
 
-def _optimize_filter_field(field_value: Union[dict, list]) -> Union[dict, list]:
+def _optimize_filter_field(
+    field_value: Union[dict, list], recursive: bool = True
+) -> Union[dict, list]:
     """
     For an FPT entity, returns a new dictionary with only the type,
     id, and other allowed keys.
@@ -4831,24 +4833,10 @@ def _optimize_filter_field(field_value: Union[dict, list]) -> Union[dict, list]:
         "storage",
         "relative_path",
     }
-    try:
-        if (
-            isinstance(field_value, dict)
-            and "id" in field_value
-            and "type" in field_value
-        ):
-            return {key: field_value[key] for key in allowed_keys if key in field_value}
+    if isinstance(field_value, dict) and "id" in field_value and "type" in field_value:
+        return {key: field_value[key] for key in allowed_keys if key in field_value}
 
-        elif isinstance(field_value, list):
-            new_value = []
-            for fv in field_value:
-                if isinstance(fv, dict) and "id" in fv and "type" in fv:
-                    fv = {key: fv[key] for key in allowed_keys if key in fv}
-
-                new_value.append(fv)
-            return new_value
-
-    except (KeyError, TypeError):
-        LOG.debug(f"Could not optimize entity value {field_value}")
+    elif recursive and isinstance(field_value, list):
+        return [_optimize_filter_field(fv, recursive=False) for fv in field_value]
 
     return field_value
