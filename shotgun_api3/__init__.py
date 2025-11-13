@@ -11,7 +11,9 @@
 import sys
 import warnings
 
-if sys.version_info < (3, 9):
+if sys.version_info < (3, 7):
+    raise Exception("This module requires Python version 3.7 or higher.")
+elif sys.version_info < (3, 9):
     warnings.warn(
         "Python versions older than 3.9 are no longer supported since 2025-03 "
         "and compatibility will be removed at any time after end of March 2026. "
