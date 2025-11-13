@@ -19,7 +19,7 @@ if sys.version_info < (3, 7):
     warnings.warn(
         "Python versions older than 3.7 are no longer supported as of January "
         "2023. Since the SHOTGUN_API_ALLOW_OLD_PYTHON variable is enabled, this "
-        "module is raising a warning instead of an exceptiom. "
+        "module is raising a warning instead of an exception. "
         "However, it is very likely that this module will not be able to work "
         "on this Python version.",
         UserWarning,
