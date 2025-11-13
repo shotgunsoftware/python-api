@@ -4832,10 +4832,11 @@ def _optimize_filter_field(field_value: Union[dict, list]) -> Union[dict, list]:
         "relative_path",
     }
     try:
-        if isinstance(field_value, dict) and {"type", "id"} & field_value.keys() == {
-            "type",
-            "id",
-        }:
+        if (
+            isinstance(field_value, dict)
+            and "id" in field_value
+            and "type" in field_value
+        ):
             return {key: field_value[key] for key in allowed_keys if key in field_value}
 
         elif isinstance(field_value, list):
