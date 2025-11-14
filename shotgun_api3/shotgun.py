@@ -406,7 +406,8 @@ class _Config(object):
         # In the case that the environment variable is already set, setting the
         # property on the config will override it.
         self.rpc_attempt_interval = 3000
-        # From http://docs.python.org/2.6/library/httplib.html:
+
+        # From https://docs.python.org/3.9/library/http.client.html:
         # If the optional timeout parameter is given, blocking operations
         # (like connection attempts) will timeout after that many seconds
         # (if it is not given, the global default timeout setting is used)
