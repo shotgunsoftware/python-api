@@ -14,7 +14,14 @@ import warnings
 
 if sys.version_info < (3, 7):
     if os.environ.get("SHOTGUN_API_ALLOW_OLD_PYTHON", "0") != "1":
-        raise Exception("This module requires Python version 3.7 or higher.")
+        # This is our perfered default behavior in the case of using an old
+        # unsupported Python version.
+        # This way, we can control where the exception is raised and provides a
+        # comprehensive error message rather than having users facing a random
+        # Python traceback and trying to understand this is due to using an
+        # unsupported Python version.
+
+        raise RuntimeError("This module requires Python version 3.7 or higher.")
 
     warnings.warn(
         "Python versions older than 3.7 are no longer supported as of January "
@@ -22,7 +29,7 @@ if sys.version_info < (3, 7):
         "module is raising a warning instead of an exception. "
         "However, it is very likely that this module will not be able to work "
         "on this Python version.",
-        UserWarning,
+        RuntimeWarning,
         stacklevel=2,
     )
 elif sys.version_info < (3, 9):
