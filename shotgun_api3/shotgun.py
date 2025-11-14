@@ -4621,11 +4621,6 @@ class Shotgun(object):
                 resp = opener.open(url, params)
                 result = resp.read()
                 # response headers are in str(resp.info()).splitlines()
-            except urllib.error.URLError as e:
-                LOG.debug("Got a %s response. Waiting and retrying..." % e)
-                time.sleep(float(attempt) * self.BACKOFF)
-                attempt += 1
-                continue
             except urllib.error.HTTPError as e:
                 if e.code == 500:
                     raise ShotgunError(
@@ -4635,6 +4630,12 @@ class Shotgun(object):
                     )
                 else:
                     raise ShotgunError("Unanticipated error occurred %s" % (e))
+
+            except urllib.error.URLError as e:
+                LOG.debug("Got a %s response. Waiting and retrying...", e)
+                time.sleep(float(attempt) * self.BACKOFF)
+                attempt += 1
+                continue
 
             if isinstance(result, bytes):
                 result = result.decode("utf-8")
