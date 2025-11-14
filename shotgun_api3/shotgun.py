@@ -495,8 +495,6 @@ class Shotgun(object):
     )
 
     _MULTIPART_UPLOAD_CHUNK_SIZE = 20000000
-    MAX_ATTEMPTS = 3  # Retries on failure
-    BACKOFF = 0.75  # Seconds to wait before retry, times the attempt number
 
     def __init__(
         self,
@@ -3757,8 +3755,16 @@ class Shotgun(object):
         if self.config.localized is True:
             req_headers["locale"] = "auto"
 
-        attempt = 1
-        while attempt <= self.MAX_ATTEMPTS:
+        max_rpc_attempts = self.config.max_rpc_attempts
+        rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
+
+        attempt = 0
+        while attempt < max_rpc_attempts:
+            if attempt:
+                time.sleep(attempt * rpc_attempt_interval)
+
+            attempt += 1
+
             http_status, resp_headers, body = self._make_call(
                 "POST",
                 self.config.api_path,
@@ -3776,10 +3782,8 @@ class Shotgun(object):
                 # We've seen some rare instances of PTR returning 502 for issues that
                 # appear to be caused by something internal to PTR. We're going to
                 # allow for limited retries for those specifically.
-                if attempt != self.MAX_ATTEMPTS and e.errcode in [502, 504]:
+                if attempt < max_rpc_attempts and e.errcode in [502, 504]:
                     LOG.debug("Got a 502 or 504 response. Waiting and retrying...")
-                    time.sleep(float(attempt) * self.BACKOFF)
-                    attempt += 1
                     continue
                 elif e.errcode == 403:
                     # 403 is returned with custom error page when api access is blocked
@@ -3919,6 +3923,9 @@ class Shotgun(object):
         rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
 
         while attempt < max_rpc_attempts:
+            if attempt:
+                time.sleep(attempt * rpc_attempt_interval)
+
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
@@ -3938,6 +3945,7 @@ class Shotgun(object):
                 if attempt == max_rpc_attempts:
                     LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
+                # TODO create only one attempt for SSL errors.
             except Exception as e:
                 self._close_connection()
                 LOG.debug(f"Request failed.  Reason: {e}", exc_info=True)
@@ -3947,7 +3955,6 @@ class Shotgun(object):
                 "Request failed, attempt %d of %d.  Retrying in %.2f seconds..."
                 % (attempt, max_rpc_attempts, rpc_attempt_interval)
             )
-            time.sleep(rpc_attempt_interval)
 
     def _http_request(
         self, verb: str, path: str, body, headers: dict[str, Any]
@@ -4480,24 +4487,41 @@ class Shotgun(object):
         :rtype: str
         """
 
-        attempt = 1
-        while attempt <= self.MAX_ATTEMPTS:
+        ## TODO - add unitests for those cases
+        # storage_url = "https://untrusted-root.badssl.com/"
+        # storage_url = "https://wrong.host.badssl.com/"
+        # storage_url = "https://expired.badssl.com/"
+
+        attempt = 0
+        max_rpc_attempts = self.config.max_rpc_attempts
+        rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
+
+        while attempt <= max_rpc_attempts:
+            if attempt:
+                time.sleep(attempt * rpc_attempt_interval)
+
+            attempt += 1
+
             try:
                 opener = self._build_opener(urllib.request.HTTPHandler)
 
-                request = urllib.request.Request(storage_url, data=data)
-                request.add_header("Content-Type", content_type)
-                request.add_header("Content-Length", size)
-                request.get_method = lambda: "PUT"
+                request = urllib.request.Request(
+                    storage_url,
+                    method="PUT",
+                    headers={
+                        "Content-Type": content_type,
+                        "Content-Length": size,
+                    },
+                    data=data,
+                )
+
                 result = self._make_upload_request(request, opener)
 
-                LOG.debug("Completed request to %s" % request.get_method())
+                LOG.debug("Completed request to %s", safe_short_url(storage_url))
 
             except urllib.error.HTTPError as e:
-                if attempt != self.MAX_ATTEMPTS and e.code in [500, 503]:
+                if attempt < max_rpc_attempts and e.code in [500, 503]:
                     LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
-                    time.sleep(float(attempt) * self.BACKOFF)
-                    attempt += 1
                     continue
                 elif e.code in [500, 503]:
                     raise ShotgunError(
@@ -4510,9 +4534,20 @@ class Shotgun(object):
                         % (storage_url, e)
                     )
             except urllib.error.URLError as e:
+                if isinstance(e.reason, ssl.SSLError):
+                    ssl_err = e.reason
+
+                    LOG.debug(
+                        f"Received an SSL error during request to {safe_short_url(storage_url)}"
+                    )
+
+                    if isinstance(ssl_err, ssl.SSLCertVerificationError):
+                        LOG.debug(f"SSL certificate error occurred: {ssl_err}")
+                    else:
+                        LOG.debug(f"SSL error occurred: {ssl_err}")
+                    raise
+
                 LOG.debug("Got a '%s' response. Waiting and retrying..." % e)
-                time.sleep(float(attempt) * self.BACKOFF)
-                attempt += 1
                 continue
             else:
                 break
@@ -4613,19 +4648,22 @@ class Shotgun(object):
 
         params.update(self._auth_params())
 
-        attempt = 1
-        while attempt <= self.MAX_ATTEMPTS:
+        max_rpc_attempts = self.config.max_rpc_attempts
+        rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
+
+        attempt = 0
+        while attempt < max_rpc_attempts:
+            if attempt:
+                time.sleep(attempt * rpc_attempt_interval)
+
+            attempt += 1
+
             # Perform the request
             try:
                 opener = self._build_opener(FormPostHandler)
                 resp = opener.open(url, params)
                 result = resp.read()
                 # response headers are in str(resp.info()).splitlines()
-            except urllib.error.URLError as e:
-                LOG.debug("Got a %s response. Waiting and retrying..." % e)
-                time.sleep(float(attempt) * self.BACKOFF)
-                attempt += 1
-                continue
             except urllib.error.HTTPError as e:
                 if e.code == 500:
                     raise ShotgunError(
@@ -4635,6 +4673,10 @@ class Shotgun(object):
                     )
                 else:
                     raise ShotgunError("Unanticipated error occurred %s" % (e))
+
+            except urllib.error.URLError as e:
+                LOG.debug("Got a %s response. Waiting and retrying...", e)
+                continue
 
             if isinstance(result, bytes):
                 result = result.decode("utf-8")
@@ -4823,3 +4865,23 @@ def _get_type_and_id_from_value(value):
         LOG.debug(f"Could not optimize entity value {value}")
 
     return value
+
+
+def safe_short_url(url: str, max_path_length: int = 80) -> str:
+    u = urllib.parse.urlparse(url)
+
+    # If the path is longer than the max_path_length, truncate it in the middle
+    if len(u.path) > max_path_length:
+        half_length = max_path_length // 2
+
+        u = u._replace(
+            path=u.path[: half_length - 3] + "[...]" + u.path[-half_length + 3 :]
+        )
+
+    return urllib.parse.urlunparse(
+        u._replace(
+            netloc=u.hostname,  # Sanitize possible in URL credentials - HTTP Basic Auth
+            query="",  # Sanitize possible in URL credentials - API keys
+            fragment="",
+        )
+    )
