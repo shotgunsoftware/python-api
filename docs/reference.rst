@@ -1002,7 +1002,7 @@ Otherwise, when unset (or set to any other value), importing the module will rai
 
 .. important::
     The ability to import the module does not guarantee that the module will work properly on the unsupported Python
-    version. Quite the opposite, it is very likely that it will not work properly.
+    version. In fact, it is very likely that it will not work properly.
 
 This is not recommended and should only be used for testing purposes.
 

@@ -14,9 +14,9 @@ import warnings
 
 if sys.version_info < (3, 7):
     if os.environ.get("SHOTGUN_API_ALLOW_OLD_PYTHON", "0") != "1":
-        # This is our perfered default behavior in the case of using an old
+        # This is our preferred default behavior when using an old
         # unsupported Python version.
-        # This way, we can control where the exception is raised and provides a
+        # This way, we can control where the exception is raised, and it provides a
         # comprehensive error message rather than having users facing a random
         # Python traceback and trying to understand this is due to using an
         # unsupported Python version.

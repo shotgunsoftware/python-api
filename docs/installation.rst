@@ -16,7 +16,7 @@ Minimum Requirements
 Python versions
 ===============
 
-The Python API library supports the following Python versions: `3.9 - 3.11`.
+The Python API library supports the following Python versions: `3.9 - 3.11`. We recommend using Python 3.11.
 
 .. important::
     Python versions older than 3.9 are no longer supported as of March 2025 and compatibility will be discontinued after
