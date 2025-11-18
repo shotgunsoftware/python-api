@@ -1000,11 +1000,11 @@ SHOTGUN_API_ALLOW_OLD_PYTHON
 When set to ``1``, ``shotgun_api3``  will allow being imported from Python versions that are no longer supported.
 Otherwise, when unset (or set to any other value), importing the module will raise an exception.
 
+This is not recommended and should only be used for testing purposes.
+
 .. important::
     The ability to import the module does not guarantee that the module will work properly on the unsupported Python
     version. In fact, it is very likely that it will not work properly.
-
-This is not recommended and should only be used for testing purposes.
 
 
 ************
