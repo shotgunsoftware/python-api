@@ -1194,7 +1194,7 @@ class Shotgun(object):
         def optimize_field(field_dict):
             if SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION:
                 return field_dict
-            return {k: _get_type_and_id_from_value(v) for k, v in field_dict.items()}
+            return {k: _optimize_filter_field(v) for k, v in field_dict.items()}
 
         full_fields = self._dict_to_list(
             data,
@@ -4799,7 +4799,7 @@ def _translate_filters_simple(sg_filter):
         and condition["relation"] in ["is", "is_not", "in", "not_in"]
         and isinstance(values[0], dict)
     ):
-        values = [_get_type_and_id_from_value(v) for v in values]
+        values = [_optimize_filter_field(v) for v in values]
 
     condition["values"] = values
 
@@ -4813,17 +4813,30 @@ def _version_str(version) -> str:
     return ".".join(map(str, version))
 
 
-def _get_type_and_id_from_value(value):
+def _optimize_filter_field(
+    field_value: Union[dict, list], recursive: bool = True
+) -> Union[dict, list]:
     """
-    For an entity dictionary, returns a new dictionary with only the type and id keys.
-    If any of these keys are not present, the original dictionary is returned.
-    """
-    try:
-        if isinstance(value, dict):
-            return {"type": value["type"], "id": value["id"]}
-        elif isinstance(value, list):
-            return [{"type": v["type"], "id": v["id"]} for v in value]
-    except (KeyError, TypeError):
-        LOG.debug(f"Could not optimize entity value {value}")
+    For an FPT entity, returns a new dictionary with only the type,
+    id, and other allowed keys.
+    If case of any processing error, the original dictionary is returned.
 
-    return value
+    At least `type` and `id` keys are required to do the optimization
+    """
+    allowed_keys = {
+        "id",
+        "type",
+        "url",
+        "name",
+        "content_type",
+        "local_path",
+        "storage",
+        "relative_path",
+    }
+    if isinstance(field_value, dict) and "id" in field_value and "type" in field_value:
+        return {key: field_value[key] for key in allowed_keys if key in field_value}
+
+    elif recursive and isinstance(field_value, list):
+        return [_optimize_filter_field(fv, recursive=False) for fv in field_value]
+
+    return field_value

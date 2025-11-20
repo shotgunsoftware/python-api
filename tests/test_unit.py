@@ -673,15 +673,41 @@ class TestFilters(unittest.TestCase):
         entity_id = 6626
         data = {
             "sg_status_list": "ip",
-            "project": {"id": 70, "type": "Project", "name": "disposable name 70"},
+            "project": {"id": 70, "type": "Project", "name": "important name 70"},
             "sg_vvv": [
-                {"id": 6441, "type": "Asset", "name": "disposable name 6441"},
                 {"id": 6440, "type": "Asset"},
+                {"id": 6441, "type": "Asset", "custom_name": "disposable name 6441"},
+                {
+                    # To be kept
+                    "id": 6442,
+                    "type": "Asset",
+                    "url": "http://test.com/asset/6442",
+                    # to be removed
+                    "custom_name": "disposable name 1",
+                    "custom_name2": "disposable name 2",
+                    "custom_name3": "disposable name 3",
+                    "custom_name4": "disposable name 4",
+                },
+                {
+                    "sg_nested": {
+                        "level1": {
+                            "level2": {"id": 123, "type": "Entity", "foo": "bar"}
+                        }
+                    }
+                },
             ],
             "sg_class": {
+                # To be kept
                 "id": 1,
                 "type": "CustomEntity53",
-                "name": "disposable name 1",
+                "url": "http://test.com",
+                "name": "important class name",
+                "local_path": "/some/local/path",
+                # to be removed
+                "custom_name": "disposable name 1",
+                "custom_name2": "disposable name 2",
+                "custom_name3": "disposable name 3",
+                "custom_name4": "disposable name 4",
             },
         }
         expected = {
@@ -689,17 +715,46 @@ class TestFilters(unittest.TestCase):
             "id": 6626,
             "fields": [
                 {"field_name": "sg_status_list", "value": "ip"},
-                {"field_name": "project", "value": {"type": "Project", "id": 70}},
+                {
+                    "field_name": "project",
+                    "value": {
+                        "type": "Project",
+                        "id": 70,
+                        "name": "important name 70",
+                    },
+                },
                 {
                     "field_name": "sg_vvv",
                     "value": [
-                        {"id": 6441, "type": "Asset"},
                         {"id": 6440, "type": "Asset"},
+                        {"id": 6441, "type": "Asset"},
+                        {
+                            "id": 6442,
+                            "type": "Asset",
+                            "url": "http://test.com/asset/6442",
+                        },
+                        {
+                            "sg_nested": {
+                                "level1": {
+                                    "level2": {
+                                        "id": 123,
+                                        "type": "Entity",
+                                        "foo": "bar",
+                                    }
+                                }
+                            }
+                        },
                     ],
                 },
                 {
                     "field_name": "sg_class",
-                    "value": {"type": "CustomEntity53", "id": 1},
+                    "value": {
+                        "type": "CustomEntity53",
+                        "id": 1,
+                        "name": "important class name",
+                        "url": "http://test.com",
+                        "local_path": "/some/local/path",
+                    },
                 },
             ],
         }
