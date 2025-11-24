@@ -13,7 +13,7 @@ import sys
 import warnings
 
 if sys.version_info < (3, 7):
-    if os.environ.get("SHOTGUN_API_ALLOW_OLD_PYTHON", "0") != "1":
+    if os.environ.get("SHOTGUN_ALLOW_OLD_PYTHON", "0") != "1":
         # This is our preferred default behavior when using an old
         # unsupported Python version.
         # This way, we can control where the exception is raised, and it provides a
@@ -25,7 +25,7 @@ if sys.version_info < (3, 7):
 
     warnings.warn(
         "Python versions older than 3.7 are no longer supported as of January "
-        "2023. Since the SHOTGUN_API_ALLOW_OLD_PYTHON variable is enabled, this "
+        "2023. Since the SHOTGUN_ALLOW_OLD_PYTHON variable is enabled, this "
         "module is raising a warning instead of an exception. "
         "However, it is very likely that this module will not be able to work "
         "on this Python version.",

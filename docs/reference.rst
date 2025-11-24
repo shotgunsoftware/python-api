@@ -994,8 +994,8 @@ Will internally be transformed as if you invoked something like this:
     sg.find('Asset', [['project', 'is', {'id': 999, 'type': 'Project'}]])
 
 
-SHOTGUN_API_ALLOW_OLD_PYTHON
-============================
+SHOTGUN_ALLOW_OLD_PYTHON
+========================
 
 When set to ``1``, ``shotgun_api3``  will allow being imported from Python versions that are no longer supported.
 Otherwise, when unset (or set to any other value), importing the module will raise an exception.
