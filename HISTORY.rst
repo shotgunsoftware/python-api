@@ -4,6 +4,16 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.9.1 (2025 Nov 25)
+====================
+
+- Removed the deprecated ``CACertsHTTPSConnection`` class, which was no longer needed after dropping Python 2 support.
+- Added basic type annotations throughout the package to improve IDE support and code completion. Note: Some typing improvements are still in progress and will be refined in future releases. Special thanks to @chadrik for this contribution!
+- Introduced a new environment variable ``SHOTGUN_ALLOW_OLD_PYTHON`` to temporarily bypass Python version warnings for users still on Python 3.7 or 3.8. While this provides flexibility during transition, we strongly recommend upgrading to Python 3.9 or newer for continued support and security updates.
+- Enhanced payload optimization for entity dictionaries, making it more flexible and preventing potential issues when working with special fields like ``type`` and ``url``.
+- Updated attachment documentation with detailed information about the ``relative_path`` field and its usage.
+- Python versions older than 3.9 are now deprecated. A runtime warning will be displayed during initialization if you're using Python 3.7 or 3.8. Please plan to upgrade to Python 3.9 or newer as these older versions will not be supported in future releases.
+
 v3.9.0 (2025 Sep 10)
 ====================
 
