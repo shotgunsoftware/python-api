@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flow Production Tracking Python API Changelog &mdash; python-api v3.9.0 documentation</title>
+  <title>Flow Production Tracking Python API Changelog &mdash; python-api v3.9.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -67,6 +67,7 @@
 <li class="toctree-l2"><a class="reference internal" href="advanced/packaging.html">Packaging an application with py2app (or py2exe)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/iron_python.html">IronPython</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Flow Production Tracking Python API Changelog</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v3-9-1-2025-nov-25">v3.9.1 (2025 Nov 25)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-9-0-2025-sep-10">v3.9.0 (2025 Sep 10)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-8-5-2025-jul-31">v3.8.5 (2025 Jul 31)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#v3-8-4-2025-jun-11">v3.8.4 (2025 Jun 11)</a></li>
@@ -174,7 +175,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.9.0.<br>
+    <b>python-api</b> v3.9.1.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -218,6 +219,17 @@
   <section id="flow-production-tracking-python-api-changelog">
 <h1>Flow Production Tracking Python API Changelog<a class="headerlink" href="#flow-production-tracking-python-api-changelog" title="Permalink to this heading"></a></h1>
 <p>Here you can see the full list of changes between each Python API release.</p>
+<section id="v3-9-1-2025-nov-25">
+<h2>v3.9.1 (2025 Nov 25)<a class="headerlink" href="#v3-9-1-2025-nov-25" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Removed the deprecated <code class="docutils literal notranslate"><span class="pre">CACertsHTTPSConnection</span></code> class, which was no longer needed after dropping Python 2 support.</p></li>
+<li><p>Added basic type annotations throughout the package to improve IDE support and code completion. Note: Some typing improvements are still in progress and will be refined in future releases. Special thanks to &#64;chadrik for this contribution!</p></li>
+<li><p>Introduced a new environment variable <code class="docutils literal notranslate"><span class="pre">SHOTGUN_ALLOW_OLD_PYTHON</span></code> to temporarily bypass Python version warnings for users still on Python 3.7 or 3.8. While this provides flexibility during transition, we strongly recommend upgrading to Python 3.9 or newer for continued support and security updates.</p></li>
+<li><p>Enhanced payload optimization for entity dictionaries, making it more flexible and preventing potential issues when working with special fields like <code class="docutils literal notranslate"><span class="pre">type</span></code> and <code class="docutils literal notranslate"><span class="pre">url</span></code>.</p></li>
+<li><p>Updated attachment documentation with detailed information about the <code class="docutils literal notranslate"><span class="pre">relative_path</span></code> field and its usage.</p></li>
+<li><p>Python versions older than 3.9 are now deprecated. A runtime warning will be displayed during initialization if you’re using Python 3.7 or 3.8. Please plan to upgrade to Python 3.9 or newer as these older versions will not be supported in future releases.</p></li>
+</ul>
+</section>
 <section id="v3-9-0-2025-sep-10">
 <h2>v3.9.0 (2025 Sep 10)<a class="headerlink" href="#v3-9-0-2025-sep-10" title="Permalink to this heading"></a></h2>
 <ul class="simple">

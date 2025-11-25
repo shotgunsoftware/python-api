@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation &mdash; python-api v3.9.0 documentation</title>
+  <title>Installation &mdash; python-api v3.9.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -61,7 +61,10 @@
     
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#minimum-requirements">Minimum Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#minimum-requirements">Minimum Requirements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#python-versions">Python versions</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-into-pythonpath">Installing into <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-with-pip">Installing with <code class="docutils literal notranslate"><span class="pre">pip</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#installing-the-master-branch-from-github">Installing the Master Branch From Github</a></li>
@@ -99,7 +102,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.9.0.<br>
+    <b>python-api</b> v3.9.1.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -143,9 +146,6 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
 <section id="minimum-requirements">
 <h2>Minimum Requirements<a class="headerlink" href="#minimum-requirements" title="Permalink to this heading"></a></h2>
-<ul class="simple">
-<li><p>Python 3.7</p></li>
-</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Some features of the API are only supported by more recent versions of the Flow Production Tracking server.
@@ -154,6 +154,15 @@ scripts will continue to function as expected. Accessing a method that is not su
 your version of Flow Production Tracking will raise an appropriate exception. In general, we attempt to
 document these where possible.</p>
 </div>
+<section id="python-versions">
+<h3>Python versions<a class="headerlink" href="#python-versions" title="Permalink to this heading"></a></h3>
+<p>The Python API library supports the following Python versions: <cite>3.9 - 3.11</cite>. We recommend using Python 3.11.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Python versions older than 3.9 are no longer supported as of March 2025 and compatibility will be discontinued after
+March 2026.</p>
+</div>
+</section>
 </section>
 <section id="installing-into-pythonpath">
 <h2>Installing into <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code><a class="headerlink" href="#installing-into-pythonpath" title="Permalink to this heading"></a></h2>
