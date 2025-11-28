@@ -94,7 +94,7 @@ SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = False
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.9.1"
+__version__ = "3.9.2"
 
 
 # ----------------------------------------------------------------------------
@@ -1881,6 +1881,29 @@ class Shotgun(object):
         )
 
         return self._call_rpc("work_schedule_update", params)
+
+    def export_page(self, page_id, format, layout_name=None):
+        """
+        Export the specified page to the given format.
+        This method allows you to export a page to CSV.
+        Respective layout or page should be marked as API Exportable in the Shotgun.
+        For more information, see documentation_.
+        .. _documentation: https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Tutorials_tu_export_csv_html#enable-api-export-for-a-page
+        If ``layout_name`` is not passed in, the default layout name will be used.
+            >>> sg.export_page(12345, "csv", layout_name="My Layout")
+            "ID,Name,Status\\n1,Shot 001,ip\\n2,    Shot 002,rev\\n"
+            >>> sg.export_page(12345, "csv")
+            "ID,Name,Status\\n1,Shot 001,ip\\n2,Shot 002,rev\\n"
+        :param int page_id: The ID of the page to export.
+        :param str format: The format to export the page to. Supported format is ``"csv"``.
+        :param str layout_name: optional layout name. This should be the name of the layout seen in the Shotgun UI.
+        :returns: string containing data of the given page.
+        :rtype: string
+        """
+
+        params = dict(format=format, page_id=page_id, layout_name=layout_name)
+
+        return self._call_rpc("export_page", params)
 
     def follow(self, user: Dict[str, Any], entity: Dict[str, Any]) -> Dict[str, Any]:
         """

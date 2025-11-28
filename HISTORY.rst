@@ -4,6 +4,12 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.9.2 (2025 Dec 03)
+===================
+
+- Add ``export_page`` method to Shotgun class.
+- Update in documentation.
+
 v3.9.1 (2025 Nov 25)
 ====================
 
