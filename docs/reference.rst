@@ -933,7 +933,7 @@ usage.
 This **does not** mean your Flow Production Tracking server performance will suffer in general, just any pages that
 are specifically displaying EventLogEntries in the web application, or API queries on the event
 log that are run. We are always looking for ways to improve this in the future. If you have any
-immediate concerns, please `reach out to our support team <https://www.autodesk.com/support/contact-support>`_
+immediate concerns, please `reach out to our support team <https://www.autodesk.com/support>`_
 
 *********************
 Environment Variables
@@ -994,6 +994,19 @@ Will internally be transformed as if you invoked something like this:
 .. code-block:: python
 
     sg.find('Asset', [['project', 'is', {'id': 999, 'type': 'Project'}]])
+
+
+SHOTGUN_ALLOW_OLD_PYTHON
+========================
+
+When set to ``1``, ``shotgun_api3``  will allow being imported from Python versions that are no longer supported.
+Otherwise, when unset (or set to any other value), importing the module will raise an exception.
+
+This is not recommended and should only be used for testing purposes.
+
+.. important::
+    The ability to import the module does not guarantee that the module will work properly on the unsupported Python
+    version. In fact, it is very likely that it will not work properly.
 
 
 ************
