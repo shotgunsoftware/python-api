@@ -50,6 +50,12 @@ jobs:
         python.version: '3.10'
       Python 3.11:
         python.version: '3.11'
+      Python 3.13:
+        python.version: '3.13'
+
+      # Keep compat
+      Python 3.7:
+        python.version: '3.7'
 
     maxParallel: 4
 
