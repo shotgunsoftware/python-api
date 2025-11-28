@@ -1830,7 +1830,10 @@ class Shotgun(object):
         """
         Export the specified page to the given format.
         This method allows you to export a page to CSV.
-        Respective layout or page should be marked as API Exportable in the Shotgun UI. << link to the web documentaion>>
+        Respective layout or page should be marked as API Exportable in the Shotgun.
+        For more information, see documentation_.
+
+        .. _documentation: https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Tutorials_tu_export_csv_html#enable-api-export-for-a-page
 
         If ``layout_name`` is not passed in, the default layout name will be used.
 
