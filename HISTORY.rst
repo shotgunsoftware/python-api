@@ -8,7 +8,7 @@ v3.9.2 (2025 Dec 03)
 ===================
 
 - Add ``export_page`` method to Shotgun class.
-- Update in documentation.
+- Documentation has been updated to reflect this addition.
 
 v3.9.1 (2025 Nov 25)
 ====================
