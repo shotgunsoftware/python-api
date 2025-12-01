@@ -20,7 +20,7 @@ license = f.read().strip()
 
 setup(
     name="shotgun_api3",
-    version="3.9.1",
+    version="3.9.2",
     description="Flow Production Tracking Python API",
     long_description=readme,
     author="Autodesk",
