@@ -1886,7 +1886,7 @@ class Shotgun(object):
         """
         Export the specified page to the given format.
         This method allows you to export a page to CSV.
-        Respective layout or page should be marked as API Exportable in the Shotgun.
+        Respective layout or page should be marked as API Exportable in the Flow Production Tracking UI.
         For more information, see documentation_.
         .. _documentation: https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Tutorials_tu_export_csv_html#enable-api-export-for-a-page
         If ``layout_name`` is not passed in, the default layout name will be used.
@@ -1896,7 +1896,7 @@ class Shotgun(object):
             "ID,Name,Status\\n1,Shot 001,ip\\n2,Shot 002,rev\\n"
         :param int page_id: The ID of the page to export.
         :param str format: The format to export the page to. Supported format is ``"csv"``.
-        :param str layout_name: optional layout name. This should be the name of the layout seen in the Shotgun UI.
+        :param str layout_name: Optional layout name. This should be the name of the layout seen in the Flow Production Tracking UI.
         :returns: string containing data of the given page.
         :rtype: string
         """
