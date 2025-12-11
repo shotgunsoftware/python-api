@@ -29,22 +29,31 @@ jobs:
 - job: code_style_validation
   displayName: Code Style Validation
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: ubuntu-latest
 
   steps:
   - task: UsePythonVersion@0
+    displayName: Use Python 3.10
     inputs:
       versionSpec: 3.10
-      addToPath: True
-      architecture: 'x64'
 
-  - script: |
-      pip install --upgrade pip setuptools wheel
-      pip install --upgrade pre-commit
-    displayName: Install dependencies
+  - task: Bash@3
+    displayName: Install Python dependencies
+    inputs:
+      targetType: inline
+      script: |
+        pip install --upgrade pip
+        pip install --upgrade setuptools wheel
+        pip install --upgrade pre-commit
 
-  - bash: pre-commit autoupdate
+  - task: Bash@3
     displayName: Update pre-commit hook versions
+    inputs:
+      targetType: inline
+      script: pre-commit autoupdate
 
-  - bash: pre-commit run --all
-    displayName: Validate code with pre-commit
+  - task: Bash@3
+    displayName: Validate code
+    inputs:
+      targetType: inline
+      script: pre-commit run --all
