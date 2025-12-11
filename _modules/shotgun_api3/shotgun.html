@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>shotgun_api3.shotgun &mdash; python-api v3.9.1 documentation</title>
+  <title>shotgun_api3.shotgun &mdash; python-api v3.9.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.9.1.<br>
+    <b>python-api</b> v3.9.2.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -221,7 +221,7 @@
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
 <span class="c1"># Version</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.9.1&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;3.9.2&quot;</span>
 
 
 <span class="c1"># ----------------------------------------------------------------------------</span>
@@ -2008,6 +2008,33 @@
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;work_schedule_update&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Shotgun.export_page"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.export_page">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">export_page</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_id</span><span class="p">,</span> <span class="nb">format</span><span class="p">,</span> <span class="n">layout_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export the specified page to the given format.</span>
+
+<span class="sd">        This method allows you to export a page to CSV.</span>
+
+<span class="sd">        Respective layout or page should be marked as API Exportable in the Flow Production Tracking UI.</span>
+
+<span class="sd">        If ``layout_name`` is not passed in, the default layout name will be used.</span>
+
+<span class="sd">        For more information, see `documentation &lt;https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Tutorials_tu_export_csv_html#enable-api-export-for-a-page&gt;`_ .</span>
+
+<span class="sd">            &gt;&gt;&gt; sg.export_page(12345, &quot;csv&quot;, layout_name=&quot;My Layout&quot;)</span>
+<span class="sd">            &quot;ID,Name,Status\\n1,Shot 001,ip\\n2,    Shot 002,rev\\n&quot;</span>
+<span class="sd">            &gt;&gt;&gt; sg.export_page(12345, &quot;csv&quot;)</span>
+<span class="sd">            &quot;ID,Name,Status\\n1,Shot 001,ip\\n2,Shot 002,rev\\n&quot;</span>
+<span class="sd">        :param int page_id: The ID of the page to export.</span>
+<span class="sd">        :param str format: The format to export the page to. Supported format is ``&quot;csv&quot;``.</span>
+<span class="sd">        :param str layout_name: Optional layout name. This should be the name of the layout seen in the Flow Production Tracking UI.</span>
+<span class="sd">        :returns: string containing data of the given page.</span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="n">page_id</span><span class="o">=</span><span class="n">page_id</span><span class="p">,</span> <span class="n">layout_name</span><span class="o">=</span><span class="n">layout_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;export_page&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shotgun.follow"><a class="viewcode-back" href="../../reference.html#shotgun_api3.shotgun.Shotgun.follow">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">follow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">entity</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
