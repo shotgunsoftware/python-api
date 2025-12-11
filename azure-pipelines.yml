@@ -53,6 +53,7 @@ pr:
 jobs:
 - template: azure-pipelines-templates/code_style_validation.yml
 - template: azure-pipelines-templates/type_checking.yml
+- template: azure-pipelines-templates/build_documentation.yml
 
 # These are jobs templates, they allow to reduce the redundancy between
 # variations of the same build. We pass in the image name
