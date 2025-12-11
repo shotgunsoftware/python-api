@@ -40,15 +40,15 @@ jobs:
         pip install --upgrade \
           https://github.com/shotgunsoftware/tk-toolchain/archive/${{ parameters.tk_toolchain_ref }}.zip
 
-  - task: Bash@3
-    displayName: Clone the tk-core repository
-    inputs:
-      targetType: inline
-      script: |
-        git clone --depth 1 \
-          --branch ${{ parameters.tk_core_ref }} \
-          https://github.com/shotgunsoftware/tk-core \
-          ../tk-core
+  # - task: Bash@3
+  #   displayName: Clone the tk-core repository
+  #   inputs:
+  #     targetType: inline
+  #     script: |
+  #       git clone --depth 1 \
+  #         --branch ${{ parameters.tk_core_ref }} \
+  #         https://github.com/shotgunsoftware/tk-core \
+  #         ../tk-core
 
   - task: Bash@3
     displayName: Build Shpinx Documentation
