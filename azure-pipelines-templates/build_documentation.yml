@@ -10,7 +10,7 @@
 
 parameters:
   # Git ref of tk-toolchain to use.
-  tk_toolchain_ref: master
+  tk_toolchain_ref: ticket/SG-40980-docs-warning-on-error-always
   # Git ref of tk-core to use.
   tk_core_ref: master
 
@@ -28,6 +28,7 @@ jobs:
       versionSpec: 3.10
 
 ## TODO switch to Py 3.11 Pyside6
+#  NOPE tk-ci-tools knows we don'T need PySide for this one
 
   - task: Bash@3
     displayName: Install Python dependencies
@@ -37,7 +38,6 @@ jobs:
         pip install --upgrade pip
         pip install --upgrade setuptools wheel
         pip install --upgrade \
-          PySide2 \
           https://github.com/shotgunsoftware/tk-toolchain/archive/${{ parameters.tk_toolchain_ref }}.zip
 
   - task: Bash@3
