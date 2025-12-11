@@ -1885,11 +1885,15 @@ class Shotgun(object):
     def export_page(self, page_id, format, layout_name=None):
         """
         Export the specified page to the given format.
+
         This method allows you to export a page to CSV.
+
         Respective layout or page should be marked as API Exportable in the Flow Production Tracking UI.
-        For more information, see documentation_.
-        .. _documentation: https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Tutorials_tu_export_csv_html#enable-api-export-for-a-page
+
         If ``layout_name`` is not passed in, the default layout name will be used.
+
+        For more information, see `documentation <https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Tutorials_tu_export_csv_html#enable-api-export-for-a-page>`_ .
+
             >>> sg.export_page(12345, "csv", layout_name="My Layout")
             "ID,Name,Status\\n1,Shot 001,ip\\n2,    Shot 002,rev\\n"
             >>> sg.export_page(12345, "csv")
