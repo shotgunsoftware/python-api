@@ -30,28 +30,17 @@
 parameters:
   name: ''
   vm_image: ''
+  python_version: ''
 
 jobs:
   # The job will be named after the OS and Azure will suffix the strategy to make it unique
   # so we'll have a job name "Windows Python 3.9" for example. What's a strategy? Strategies are the
   # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python 3.9" and
   # "<OS> Python 3.10".
-- job: ${{ parameters.name }}
+- job:
+  displayName: ${{ parameters.name }}
   pool:
     vmImage: ${{ parameters.vm_image }}
-  # The strategy is another way of removing repetition. It will create one job per entry in the
-  # matrix.
-  strategy:
-    matrix:
-      # We support these versions of Python.
-      Python 3.9:
-        python.version: '3.9'
-      Python 3.10:
-        python.version: '3.10'
-      Python 3.11:
-        python.version: '3.11'
-
-    maxParallel: 4
 
   variables:
     group: sg-credentials
@@ -65,20 +54,23 @@ jobs:
   #       Otherwise we may hit the GitHub anonymous download limit.
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '$(python.version)'
-      addToPath: True
+      versionSpec: ${{ parameters.python_version }}
 
   # Install all dependencies needed for running the tests. This command is good
   # for all OSes
-  - script: |
-      python -m pip install --upgrade pip setuptools wheel
-      python -m pip install -r tests/ci_requirements.txt
-    displayName: Install tools
+  - task: Bash@3
+    displayName: Install dependencies
+    inputs:
+      targetType: inline
+      script: |
+        pip install --upgrade pip
+        pip install --upgrade setuptools wheel
+        pip install --upgrade --requirement tests/ci_requirements.txt
 
   # The {{}} syntax is meant for the the pre-processor of Azure pipeline. Every statement inside
   # a {{}} block will be evaluated and substituted before the file is parsed to create the jobs.
   # So here we're inserting an extra step if the template is being invoked for Windows.
-  - ${{ if eq(parameters.name, 'Windows') }}:
+  - ${{ if startsWith(parameters.vm_image, 'windows') }}:
     # On Windows, we need to update the certificates, the cert store is missing the newer one
     # from Amazon like some clients experienced a while back. Who would have thought Microsoft
     # would have been out of date! ;)
@@ -92,10 +84,15 @@ jobs:
   # Runs the tests and generates test coverage. The tests results are uploaded to Azure Pipelines in the
   # Tests tab of the build and each test run will be named after the --test-run-title argument to pytest,
   # for example 'Windows - 2.7'
-  - bash: |
-      cp ./tests/example_config ./tests/config
-      pytest --durations=0 -v --cov shotgun_api3 --cov-report xml --test-run-title="${{parameters.name}}-$(python.version)"
+  - task: Bash@3
     displayName: Running tests
+    inputs:
+      targetType: inline
+      script: |
+        cp ./tests/example_config ./tests/config
+        pytest --durations=0 -v \
+          --cov shotgun_api3 --cov-report xml \
+          --test-run-title="${{parameters.name}}-${{ parameters.python_version }}"
     env:
       # Pass the values needed to authenticate with the Flow Production Tracking site and create some entities.
       # Remember, on a pull request from a client or on forked repos, those variables
@@ -130,21 +127,21 @@ jobs:
       SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
 
   # Upload the code coverage result to codecov.io.
-  - ${{ if eq(parameters.name, 'Windows') }}:
+  - ${{ if startsWith(parameters.vm_image, 'windows') }}:
     - powershell: |
         $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
         .\codecov.exe -f coverage.xml
       displayName: Uploading code coverage
-  - ${{ elseif eq(parameters.name, 'Linux') }}:
-    - script: |
-        curl -Os https://uploader.codecov.io/latest/linux/codecov
-        chmod +x codecov
-        ./codecov -f coverage.xml
-      displayName: Uploading code coverage
-  - ${{ else }}:
+  - ${{ elseif startsWith(parameters.vm_image, 'macos') }}:
     - script: |
         curl -Os https://uploader.codecov.io/v0.7.3/macos/codecov
         chmod +x codecov
         ./codecov -f coverage.xml
       displayName: Uploading code coverage
+  - ${{ else }}:
+  - script: |
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        chmod +x codecov
+        ./codecov -f coverage.xml
+      displayName: Uploading code cover
