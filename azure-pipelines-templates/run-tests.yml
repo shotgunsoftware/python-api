@@ -140,8 +140,8 @@ jobs:
         ./codecov -f coverage.xml
       displayName: Uploading code coverage
   - ${{ else }}:
-  - script: |
-        curl -Os https://uploader.codecov.io/latest/linux/codecov
-        chmod +x codecov
-        ./codecov -f coverage.xml
-      displayName: Uploading code cover
+    - script: |
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov -f coverage.xml
+        displayName: Uploading code cover
