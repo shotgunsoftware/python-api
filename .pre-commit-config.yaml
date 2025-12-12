@@ -47,9 +47,3 @@ repos:
     rev: 25.1.0
     hooks:
     - id: black
-
-### does not work .... lots of errors
-#  - repo: https://github.com/pycqa/flake8
-#    rev: 7.3.0#
-#    hooks:
-#    - id: flake8
