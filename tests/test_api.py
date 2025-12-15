@@ -1963,14 +1963,18 @@ class TestExportPage(base.LiveTestBase):
 
         with self.assertRaises(Exception) as cm:
             self.sg.export_page(page_entity["id"], "csv")
-        self.assertIn(
-            f"This functionality is currently not available", str(cm.exception)
+        msg = str(cm.exception)
+        self.assertTrue(
+            "This functionality is currently not available" in msg
+            or f"Export for Page id= {page_entity['id']} not available" in msg
         )
 
         with self.assertRaises(Exception) as cm:
             self.sg.export_page(page_entity["id"], "csv", layout_name="My Layout")
-        self.assertIn(
-            f"This functionality is currently not available", str(cm.exception)
+        msg = str(cm.exception)
+        self.assertTrue(
+            "This functionality is currently not available" in msg
+            or f"Export for Page id= {page_entity['id']} not available" in msg
         )
 
     def test_export_page_format_missing(self):
