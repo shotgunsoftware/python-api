@@ -1961,8 +1961,8 @@ class TestExportPage(base.LiveTestBase):
 
         page_entity = self.sg.create("Page", {"entity_type": "Shot"})
         error_messages = [
-            "This functionality is currently not available"
-            f"Export for Page id={page_entity['id']} not available"
+            "This functionality is currently not available",
+            f"Export for Page id={page_entity['id']} not available",
         ]
 
         with self.assertRaises(Exception) as cm:
