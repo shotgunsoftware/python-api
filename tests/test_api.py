@@ -1968,13 +1968,12 @@ class TestExportPage(base.LiveTestBase):
         with self.assertRaises(Exception) as cm:
             self.sg.export_page(page_entity["id"], "csv")
         msg = str(cm.exception)
-        self.assertTrue(any(error_message in msg for error_message in error_messages))
+        self.assertIn(msg, error_messages)
 
         with self.assertRaises(Exception) as cm:
             self.sg.export_page(page_entity["id"], "csv", layout_name="My Layout")
         msg = str(cm.exception)
-
-        self.assertTrue(any(error_message in msg for error_message in error_messages))
+        self.assertIn(msg, error_messages)
 
     def test_export_page_format_missing(self):
         """
