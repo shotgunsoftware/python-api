@@ -31,9 +31,10 @@ resources:
     - repository: templates
       type: github
       name: shotgunsoftware/tk-ci-tools
-      ref: refs/heads/ticket/SG-41463
+      ref: refs/heads/master
       endpoint: shotgunsoftware
-      ### Yes, this is not Toolkit but tk-ci-tools is a useful utility that we can use to avoid duplicating and maintaing CI pipelines
+      # tk-ci-tools, despites using the tk- prefix, is not a Toolkit only tool
+      # that we use to avoid duplicating and maintaining CI pipeline code.
 
 # We've stored some variables in Azure. They contain credentials
 # and are encrypted. They are also not available to clients.
