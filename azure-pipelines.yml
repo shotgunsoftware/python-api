@@ -63,7 +63,10 @@ pr:
 jobs:
 - template: build-pipeline.yml@templates
   parameters:
-    has_unit_tests: false # Python API does not follow the same Python version  lifecycle than Toolkit
+    # Python API does not follow the exact same Python version lifecycle than
+    # Toolkit. So we prefer to control the test execution here instead.
+    has_unit_tests: false
+
     has_ui_resources: false
 
 - template: azure-pipelines-templates/type_checking.yml
