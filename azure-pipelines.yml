@@ -26,6 +26,16 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: shotgunsoftware/tk-ci-tools
+      ref: refs/heads/master
+      endpoint: shotgunsoftware
+      # Despite using the "tk-" prefix, tk-ci-tools is not a Toolkit only tool.
+      # We use it to avoid duplicating and maintaining CI pipeline code.
+
 # We've stored some variables in Azure. They contain credentials
 # and are encrypted. They are also not available to clients.
 # This statement says which variable groups this repo requires.
@@ -51,7 +61,14 @@ pr:
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
 jobs:
-- template: azure-pipelines-templates/code_style_validation.yml
+- template: build-pipeline.yml@templates
+  parameters:
+    # Python API does not follow the exact same Python version lifecycle than
+    # Toolkit. So we prefer to control the test execution here instead.
+    has_unit_tests: false
+
+    has_ui_resources: false
+
 - template: azure-pipelines-templates/type_checking.yml
 
 # These are jobs templates, they allow to reduce the redundancy between
