@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2009-2021, Shotgun Software Inc.
+# Copyright (c) 2009-2025, Shotgun Software Inc.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -44,14 +44,11 @@ parameters:
 #   pool:
 #     vmImage: ${{ parameters.vm_image }}
 
-#   variables:
-#     group: sg-credentials
+  variables:
+    group: sg-credentials
 
 
 steps:
-  # Specifies which version of Python we want to use. That's where the strategy comes in.
-  # Each job will share this set of steps, but each of them will receive a different
-  # $(python.version)
   # TODO: We should provide `githubToken` if we want to download a python release.
   #       Otherwise we may hit the GitHub anonymous download limit.
   - task: UsePythonVersion@0

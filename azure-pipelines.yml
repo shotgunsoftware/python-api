@@ -111,9 +111,6 @@ jobs:
   pool:
     vmImage: $(imageName)
 
-  variables:
-    group: sg-credentials
-
   steps:
     - template: azure-pipelines-templates/run-tests.yml
       parameters:
