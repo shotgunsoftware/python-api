@@ -129,7 +129,7 @@ jobs:
       #   python.version: '3.11'
     maxParallel: 3
 
-  displayName: "Run tests_${{ imageName }}_${{ python.version }}"
+  displayName: "Run tests_$( imageName )_$( python.version )"
   pool:
     vmImage: $(imageName)
   steps:
