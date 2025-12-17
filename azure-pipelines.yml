@@ -101,7 +101,7 @@ jobs:
 #         python_version: ${{ python_version }}
 
 
-- job: "Run tests $(imageName) $(python.version)"
+- job: "Run tests"
   strategy:
     matrix:
       linux_py310:
