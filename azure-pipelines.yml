@@ -59,24 +59,28 @@ pr:
     - "*"
 
 parameters:
-  - name: python_versions
+  - name: test_python_versions
     type: object
     default:
       - '3.9'
       - '3.10'
       - '3.11'
 
-  - name: os_versions
+  - name: test_os_versions
     type: object
     default:
-      - name: Linux
-        vm_image: ubuntu-latest
+      - name: Windows
+        vm_image: windows-latest
+        # Select Windows first because it's slower
 
       - name: macOS
         vm_image: macOS-latest
+        # then mac because 2nd slower
 
-      - name: Windows
-        vm_image: windows-latest
+      - name: Linux
+        vm_image: ubuntu-latest
+        # finally Linux is the fastest
+
 
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
@@ -91,20 +95,13 @@ jobs:
 
 - template: azure-pipelines-templates/type_checking.yml
 
-# - ${{ each os_version in parameters.os_versions }}:
-#   - ${{ each python_version in parameters.python_versions }}:
-#     - template: azure-pipelines-templates/run-tests.yml
-#       parameters:
-#         name: "${{ os_version.name }} Python ${{ python_version }}"
-#         vm_image: ${{ os_version.vm_image }}
-#         python_version: ${{ python_version }}
-
+# Run tests for all combinations of Python and OS
 - job:
   strategy:
     matrix:
-      ${{ each python_version in parameters.python_versions }}:
-        ${{ each os_version in parameters.os_versions }}:
-          "Run Tests ${{ os_version.name }} Python ${{ python_version }}":
+      ${{ each python_version in parameters.test_python_versions }}:
+        ${{ each os_version in parameters.test_os_versions }}:
+          "Tests ${{ os_version.name }} Python ${{ python_version }}":
             imageName: '${{ os_version.vm_image }}'
             python.version: '${{ python_version }}'
 
@@ -121,12 +118,3 @@ jobs:
     - template: azure-pipelines-templates/run-tests.yml
       parameters:
         python_version: $(python.version)
-
-
-#   - task: UsePythonVersion@0
-#     inputs:
-#       versionSpec: $(python.version)
-
-#   - script: |
-#       python --version
-#       python -c "import sys; print(sys.platform)"
