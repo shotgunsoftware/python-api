@@ -81,66 +81,44 @@ parameters:
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
 jobs:
-# - template: build-pipeline.yml@templates
-#   parameters:
-#     # Python API does not follow the exact same Python version lifecycle than
-#     # Toolkit. So we prefer to control the test execution here instead.
-#     has_unit_tests: false
+- template: build-pipeline.yml@templates
+  parameters:
+    # Python API does not follow the exact same Python version lifecycle than
+    # Toolkit. So we prefer to control the test execution here instead.
+    has_unit_tests: false
 
-#     has_ui_resources: false
+    has_ui_resources: false
 
-# - template: azure-pipelines-templates/type_checking.yml
+- template: azure-pipelines-templates/type_checking.yml
 
+- ${{ each os_version in parameters.os_versions }}:
+  - ${{ each python_version in parameters.python_versions }}:
+    - template: azure-pipelines-templates/run-tests.yml
+      parameters:
+        name: "${{ os_version.name }} Python ${{ python_version }}"
+        vm_image: ${{ os_version.vm_image }}
+        python_version: ${{ python_version }}
 
-# - ${{ each os_version in parameters.os_versions }}:
-#   - ${{ each python_version in parameters.python_versions }}:
-#     - template: azure-pipelines-templates/run-tests.yml
-#       parameters:
-#         name: "${{ os_version.name }} Python ${{ python_version }}"
-#         vm_image: ${{ os_version.vm_image }}
-#         python_version: ${{ python_version }}
+# - job: ##  "Run_tests" ## I don't have to ...
+#   strategy:
+#     matrix:
+#       ${{ each python_version in parameters.python_versions }}:
+#         ${{ each os_version in parameters.os_versions }}:
+#           "Run Tests ${{ os_version.name }} Python ${{ python_version }}":
+#             imageName: '${{ os_version.vm_image }}'
+#             python.version: '${{ python_version }}'
 
+#     maxParallel: 3
+#     # limiting the parallel jobs to 3 to avoid race condition issues between tests..... :(
 
-- job: ##  "Run_tests" ## I don't have to ...
-  strategy:
-    matrix:
-      ${{ each python_version in parameters.python_versions }}:
-        ${{ each os_version in parameters.os_versions }}:
-          "Run Tests ${{ os_version.name }} Python ${{ python_version }}":
-            imageName: '${{ os_version.vm_image }}'
-            python.version: '${{ python_version }}'
-      # linux_py310:
-      #   imageName: 'ubuntu-latest'
-      #   python.version: '3.10'
-      # mac_py310:
-      #   imageName: 'macOS-latest'
-      #   python.version: '3.10'
-      # windows_py310 :
-      #   imageName: 'windows-latest'
-      #   python.version: '3.10'
-      # linux_py311:
-      #   imageName: 'ubuntu-latest'
-      #   python.version: '3.11'
-      # mac_py311:
-      #   imageName: 'macOS-latest'
-      #   python.version: '3.11'
-      # windows_py311 :
-      #   imageName: 'windows-latest'
-      #   python.version: '3.11'
-    maxParallel: 3
-    # limiting the parallel jobs to 3 to avoid race condition issues between tests..... :(
+#   # displayName: "Run tests_$( imageName )_$( python.version )"
+#   pool:
+#     vmImage: $(imageName)
+#   steps:
+#   - task: UsePythonVersion@0
+#     inputs:
+#       versionSpec: $(python.version)
 
-  # displayName: "Run tests_$( imageName )_$( python.version )"
-  pool:
-    vmImage: $(imageName)
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: $(python.version)
-
-  - script: |
-      python --version
-      python -c "import sys; print(sys.platform)"
-
-
-#   job: TODO_Tests_${{ matrix.imageName }}_${{ matrix.python.version }}
+#   - script: |
+#       python --version
+#       python -c "import sys; print(sys.platform)"
