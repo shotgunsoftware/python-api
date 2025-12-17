@@ -81,20 +81,54 @@ parameters:
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
 jobs:
-- template: build-pipeline.yml@templates
-  parameters:
-    # Python API does not follow the exact same Python version lifecycle than
-    # Toolkit. So we prefer to control the test execution here instead.
-    has_unit_tests: false
+# - template: build-pipeline.yml@templates
+#   parameters:
+#     # Python API does not follow the exact same Python version lifecycle than
+#     # Toolkit. So we prefer to control the test execution here instead.
+#     has_unit_tests: false
 
-    has_ui_resources: false
+#     has_ui_resources: false
 
-- template: azure-pipelines-templates/type_checking.yml
+# - template: azure-pipelines-templates/type_checking.yml
 
-- ${{ each os_version in parameters.os_versions }}:
-  - ${{ each python_version in parameters.python_versions }}:
-    - template: azure-pipelines-templates/run-tests.yml
-      parameters:
-        name: "${{ os_version.name }} Python ${{ python_version }}"
-        vm_image: ${{ os_version.vm_image }}
-        python_version: ${{ python_version }}
+
+# - ${{ each os_version in parameters.os_versions }}:
+#   - ${{ each python_version in parameters.python_versions }}:
+#     - template: azure-pipelines-templates/run-tests.yml
+#       parameters:
+#         name: "${{ os_version.name }} Python ${{ python_version }}"
+#         vm_image: ${{ os_version.vm_image }}
+#         python_version: ${{ python_version }}
+
+
+- job: TODO Tests
+  strategy:
+    matrix:
+      linux_py310:
+        imageName: 'ubuntu-latest'
+        python.version: '3.10'
+      mac_py310:
+        imageName: 'macOS-latest'
+        python.version: '3.10'
+      windows_py310 :
+        imageName: 'windows-latest'
+        python.version: '3.10'
+      linux_py311:
+        imageName: 'ubuntu-latest'
+        python.version: '3.11'
+      mac_py311:
+        imageName: 'macOS-latest'
+        python.version: '3.11'
+      windows_py311 :
+        imageName: 'windows-latest'
+        python.version: '3.11'
+    maxParallel: 3
+  pool:
+    vmImage: $(imageName)
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: ${{ python.version }}
+
+  - script: |
+      python --version
