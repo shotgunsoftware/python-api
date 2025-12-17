@@ -101,12 +101,12 @@ jobs:
 #         python_version: ${{ python_version }}
 
 
-- job: "Run_tests" ## I don't have to ...
+- job: ##  "Run_tests" ## I don't have to ...
   strategy:
     matrix:
       ${{ each os_version in parameters.os_versions }}:
         ${{ each python_version in parameters.python_versions }}:
-          job_${{ os_version.name }}_Python_${{ python_version }}:
+          Run_Tests_${{ os_version.name }}_Python_${{ python_version }}:
             imageName: '${{ os_version.vm_image }}'
             python.version: '${{ python_version }}'
       # linux_py310:
@@ -129,7 +129,7 @@ jobs:
       #   python.version: '3.11'
     maxParallel: 3
 
-  displayName: "Run tests_$( imageName )_$( python.version )"
+  # displayName: "Run tests_$( imageName )_$( python.version )"
   pool:
     vmImage: $(imageName)
   steps:
