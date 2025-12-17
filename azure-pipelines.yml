@@ -101,7 +101,8 @@ jobs:
 #         python_version: ${{ python_version }}
 
 
-- strategy:
+- job: "Run tests ${{ matrix.imageName }}_${{ matrix.python.version }}"
+  strategy:
     matrix:
       linux_py310:
         imageName: 'ubuntu-latest'
@@ -122,7 +123,7 @@ jobs:
         imageName: 'windows-latest'
         python.version: '3.11'
     maxParallel: 3
-  job: "Run tests ${{ matrix.imageName }}_${{ matrix.python.version }}"
+
   pool:
     vmImage: $(imageName)
   steps:
