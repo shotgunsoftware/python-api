@@ -58,6 +58,30 @@ pr:
     include:
     - "*"
 
+parameters:
+  - name: test_python_versions
+    type: object
+    default:
+      - '3.9'
+      - '3.10'
+      - '3.11'
+
+  - name: test_os_versions
+    type: object
+    default:
+      - name: Windows
+        vm_image: windows-latest
+        # Select Windows first because it's slower
+
+      - name: macOS
+        vm_image: macOS-latest
+        # then mac because 2nd slower
+
+      - name: Linux
+        vm_image: ubuntu-latest
+        # finally Linux is the fastest
+
+
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
 jobs:
@@ -71,20 +95,23 @@ jobs:
 
 - template: azure-pipelines-templates/type_checking.yml
 
-# These are jobs templates, they allow to reduce the redundancy between
-# variations of the same build. We pass in the image name
-# and a friendly name that then template can then use to create jobs.
-- template: azure-pipelines-templates/run-tests.yml
-  parameters:
-    name: Linux
-    vm_image: 'ubuntu-latest'
+# Run tests for all combinations of Python and OS
+- job:
+  strategy:
+    matrix:
+      ${{ each python_version in parameters.test_python_versions }}:
+        ${{ each os_version in parameters.test_os_versions }}:
+          "Tests ${{ os_version.name }} Python ${{ python_version }}":
+            imageName: '${{ os_version.vm_image }}'
+            python.version: '${{ python_version }}'
 
-- template: azure-pipelines-templates/run-tests.yml
-  parameters:
-    name: macOS
-    vm_image: 'macOS-latest'
+    maxParallel: 3
+    # limiting the parallel jobs to 3 to avoid race condition issues between tests..... :(
 
-- template: azure-pipelines-templates/run-tests.yml
-  parameters:
-    name: Windows
-    vm_image: 'windows-latest'
+  pool:
+    vmImage: $(imageName)
+
+  steps:
+    - template: azure-pipelines-templates/run-tests.yml
+      parameters:
+        python_version: $(python.version)
