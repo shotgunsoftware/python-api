@@ -28,45 +28,45 @@
 
 # This is the list of parameters for this template and their default values.
 parameters:
-  name: ''
-  vm_image: ''
+  # name: ''
+  # vm_image: ''
   python_version: ''
 
-jobs:
-  # The job will be named after the OS and Azure will suffix the strategy to make it unique
-  # so we'll have a job name "Windows Python 3.9" for example. What's a strategy? Strategies are the
-  # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python 3.9" and
-  # "<OS> Python 3.10".
-- job:
-  strategy:
-    parallel: 3
-  displayName: ${{ parameters.name }}
-  pool:
-    vmImage: ${{ parameters.vm_image }}
+# jobs:
+#   # The job will be named after the OS and Azure will suffix the strategy to make it unique
+#   # so we'll have a job name "Windows Python 3.9" for example. What's a strategy? Strategies are the
+#   # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python 3.9" and
+#   # "<OS> Python 3.10".
+# - job:
+#   strategy:
+#     parallel: 3
+#   displayName: ${{ parameters.name }}
+#   pool:
+#     vmImage: ${{ parameters.vm_image }}
 
-  variables:
-    group: sg-credentials
+#   variables:
+#     group: sg-credentials
 
-  # These are the steps that will be executed inside each job.
-  steps:
-  # Specifies which version of Python we want to use. That's where the strategy comes in.
-  # Each job will share this set of steps, but each of them will receive a different
-  # $(python.version)
-  # TODO: We should provide `githubToken` if we want to download a python release.
-  #       Otherwise we may hit the GitHub anonymous download limit.
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: ${{ parameters.python_version }}
 
-  # Install all dependencies needed for running the tests. This command is good
-  # for all OSes
-  - task: Bash@3
-    displayName: Install dependencies
-    inputs:
-      targetType: inline
-      script: |
-        python --version
-         python -c "import sys; print(sys.platform)"
+steps:
+# Specifies which version of Python we want to use. That's where the strategy comes in.
+# Each job will share this set of steps, but each of them will receive a different
+# $(python.version)
+# TODO: We should provide `githubToken` if we want to download a python release.
+#       Otherwise we may hit the GitHub anonymous download limit.
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: ${{ parameters.python_version }}
+
+# Install all dependencies needed for running the tests. This command is good
+# for all OSes
+- task: Bash@3
+  displayName: Install dependencies
+  inputs:
+    targetType: inline
+    script: |
+      python --version
+        python -c "import sys; print(sys.platform)"
 
   #       pip install --upgrade pip
   #       pip install --upgrade setuptools wheel

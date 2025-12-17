@@ -91,30 +91,38 @@ jobs:
 
 - template: azure-pipelines-templates/type_checking.yml
 
-- ${{ each os_version in parameters.os_versions }}:
-  - ${{ each python_version in parameters.python_versions }}:
+# - ${{ each os_version in parameters.os_versions }}:
+#   - ${{ each python_version in parameters.python_versions }}:
+#     - template: azure-pipelines-templates/run-tests.yml
+#       parameters:
+#         name: "${{ os_version.name }} Python ${{ python_version }}"
+#         vm_image: ${{ os_version.vm_image }}
+#         python_version: ${{ python_version }}
+
+- job:
+  strategy:
+    matrix:
+      ${{ each python_version in parameters.python_versions }}:
+        ${{ each os_version in parameters.os_versions }}:
+          "Run Tests ${{ os_version.name }} Python ${{ python_version }}":
+            imageName: '${{ os_version.vm_image }}'
+            python.version: '${{ python_version }}'
+
+    maxParallel: 3
+    # limiting the parallel jobs to 3 to avoid race condition issues between tests..... :(
+
+  pool:
+    vmImage: $(imageName)
+
+  variables:
+    group: sg-credentials
+
+  steps:
     - template: azure-pipelines-templates/run-tests.yml
       parameters:
-        name: "${{ os_version.name }} Python ${{ python_version }}"
-        vm_image: ${{ os_version.vm_image }}
-        python_version: ${{ python_version }}
+        python_version: $(python.version)
 
-# - job: ##  "Run_tests" ## I don't have to ...
-#   strategy:
-#     matrix:
-#       ${{ each python_version in parameters.python_versions }}:
-#         ${{ each os_version in parameters.os_versions }}:
-#           "Run Tests ${{ os_version.name }} Python ${{ python_version }}":
-#             imageName: '${{ os_version.vm_image }}'
-#             python.version: '${{ python_version }}'
 
-#     maxParallel: 3
-#     # limiting the parallel jobs to 3 to avoid race condition issues between tests..... :(
-
-#   # displayName: "Run tests_$( imageName )_$( python.version )"
-#   pool:
-#     vmImage: $(imageName)
-#   steps:
 #   - task: UsePythonVersion@0
 #     inputs:
 #       versionSpec: $(python.version)
