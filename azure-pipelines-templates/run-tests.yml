@@ -55,8 +55,10 @@ jobs:
 
       # Keep compat
       Python 3.7:
-        python.version: '3.7'
+        python.version: pypy3.7
 
+    maxParallel: 2
+    # Looks like too much parallelle creates race condition issues between tests..... :(
 
   variables:
     group: sg-credentials
@@ -71,7 +73,6 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '$(python.version)'
-      addToPath: True
 
   # Install all dependencies needed for running the tests. This command is good
   # for all OSes
