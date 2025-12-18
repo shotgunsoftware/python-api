@@ -44,14 +44,21 @@ jobs:
   strategy:
     matrix:
       # We support these versions of Python.
-      Python 3.9:
-        python.version: '3.9'
-      Python 3.10:
-        python.version: '3.10'
+      # Python 3.9:
+      #   python.version: '3.9'
+      # Python 3.10:
+      #   python.version: '3.10'
       Python 3.11:
         python.version: '3.11'
+      Python 3.13:
+        python.version: '3.13'
 
-    maxParallel: 4
+      # # Keep compat
+      # Python 3.7:
+      #   python.version: pypy3.7
+
+    maxParallel: 2
+    # Looks like too much parallelle creates race condition issues between tests..... :(
 
   variables:
     group: sg-credentials
@@ -66,13 +73,13 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '$(python.version)'
-      addToPath: True
 
   # Install all dependencies needed for running the tests. This command is good
   # for all OSes
   - script: |
+      python -m pip install --upgrade pip
       python -m pip install --upgrade pip setuptools wheel
-      python -m pip install -r tests/ci_requirements.txt
+      python -m pip install --upgrade -r tests/ci_requirements.txt
     displayName: Install tools
 
   # The {{}} syntax is meant for the the pre-processor of Azure pipeline. Every statement inside
@@ -92,6 +99,7 @@ jobs:
   # Runs the tests and generates test coverage. The tests results are uploaded to Azure Pipelines in the
   # Tests tab of the build and each test run will be named after the --test-run-title argument to pytest,
   # for example 'Windows - 2.7'
+  ## pytest --durations=0 -v --cov shotgun_api3 --cov-report xml --test-run-title="${{parameters.name}}-$(python.version)"
   - bash: |
       cp ./tests/example_config ./tests/config
       pytest --durations=0 -v --cov shotgun_api3 --cov-report xml --test-run-title="${{parameters.name}}-$(python.version)"
