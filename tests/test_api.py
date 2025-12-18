@@ -37,17 +37,17 @@ from . import base
 
 import logging
 
-root = logging.getLogger()
-root.setLevel(logging.DEBUG)
+# root = logging.getLogger()
+# root.setLevel(logging.DEBUG)
 
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-root.addHandler(handler)
+# handler = logging.StreamHandler(sys.stdout)
+# handler.setLevel(logging.DEBUG)
+# formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+# handler.setFormatter(formatter)
+# root.addHandler(handler)
 
-logger = logging.getLogger("shotgun_api3")
-logger.setLevel(logging.DEBUG)
+# logger = logging.getLogger("shotgun_api3")
+# logger.setLevel(logging.DEBUG)
 
 
 class TestShotgunApi(base.LiveTestBase):
