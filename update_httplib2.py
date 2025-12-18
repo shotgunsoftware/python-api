@@ -93,7 +93,7 @@ def main(temp_path, repo_root, version):
     # Copies a new version into place.
     print("Copying new version of httplib2")
     root_folder = unzipped_folder / f"httplib2-{version[1:]}"
-    utilities.copy_folder(str(root_folder / "httplib2"), httplib2_dir)
+    utilities.copy_folder(str(root_folder / "python3" / "httplib2"), httplib2_dir)
     utilities.remove_folder(f"{httplib2_dir}/test")
 
     # Patches the httplib2 imports so they are relative instead of absolute.
