@@ -28,7 +28,7 @@
 
 # This is the list of parameters for this template and their default values.
 parameters:
-  name: ''
+  os_name: ''
   vm_image: ''
   python_version: ''
 
@@ -38,7 +38,7 @@ jobs:
   # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python 3.9" and
   # "<OS> Python 3.10".
 - job:
-  displayName: ${{ parameters.name }}
+  displayName: "${{ parameters.os_name }} Python ${{ parameters.python_version }}"
   pool:
     vmImage: ${{ parameters.vm_image }}
 
@@ -47,9 +47,7 @@ jobs:
 
   # These are the steps that will be executed inside each job.
   steps:
-  # Specifies which version of Python we want to use. That's where the strategy comes in.
-  # Each job will share this set of steps, but each of them will receive a different
-  # $(python.version)
+  # Specifies which version of Python we want to use.
   # TODO: We should provide `githubToken` if we want to download a python release.
   #       Otherwise we may hit the GitHub anonymous download limit.
   - task: UsePythonVersion@0
@@ -70,7 +68,7 @@ jobs:
   # The {{}} syntax is meant for the the pre-processor of Azure pipeline. Every statement inside
   # a {{}} block will be evaluated and substituted before the file is parsed to create the jobs.
   # So here we're inserting an extra step if the template is being invoked for Windows.
-  - ${{ if startsWith(parameters.vm_image, 'windows') }}:
+  - ${{ if eq(parameters.os_name, 'Windows') }}:
     # On Windows, we need to update the certificates, the cert store is missing the newer one
     # from Amazon like some clients experienced a while back. Who would have thought Microsoft
     # would have been out of date! ;)
@@ -92,7 +90,7 @@ jobs:
         cp ./tests/example_config ./tests/config
         pytest --durations=0 -v \
           --cov shotgun_api3 --cov-report xml \
-          --test-run-title="${{parameters.name}}-${{ parameters.python_version }}"
+          --test-run-title="${{ parameters.os_name }}-${{ parameters.python_version }}"
     env:
       # Pass the values needed to authenticate with the Flow Production Tracking site and create some entities.
       # Remember, on a pull request from a client or on forked repos, those variables
@@ -107,9 +105,9 @@ jobs:
       # build variables are available. Because of this, we need to find another way to generate a
       # unique login. So instead, we'll use the the name of the platform and the python version,
       # which should make it unique.
-      SG_HUMAN_LOGIN: $(python_api_human_login)-${{parameters.name}}-$(python.version)
+      SG_HUMAN_LOGIN: $(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
       # This will give a user name like 'something macOS 2.7'
-      SG_HUMAN_NAME: $(python_api_human_name) ${{parameters.name}} $(python.version)
+      SG_HUMAN_NAME: $(python_api_human_name) ${{ parameters.os_name }} ${{ parameters.python_version }}
       SG_HUMAN_PASSWORD: $(python_api_human_password)
       # So, first, we need to make sure that two builds running at the same time do not manipulate
       # the same entities, so we're sandboxing build nodes based on their name.
@@ -120,28 +118,28 @@ jobs:
       # Again, this would have been a lot simpler if we could simply have had a login based on the
       # agent name, but alas, the agent name has a space in it which needs to be replaced to something
       # else and string substitution can't be made on build variables, only template parameters.
-      SG_ASSET_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
-      SG_VERSION_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
-      SG_SHOT_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
-      SG_TASK_CONTENT: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
-      SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
+      SG_ASSET_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
+      SG_VERSION_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
+      SG_SHOT_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
+      SG_TASK_CONTENT: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
+      SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
 
   # Upload the code coverage result to codecov.io.
-  - ${{ if startsWith(parameters.vm_image, 'windows') }}:
+  - ${{ if eq(parameters.os_name, 'Windows') }}:
     - powershell: |
         $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
         .\codecov.exe -f coverage.xml
       displayName: Uploading code coverage
-  - ${{ elseif startsWith(parameters.vm_image, 'macos') }}:
+  - ${{ elseif eq(parameters.os_name, 'Linux') }}:
     - script: |
-        curl -Os https://uploader.codecov.io/v0.7.3/macos/codecov
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
         chmod +x codecov
         ./codecov -f coverage.xml
       displayName: Uploading code coverage
   - ${{ else }}:
     - script: |
-          curl -Os https://uploader.codecov.io/latest/linux/codecov
-          chmod +x codecov
-          ./codecov -f coverage.xml
-      displayName: Uploading code cover
+        curl -Os https://uploader.codecov.io/v0.7.3/macos/codecov
+        chmod +x codecov
+        ./codecov -f coverage.xml
+      displayName: Uploading code coverage

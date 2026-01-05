@@ -95,6 +95,6 @@ jobs:
   - ${{ each python_version in parameters.python_versions }}:
     - template: azure-pipelines-templates/run-tests.yml
       parameters:
-        name: "${{ os_version.name }} Python ${{ python_version }}"
+        os_name: "${{ os_version.name }}"
         vm_image: ${{ os_version.vm_image }}
         python_version: ${{ python_version }}
