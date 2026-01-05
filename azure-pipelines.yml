@@ -62,9 +62,10 @@ parameters:
   - name: python_versions
     type: object
     default:
-      - '3.9'
-      - '3.10'
-      - '3.11'
+      - '3.7'
+      # - '3.9'
+      # - '3.10'
+      # - '3.11'
 
   - name: os_versions
     type: object
@@ -72,11 +73,11 @@ parameters:
       - name: Linux
         vm_image: ubuntu-latest
 
-      - name: macOS
-        vm_image: macOS-latest
+      # - name: macOS
+      #   vm_image: macOS-latest
 
-      - name: Windows
-        vm_image: windows-latest
+      # - name: Windows
+      #   vm_image: windows-latest
 
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
