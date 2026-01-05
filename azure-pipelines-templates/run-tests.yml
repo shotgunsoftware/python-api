@@ -52,7 +52,7 @@ jobs:
   #       Otherwise we may hit the GitHub anonymous download limit.
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: "3.7"
+      versionSpec: "3.7.17"
       allowUnstable: true
 
   # Install all dependencies needed for running the tests. This command is good
