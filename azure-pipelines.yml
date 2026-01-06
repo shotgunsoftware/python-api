@@ -48,6 +48,7 @@ variables:
     # hardcode in the .yml files.
 
   - name: vfx_reference_platform_versions
+    type: object
     value:
     - name: VFX CY2021
       # Python 3.7 is no longer supported but we want to ensure that we don't break compatiblity just yet.
@@ -66,6 +67,7 @@ variables:
       python_version: '3.11'
 
   - name: os_versions
+    type: object
     value:
       - name: Linux
         vm_image: ubuntu-latest
