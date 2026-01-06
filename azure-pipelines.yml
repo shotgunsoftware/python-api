@@ -71,7 +71,7 @@ parameters:
     type: object
     default:
       - name: Linux
-        vm_image: ubuntu-latest
+        vm_image: ubuntu-22.04
 
       # - name: macOS
       #   vm_image: macOS-latest
