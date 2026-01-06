@@ -52,96 +52,94 @@ jobs:
   #       Otherwise we may hit the GitHub anonymous download limit.
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: "3.7"
-      #disableDownloadFromRegistry: false
-      #allowUnstable: true
+      versionSpec: ${{ parameters.python_version }}
 
-  # Install all dependencies needed for running the tests. This command is good
-  # for all OSes
-  - task: Bash@3
-    displayName: Install dependencies
-    inputs:
-      targetType: inline
-      script: |
-        pip install --upgrade pip
-        pip install --upgrade setuptools wheel
-        pip install --upgrade --requirement tests/ci_requirements.txt
+  # # Install all dependencies needed for running the tests. This command is good
+  # # for all OSes
+  # - task: Bash@3
+  #   displayName: Install dependencies
+  #   inputs:
+  #     targetType: inline
+  #     script: |
+  #       pip install --upgrade pip
+  #       pip install --upgrade setuptools wheel
+  #       pip install --upgrade --requirement tests/ci_requirements.txt
 
-  # The {{}} syntax is meant for the the pre-processor of Azure pipeline. Every statement inside
-  # a {{}} block will be evaluated and substituted before the file is parsed to create the jobs.
-  # So here we're inserting an extra step if the template is being invoked for Windows.
-  - ${{ if eq(parameters.os_name, 'Windows') }}:
-    # On Windows, we need to update the certificates, the cert store is missing the newer one
-    # from Amazon like some clients experienced a while back. Who would have thought Microsoft
-    # would have been out of date! ;)
-    - powershell: |
-        $cert_url = "https://www.amazontrust.com/repository/SFSRootCAG2.cer"
-        $cert_file = New-TemporaryFile
-        Invoke-WebRequest -Uri $cert_url -UseBasicParsing -OutFile $cert_file.FullName
-        Import-Certificate -FilePath $cert_file.FullName -CertStoreLocation Cert:\LocalMachine\Root
-      displayName: Updating OS Certificates
+  # # The {{}} syntax is meant for the the pre-processor of Azure pipeline. Every statement inside
+  # # a {{}} block will be evaluated and substituted before the file is parsed to create the jobs.
+  # # So here we're inserting an extra step if the template is being invoked for Windows.
+  # - ${{ if eq(parameters.os_name, 'Windows') }}:
+  #   # On Windows, we need to update the certificates, the cert store is missing the newer one
+  #   # from Amazon like some clients experienced a while back. Who would have thought Microsoft
+  #   # would have been out of date! ;)
+  #   - powershell: |
+  #       $cert_url = "https://www.amazontrust.com/repository/SFSRootCAG2.cer"
+  #       $cert_file = New-TemporaryFile
+  #       Invoke-WebRequest -Uri $cert_url -UseBasicParsing -OutFile $cert_file.FullName
+  #       Import-Certificate -FilePath $cert_file.FullName -CertStoreLocation Cert:\LocalMachine\Root
+  #     displayName: Updating OS Certificates
 
-  # Runs the tests and generates test coverage. The tests results are uploaded to Azure Pipelines in the
-  # Tests tab of the build and each test run will be named after the --test-run-title argument to pytest,
-  # for example 'Windows - 2.7'
-  - task: Bash@3
-    displayName: Running tests
-    inputs:
-      targetType: inline
-      script: |
-        cp ./tests/example_config ./tests/config
-        pytest --durations=0 -v \
-          --cov shotgun_api3 --cov-report xml \
-          --test-run-title="${{ parameters.os_name }}-${{ parameters.python_version }}"
-    env:
-      # Pass the values needed to authenticate with the Flow Production Tracking site and create some entities.
-      # Remember, on a pull request from a client or on forked repos, those variables
-      # will be empty!
-      SG_SERVER_URL: $(ci_site)
-      SG_SCRIPT_NAME: $(ci_site_script_name)
-      SG_API_KEY: $(ci_site_script_key)
-      # The unit tests manipulate the user and project during the tests, which can cause collisions,
-      # so sandbox each build variant.
-      # Ideally, we would use the agent name here. The problem is that the agent name is in a build
-      # variable, so we can't edit it's value through a ${{replace(a,b,c)}} expression, which are evaluated before
-      # build variables are available. Because of this, we need to find another way to generate a
-      # unique login. So instead, we'll use the the name of the platform and the python version,
-      # which should make it unique.
-      SG_HUMAN_LOGIN: $(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
-      # This will give a user name like 'something macOS 2.7'
-      SG_HUMAN_NAME: $(python_api_human_name) ${{ parameters.os_name }} ${{ parameters.python_version }}
-      SG_HUMAN_PASSWORD: $(python_api_human_password)
-      # So, first, we need to make sure that two builds running at the same time do not manipulate
-      # the same entities, so we're sandboxing build nodes based on their name.
-      SG_PROJECT_NAME: Python API CI - $(Agent.Name)
-      # The entities created and then reused between tests assume that the same user is always
-      # manipulating them. Because different builds will be assigned different agents and therefore
-      # different projects, it means each project needs to have an entity specific to a given user.
-      # Again, this would have been a lot simpler if we could simply have had a login based on the
-      # agent name, but alas, the agent name has a space in it which needs to be replaced to something
-      # else and string substitution can't be made on build variables, only template parameters.
-      SG_ASSET_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
-      SG_VERSION_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
-      SG_SHOT_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
-      SG_TASK_CONTENT: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
-      SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
+  # # Runs the tests and generates test coverage. The tests results are uploaded to Azure Pipelines in the
+  # # Tests tab of the build and each test run will be named after the --test-run-title argument to pytest,
+  # # for example 'Windows - 2.7'
+  # - task: Bash@3
+  #   displayName: Running tests
+  #   inputs:
+  #     targetType: inline
+  #     script: |
+  #       cp ./tests/example_config ./tests/config
+  #       pytest --durations=0 -v \
+  #         --cov shotgun_api3 --cov-report xml \
+  #         --test-run-title="${{ parameters.os_name }}-${{ parameters.python_version }}"
+  #   env:
+  #     # Pass the values needed to authenticate with the Flow Production Tracking site and create some entities.
+  #     # Remember, on a pull request from a client or on forked repos, those variables
+  #     # will be empty!
+  #     SG_SERVER_URL: $(ci_site)
+  #     SG_SCRIPT_NAME: $(ci_site_script_name)
+  #     SG_API_KEY: $(ci_site_script_key)
+  #     # The unit tests manipulate the user and project during the tests, which can cause collisions,
+  #     # so sandbox each build variant.
+  #     # Ideally, we would use the agent name here. The problem is that the agent name is in a build
+  #     # variable, so we can't edit it's value through a ${{replace(a,b,c)}} expression, which are evaluated before
+  #     # build variables are available. Because of this, we need to find another way to generate a
+  #     # unique login. So instead, we'll use the the name of the platform and the python version,
+  #     # which should make it unique.
+  #     SG_HUMAN_LOGIN: $(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
+  #     # This will give a user name like 'something macOS 2.7'
+  #     SG_HUMAN_NAME: $(python_api_human_name) ${{ parameters.os_name }} ${{ parameters.python_version }}
+  #     SG_HUMAN_PASSWORD: $(python_api_human_password)
+  #     # So, first, we need to make sure that two builds running at the same time do not manipulate
+  #     # the same entities, so we're sandboxing build nodes based on their name.
+  #     SG_PROJECT_NAME: Python API CI - $(Agent.Name)
+  #     # The entities created and then reused between tests assume that the same user is always
+  #     # manipulating them. Because different builds will be assigned different agents and therefore
+  #     # different projects, it means each project needs to have an entity specific to a given user.
+  #     # Again, this would have been a lot simpler if we could simply have had a login based on the
+  #     # agent name, but alas, the agent name has a space in it which needs to be replaced to something
+  #     # else and string substitution can't be made on build variables, only template parameters.
+  #     SG_ASSET_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
+  #     SG_VERSION_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
+  #     SG_SHOT_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
+  #     SG_TASK_CONTENT: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
+  #     SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
 
-  # Upload the code coverage result to codecov.io.
-  - ${{ if eq(parameters.os_name, 'Windows') }}:
-    - powershell: |
-        $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
-        .\codecov.exe -f coverage.xml
-      displayName: Uploading code coverage
-  - ${{ elseif eq(parameters.os_name, 'Linux') }}:
-    - script: |
-        curl -Os https://uploader.codecov.io/latest/linux/codecov
-        chmod +x codecov
-        ./codecov -f coverage.xml
-      displayName: Uploading code coverage
-  - ${{ else }}:
-    - script: |
-        curl -Os https://uploader.codecov.io/v0.7.3/macos/codecov
-        chmod +x codecov
-        ./codecov -f coverage.xml
-      displayName: Uploading code coverage
+  # # Upload the code coverage result to codecov.io.
+  # - ${{ if eq(parameters.os_name, 'Windows') }}:
+  #   - powershell: |
+  #       $ProgressPreference = 'SilentlyContinue'
+  #       Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
+  #       .\codecov.exe -f coverage.xml
+  #     displayName: Uploading code coverage
+  # - ${{ elseif eq(parameters.os_name, 'Linux') }}:
+  #   - script: |
+  #       curl -Os https://uploader.codecov.io/latest/linux/codecov
+  #       chmod +x codecov
+  #       ./codecov -f coverage.xml
+  #     displayName: Uploading code coverage
+  # - ${{ else }}:
+  #   - script: |
+  #       curl -Os https://uploader.codecov.io/v0.7.3/macos/codecov
+  #       chmod +x codecov
+  #       ./codecov -f coverage.xml
+  #     displayName: Uploading code coverage
