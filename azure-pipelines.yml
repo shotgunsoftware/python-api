@@ -36,22 +36,35 @@ resources:
       # Despite using the "tk-" prefix, tk-ci-tools is not a Toolkit only tool.
       # We use it to avoid duplicating and maintaining CI pipeline code.
 
-
+# We've stored some variables in Azure. They contain credentials
+# and are encrypted. They are also not available to clients.
+# This statement says which variable groups this repo requires.
+# We have two: one that can be shared by all repos that use CI
+# and another that is used just by the Python API, which creates
+# HumanUser's and as such need a password, which we can't
+# hardcode in the .yml files.
 variables:
   - group: sg-credentials
-    # We've stored some variables in Azure. They contain credentials
-    # and are encrypted. They are also not available to clients.
-    # This statement says which variable groups this repo requires.
-    # We have two: one that can be shared by all repos that use CI
-    # and another that is used just by the Python API, which creates
-    # HumanUser's and as such need a password, which we can't
-    # hardcode in the .yml files.
 
+# We want builds to trigger for 3 reasons:
+# - The master branch sees new commits
+# - Each PR should get rebuilt when commits are added to it.
+trigger:
+  branches:
+    include:
+    - master
+pr:
+  branches:
+    include:
+    - "*"
+
+parameters:
   - name: vfx_reference_platform_versions
     type: object
-    value:
+    default:
     - name: VFX CY2021
-      # Python 3.7 is no longer supported but we want to ensure that we don't break compatiblity just yet.
+      # Python 3.7 is no longer supported but we want to ensure that we don't
+      # break compatiblity just yet.
       python_version: '3.7'
       os_versions:
         - name: Linux
@@ -68,7 +81,7 @@ variables:
 
   - name: os_versions
     type: object
-    value:
+    default:
       - name: Linux
         vm_image: ubuntu-latest
 
@@ -77,34 +90,6 @@ variables:
 
       - name: Windows
         vm_image: windows-latest
-
-# We want builds to trigger for 3 reasons:
-# - The master branch sees new commits
-# - Each PR should get rebuilt when commits are added to it.
-trigger:
-  branches:
-    include:
-    - master
-pr:
-  branches:
-    include:
-    - "*"
-
-parameters:
-  - name: test_matrix
-    type: object
-    default:
-    - ${{ each vfx_version in variables.vfx_reference_platform_versions }}:
-      - ${{ if vfx_version.os_versions }}:
-        - ${{ each os_version in vfx_version.os_versions }}:
-          - os_name: "${{ os_version.name }}"
-            vm_image: ${{ os_version.vm_image }}
-            python_version: ${{ vfx_version.python_version }}
-      - ${{ else }}:
-        - ${{ each os_version in variables.os_versions }}:
-          - os_name: "${{ os_version.name }}"
-            vm_image: ${{ os_version.vm_image }}
-            python_version: ${{ vfx_version.python_version }}
 
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
@@ -119,9 +104,18 @@ jobs:
 
 - template: azure-pipelines-templates/type_checking.yml
 
-- ${{ each test_item in parameters.test_matrix }}:
-  - template: azure-pipelines-templates/run-tests.yml
-    parameters:
-      os_name: "${{ test_item.os_name }}"
-      vm_image: ${{ test_item.vm_image }}
-      python_version: ${{ test_item.python_version }}
+- ${{ each vfx_version in variables.vfx_reference_platform_versions }}:
+  - ${{ if vfx_version.os_versions }}:
+    - ${{ each os_version in vfx_version.os_versions }}:
+      - template: azure-pipelines-templates/run-tests.yml
+        parameters:
+          os_name: "${{ os_version.name }}"
+          vm_image: ${{ os_version.vm_image }}
+          python_version: ${{ vfx_version.python_version }}
+  - ${{ else }}:
+    - ${{ each os_version in variables.os_versions }}:
+      - template: azure-pipelines-templates/run-tests.yml
+        parameters:
+          os_name: "${{ os_version.name }}"
+          vm_image: ${{ os_version.vm_image }}
+          python_version: ${{ vfx_version.python_version }}
