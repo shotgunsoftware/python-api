@@ -4179,7 +4179,7 @@ class Shotgun(object):
             if isinstance(value, str):
                 if len(value) == 20 and self._DATE_TIME_PATTERN.match(value):
                     try:
-                        value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
+                        value = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
                     except ValueError:
                         return value
                     if _change_tz:
