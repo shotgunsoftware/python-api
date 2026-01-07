@@ -36,7 +36,7 @@ elif sys.version_info < (3, 9):
     warnings.warn(
         "Python versions older than 3.9 are no longer supported as of March "
         "2025 and compatibility will be discontinued after March 2026. "
-        "Please update to Python 3.11 or any other supported version.",
+        "Please update to Python 3.13 or any other supported version.",
         DeprecationWarning,
         stacklevel=2,
     )

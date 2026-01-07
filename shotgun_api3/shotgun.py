@@ -29,7 +29,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-from __future__ import annotations  # Requried for 3.7
+from __future__ import annotations  # Required for compatibility with Python 3.7
 
 import base64
 import copy
@@ -3162,29 +3162,17 @@ class Shotgun(object):
         self.config.auth_token = auth_token
 
         try:
-            data = self.find_one(
+            return self.find_one(
                 "HumanUser",
                 [["sg_status_list", "is", "act"], ["login", "is", user_login]],
                 ["id", "login"],
                 "",
                 "all",
             )
-            # Set back to default - There finally and except cannot be used together in python2.4
+        finally:
             self.config.user_login = original_login
             self.config.user_password = original_password
             self.config.auth_token = original_auth_token
-            return data
-        except Fault:
-            # Set back to default - There finally and except cannot be used together in python2.4
-            self.config.user_login = original_login
-            self.config.user_password = original_password
-            self.config.auth_token = original_auth_token
-        except Exception:
-            # Set back to default - There finally and except cannot be used together in python2.4
-            self.config.user_login = original_login
-            self.config.user_password = original_password
-            self.config.auth_token = original_auth_token
-            raise
 
     def update_project_last_accessed(
         self, project: Dict[str, Any], user: Optional[Dict[str, Any]] = None
@@ -4191,10 +4179,7 @@ class Shotgun(object):
             if isinstance(value, str):
                 if len(value) == 20 and self._DATE_TIME_PATTERN.match(value):
                     try:
-                        # strptime was not on datetime in python2.4
-                        value = datetime.datetime(
-                            *time.strptime(value, "%Y-%m-%dT%H:%M:%SZ")[:6]
-                        )
+                        value = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
                     except ValueError:
                         return value
                     if _change_tz:

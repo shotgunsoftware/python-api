@@ -6,7 +6,7 @@ Some third-party modules are bundled with `python-api` inside lib.
 
 ### httplib2
 
-`httplib2` is used to make http connections to the Flow Production Tracking server.  We bundle both python2 and python3 compatible versions since httplib2 chose to maintain parallel versions of the module for python 2 and 3 compatibility.
+`httplib2` is used to make http connections to the Flow Production Tracking server.
 
 The version of `httplib2` bundled should be updated manually, however its version is included in the unused `shotgun_api3/lib/requirements.txt` to allow Github's automated CVE notifications to work.
 
