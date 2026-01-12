@@ -72,12 +72,21 @@ parameters:
     default:
       - name: Linux
         vm_image: ubuntu-latest
+        codecov_download_url: https://uploader.codecov.io/latest/linux/codecov
 
       - name: macOS
         vm_image: macOS-latest
+        codecov_download_url: https://uploader.codecov.io/v0.7.3/macos/codecov
+        # macOS & codecov note:
+        # In Nov 2024 (SG-36700), we pinned macOS to codecov v0.7.3 because the
+        # macOS-latest Azure Pipelines agent is Intel (x86_64), but Codecov
+        # started shipping arm64-only binaries.
+        # When we will change the macOs image to a arm64 arch, we can use the
+        # "latest" version again.
 
       - name: Windows
         vm_image: windows-latest
+        codecov_download_url: https://uploader.codecov.io/latest/windows/codecov.exe
 
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
@@ -96,6 +105,7 @@ jobs:
   - ${{ each python_version in parameters.python_versions }}:
     - template: azure-pipelines-templates/run-tests.yml
       parameters:
-        os_name: "${{ os_version.name }}"
-        vm_image: ${{ os_version.vm_image }}
+        codecov_download_url: ${{ os_version.codecov_download_url }}
+        os_name: ${{ os_version.name }}
         python_version: ${{ python_version }}
+        vm_image: ${{ os_version.vm_image }}

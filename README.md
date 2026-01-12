@@ -2,7 +2,7 @@
 [![Reference Documentation](http://img.shields.io/badge/Reference-documentation-blue.svg?logo=wikibooks&logoColor=f5f5f5)](http://developer.shotgridsoftware.com/python-api)
 
 [![Build Status](https://dev.azure.com/shotgun-ecosystem/Python%20API/_apis/build/status/shotgunsoftware.python-api?branchName=master)](https://dev.azure.com/shotgun-ecosystem/Python%20API/_build/latest?definitionId=108&branchName=master)
-[![Coverage Status](https://coveralls.io/repos/github/shotgunsoftware/python-api/badge.svg?branch=master)](https://coveralls.io/github/shotgunsoftware/python-api?branch=master)
+[![Coverage Status](https://codecov.io/gh/shotgunsoftware/python-api/branch/master/graph/badge.svg)](https://codecov.io/gh/shotgunsoftware/python-api)
 
 # Flow Production Tracking Python API
 
@@ -11,7 +11,7 @@ Autodesk provides a simple Python-based API for accessing Flow Production Tracki
 The latest version can always be found at http://github.com/shotgunsoftware/python-api
 
 ## Documentation
-Tutorials and detailed documentation about the Python API are available at http://developer.shotgridsoftware.com/python-api).
+Tutorials and detailed documentation about the Python API are available at http://developer.shotgridsoftware.com/python-api.
 
 Some useful direct links:
 
@@ -31,12 +31,11 @@ You can see the [full history of the Python API on the documentation site](http:
 Integration and unit tests are provided.
 
 - All tests require:
-    - The [nose unit testing tools](http://nose.readthedocs.org),
-    - The [nose-exclude nose plugin](https://pypi.org/project/nose-exclude/)
-    - (Note: Running `pip install -r tests/ci_requirements.txt` will install this package)
+    - [pytest](https://docs.pytest.org/) and related plugins
+    - (Note: Running `pip install -r tests/requirements.txt` will install all required packages)
 - A `tests/config` file (you can copy an example from `tests/example_config`).
-- Tests can be run individually like this: `nosetests --config="nose.cfg" tests/test_client.py`
-    - Make sure to not forget the `--config="nose.cfg"` option. This option tells nose to use our config file.
-- `test_client` and `tests_unit` use mock server interaction and do not require a Flow Production Tracking instance to be available (no modifications to `tests/config` are necessary).
+- Tests can be run individually like this: `pytest tests/test_client.py`
+- To run all tests: `pytest`
+- To run tests with coverage: `pytest --cov shotgun_api3 --cov-report html`
+- `test_client` and `test_unit` use mock server interaction and do not require a Flow Production Tracking instance to be available (no modifications to `tests/config` are necessary).
 - `test_api` and `test_api_long` *do* require a Flow Production Tracking instance, with a script key available for the tests. The server and script user values must be supplied in the `tests/config` file. The tests will add test data to your server based on information in your config. This data will be manipulated by the tests, and should not be used for other purposes.
-- To run all of the tests, use the shell script `run-tests`.

@@ -28,9 +28,17 @@
 
 # This is the list of parameters for this template and their default values.
 parameters:
-  os_name: ''
-  vm_image: ''
-  python_version: ''
+  - name: codecov_download_url
+    type: string
+
+  - name: os_name
+    type: string
+
+  - name: python_version
+    type: string
+
+  - name: vm_image
+    type: string
 
 jobs:
   # The job will be named after the OS and Azure will suffix the strategy to make it unique
@@ -63,7 +71,7 @@ jobs:
       script: |
         pip install --upgrade pip
         pip install --upgrade setuptools wheel
-        pip install --upgrade --requirement tests/ci_requirements.txt
+        pip install --upgrade --requirement tests/requirements.txt
 
   # The {{}} syntax is meant for the the pre-processor of Azure pipeline. Every statement inside
   # a {{}} block will be evaluated and substituted before the file is parsed to create the jobs.
@@ -79,18 +87,18 @@ jobs:
         Import-Certificate -FilePath $cert_file.FullName -CertStoreLocation Cert:\LocalMachine\Root
       displayName: Updating OS Certificates
 
-  # Runs the tests and generates test coverage. The tests results are uploaded to Azure Pipelines in the
-  # Tests tab of the build and each test run will be named after the --test-run-title argument to pytest,
-  # for example 'Windows - 2.7'
+  # Runs the tests and generates both test report and code coverage
   - task: Bash@3
     displayName: Running tests
     inputs:
       targetType: inline
       script: |
         cp ./tests/example_config ./tests/config
-        pytest --durations=0 -v \
-          --cov shotgun_api3 --cov-report xml \
-          --test-run-title="${{ parameters.os_name }}-${{ parameters.python_version }}"
+        python -m pytest \
+          --verbose \
+          --nunit-xml=test-results.xml \
+          --cov \
+          --cov-report xml \
     env:
       # Pass the values needed to authenticate with the Flow Production Tracking site and create some entities.
       # Remember, on a pull request from a client or on forked repos, those variables
@@ -124,22 +132,31 @@ jobs:
       SG_TASK_CONTENT: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
       SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
 
-  # Upload the code coverage result to codecov.io.
-  - ${{ if eq(parameters.os_name, 'Windows') }}:
-    - powershell: |
-        $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
-        .\codecov.exe -f coverage.xml
-      displayName: Uploading code coverage
-  - ${{ elseif eq(parameters.os_name, 'Linux') }}:
-    - script: |
-        curl -Os https://uploader.codecov.io/latest/linux/codecov
+  - task: PublishTestResults@2
+    displayName: Publish test results
+    inputs:
+      testResultsFormat: NUnit
+      testResultsFiles: test-results.xml
+      testRunTitle: "${{ parameters.os_name }} - Python ${{ parameters.python_version }}"
+      failTaskOnFailureToPublishResults: true
+      failTaskOnMissingResultsFile: true
+    condition: succeededOrFailed()
+
+  - task: PublishCodeCoverageResults@2
+    displayName: Publish code coverage
+    inputs:
+      summaryFileLocation: coverage.xml
+      failIfCoverageEmpty: true
+
+  - task: Bash@3
+    displayName: Uploading coverage to Codecov.io
+    inputs:
+      targetType: inline
+      script: |
+        curl -Os "${{ parameters.codecov_download_url }}"
         chmod +x codecov
-        ./codecov -f coverage.xml
-      displayName: Uploading code coverage
-  - ${{ else }}:
-    - script: |
-        curl -Os https://uploader.codecov.io/v0.7.3/macos/codecov
-        chmod +x codecov
-        ./codecov -f coverage.xml
-      displayName: Uploading code coverage
+        ./codecov  \
+          --file coverage.xml \
+          --flags ${{ parameters.os_name }} \
+          --flags "Python ${{ parameters.python_version }}" \
+          --name "Tests ran on ${{ parameters.os_name }} with Python ${{ parameters.python_version }}" \

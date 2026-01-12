@@ -8,7 +8,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 #
-# coverage configuration - used by https://coveralls.io/ integration
+# coverage configuration - used by pytest-cov and codecov.io integration
 #
 #
 
@@ -16,5 +16,5 @@
 source=shotgun_api3
 omit=
     shotgun_api3/lib/httplib2/*
-    shotgun_api3/lib/certify/*
+    shotgun_api3/lib/certifi/*
     shotgun_api3/lib/pyparsing.py
