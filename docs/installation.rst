@@ -16,7 +16,9 @@ Minimum Requirements
 Python versions
 ===============
 
-The Python API library supports the following Python versions: `3.9 - 3.11`. We recommend using Python 3.11.
+The Python API library supports the following Python versions: `3.9`, `3.10`,
+`3.11`, and `3.13`.
+We recommend using Python 3.13.
 
 .. important::
     Python versions older than 3.9 are no longer supported as of March 2025 and compatibility will be discontinued after
@@ -68,4 +70,4 @@ If you're using pip with `requirements.txt`, add the following line::
 Installing with ``setup.py``
 ****************************
 
-From a local copy of the repository, you can run ``python setup.py install`` to copy the package inside your python ``site-packages``. Note that while ``setuptools`` will complain about syntax errors when installing the library, the library is fully functional. However, it ships with both Python 2 and Python 3 copies of ``httplib2``, which will generate syntax errors when byte-compiling the Python modules.
+From a local copy of the repository, you can run ``python setup.py install`` to copy the package inside your python ``site-packages``. Note that while ``setuptools`` will complain about syntax errors when installing the library, the library is fully functional.
