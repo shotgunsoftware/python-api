@@ -243,7 +243,7 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.info()
 
         args, _ = self.sg._http_request.call_args
-        (_, _, _, headers) = args
+        _, _, _, headers = args
         expected_header_value = "auto"
 
         self.assertEqual(None, headers.get("locale"))
@@ -255,7 +255,7 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.info()
 
         args, _ = self.sg._http_request.call_args
-        (_, _, _, headers) = args
+        _, _, _, headers = args
         expected_header_value = "auto"
 
         self.assertEqual("auto", headers.get("locale"))
@@ -267,7 +267,7 @@ class TestShotgunClient(base.MockTestBase):
         client_caps = self.sg.client_caps
         config = self.sg.config
         args, _ = self.sg._http_request.call_args
-        (_, _, _, headers) = args
+        _, _, _, headers = args
         ssl_validate_lut = {True: "no-validate", False: "validate"}
         expected = "shotgun-json (%s); Python %s (%s); ssl %s" % (
             api.__version__,
@@ -281,7 +281,7 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.add_user_agent("test-agent")
         self.sg.info()
         args, _ = self.sg._http_request.call_args
-        (_, _, _, headers) = args
+        _, _, _, headers = args
         expected = "shotgun-json (%s); Python %s (%s); ssl %s; test-agent" % (
             api.__version__,
             client_caps.py_version,
@@ -294,7 +294,7 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.reset_user_agent()
         self.sg.info()
         args, _ = self.sg._http_request.call_args
-        (_, _, _, headers) = args
+        _, _, _, headers = args
         expected = "shotgun-json (%s); Python %s (%s); ssl %s" % (
             api.__version__,
             client_caps.py_version,

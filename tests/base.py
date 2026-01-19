@@ -14,7 +14,6 @@ import urllib.error
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities
 
-
 THUMBNAIL_MAX_ATTEMPTS = 30
 THUMBNAIL_RETRY_INTERVAL = 10
 TRANSIENT_IMAGE_PATH = "images/status/transient"
