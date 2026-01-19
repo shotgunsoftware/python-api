@@ -72,6 +72,7 @@ jobs:
     inputs:
       targetType: inline
       script: |
+        set -e
         pip install --upgrade pip
         pip install --upgrade setuptools wheel
         pip install --upgrade --requirement tests/requirements.txt
@@ -96,6 +97,7 @@ jobs:
     inputs:
       targetType: inline
       script: |
+        set -e
         cp ./tests/example_config ./tests/config
         python -m pytest \
           --cov=shotgun_api3 \
@@ -104,6 +106,9 @@ jobs:
           --nunit-xml=test-results.xml \
           --verbose \
     env:
+      # Tell Pytest that we're running in a CI environment
+      CI: 1
+
       # Pass the values needed to authenticate with the Flow Production Tracking site and create some entities.
       # Remember, on a pull request from a client or on forked repos, those variables
       # will be empty!
@@ -136,6 +141,12 @@ jobs:
       SG_TASK_CONTENT: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
       SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
 
+  # Explicit call to PublishTestResults@2 and PublishCodeCoverageResults@2 here
+  # instead of relying on pytest-azurepipelines because pytest-azurepipelines
+  # does not seem to be maintained anymore and is still using earlier versions
+  # of the PublishTestResults and PublishCodeCoverageResults Azure Pipelines
+  # jobs.
+
   - task: PublishTestResults@2
     displayName: Publish test results
     inputs:
@@ -157,6 +168,7 @@ jobs:
     inputs:
       targetType: inline
       script: |
+        set -e
         curl -Os "${{ parameters.codecov_download_url }}"
         chmod +x codecov
         ./codecov  \
