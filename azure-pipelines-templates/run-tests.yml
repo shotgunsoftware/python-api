@@ -44,10 +44,6 @@ parameters:
     type: string
 
 jobs:
-  # The job will be named after the OS and Azure will suffix the strategy to make it unique
-  # so we'll have a job name "Windows Python 3.9" for example. What's a strategy? Strategies are the
-  # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python 3.9" and
-  # "<OS> Python 3.10".
 - job:
   displayName: "${{ parameters.os_name }} - Python ${{ parameters.python_version }}"
   pool:
