@@ -100,7 +100,7 @@ jobs:
         python -m pytest \
           --cov=shotgun_api3 \
           --cov-report xml \
-          --duration=0 \
+          --durations=0 \
           --nunit-xml=test-results.xml \
           --verbose \
     env:
