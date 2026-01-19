@@ -26,8 +26,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# This is the list of parameters for this template and their default values.
 parameters:
+  # Using the most formal way of defining parameters so we don't define a
+  # default value for mandatory parameters. This way, CI will fail if we forget
+  # to pass it when invoking the template.
+
   - name: codecov_download_url
     type: string
 
@@ -46,7 +49,7 @@ jobs:
   # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python 3.9" and
   # "<OS> Python 3.10".
 - job:
-  displayName: "${{ parameters.os_name }} Python ${{ parameters.python_version }}"
+  displayName: "${{ parameters.os_name }} - Python ${{ parameters.python_version }}"
   pool:
     vmImage: ${{ parameters.vm_image }}
 
@@ -135,11 +138,11 @@ jobs:
   - task: PublishTestResults@2
     displayName: Publish test results
     inputs:
-      testResultsFormat: NUnit
-      testResultsFiles: test-results.xml
-      testRunTitle: "${{ parameters.os_name }} - Python ${{ parameters.python_version }}"
       failTaskOnFailureToPublishResults: true
       failTaskOnMissingResultsFile: true
+      testResultsFiles: test-results.xml
+      testResultsFormat: NUnit
+      testRunTitle: "${{ parameters.os_name }} - Python ${{ parameters.python_version }}"
     condition: succeededOrFailed()
 
   - task: PublishCodeCoverageResults@2
@@ -157,6 +160,6 @@ jobs:
         chmod +x codecov
         ./codecov  \
           --file coverage.xml \
-          --flags ${{ parameters.os_name }} \
-          --flags "Python ${{ parameters.python_version }}" \
+          --flags "${{ parameters.os_name }}" \
+          --flags "Python-${{ parameters.python_version }}" \
           --name "Tests ran on ${{ parameters.os_name }} with Python ${{ parameters.python_version }}" \
