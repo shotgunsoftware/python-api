@@ -96,7 +96,7 @@ jobs:
         set -e
         cp ./tests/example_config ./tests/config
         python -m pytest \
-          --cov=shotgun_api3 \
+          --cov \
           --cov-report xml:coverage.xml \
           --durations=0 \
           --nunit-xml=test-results.xml \
@@ -165,10 +165,10 @@ jobs:
       targetType: inline
       script: |
         set -e
-        curl -Os "${{ parameters.codecov_download_url }}"
+        curl --remote-name --silent "${{ parameters.codecov_download_url }}"
         chmod +x codecov
         ./codecov  \
           --file coverage.xml \
           --flags "${{ parameters.os_name }}" \
           --flags "Python-${{ parameters.python_version }}" \
-          --name "Tests ran on ${{ parameters.os_name }} with Python ${{ parameters.python_version }}" \
+          --name "Tested on ${{ parameters.os_name }} with Python ${{ parameters.python_version }}" \
