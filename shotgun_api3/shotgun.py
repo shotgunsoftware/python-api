@@ -71,7 +71,6 @@ from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 from .lib.httplib2 import Http, ProxyInfo, socks
 from .lib.sgtimezone import SgTimezone
 
-
 LOG = logging.getLogger("shotgun_api3")
 """
 Logging instance for shotgun_api3

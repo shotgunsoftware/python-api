@@ -26,19 +26,26 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# This is the list of parameters for this template and their default values.
 parameters:
-  os_name: ''
-  vm_image: ''
-  python_version: ''
+  # Using the most formal way of defining parameters so we don't define a
+  # default value for mandatory parameters. This way, CI will fail if we forget
+  # to pass it when invoking the template.
+
+  - name: codecov_download_url
+    type: string
+
+  - name: os_name
+    type: string
+
+  - name: python_version
+    type: string
+
+  - name: vm_image
+    type: string
 
 jobs:
-  # The job will be named after the OS and Azure will suffix the strategy to make it unique
-  # so we'll have a job name "Windows Python 3.9" for example. What's a strategy? Strategies are the
-  # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python 3.9" and
-  # "<OS> Python 3.10".
 - job:
-  displayName: "${{ parameters.os_name }} Python ${{ parameters.python_version }}"
+  displayName: "${{ parameters.os_name }} - Python ${{ parameters.python_version }}"
   pool:
     vmImage: ${{ parameters.vm_image }}
 
@@ -61,9 +68,10 @@ jobs:
     inputs:
       targetType: inline
       script: |
+        set -e
         pip install --upgrade pip
         pip install --upgrade setuptools wheel
-        pip install --upgrade --requirement tests/ci_requirements.txt
+        pip install --upgrade --requirement tests/requirements.txt
 
   # The {{}} syntax is meant for the the pre-processor of Azure pipeline. Every statement inside
   # a {{}} block will be evaluated and substituted before the file is parsed to create the jobs.
@@ -79,19 +87,24 @@ jobs:
         Import-Certificate -FilePath $cert_file.FullName -CertStoreLocation Cert:\LocalMachine\Root
       displayName: Updating OS Certificates
 
-  # Runs the tests and generates test coverage. The tests results are uploaded to Azure Pipelines in the
-  # Tests tab of the build and each test run will be named after the --test-run-title argument to pytest,
-  # for example 'Windows - 2.7'
+  # Runs the tests and generates both test report and code coverage
   - task: Bash@3
     displayName: Running tests
     inputs:
       targetType: inline
       script: |
+        set -e
         cp ./tests/example_config ./tests/config
-        pytest --durations=0 -v \
-          --cov shotgun_api3 --cov-report xml \
-          --test-run-title="${{ parameters.os_name }}-${{ parameters.python_version }}"
+        python -m pytest \
+          --cov \
+          --cov-report xml:coverage.xml \
+          --durations=0 \
+          --nunit-xml=test-results.xml \
+          --verbose \
     env:
+      # Tell Pytest that we're running in a CI environment
+      CI: 1
+
       # Pass the values needed to authenticate with the Flow Production Tracking site and create some entities.
       # Remember, on a pull request from a client or on forked repos, those variables
       # will be empty!
@@ -124,22 +137,38 @@ jobs:
       SG_TASK_CONTENT: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
       SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
 
-  # Upload the code coverage result to codecov.io.
-  - ${{ if eq(parameters.os_name, 'Windows') }}:
-    - powershell: |
-        $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
-        .\codecov.exe -f coverage.xml
-      displayName: Uploading code coverage
-  - ${{ elseif eq(parameters.os_name, 'Linux') }}:
-    - script: |
-        curl -Os https://uploader.codecov.io/latest/linux/codecov
+  # Explicit call to PublishTestResults@2 and PublishCodeCoverageResults@2 here
+  # instead of relying on pytest-azurepipelines because pytest-azurepipelines
+  # does not seem to be maintained anymore and is still using earlier versions
+  # of the PublishTestResults and PublishCodeCoverageResults Azure Pipelines
+  # jobs.
+
+  - task: PublishTestResults@2
+    displayName: Publish test results
+    inputs:
+      failTaskOnFailureToPublishResults: true
+      failTaskOnMissingResultsFile: true
+      testResultsFiles: test-results.xml
+      testResultsFormat: NUnit
+      testRunTitle: "${{ parameters.os_name }} - Python ${{ parameters.python_version }}"
+    condition: succeededOrFailed()
+
+  - task: PublishCodeCoverageResults@2
+    displayName: Publish code coverage
+    inputs:
+      summaryFileLocation: coverage.xml
+      failIfCoverageEmpty: true
+
+  - task: Bash@3
+    displayName: Uploading coverage to Codecov.io
+    inputs:
+      targetType: inline
+      script: |
+        set -e
+        curl --remote-name --silent "${{ parameters.codecov_download_url }}"
         chmod +x codecov
-        ./codecov -f coverage.xml
-      displayName: Uploading code coverage
-  - ${{ else }}:
-    - script: |
-        curl -Os https://uploader.codecov.io/v0.7.3/macos/codecov
-        chmod +x codecov
-        ./codecov -f coverage.xml
-      displayName: Uploading code coverage
+        ./codecov  \
+          --file coverage.xml \
+          --flags "${{ parameters.os_name }}" \
+          --flags "Python-${{ parameters.python_version }}" \
+          --name "Tested on ${{ parameters.os_name }} with Python ${{ parameters.python_version }}" \

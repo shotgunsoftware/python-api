@@ -42,7 +42,6 @@ import unittest
 from shotgun_api3.lib.mockgun import Shotgun as Mockgun
 from shotgun_api3 import ShotgunError
 
-
 mockgun_schema_folder = os.path.join(os.path.dirname(__file__), "mockgun")
 
 Mockgun.set_schema_paths(
