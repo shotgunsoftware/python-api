@@ -72,6 +72,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools wheel
         python -m pip install --upgrade --requirement tests/requirements.txt
+      # Need to use the "python -m" prefix to make Windows happy.
 
   # The {{}} syntax is meant for the the pre-processor of Azure pipeline. Every statement inside
   # a {{}} block will be evaluated and substituted before the file is parsed to create the jobs.
