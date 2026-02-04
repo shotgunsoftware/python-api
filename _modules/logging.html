@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>logging &mdash; python-api v3.9.2 documentation</title>
+  <title>logging &mdash; python-api v3.10.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -83,7 +83,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.9.2.<br>
+    <b>python-api</b> v3.10.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -152,7 +152,6 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">time</span><span class="o">,</span><span class="w"> </span><span class="nn">io</span><span class="o">,</span><span class="w"> </span><span class="nn">re</span><span class="o">,</span><span class="w"> </span><span class="nn">traceback</span><span class="o">,</span><span class="w"> </span><span class="nn">warnings</span><span class="o">,</span><span class="w"> </span><span class="nn">weakref</span><span class="o">,</span><span class="w"> </span><span class="nn">collections.abc</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenericAlias</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Formatter</span> <span class="k">as</span> <span class="n">StrFormatter</span>
 
@@ -165,7 +164,7 @@
            <span class="s1">&#39;exception&#39;</span><span class="p">,</span> <span class="s1">&#39;fatal&#39;</span><span class="p">,</span> <span class="s1">&#39;getLevelName&#39;</span><span class="p">,</span> <span class="s1">&#39;getLogger&#39;</span><span class="p">,</span> <span class="s1">&#39;getLoggerClass&#39;</span><span class="p">,</span>
            <span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;makeLogRecord&#39;</span><span class="p">,</span> <span class="s1">&#39;setLoggerClass&#39;</span><span class="p">,</span> <span class="s1">&#39;shutdown&#39;</span><span class="p">,</span>
            <span class="s1">&#39;warn&#39;</span><span class="p">,</span> <span class="s1">&#39;warning&#39;</span><span class="p">,</span> <span class="s1">&#39;getLogRecordFactory&#39;</span><span class="p">,</span> <span class="s1">&#39;setLogRecordFactory&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;lastResort&#39;</span><span class="p">,</span> <span class="s1">&#39;raiseExceptions&#39;</span><span class="p">,</span> <span class="s1">&#39;getLevelNamesMapping&#39;</span><span class="p">]</span>
+           <span class="s1">&#39;lastResort&#39;</span><span class="p">,</span> <span class="s1">&#39;raiseExceptions&#39;</span><span class="p">]</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 
@@ -244,9 +243,6 @@
     <span class="s1">&#39;NOTSET&#39;</span><span class="p">:</span> <span class="n">NOTSET</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">getLevelNamesMapping</span><span class="p">():</span>
-    <span class="k">return</span> <span class="n">_nameToLevel</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
 <span class="k">def</span><span class="w"> </span><span class="nf">getLevelName</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the textual or numeric representation of logging level &#39;level&#39;.</span>
@@ -287,8 +283,8 @@
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">_releaseLock</span><span class="p">()</span>
 
-<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s2">&quot;_getframe&quot;</span><span class="p">):</span>
-    <span class="n">currentframe</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s1">&#39;_getframe&#39;</span><span class="p">):</span>
+    <span class="n">currentframe</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span> <span class="c1">#pragma: no cover</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">currentframe</span><span class="p">():</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the frame object for the caller&#39;s stack frame.&quot;&quot;&quot;</span>
@@ -312,18 +308,13 @@
 <span class="n">_srcfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">addLevelName</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_filename</span><span class="p">)</span>
 
 <span class="c1"># _srcfile is only used in conjunction with sys._getframe().</span>
-<span class="c1"># Setting _srcfile to None will prevent findCaller() from being called. This</span>
-<span class="c1"># way, you can avoid the overhead of fetching caller information.</span>
-
-<span class="c1"># The following is based on warnings._is_internal_frame. It makes sure that</span>
-<span class="c1"># frames of the import mechanism are skipped when logging at module level and</span>
-<span class="c1"># using a stacklevel value greater than one.</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_is_internal_frame</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Signal whether the frame is a CPython or logging module internal.&quot;&quot;&quot;</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_filename</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">filename</span> <span class="o">==</span> <span class="n">_srcfile</span> <span class="ow">or</span> <span class="p">(</span>
-        <span class="s2">&quot;importlib&quot;</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">and</span> <span class="s2">&quot;_bootstrap&quot;</span> <span class="ow">in</span> <span class="n">filename</span>
-    <span class="p">)</span>
+<span class="c1"># To provide compatibility with older versions of Python, set _srcfile</span>
+<span class="c1"># to None if _getframe() is not available; this value will prevent</span>
+<span class="c1"># findCaller() from being called. You can also do this if you want to avoid</span>
+<span class="c1"># the overhead of fetching caller information, even when _getframe() is</span>
+<span class="c1"># available.</span>
+<span class="c1">#if not hasattr(sys, &#39;_getframe&#39;):</span>
+<span class="c1">#    _srcfile = None</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_checkLevel</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
@@ -623,7 +614,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">usesTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">fmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span>
-        <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;$asctime&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">fmt</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">asctime_format</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">fmt</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;$asctime&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">fmt</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">asctime_search</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="n">Template</span><span class="o">.</span><span class="n">pattern</span>
@@ -981,9 +972,8 @@
     <span class="k">if</span> <span class="n">acquire</span> <span class="ow">and</span> <span class="n">release</span> <span class="ow">and</span> <span class="n">handlers</span><span class="p">:</span>
         <span class="n">acquire</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">handlers</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wr</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">pass</span>
+            <span class="k">if</span> <span class="n">wr</span> <span class="ow">in</span> <span class="n">handlers</span><span class="p">:</span>
+                <span class="n">handlers</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wr</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">release</span><span class="p">()</span>
 
@@ -1272,8 +1262,6 @@
         <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span>
         <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">(</span><span class="si">%s</span><span class="s1">)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
-
-    <span class="n">__class_getitem__</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">GenericAlias</span><span class="p">)</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">FileHandler</span><span class="p">(</span><span class="n">StreamHandler</span><span class="p">):</span>
@@ -1693,31 +1681,33 @@
         <span class="n">f</span> <span class="o">=</span> <span class="n">currentframe</span><span class="p">()</span>
         <span class="c1">#On some versions of IronPython, currentframe() returns None if</span>
         <span class="c1">#IronPython isn&#39;t run with -X:Frames.</span>
-        <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;(unknown file)&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;(unknown function)&quot;</span><span class="p">,</span> <span class="kc">None</span>
-        <span class="k">while</span> <span class="n">stacklevel</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">next_f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_back</span>
-            <span class="k">if</span> <span class="n">next_f</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1">## We&#39;ve got options here.</span>
-                <span class="c1">## If we want to use the last (deepest) frame:</span>
-                <span class="k">break</span>
-                <span class="c1">## If we want to mimic the warnings module:</span>
-                <span class="c1">#return (&quot;sys&quot;, 1, &quot;(unknown function)&quot;, None)</span>
-                <span class="c1">## If we want to be pedantic:</span>
-                <span class="c1">#raise ValueError(&quot;call stack is not deep enough&quot;)</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="n">next_f</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_internal_frame</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-                <span class="n">stacklevel</span> <span class="o">-=</span> <span class="mi">1</span>
-        <span class="n">co</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_code</span>
-        <span class="n">sinfo</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">stack_info</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span> <span class="k">as</span> <span class="n">sio</span><span class="p">:</span>
-                <span class="n">sio</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Stack (most recent call last):</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_back</span>
+        <span class="n">orig_f</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="k">while</span> <span class="n">f</span> <span class="ow">and</span> <span class="n">stacklevel</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_back</span>
+            <span class="n">stacklevel</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">orig_f</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="s2">&quot;(unknown file)&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;(unknown function)&quot;</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">while</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;f_code&quot;</span><span class="p">):</span>
+            <span class="n">co</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_code</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normcase</span><span class="p">(</span><span class="n">co</span><span class="o">.</span><span class="n">co_filename</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="n">_srcfile</span><span class="p">:</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">f_back</span>
+                <span class="k">continue</span>
+            <span class="n">sinfo</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">stack_info</span><span class="p">:</span>
+                <span class="n">sio</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
+                <span class="n">sio</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Stack (most recent call last):</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="n">traceback</span><span class="o">.</span><span class="n">print_stack</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sio</span><span class="p">)</span>
                 <span class="n">sinfo</span> <span class="o">=</span> <span class="n">sio</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">sinfo</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
                     <span class="n">sinfo</span> <span class="o">=</span> <span class="n">sinfo</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">co</span><span class="o">.</span><span class="n">co_filename</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">f_lineno</span><span class="p">,</span> <span class="n">co</span><span class="o">.</span><span class="n">co_name</span><span class="p">,</span> <span class="n">sinfo</span>
+                <span class="n">sio</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">rv</span> <span class="o">=</span> <span class="p">(</span><span class="n">co</span><span class="o">.</span><span class="n">co_filename</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">f_lineno</span><span class="p">,</span> <span class="n">co</span><span class="o">.</span><span class="n">co_name</span><span class="p">,</span> <span class="n">sinfo</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="k">return</span> <span class="n">rv</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">makeRecord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">lno</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">exc_info</span><span class="p">,</span>
                    <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1904,6 +1894,8 @@
         <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># In general, only the root logger will not be accessible via its name.</span>
+        <span class="c1"># However, the root logger&#39;s class has its own __reduce__ method.</span>
         <span class="k">if</span> <span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
             <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
             <span class="k">raise</span> <span class="n">pickle</span><span class="o">.</span><span class="n">PicklingError</span><span class="p">(</span><span class="s1">&#39;logger cannot be pickled&#39;</span><span class="p">)</span>
@@ -2066,8 +2058,6 @@
         <span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
         <span class="n">level</span> <span class="o">=</span> <span class="n">getLevelName</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">())</span>
         <span class="k">return</span> <span class="s1">&#39;&lt;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">logger</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
-
-    <span class="n">__class_getitem__</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">GenericAlias</span><span class="p">)</span>
 
 <span class="n">root</span> <span class="o">=</span> <span class="n">RootLogger</span><span class="p">(</span><span class="n">WARNING</span><span class="p">)</span>
 <span class="n">Logger</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
@@ -2379,9 +2369,7 @@
         <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;py.warnings&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">NullHandler</span><span class="p">())</span>
-        <span class="c1"># bpo-46557: Log str(s) as msg instead of logger.warning(&quot;%s&quot;, s)</span>
-        <span class="c1"># since some log aggregation tools group logs by the msg arg</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">captureWarnings</span><span class="p">(</span><span class="n">capture</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2407,7 +2395,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, Autodesk.</p>
+    <p>&#169; Copyright 2026, Autodesk.</p>
   </div>
 
    

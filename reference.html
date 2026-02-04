@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; python-api v3.9.2 documentation</title>
+  <title>API Reference &mdash; python-api v3.10.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -139,27 +139,22 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#shotgun_api3.ShotgunError"><code class="docutils literal notranslate"><span class="pre">ShotgunError</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.ShotgunError.add_note"><code class="docutils literal notranslate"><span class="pre">ShotgunError.add_note()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.ShotgunError.with_traceback"><code class="docutils literal notranslate"><span class="pre">ShotgunError.with_traceback()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#shotgun_api3.ShotgunFileDownloadError"><code class="docutils literal notranslate"><span class="pre">ShotgunFileDownloadError</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.ShotgunFileDownloadError.add_note"><code class="docutils literal notranslate"><span class="pre">ShotgunFileDownloadError.add_note()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.ShotgunFileDownloadError.with_traceback"><code class="docutils literal notranslate"><span class="pre">ShotgunFileDownloadError.with_traceback()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#shotgun_api3.Fault"><code class="docutils literal notranslate"><span class="pre">Fault</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.Fault.add_note"><code class="docutils literal notranslate"><span class="pre">Fault.add_note()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.Fault.with_traceback"><code class="docutils literal notranslate"><span class="pre">Fault.with_traceback()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#shotgun_api3.AuthenticationFault"><code class="docutils literal notranslate"><span class="pre">AuthenticationFault</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.AuthenticationFault.add_note"><code class="docutils literal notranslate"><span class="pre">AuthenticationFault.add_note()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.AuthenticationFault.with_traceback"><code class="docutils literal notranslate"><span class="pre">AuthenticationFault.with_traceback()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#shotgun_api3.MissingTwoFactorAuthenticationFault"><code class="docutils literal notranslate"><span class="pre">MissingTwoFactorAuthenticationFault</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.MissingTwoFactorAuthenticationFault.add_note"><code class="docutils literal notranslate"><span class="pre">MissingTwoFactorAuthenticationFault.add_note()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shotgun_api3.MissingTwoFactorAuthenticationFault.with_traceback"><code class="docutils literal notranslate"><span class="pre">MissingTwoFactorAuthenticationFault.with_traceback()</span></code></a></li>
 </ul>
 </li>
@@ -255,7 +250,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.9.2.<br>
+    <b>python-api</b> v3.10.0.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -2502,13 +2497,6 @@ types. Properties that are <code class="docutils literal notranslate"><span clas
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.9/library/exceptions.html#Exception" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
 <p>Base for all Shotgun API Errors.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="shotgun_api3.ShotgunError.add_note">
-<span class="sig-name descname"><span class="pre">add_note</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.ShotgunError.add_note" title="Permalink to this definition"></a></dt>
-<dd><p>Exception.add_note(note) –
-add a note to the exception</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="shotgun_api3.ShotgunError.with_traceback">
 <span class="sig-name descname"><span class="pre">with_traceback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.ShotgunError.with_traceback" title="Permalink to this definition"></a></dt>
 <dd><p>Exception.with_traceback(tb) –
@@ -2522,13 +2510,6 @@ set self.__traceback__ to tb and return self.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shotgun_api3.</span></span><span class="sig-name descname"><span class="pre">ShotgunFileDownloadError</span></span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#ShotgunFileDownloadError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shotgun_api3.ShotgunFileDownloadError" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#shotgun_api3.ShotgunError" title="shotgun_api3.shotgun.ShotgunError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotgunError</span></code></a></p>
 <p>Exception for file download-related errors.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="shotgun_api3.ShotgunFileDownloadError.add_note">
-<span class="sig-name descname"><span class="pre">add_note</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.ShotgunFileDownloadError.add_note" title="Permalink to this definition"></a></dt>
-<dd><p>Exception.add_note(note) –
-add a note to the exception</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="shotgun_api3.ShotgunFileDownloadError.with_traceback">
 <span class="sig-name descname"><span class="pre">with_traceback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.ShotgunFileDownloadError.with_traceback" title="Permalink to this definition"></a></dt>
@@ -2544,13 +2525,6 @@ set self.__traceback__ to tb and return self.</p>
 <dd><p>Bases: <a class="reference internal" href="#shotgun_api3.ShotgunError" title="shotgun_api3.shotgun.ShotgunError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotgunError</span></code></a></p>
 <p>Exception when server-side exception detected.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="shotgun_api3.Fault.add_note">
-<span class="sig-name descname"><span class="pre">add_note</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.Fault.add_note" title="Permalink to this definition"></a></dt>
-<dd><p>Exception.add_note(note) –
-add a note to the exception</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="shotgun_api3.Fault.with_traceback">
 <span class="sig-name descname"><span class="pre">with_traceback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.Fault.with_traceback" title="Permalink to this definition"></a></dt>
 <dd><p>Exception.with_traceback(tb) –
@@ -2564,13 +2538,6 @@ set self.__traceback__ to tb and return self.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">shotgun_api3.</span></span><span class="sig-name descname"><span class="pre">AuthenticationFault</span></span><a class="reference internal" href="_modules/shotgun_api3/shotgun.html#AuthenticationFault"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shotgun_api3.AuthenticationFault" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#shotgun_api3.Fault" title="shotgun_api3.shotgun.Fault"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fault</span></code></a></p>
 <p>Exception when the server side reports an error related to authentication.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="shotgun_api3.AuthenticationFault.add_note">
-<span class="sig-name descname"><span class="pre">add_note</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.AuthenticationFault.add_note" title="Permalink to this definition"></a></dt>
-<dd><p>Exception.add_note(note) –
-add a note to the exception</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="shotgun_api3.AuthenticationFault.with_traceback">
 <span class="sig-name descname"><span class="pre">with_traceback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.AuthenticationFault.with_traceback" title="Permalink to this definition"></a></dt>
@@ -2586,13 +2553,6 @@ set self.__traceback__ to tb and return self.</p>
 <dd><p>Bases: <a class="reference internal" href="#shotgun_api3.Fault" title="shotgun_api3.shotgun.Fault"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fault</span></code></a></p>
 <p>Exception when the server side reports an error related to missing two-factor authentication
 credentials.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="shotgun_api3.MissingTwoFactorAuthenticationFault.add_note">
-<span class="sig-name descname"><span class="pre">add_note</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.MissingTwoFactorAuthenticationFault.add_note" title="Permalink to this definition"></a></dt>
-<dd><p>Exception.add_note(note) –
-add a note to the exception</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="shotgun_api3.MissingTwoFactorAuthenticationFault.with_traceback">
 <span class="sig-name descname"><span class="pre">with_traceback</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#shotgun_api3.MissingTwoFactorAuthenticationFault.with_traceback" title="Permalink to this definition"></a></dt>
@@ -3486,7 +3446,7 @@ Requests made from script/API users are localized in the site settings.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, Autodesk.</p>
+    <p>&#169; Copyright 2026, Autodesk.</p>
   </div>
 
    
