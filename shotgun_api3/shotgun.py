@@ -404,7 +404,8 @@ class _Config(object):
         # In the case that the environment variable is already set, setting the
         # property on the config will override it.
         self.rpc_attempt_interval = 3000
-        # From http://docs.python.org/2.6/library/httplib.html:
+
+        # From https://docs.python.org/3.9/library/http.client.html:
         # If the optional timeout parameter is given, blocking operations
         # (like connection attempts) will timeout after that many seconds
         # (if it is not given, the global default timeout setting is used)
@@ -3995,12 +3996,7 @@ class Shotgun(object):
         Open the given request object, return the
         response, raises URLError on protocol errors.
         """
-        try:
-            result = opener.open(request)
-
-        except urllib.error.HTTPError:
-            raise
-        return result
+        return opener.open(request)
 
     def _parse_http_status(self, status: Tuple) -> None:
         """
@@ -4493,7 +4489,7 @@ class Shotgun(object):
         :param str content_type: Content type of the data stream.
         :param int size: Number of bytes in the data stream.
         :param str storage_url: Target URL for the uploaded file.
-        :returns: upload url.
+        :returns: etag of the uploaded file (hash of the file content).
         :rtype: str
         """
 
