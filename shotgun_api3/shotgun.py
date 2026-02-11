@@ -2940,7 +2940,7 @@ class Shotgun(object):
             If an int value is passed in, the Attachment entity with the matching id will
             be downloaded from the Shotgun server.
         :param str file_path: Optional file path to write the data directly to local disk. This
-            avoids loading all of the data in memory and saves the file locally at the given path.
+            avoids loading all the data in memory and saves the file locally at the given path.
         :param id attachment_id: (deprecated) Optional ``id`` of the Attachment entity in Shotgun to
             download.
 
@@ -2961,16 +2961,37 @@ class Shotgun(object):
                     "dict, int, NoneType value or"
                     "an int for parameter attachment_id"
                 )
+
+        url = self.get_attachment_download_url(attachment)
+        return self.download_file_from_url(url, file_path)
+
+    def download_file_from_url(self, url, file_path=None):
+        """
+        Download the file associated with a Shotgun Attachment using the provided url.
+
+        >>> version = sg.find_one("Version", [["id", "is", 7115]], ["image"])
+        >>> url = version["image"]
+        >>> sg.download_file_from_url(url)
+
+        This method is used internally by :meth:`~shotgun_api3.Shotgun.download_attachment`.
+        This can be used to download other files from Shotgun/FPT that are not explicitly an attachment,
+        such as thumbnails.
+
+        :param str url: The url to download the file from. This should be a valid Shotgun URL
+        :param str file_path: Optional file path to write the data directly to local disk. This
+            avoids loading all the data in memory and saves the file locally at the given path.
+        :returns: If ``file_path`` is provided, returns the path to the file on disk.  If
+            ``file_path`` is ``None``, returns the actual data of the file, as str in Python 2 or
+            bytes in Python 3.
+        :rtype: str | bytes
+        """
         # write to disk
         if file_path:
             try:
                 fp = open(file_path, "wb")
             except IOError as e:
-                raise IOError(
-                    "Unable to write Attachment to disk using " "file_path. %s" % e
-                )
+                raise IOError("Unable to write Attachment to disk using " "file_path. %s" % e)
 
-        url = self.get_attachment_download_url(attachment)
         if url is None:
             return None
 
