@@ -2610,6 +2610,7 @@ class Shotgun(object):
         field_name: Optional[str] = None,
         display_name: Optional[str] = None,
         tag_list: Optional[str] = None,
+        created_at: Optional[datetime.datetime] = None,
     ) -> int:
         """
         Upload a file to the specified entity.
@@ -2634,6 +2635,8 @@ class Shotgun(object):
             This field must be a File/Link field type.
         :param str display_name: The display name to use for the file. Defaults to the file name.
         :param str tag_list: comma-separated string of tags to assign to the file.
+        :param datetime.datetime created_at: Optional datetime value to set as the created_at
+            time for the Attachment entity. If ``None``, the server will use the current time.
         :returns: Id of the Attachment entity that was created for the image.
         :rtype: int
         :raises: :class:`ShotgunError` on upload failure.
@@ -2662,6 +2665,13 @@ class Shotgun(object):
         if os.path.getsize(path) == 0:
             raise ShotgunError("Path cannot be an empty file: '%s'" % path)
 
+        if created_at is not None:
+            if not isinstance(created_at, datetime.datetime):
+                raise ShotgunError(
+                    "created_at must be a datetime.datetime instance, got %s"
+                    % type(created_at)
+                )
+
         is_thumbnail = field_name in [
             "thumb_image",
             "filmstrip_thumb_image",
@@ -2679,6 +2689,7 @@ class Shotgun(object):
                 display_name,
                 tag_list,
                 is_thumbnail,
+                created_at,
             )
         else:
             return self._upload_to_sg(
@@ -2689,6 +2700,7 @@ class Shotgun(object):
                 display_name,
                 tag_list,
                 is_thumbnail,
+                created_at,
             )
 
     def _upload_to_storage(
@@ -2700,6 +2712,7 @@ class Shotgun(object):
         display_name: Optional[str],
         tag_list: Optional[str],
         is_thumbnail: bool,
+        created_at: Optional[datetime.datetime] = None,
     ) -> int:
         """
         Internal function to upload a file to the Cloud storage and link it to the specified entity.
@@ -2712,6 +2725,7 @@ class Shotgun(object):
         :param str display_name: The display name to use for the file. Defaults to the file name.
         :param str tag_list: comma-separated string of tags to assign to the file.
         :param bool is_thumbnail: indicates if the attachment is a thumbnail.
+        :param datetime created_at: The datetime to set for the attachment.
         :returns: Id of the Attachment entity that was created for the image.
         :rtype: int
         """
@@ -2768,6 +2782,8 @@ class Shotgun(object):
             # None gets converted to a string and added as a tag...
             if tag_list:
                 params["tag_list"] = tag_list
+            if created_at is not None:
+                params["created_at"] = created_at
 
         result = self._send_form(url, params)
         if not result.startswith("1"):
@@ -2790,6 +2806,7 @@ class Shotgun(object):
         display_name: Optional[str],
         tag_list: Optional[str],
         is_thumbnail: bool,
+        created_at: Optional[datetime.datetime] = None,
     ) -> int:
         """
         Internal function to upload a file to Shotgun and link it to the specified entity.
@@ -2848,6 +2865,8 @@ class Shotgun(object):
             # None gets converted to a string and added as a tag...
             if tag_list:
                 params["tag_list"] = tag_list
+            if created_at is not None:
+                params["created_at"] = created_at
 
             params["file"] = open(path, "rb")
 
