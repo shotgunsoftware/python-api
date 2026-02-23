@@ -2668,7 +2668,8 @@ class Shotgun(object):
         if created_at is not None:
             if not isinstance(created_at, datetime.datetime):
                 raise ShotgunError(
-                    "created_at must be a datetime.datetime instance, got '%s'" % type(created_at)
+                    "created_at must be a datetime.datetime instance, got '%s'"
+                    % type(created_at)
                 )
 
         is_thumbnail = field_name in [
