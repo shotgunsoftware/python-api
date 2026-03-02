@@ -2819,7 +2819,7 @@ class Shotgun(object):
         :param str display_name: The display name to use for the file. Defaults to the file name.
         :param str tag_list: comma-separated string of tags to assign to the file.
         :param bool is_thumbnail: indicates if the attachment is a thumbnail.
-
+        :param datetime created_at: The datetime to set for the attachment.
         :returns: Id of the Attachment entity that was created for the image.
         :rtype: int
         """

@@ -325,6 +325,156 @@ class TestShotgunApi(base.LiveTestBase):
         mock_send_form.assert_called_once()
         self.sg.server_info["s3_direct_uploads_enabled"] = True
 
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
+    def test_upload_to_sg_with_created_at(self, mock_send_form):
+        """
+        Verify that created_at is passed as a form parameter when uploading
+        non-thumbnail attachments via _upload_to_sg().
+        """
+        self.sg.server_info["s3_direct_uploads_enabled"] = False
+        mock_send_form.return_value = "1\n:456\nasd"
+        this_dir, _ = os.path.split(__file__)
+        u_path = os.path.abspath(
+            os.path.expanduser(glob.glob(os.path.join(this_dir, "Noëlご.jpg"))[0])
+        )
+        custom_time = datetime.datetime(2026, 2, 15, 10, 30, 0)
+        self.sg.upload(
+            "Version",
+            self.version["id"],
+            u_path,
+            "attachments",
+            created_at=custom_time,
+        )
+        mock_send_form.assert_called_once()
+        mock_send_form_args, _ = mock_send_form.call_args
+        params = mock_send_form_args[1]
+        self.assertIn("created_at", params)
+        self.assertEqual(params["created_at"], custom_time)
+        self.sg.server_info["s3_direct_uploads_enabled"] = True
+
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
+    def test_upload_to_sg_without_created_at(self, mock_send_form):
+        """
+        Verify that created_at is NOT included in form parameters when omitted.
+        """
+        self.sg.server_info["s3_direct_uploads_enabled"] = False
+        mock_send_form.return_value = "1\n:456\nasd"
+        this_dir, _ = os.path.split(__file__)
+        u_path = os.path.abspath(
+            os.path.expanduser(glob.glob(os.path.join(this_dir, "Noëlご.jpg"))[0])
+        )
+        self.sg.upload(
+            "Version",
+            self.version["id"],
+            u_path,
+            "attachments",
+        )
+        mock_send_form.assert_called_once()
+        mock_send_form_args, _ = mock_send_form.call_args
+        params = mock_send_form_args[1]
+        self.assertNotIn("created_at", params)
+        self.sg.server_info["s3_direct_uploads_enabled"] = True
+
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
+    @unittest.mock.patch("shotgun_api3.Shotgun._upload_file_to_storage")
+    @unittest.mock.patch("shotgun_api3.Shotgun._get_attachment_upload_info")
+    def test_upload_to_storage_with_created_at(
+        self, mock_get_info, mock_upload_file, mock_send_form
+    ):
+        """
+        Verify that created_at is passed as a form parameter when uploading
+        non-thumbnail attachments via _upload_to_storage() (S3/cloud path).
+        """
+        self.sg.server_info["s3_direct_uploads_enabled"] = True
+        self.sg.server_info["s3_enabled_upload_types"] = {"Version": "*"}
+        mock_get_info.return_value = {
+            "upload_url": "https://example.com/upload",
+            "upload_info": {"upload_type": "s3"},
+        }
+        mock_send_form.return_value = "1\n:456\nasd"
+        this_dir, _ = os.path.split(__file__)
+        u_path = os.path.abspath(
+            os.path.expanduser(glob.glob(os.path.join(this_dir, "Noëlご.jpg"))[0])
+        )
+        custom_time = datetime.datetime(2026, 2, 15, 10, 30, 0)
+        self.sg.upload(
+            "Version",
+            self.version["id"],
+            u_path,
+            "attachments",
+            created_at=custom_time,
+        )
+        mock_get_info.assert_called_once()
+        mock_send_form.assert_called_once()
+        mock_send_form_args, _ = mock_send_form.call_args
+        params = mock_send_form_args[1]
+        self.assertIn("created_at", params)
+        self.assertEqual(params["created_at"], custom_time)
+
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
+    @unittest.mock.patch("shotgun_api3.Shotgun._upload_file_to_storage")
+    @unittest.mock.patch("shotgun_api3.Shotgun._get_attachment_upload_info")
+    def test_upload_to_storage_without_created_at(
+        self, mock_get_info, mock_upload_file, mock_send_form
+    ):
+        """
+        Verify that created_at is NOT included in form parameters when omitted
+        via _upload_to_storage() (S3/cloud path).
+        """
+        self.sg.server_info["s3_direct_uploads_enabled"] = True
+        self.sg.server_info["s3_enabled_upload_types"] = {"Version": "*"}
+        mock_get_info.return_value = {
+            "upload_url": "https://example.com/upload",
+            "upload_info": {"upload_type": "s3"},
+        }
+        mock_send_form.return_value = "1\n:456\nasd"
+        this_dir, _ = os.path.split(__file__)
+        u_path = os.path.abspath(
+            os.path.expanduser(glob.glob(os.path.join(this_dir, "Noëlご.jpg"))[0])
+        )
+        self.sg.upload(
+            "Version",
+            self.version["id"],
+            u_path,
+            "attachments",
+        )
+        mock_get_info.assert_called_once()
+        mock_send_form.assert_called_once()
+        mock_send_form_args, _ = mock_send_form.call_args
+        params = mock_send_form_args[1]
+        self.assertNotIn("created_at", params)
+
+    def test_upload_created_at_invalid_type(self):
+        """
+        Verify that passing a non-datetime value for created_at raises ShotgunError.
+        """
+        this_dir, _ = os.path.split(__file__)
+        u_path = os.path.abspath(
+            os.path.expanduser(glob.glob(os.path.join(this_dir, "Noëlご.jpg"))[0])
+        )
+        with self.assertRaisesRegex(
+            shotgun_api3.ShotgunError,
+            "created_at must be a datetime.datetime instance",
+        ):
+            self.sg.upload(
+                "Version",
+                self.version["id"],
+                u_path,
+                "attachments",
+                created_at="2026-02-15T10:30:00Z",
+            )
+        with self.assertRaisesRegex(
+            shotgun_api3.ShotgunError,
+            "created_at must be a datetime.datetime instance",
+        ):
+            self.sg.upload(
+                "Version",
+                self.version["id"],
+                u_path,
+                "attachments",
+                created_at=1234567890,
+            )
+
     def test_upload_thumbnail_in_create(self):
         """Upload a thumbnail via the create method"""
         this_dir, _ = os.path.split(__file__)
