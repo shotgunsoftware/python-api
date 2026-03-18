@@ -2737,7 +2737,7 @@ class Shotgun(object):
         is_multipart_upload = os.path.getsize(path) > self._MULTIPART_UPLOAD_CHUNK_SIZE
 
         upload_info = self._get_attachment_upload_info(
-            is_thumbnail, filename, is_multipart_upload
+            is_thumbnail, filename, is_multipart_upload, created_at=created_at
         )
 
         # Step 2: upload the file
@@ -2866,7 +2866,7 @@ class Shotgun(object):
             if tag_list:
                 params["tag_list"] = tag_list
             if created_at is not None:
-                params["created_at"] = created_at
+                params["created_at"] = created_at.isoformat()
 
             params["file"] = open(path, "rb")
 
@@ -2882,7 +2882,11 @@ class Shotgun(object):
         return attachment_id
 
     def _get_attachment_upload_info(
-        self, is_thumbnail: bool, filename: str, is_multipart_upload: bool
+        self,
+        is_thumbnail: bool,
+        filename: str,
+        is_multipart_upload: bool,
+        created_at: Optional[datetime.datetime] = None,
     ) -> Dict[str, Any]:
         """
         Internal function to get the information needed to upload a file to Cloud storage.
@@ -2890,6 +2894,9 @@ class Shotgun(object):
         :param bool is_thumbnail: indicates if the attachment is a thumbnail.
         :param str filename: name of the file that will be uploaded.
         :param bool is_multipart_upload: Indicates if we want multi-part upload information back.
+        :param datetime created_at: Optional datetime to use as the upload timestamp.
+            When provided, the server generates the S3 key with this timestamp so that
+            the Attachment's created_at and its storage path stay in sync.
 
         :returns: dictionary containing upload details from the server.
             These details are used throughout the upload process.
@@ -2904,6 +2911,9 @@ class Shotgun(object):
         params = {"upload_type": upload_type, "filename": filename}
 
         params["multipart_upload"] = is_multipart_upload
+
+        if created_at is not None:
+            params["created_at"] = created_at.isoformat()
 
         upload_url = "/upload/api_get_upload_link_info"
         url = urllib.parse.urlunparse(
