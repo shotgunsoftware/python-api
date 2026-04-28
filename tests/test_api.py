@@ -328,8 +328,8 @@ class TestShotgunApi(base.LiveTestBase):
     @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
     def test_upload_to_sg_with_created_at(self, mock_send_form):
         """
-        Verify that created_at is passed as a form parameter when uploading
-        non-thumbnail attachments via _upload_to_sg().
+        Verify that created_at is passed (in ISO 8601 string form) as a form
+        parameter when uploading non-thumbnail attachments via _upload_to_sg().
         """
         self.sg.server_info["s3_direct_uploads_enabled"] = False
         mock_send_form.return_value = "1\n:456\nasd"
@@ -349,7 +349,7 @@ class TestShotgunApi(base.LiveTestBase):
         mock_send_form_args, _ = mock_send_form.call_args
         params = mock_send_form_args[1]
         self.assertIn("created_at", params)
-        self.assertEqual(params["created_at"], custom_time)
+        self.assertEqual(params["created_at"], custom_time.isoformat())
         self.sg.server_info["s3_direct_uploads_enabled"] = True
 
     @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
@@ -383,7 +383,9 @@ class TestShotgunApi(base.LiveTestBase):
     ):
         """
         Verify that created_at is passed as a form parameter when uploading
-        non-thumbnail attachments via _upload_to_storage() (S3/cloud path).
+        non-thumbnail attachments via _upload_to_storage() (S3/cloud path),
+        and that it is forwarded to _get_attachment_upload_info() so the server
+        can use it when generating the storage path.
         """
         self.sg.server_info["s3_direct_uploads_enabled"] = True
         self.sg.server_info["s3_enabled_upload_types"] = {"Version": "*"}
@@ -405,6 +407,8 @@ class TestShotgunApi(base.LiveTestBase):
             created_at=custom_time,
         )
         mock_get_info.assert_called_once()
+        _, get_info_kwargs = mock_get_info.call_args
+        self.assertEqual(get_info_kwargs.get("created_at"), custom_time)
         mock_send_form.assert_called_once()
         mock_send_form_args, _ = mock_send_form.call_args
         params = mock_send_form_args[1]
@@ -419,7 +423,8 @@ class TestShotgunApi(base.LiveTestBase):
     ):
         """
         Verify that created_at is NOT included in form parameters when omitted
-        via _upload_to_storage() (S3/cloud path).
+        via _upload_to_storage() (S3/cloud path), and that None is forwarded to
+        _get_attachment_upload_info().
         """
         self.sg.server_info["s3_direct_uploads_enabled"] = True
         self.sg.server_info["s3_enabled_upload_types"] = {"Version": "*"}
@@ -439,10 +444,83 @@ class TestShotgunApi(base.LiveTestBase):
             "attachments",
         )
         mock_get_info.assert_called_once()
+        _, get_info_kwargs = mock_get_info.call_args
+        self.assertIsNone(get_info_kwargs.get("created_at"))
         mock_send_form.assert_called_once()
         mock_send_form_args, _ = mock_send_form.call_args
         params = mock_send_form_args[1]
         self.assertNotIn("created_at", params)
+
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
+    def test_get_attachment_upload_info_with_created_at(self, mock_send_form):
+        """
+        Verify that _get_attachment_upload_info() includes created_at in the
+        form params (as ISO 8601 string) when sending the request to
+        /upload/api_get_upload_link_info.
+        """
+        mock_send_form.return_value = (
+            "1\nhttps://example.com/upload\n2026-02-15T10:30:00\nAttachment\nupload-123"
+        )
+        custom_time = datetime.datetime(2026, 2, 15, 10, 30, 0)
+        self.sg._get_attachment_upload_info(
+            is_thumbnail=False,
+            filename="example.jpg",
+            is_multipart_upload=False,
+            created_at=custom_time,
+        )
+        mock_send_form.assert_called_once()
+        mock_send_form_args, _ = mock_send_form.call_args
+        params = mock_send_form_args[1]
+        self.assertIn("created_at", params)
+        self.assertEqual(params["created_at"], custom_time.isoformat())
+        self.assertEqual(params["upload_type"], "Attachment")
+        self.assertEqual(params["filename"], "example.jpg")
+
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
+    def test_get_attachment_upload_info_without_created_at(self, mock_send_form):
+        """
+        Verify that _get_attachment_upload_info() does NOT include created_at
+        in the form params when it is omitted (None).
+        """
+        mock_send_form.return_value = (
+            "1\nhttps://example.com/upload\n2026-02-15T10:30:00\nAttachment\nupload-123"
+        )
+        self.sg._get_attachment_upload_info(
+            is_thumbnail=False,
+            filename="example.jpg",
+            is_multipart_upload=False,
+        )
+        mock_send_form.assert_called_once()
+        mock_send_form_args, _ = mock_send_form.call_args
+        params = mock_send_form_args[1]
+        self.assertNotIn("created_at", params)
+
+    @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
+    def test_get_attachment_upload_info_thumbnail_with_created_at(
+        self, mock_send_form
+    ):
+        """
+        Verify that _get_attachment_upload_info() forwards created_at even when
+        is_thumbnail=True. The implementation does not gate created_at on the
+        thumbnail flag at this stage; the server is responsible for handling
+        thumbnail-specific behavior.
+        """
+        mock_send_form.return_value = (
+            "1\nhttps://example.com/upload\n2026-02-15T10:30:00\nThumbnail\nupload-123"
+        )
+        custom_time = datetime.datetime(2026, 2, 15, 10, 30, 0)
+        self.sg._get_attachment_upload_info(
+            is_thumbnail=True,
+            filename="thumb.jpg",
+            is_multipart_upload=False,
+            created_at=custom_time,
+        )
+        mock_send_form.assert_called_once()
+        mock_send_form_args, _ = mock_send_form.call_args
+        params = mock_send_form_args[1]
+        self.assertEqual(params["upload_type"], "Thumbnail")
+        self.assertIn("created_at", params)
+        self.assertEqual(params["created_at"], custom_time.isoformat())
 
     def test_upload_created_at_invalid_type(self):
         """
