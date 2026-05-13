@@ -496,9 +496,7 @@ class TestShotgunApi(base.LiveTestBase):
         self.assertNotIn("created_at", params)
 
     @unittest.mock.patch("shotgun_api3.Shotgun._send_form")
-    def test_get_attachment_upload_info_thumbnail_with_created_at(
-        self, mock_send_form
-    ):
+    def test_get_attachment_upload_info_thumbnail_with_created_at(self, mock_send_form):
         """
         Verify that _get_attachment_upload_info() forwards created_at even when
         is_thumbnail=True. The implementation does not gate created_at on the
