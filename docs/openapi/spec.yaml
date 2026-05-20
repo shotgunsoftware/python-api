@@ -254,7 +254,8 @@ tags:
   - name: "Schema"
     description: "Introspect and modify the Shotgun schema (entity types and fields)."
 
-security: []
+security:
+  - api3RequestBodyAuth: []
 
 paths:
 
@@ -262,7 +263,8 @@ paths:
     post:
       operationId: api3Dispatch
       summary: "JSON-RPC Dispatch"
-      security: []
+      security:
+        - api3RequestBodyAuth: []
       description: |
         Single dispatch endpoint for all API3 JSON-RPC methods.
         The method is selected via the `method_name` field in the request body.
@@ -684,6 +686,7 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/EntityLink'
+                  maxItems: 500
                   description: "List of entities to update with the shared thumbnail"
                 thumbnail_path:
                   type: string
@@ -703,6 +706,21 @@ paths:
                     type: integer
 
 components:
+
+  securitySchemes:
+    api3RequestBodyAuth:
+      type: apiKey
+      in: header
+      name: X-SG-Auth-Placeholder
+      description: |
+        API3 authentication is handled inside the JSON request body as `params[0]`,
+        not via HTTP headers. This scheme is defined to satisfy OpenAPI tooling
+        requirements. Pass one of the following in `params[0]`:
+        - Script auth: `{"script_name": "...", "script_key": "..."}`
+        - Session token: `{"session_token": "..."}`
+        - User/password: `{"user_login": "...", "user_password": "..."}`
+        See `AuthParams` in the schemas section for full details.
+
   schemas:
 
     # -------------------------------------------------------------------------
@@ -804,6 +822,7 @@ components:
         - type: array
           items:
             $ref: '#/components/schemas/FilterCondition'
+          maxItems: 1000
         - type: object
           required: [filter_operator, filters]
           properties:
@@ -813,6 +832,7 @@ components:
             filters:
               type: array
               items: {}
+              maxItems: 1000
 
     OrderSpec:
       description: "Sort specification for find() queries."
@@ -913,6 +933,7 @@ components:
           type: array
           items:
             type: string
+          maxItems: 500
           description: "Fields to return (create only, defaults to [id])"
         multi_entity_update_modes:
           type: object
@@ -1084,6 +1105,7 @@ components:
           enum: [authenticate_human_user]
         params:
           type: array
+          maxItems: 500
           items: {}
           description: "params[0]: auth object; params[1]: {user_login, user_password, auth_token}"
 
@@ -1111,6 +1133,7 @@ components:
           enum: [get_session_token]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     # -------------------------------------------------------------------------
@@ -1133,6 +1156,7 @@ components:
           enum: [user_subscriptions_read]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     UserSubscriptionsCreateRequest:
@@ -1155,6 +1179,7 @@ components:
           enum: [user_subscriptions_create]
         params:
           type: array
+          maxItems: 500
           items: {}
           description: "params[0]: AuthParams; params[1]: list of {humanUserId, subscription} dicts"
 
@@ -1483,6 +1508,7 @@ components:
           enum: [note_thread_read]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     TextSearchRequest:
@@ -1523,6 +1549,7 @@ components:
           enum: [text_search]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     UpdateProjectLastAccessedRequest:
@@ -1552,6 +1579,7 @@ components:
           enum: [update_project_last_accessed_by_current_user]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     WorkScheduleReadRequest:
@@ -1592,6 +1620,7 @@ components:
           enum: [work_schedule_read]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     WorkScheduleUpdateRequest:
@@ -1629,6 +1658,7 @@ components:
           enum: [work_schedule_update]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     PreferencesReadRequest:
@@ -1655,6 +1685,7 @@ components:
           enum: [preferences_read]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     ExportPageRequest:
@@ -1687,6 +1718,7 @@ components:
           enum: [export_page]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     # -------------------------------------------------------------------------
@@ -1720,6 +1752,7 @@ components:
           enum: [activity_stream_read]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     FollowRequest:
@@ -1749,6 +1782,7 @@ components:
           enum: [follow]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     UnfollowRequest:
@@ -1778,6 +1812,7 @@ components:
           enum: [unfollow]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     FollowersRequest:
@@ -1804,6 +1839,7 @@ components:
           enum: [followers]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     FollowingRequest:
@@ -1834,6 +1870,7 @@ components:
           enum: [following]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     # -------------------------------------------------------------------------
@@ -1874,6 +1911,7 @@ components:
           enum: [schema_entity_read]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     SchemaFieldReadRequest:
@@ -1912,6 +1950,7 @@ components:
           enum: [schema_field_read]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     SchemaFieldCreateRequest:
@@ -1945,6 +1984,7 @@ components:
           enum: [schema_field_create]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     SchemaFieldUpdateRequest:
@@ -1981,6 +2021,7 @@ components:
           enum: [schema_field_update]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     SchemaFieldDeleteRequest:
@@ -2008,6 +2049,7 @@ components:
           enum: [schema_field_delete]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     SchemaReadRequest:
@@ -2040,6 +2082,7 @@ components:
           enum: [schema_read]
         params:
           type: array
+          maxItems: 500
           items: {}
 
     SchemaDeprecatedRequest:
@@ -2056,4 +2099,5 @@ components:
           enum: [schema, entity_types]
         params:
           type: array
+          maxItems: 500
           items: {}
