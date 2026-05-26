@@ -1,10 +1,9 @@
 openapi: "3.0.3"
 
 info:
-  title: "Flow Production Tracking Python API"
-  version: "3.10.0"
-  description: |
-    OpenAPI 3.0.3 description of the [Flow Production Tracking Python API](https://developers.shotgridsoftware.com/python-api/reference.html) (`shotgun_api3` v3.10.0).
+  title: "Flow Production Tracking API3"
+  version: "1.0"
+  description: "Flow Production Tracking API3 specification."
 
     ## Shotgun Client
 
