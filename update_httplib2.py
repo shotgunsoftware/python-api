@@ -3,7 +3,7 @@
 """
 Updates the httplib2 module.
 
-Run as "./upgrade_httplib2.py vX.Y.Z" to get a specific release from github.
+Run as "./update_httplib2.py vX.Y.Z" to get a specific release from github.
 """
 
 import pathlib
