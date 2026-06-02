@@ -24,7 +24,8 @@ class Utilities:
                 "download",
                 f"certifi=={version}",
                 "--no-deps",
-                "--index-url", "https://pypi.org/simple/",
+                "--index-url",
+                "https://pypi.org/simple/",
                 "-d",
                 str(dest_dir),
             ]
@@ -91,7 +92,9 @@ def main(temp_path, repo_root, version):
 
     # Stage changes
     print("Adding to git")
-    subprocess.check_output(["git", "add", str(certifi_dir), str(req_file)])  # nosec B607
+    subprocess.check_output(
+        ["git", "add", str(certifi_dir), str(req_file)]
+    )  # nosec B607
 
 
 if __name__ == "__main__":
