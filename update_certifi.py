@@ -4,8 +4,6 @@
 Updates the bundled certifi module.
 
 Run as "./update_certifi.py YYYY.MM.DD" to get a specific release from PyPI.
-
-After running this script, manually add an entry to HISTORY.rst and then commit.
 """
 
 import pathlib
