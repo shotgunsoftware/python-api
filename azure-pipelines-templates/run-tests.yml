@@ -123,20 +123,42 @@ jobs:
       # This will give a user name like 'something macOS 2.7'
       SG_HUMAN_NAME: $(python_api_human_name) ${{ parameters.os_name }} ${{ parameters.python_version }}
       SG_HUMAN_PASSWORD: $(python_api_human_password)
-      # So, first, we need to make sure that two builds running at the same time do not manipulate
-      # the same entities, so we're sandboxing build nodes based on their name.
-      SG_PROJECT_NAME: Python API CI - $(Agent.Name)
-      # The entities created and then reused between tests assume that the same user is always
-      # manipulating them. Because different builds will be assigned different agents and therefore
-      # different projects, it means each project needs to have an entity specific to a given user.
-      # Again, this would have been a lot simpler if we could simply have had a login based on the
-      # agent name, but alas, the agent name has a space in it which needs to be replaced to something
-      # else and string substitution can't be made on build variables, only template parameters.
-      SG_ASSET_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
-      SG_VERSION_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
-      SG_SHOT_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
-      SG_TASK_CONTENT: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
-      SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
+      # Each job gets its own ephemeral project, scoped to this build + OS + Python version.
+      # This eliminates state bleed between concurrent runs and across successive builds on the
+      # same agent. The project is retired in the "Cleanup test project" step below.
+      SG_PROJECT_NAME: Python API CI - $(Build.BuildId) - ${{ parameters.os_name }} - ${{ parameters.python_version }}
+      # Entity codes only need to be unique within the project, so fixed strings are fine.
+      SG_ASSET_CODE: CI-asset
+      SG_VERSION_CODE: CI-version
+      SG_SHOT_CODE: CI-shot
+      SG_TASK_CONTENT: CI-task
+      SG_PLAYLIST_CODE: CI-playlist
+
+  - task: Bash@3
+    displayName: Cleanup test project
+    condition: always()
+    inputs:
+      targetType: inline
+      script: |
+        python -c "
+        import os, shotgun_api3
+        sg = shotgun_api3.Shotgun(
+            os.environ['SG_SERVER_URL'],
+            os.environ['SG_SCRIPT_NAME'],
+            os.environ['SG_API_KEY'],
+        )
+        project = sg.find_one('Project', [['name', 'is', os.environ['SG_PROJECT_NAME']]])
+        if project:
+            sg.delete('Project', project['id'])
+            print('Retired project:', os.environ['SG_PROJECT_NAME'])
+        else:
+            print('Project not found, nothing to clean up.')
+        "
+    env:
+      SG_SERVER_URL: $(ci_site)
+      SG_SCRIPT_NAME: $(ci_site_script_name)
+      SG_API_KEY: $(ci_site_script_key)
+      SG_PROJECT_NAME: Python API CI - $(Build.BuildId) - ${{ parameters.os_name }} - ${{ parameters.python_version }}
 
   # Explicit call to PublishTestResults@2 and PublishCodeCoverageResults@2 here
   # instead of relying on pytest-azurepipelines because pytest-azurepipelines
