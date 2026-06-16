@@ -3329,22 +3329,24 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
         project_1 = projects[0]
         project_2 = projects[1]
 
+        def assert_visibility(project, expected, retries=5, delay=1):
+            """Poll until schema_field_read reflects the expected visibility value."""
+            result = None
+            for _ in range(retries):
+                result = self.sg.schema_field_read("Asset", field_name, project)[
+                    field_name
+                ]["visible"]
+                if result == expected:
+                    return
+                time.sleep(delay)
+            self.assertEqual(expected, result)
+
         # First, reset the field visibility in a known state, i.e. visible for both projects,
         # in case the last test run failed midway through.
         self.sg.schema_field_update("Asset", field_name, {"visible": True}, project_1)
-        self.assertEqual(
-            {"value": True, "editable": True},
-            self.sg.schema_field_read("Asset", field_name, project_1)[field_name][
-                "visible"
-            ],
-        )
+        assert_visibility(project_1, {"value": True, "editable": True})
         self.sg.schema_field_update("Asset", field_name, {"visible": True}, project_2)
-        self.assertEqual(
-            {"value": True, "editable": True},
-            self.sg.schema_field_read("Asset", field_name, project_2)[field_name][
-                "visible"
-            ],
-        )
+        assert_visibility(project_2, {"value": True, "editable": True})
 
         # Built-in fields should remain not editable.
         self.assertFalse(
@@ -3360,12 +3362,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
         # Hide the field on project 1
         self.sg.schema_field_update("Asset", field_name, {"visible": False}, project_1)
         # It should not be visible anymore.
-        self.assertEqual(
-            {"value": False, "editable": True},
-            self.sg.schema_field_read("Asset", field_name, project_1)[field_name][
-                "visible"
-            ],
-        )
+        assert_visibility(project_1, {"value": False, "editable": True})
 
         # The field should be visible on the second project.
         self.assertEqual(
@@ -3377,12 +3374,7 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
 
         # Restore the visibility on the field.
         self.sg.schema_field_update("Asset", field_name, {"visible": True}, project_1)
-        self.assertEqual(
-            {"value": True, "editable": True},
-            self.sg.schema_field_read("Asset", field_name, project_1)[field_name][
-                "visible"
-            ],
-        )
+        assert_visibility(project_1, {"value": True, "editable": True})
 
 
 class TestLibImports(base.LiveTestBase):
