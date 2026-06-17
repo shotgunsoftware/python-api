@@ -102,6 +102,8 @@ jobs:
           --durations=0 \
           --nunit-xml=test-results.xml \
           --verbose \
+          --reruns 1 \
+          --reruns-delay 2 \
     env:
       # Tell Pytest that we're running in a CI environment
       CI: 1
