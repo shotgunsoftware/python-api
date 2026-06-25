@@ -147,11 +147,11 @@ jobs:
             entity_type='Project',
             filters=[['name', 'is', os.environ['SG_PROJECT_NAME']]],
         )
-        if project:
-            sg.delete(entity_type='Project', entity_id=project['id'])
-            print('Retired project:', os.environ['SG_PROJECT_NAME'])
-        else:
+        if not project:
             print('Project not found, nothing to clean up.')
+            sys.exit(0)
+        sg.delete(entity_type='Project', entity_id=project['id'])
+        print('Retired project:', os.environ['SG_PROJECT_NAME'])
     env:
       PYTHONPATH: $(Build.SourcesDirectory)
       SG_SERVER_URL: $(ci_site)
