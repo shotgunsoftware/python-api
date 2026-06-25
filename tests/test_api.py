@@ -3323,9 +3323,13 @@ class TestReadAdditionalFilterPresets(base.LiveTestBase):
             self.sg.schema_field_create("Asset", "text", "Project Visibility Test")
 
         # Hide/show on the ephemeral CI project so concurrent matrix jobs do not race.
-        # Use the oldest site project as the control.
+        # Use the oldest site project as the control (find_one defaults to sorting by "id" ascending)
         project_1 = self.project
-        project_2 = self.sg.find_one("Project", [])
+        project_2 = self.sg.find_one("Project", [["id", "is_not", project_1["id"]]])
+        self.assertIsNotNone(
+            project_2,
+            "A second project is required to test per-project field visibility.",
+        )
 
         # First, reset the field visibility in a known state, i.e. visible for both projects,
         # in case the last test run failed midway through.
