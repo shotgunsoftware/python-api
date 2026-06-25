@@ -135,6 +135,7 @@ jobs:
     condition: always()
     inputs:
       scriptSource: inline
+      workingDirectory: $(Build.SourcesDirectory)
       script: |
         import os, shotgun_api3
         sg = shotgun_api3.Shotgun(
@@ -149,6 +150,7 @@ jobs:
         else:
             print('Project not found, nothing to clean up.')
     env:
+      PYTHONPATH: $(Build.SourcesDirectory)
       SG_SERVER_URL: $(ci_site)
       SG_SCRIPT_NAME: $(ci_site_script_name)
       SG_API_KEY: $(ci_site_script_key)
