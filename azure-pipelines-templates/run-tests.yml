@@ -136,13 +136,12 @@ jobs:
       SG_TASK_CONTENT: CI-task
       SG_PLAYLIST_CODE: CI-playlist
 
-  - task: Bash@3
+  - task: PythonScript@0
     displayName: Cleanup test project
     condition: always()
     inputs:
-      targetType: inline
+      scriptSource: inline
       script: |
-        python -c "
         import os, shotgun_api3
         sg = shotgun_api3.Shotgun(
             os.environ['SG_SERVER_URL'],
@@ -155,7 +154,6 @@ jobs:
             print('Retired project:', os.environ['SG_PROJECT_NAME'])
         else:
             print('Project not found, nothing to clean up.')
-        "
     env:
       SG_SERVER_URL: $(ci_site)
       SG_SCRIPT_NAME: $(ci_site_script_name)
