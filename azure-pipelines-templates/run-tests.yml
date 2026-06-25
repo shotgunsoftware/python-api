@@ -129,12 +129,6 @@ jobs:
       # This eliminates state bleed between concurrent runs and across successive builds on the
       # same agent. The project is retired in the "Cleanup test project" step below.
       SG_PROJECT_NAME: Python API CI - $(Build.BuildId) - ${{ parameters.os_name }} - ${{ parameters.python_version }}
-      # Entity codes only need to be unique within the project, so fixed strings are fine.
-      SG_ASSET_CODE: CI-asset
-      SG_VERSION_CODE: CI-version
-      SG_SHOT_CODE: CI-shot
-      SG_TASK_CONTENT: CI-task
-      SG_PLAYLIST_CODE: CI-playlist
 
   - task: PythonScript@0
     displayName: Cleanup test project
