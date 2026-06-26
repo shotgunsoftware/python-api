@@ -137,7 +137,7 @@ jobs:
       scriptSource: inline
       workingDirectory: $(Build.SourcesDirectory)
       script: |
-        import os, shotgun_api3
+        import os, shotgun_api3, sys
         sg = shotgun_api3.Shotgun(
             base_url=os.environ['SG_SERVER_URL'],
             script_name=os.environ['SG_SCRIPT_NAME'],
