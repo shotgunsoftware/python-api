@@ -93,7 +93,11 @@ def main(temp_path, repo_root, version):
     # Copies a new version into place.
     print("Copying new version of httplib2")
     root_folder = unzipped_folder / f"httplib2-{version[1:]}"
-    utilities.copy_folder(str(root_folder / "python3" / "httplib2"), httplib2_dir)
+    # Older releases had python3/httplib2/; newer ones have httplib2/ at root.
+    python3_path = root_folder / "python3" / "httplib2"
+    flat_path = root_folder / "httplib2"
+    src_path = python3_path if python3_path.exists() else flat_path
+    utilities.copy_folder(str(src_path), httplib2_dir)
     utilities.remove_folder(f"{httplib2_dir}/test")
 
     # Patches the httplib2 imports so they are relative instead of absolute.
@@ -106,9 +110,17 @@ def main(temp_path, repo_root, version):
     subprocess.check_output(["git", "add", str(httplib2_dir)])  # nosec B607
 
 
+def find_repo_root():
+    path = pathlib.Path(__file__).resolve()
+    for parent in [path, *path.parents]:
+        if (parent / ".git").exists():
+            return parent
+    raise RuntimeError("Could not find repo root (no .git directory found)")
+
+
 if __name__ == "__main__":
     try:
         temp_path = pathlib.Path(tempfile.mkdtemp())
-        main(temp_path, pathlib.Path(__file__).parent, sys.argv[1])
+        main(temp_path, find_repo_root(), sys.argv[1])
     finally:
         shutil.rmtree(temp_path)

@@ -97,9 +97,17 @@ def main(temp_path, repo_root, version):
     )  # nosec B607
 
 
+def find_repo_root():
+    path = pathlib.Path(__file__).resolve()
+    for parent in [path, *path.parents]:
+        if (parent / ".git").exists():
+            return parent
+    raise RuntimeError("Could not find repo root (no .git directory found)")
+
+
 if __name__ == "__main__":
     try:
         temp_path = pathlib.Path(tempfile.mkdtemp())
-        main(temp_path, pathlib.Path(__file__).parent, sys.argv[1])
+        main(temp_path, find_repo_root(), sys.argv[1])
     finally:
         shutil.rmtree(temp_path)
