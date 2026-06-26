@@ -7,7 +7,7 @@ Here you can see the full list of changes between each Python API release.
 v3.10.2 (2026 Jun 2)
 =====================
 
-- Update bundled certifi to version 2026.5.20.
+- Update bundled certifi to version 2026.6.17.
 
 v3.10.1 (2026 Feb 10)
 =====================
