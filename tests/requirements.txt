@@ -11,3 +11,4 @@
 pytest
 pytest-cov
 pytest-nunit
+pytest-rerunfailures

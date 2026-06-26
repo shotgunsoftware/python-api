@@ -289,7 +289,7 @@ class LiveTestBase(TestBase):
         cls.human_user = _find_or_create_entity(sg, "HumanUser", data)
 
         data = {"code": cls.config.asset_code, "project": cls.project}
-        keys = ["code"]
+        keys = ["code", "project"]
         cls.asset = _find_or_create_entity(sg, "Asset", data, keys)
 
         data = {
