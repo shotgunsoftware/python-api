@@ -1,11 +1,19 @@
 
 # Updating HTTPLib2
 
-The API comes with a copy of the `httplib2` inside the `shotgun_api3/lib` folder. To update the copy to a more recent version of the API, you can run the `update_httplib2.py` script at the root of this repository like this:
+The API comes with a copy of the `httplib2` inside the `shotgun_api3/lib` folder. To update the copy to a more recent version of the API, you can run the `update_httplib2.py` script from the `developer/` directory like this:
 
     python update_httplib2.py vX.Y.Z
 
-where `vX.Y.Z` is a release found on `httplib2`'s [release page](https://github.com/httplib2/httplib2/releases).
+where `vX.Y.Z` is a release found on `httplib2`'s [tags page](https://github.com/httplib2/httplib2/tags).
+
+# Updating Certifi
+
+The API comes with a copy of `certifi` inside the `shotgun_api3/lib` folder. To update the copy to a more recent version of the API, you can run the `update_certifi.py` script from the `developer/` directory like this:
+
+    python update_certifi.py YYYY.MM.DD
+
+where `YYYY.MM.DD` is a release found on `certifi`'s [release page](https://pypi.org/project/certifi/#history).
 
 
 # Release process
