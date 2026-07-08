@@ -296,9 +296,14 @@ Operators and Arguments
     'not_between'               [[field_value] | None, [field_value] | None]
     'in_last'                   [[int], 'HOUR' | 'DAY' | 'WEEK' | 'MONTH' | 'YEAR']
                                        # note that brackets are not literal (eg. ['start_date', 'in_last', 1, 'DAY'])
+    'not_in_last'               [[int], 'HOUR' | 'DAY' | 'WEEK' | 'MONTH' | 'YEAR']
+                                       # note that brackets are not literal (eg. ['start_date', 'not_in_last', 1, 'DAY'])
     'in_next'                   [[int], 'HOUR' | 'DAY' | 'WEEK' | 'MONTH' | 'YEAR']
                                        # note that brackets are not literal (eg. ['start_date', 'in_next', 1, 'DAY'])
+    'not_in_next'               [[int], 'HOUR' | 'DAY' | 'WEEK' | 'MONTH' | 'YEAR']
+                                       # note that brackets are not literal (eg. ['start_date', 'not_in_next', 1, 'DAY'])
     'in'                        [[field_value], ...]        # Array of field values
+    'not_in'                    [[field_value], ...]        # Array of field values
     'type_is'                   [string] | None             # Shotgun entity type
     'type_is_not'               [string] | None             # Shotgun entity type
     'in_calendar_day'           [int]                       # Offset (e.g. 0 = today, 1 = tomorrow,
@@ -307,8 +312,11 @@ Operators and Arguments
                                                             # -1 = last week)
     'in_calendar_month'         [int]                       # Offset (e.g. 0 = this month, 1 = next month,
                                                             # -1 = last month)
+    'in_calendar_year'          [int]                       # Offset (e.g. 0 = this year, 1 = next year,
+                                                            # -1 = last year)
     'name_contains'             [string]
     'name_not_contains'         [string]
+    'name_is'                   [string]
     'name_starts_with'          [string]
     'name_ends_with'            [string]
 
@@ -450,9 +458,13 @@ Valid Operators By Data Type
     tag_list                    'is'  ** Note:  when used on tag_list, this functions as
                                                 you would expect 'contains' to function
                                 'is_not'
+                                'type_is'
+                                'type_is_not'
                                 'name_contains'
                                 'name_not_contains'
-                                'name_id'
+                                'name_is'
+                                'in'
+                                'not_in'
 
     text                        'is'
                                 'is_not'
@@ -698,7 +710,7 @@ image (read-only)
 :value: :obj:`str` | :obj:`None`
 
     .. note::
-	   Refer to :ref:`interpreting_image_field_strings`.
+      Refer to :ref:`interpreting_image_field_strings`.
 
 list
 ====
