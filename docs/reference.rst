@@ -710,7 +710,7 @@ image (read-only)
 :value: :obj:`str` | :obj:`None`
 
     .. note::
-      Refer to :ref:`interpreting_image_field_strings`.
+       Refer to :ref:`interpreting_image_field_strings`.
 
 list
 ====
