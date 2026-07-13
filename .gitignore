@@ -25,12 +25,11 @@ tests/config
 .cache
 .travis-solo
 htmlcov
+test-output.xml
+coverage.xml
 
 # setup related
 build
 dist
 shotgun_api3.egg-info
 /%1
-
-# pycharm
-.idea

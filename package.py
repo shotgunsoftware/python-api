@@ -2,7 +2,7 @@
 """Shotgun_api3"""
 name = "shotgun_api3"
 
-_shotgunSoftwareVersion = "3.3.4"
+_shotgunSoftwareVersion = "3.10.2"
 _rdoVersion = "1.0.0"
 version = "{0}-rdo-{1}".format(_shotgunSoftwareVersion, _rdoVersion)
 
@@ -10,7 +10,7 @@ authors = ["shotgundev@rodeofx.com"]
 
 description = "Fork of the python api of shotgun."
 
-requires = ["python-2.7|3.7+"]
+requires = ["python-3.9+"]
 
 private_build_requires = ["rdo_package_utils"]
 

@@ -4,27 +4,26 @@
 Details About Working With Files
 ################################
 
-The Shotgun web application stores Files as Attachment entities. You can see these on a Files page,
+The Flow Production Tracking web application stores Files as Attachment entities. You can see these on a Files page,
 or a Files tab on a detail page, for example. You can access Attachments via the API to create and
 modify uploaded files, url links, and local files, and link them to other entities (Shots,
-Versions, etc). This entity works a lot like other entity types within Shotgun with a few
+Versions, etc). This entity works a lot like other entity types within Flow Production Tracking with a few
 exceptions which are detailed below.
 
 .. note::
-    If you are simply looking for information about how to upload and link things in Shotgun, this
+    If you are simply looking for information about how to upload and link things in Flow Production Tracking, this
     doc is not for you. Instead look at the :meth:`~shotgun_api3.Shotgun.upload` and
     :meth:`~shotgun_api3.Shotgun.upload_thumbnail` methods.
 
     This doc describes the detailed structure of the Attachment entities that represent files
-    in Shotgun and how to interact with them. If that sounds cool too, then read on!
+    in Flow Production Tracking and how to interact with them. If that sounds cool too, then read on!
 
 .. versionadded:: 3.0.3
-    Requires Shotgun Server v2.2.0+
 
 *****************
 Default structure
 *****************
-The following is a list of the default fields that Shotgun creates for Attachments. Your server
+The following is a list of the default fields that Flow Production Tracking creates for Attachments. Your server
 instance may look slightly different depending on your own customizations. Many of these fields are
 optional and some are automatically filled in. These exceptions are listed below in the
 descriptions of each field.
@@ -47,7 +46,7 @@ descriptions of each field.
     the size of the file in bytes.
 
 - **id** (:obj:`int`):
-    The internal Shotgun id for this Attachment entity.
+    The internal Flow Production Tracking id for this Attachment entity.
 
 - **attachment_links** (:obj:`list`):
     A list of entity dictionaries used for linking Attachments to multiple entities.
@@ -75,7 +74,7 @@ descriptions of each field.
     List of tags (as strings) that are currently assigned to the Attachment.
 
 - **image** (:obj:`str`):
-    The url location of the thumbnail image assigned to this Attachment. For uploads, Shotgun
+    The url location of the thumbnail image assigned to this Attachment. For uploads, Flow Production Tracking
     automatically tries to create a thumbnail from the file.
     See :ref:`interpreting_image_field_strings`. Alternatively, you can assign your
     own thumbnail to an Attachment using the :meth:`~shotgun_api3.Shotgun.upload_thumbnail` method.
@@ -95,8 +94,8 @@ Depending on the type of file the Attachment entity is representing, the value o
 will vary.
 
 - **Uploads**
-    Designated by ``link_type: 'upload'``, this represents a file that was uploaded to Shotgun.
-    Uploading files to Shotgun can be done using the :meth:`~shotgun_api3.Shotgun.upload` method.
+    Designated by ``link_type: 'upload'``, this represents a file that was uploaded to Flow Production Tracking.
+    Uploading files to Flow Production Tracking can be done using the :meth:`~shotgun_api3.Shotgun.upload` method.
     You cannot create an Attachment with an uploaded file directly.
 
     ::
@@ -104,7 +103,7 @@ will vary.
       {'content_type': 'image/jpeg',
        'link_type': 'upload',
        'name': 'western1FULL.jpg',
-       'url': 'https://superdeathcarracer.shotgunstudio.com/file_serve/attachment/538'}
+       'url': 'https://my-site.shotgrid.autodesk.com/file_serve/attachment/538'}
 
 - **Web links**
     Designated by ``link_type: 'web'``, this is represents a url link. Examples include an
@@ -125,17 +124,22 @@ will vary.
 
     ::
 
-      { 'content_type': 'video/quicktime',
+      {
+        'content_type': 'video/quicktime',
         'link_type': 'local',
+        'local_path': '/Users/kp/Movies/testing/test_movie_002.mov',
+        'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov',
+        'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov',
+        'local_path_windows': 'M:\\macusers\\kp\\Movies\\testing\\test_movie_002.mov',
+        'local_storage': {
+          'id': 1,
+          'name': 'Dailies Directories',
+          'type': 'LocalStorage',
+        },
         'name': 'my_test_movie.mov',
-        'local_path': '/Users/kp/Movies/testing/test_movie_002.mov'
-        'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov'
-        'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov'
-        'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov'
-        'local_storage': {'id': 1,
-                          'name': 'Dailies Directories',
-                          'type': 'LocalStorage'},
-        'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'}
+        'relative_path': 'testing/test_movie_002.mov',
+        'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov',
+      }
 
 
 ********************
@@ -175,14 +179,14 @@ Updating Attachments
 ********************
 You cannot modify the ``this_file`` field after you create an Attachment. If you need to provide a
 different file, you will have to create a new Attachment entity. Otherwise, the process for
-updating Attachments is exactly like updating other entity types in Shotgun and is the same for all
+updating Attachments is exactly like updating other entity types in Flow Production Tracking and is the same for all
 Attachment types. See :meth:`~shotgun_api3.Shotgun.update` for more info.
 
 
 ********************
 Deleting Attachments
 ********************
-The process of deleting an Attachment is just like other entities in Shotgun. See
+The process of deleting an Attachment is just like other entities in Flow Production Tracking. See
 :meth:`~shotgun_api3.Shotgun.delete` for more info.
 
 .. _local_files:
@@ -191,14 +195,14 @@ The process of deleting an Attachment is just like other entities in Shotgun. Se
 Working With Local File Types
 *****************************
 
-We added support for linking to local files in the UI in Shotgun Server v2.1. This doc covers how
+We added support for linking to local files in the UI in Flow Production Tracking Server v2.1. This doc covers how
 to work with these local file links using the API.
 
 Requirements
 ============
 
 - Python API v3.0.3+
-- Shotgun Server v2.1.10+
+- Flow Production Tracking Server v2.1.10+
 
 Structure of Local File Values
 ==============================
@@ -238,8 +242,11 @@ are available:
 - **local_storage** (:obj:`dict`) *read-only*:
     A dictionary representing which LocalStorage entity is applied for this local file link.
 
+- **relative_path** (:obj:`str`) *read-only*:
+    The path to the file relative to the ``local_storage`` root.
+
 - **url** (:obj:`str`) *read-only*:
-    A file:// link provided for convenience pointing to the value in the ``local_path``
+    A file URI (``file://``) path provided for convenience pointing to the value in the ``local_path``
 
 Reading Local File Fields
 =========================
@@ -251,19 +258,26 @@ Reading Local File Fields
 
 Returns::
 
-    {'id':123,
-     'sg_uploaded_movie': { 'content_type': None,
-                            'link_type': 'local',
-                            'name': 'my_test_movie.mov',
-                            'local_path': '/Users/kp/Movies/testing/test_movie_001_.mov'
-                            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_001_.mov'
-                            'local_path_mac': '/Users/kp/Movies/testing/test_movie_001_.mov'
-                            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_001_.mov'
-                            'local_storage': {'id': 1,
-                                              'name': 'Dailies Directories',
-                                              'type': 'LocalStorage'},
-                            'url': 'file:///Users/kp/Movies/testing/test_movie_001_.mov'},
-     'type': 'Version'}
+    {
+        'id': 123,
+        'sg_uploaded_movie': {
+            'content_type': None,
+            'link_type': 'local',
+            'local_path': '/Users/kp/Movies/testing/test_movie_001_.mov',
+            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_001_.mov',
+            'local_path_mac': '/Users/kp/Movies/testing/test_movie_001_.mov',
+            'local_path_windows': 'M:\\macusers\\kp\\Movies\\testing\\test_movie_001_.mov',
+            'local_storage': {
+                'id': 1,
+                'name': 'Dailies Directories',
+                'type': 'LocalStorage',
+            },
+            'relative_path': 'testing/test_movie_001_.mov',
+            'name': 'my_test_movie.mov',
+            'url': 'file:///Users/kp/Movies/testing/test_movie_001_.mov',
+        },
+        'type': 'Version',
+    }
 
 .. note::
     When viewing results that include file/link fields with local file link values, all of the
@@ -276,7 +290,7 @@ Returns::
 Creating & Updating Local file Fields
 =====================================
 
-When setting a file/link field value to a local file, only the ``local_path`` is mandatory. Shotgun
+When setting a file/link field value to a local file, only the ``local_path`` is mandatory. Flow Production Tracking
 will automatically select the appropriate matching local storage for your file based on the path.
 You can optionally specify the ``name`` and ``content_type`` fields if you wish to override their
 defaults. Any other keys that are provided will be ignored.
@@ -285,39 +299,108 @@ defaults. Any other keys that are provided will be ignored.
     Optionally set the mime-type of the associated local file. This is assigned automatically
     using a best-guess based on the file extension.
 
-
 * **name** :obj:`str`:
     Optional display name of the local file. This is set to the filename by default.
 
 * **local_path** :obj:`str`:
-    The full local path to the file. Shotgun will find the LocalStorage
+    The full local path to the file. Flow Production Tracking will find the ``LocalStorage``
     that has the most specific match to this path and automatically assign that LocalStorage to
     the file.
+    Alternative to ``relative_path``
+
+* **local_storage** :obj:`dict`:
+    The reference to an existing ``LocalStorage``.
+    Must contain ``type: LocalStorage`` plus either an ``id`` or a ``name``
+
+* **relative_path** :obj:`str`:
+    The path to the file relative ``local_storage`` root.
+    Requires ``local_storage``
+    Only accepting slash ``/`` separated path. Does not accept Windows path.
+    Alternative to ``local_path``
+
+Example 1: Using ``local_path``
+-------------------------------
 
 ::
 
-    data = {'sg_uploaded_movie': {'local_path': '/Users/kp/Movies/testing/test_movie_002.mov',
-                                  'name': 'Better Movie'}
-    result = sg.update('Version', 123, data)
+    result = sg.update(
+        'Version',
+        123,
+        {
+            'sg_uploaded_movie': {
+                'local_path': '/Users/kp/Movies/testing/test_movie_002.mov',
+                'name': 'Better Movie',
+            }
+        )
 
 Returns::
 
-    {'id':123,
-     'sg_uploaded_movie': { 'content_type': 'video/quicktime',
-                            'link_type': 'local',
-                            'name': 'my_test_movie.mov',
-                            'local_path': '/Users/kp/Movies/testing/test_movie_002.mov'
-                            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov'
-                            'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov'
-                            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov'
-                            'local_storage': {'id': 1,
-                                              'name': 'Dailies Directories',
-                                              'type': 'LocalStorage'},
-                            'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'},
-     'type': 'Version'}]
+    {
+        'id':123,
+        'sg_uploaded_movie': {
+            'content_type': 'video/quicktime',
+            'link_type': 'local',
+            'name': 'my_test_movie.mov',
+            'local_path': '/Users/kp/Movies/testing/test_movie_002.mov'
+            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov'
+            'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov'
+            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov'
+            'local_storage': {
+                'id': 1,
+                'name': 'Dailies Directories',
+                'type': 'LocalStorage'
+            },
+            'relative_path': 'testing/test_movie_002.mov',
+            'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov',
+        },
+        'type': 'Version',
+    }
 
-The ``content_type`` was assigned a best-guess value based on the file extension. Shotgun selected
+The ``content_type`` was assigned a best-guess value based on the file extension. Flow Production Tracking selected
 the most appropriate specific LocalStorage match and assigned it to local_storage automatically.
+
+
+Example 2: Using ``relative_path``
+----------------------------------
+
+::
+
+    result = sg.update(
+        'Version',
+        123,
+        {
+            'sg_uploaded_movie': {
+                'local_storage': {
+                    'type': 'LocalStorage',
+                    'name': 'Dailies Directories',
+                },
+                'relative_path': 'testing/test_movie_002.mov',
+            }
+        )
+
+Returns::
+
+    {
+        'id':123,
+        'sg_uploaded_movie': {
+            'content_type': 'video/quicktime',
+            'link_type': 'local',
+            'name': 'my_test_movie.mov',
+            'local_path': '/Users/kp/Movies/testing/test_movie_002.mov',
+            'local_path_linux': '/home/users/macusers/kp/Movies/testing/test_movie_002.mov',
+            'local_path_mac': '/Users/kp/Movies/testing/test_movie_002.mov',
+            'local_path_windows': 'M:\\macusers\kp\Movies\testing\test_movie_002.mov',
+            'local_storage': {
+                'id': 1,
+                'name': 'Dailies Directories',
+                'type': 'LocalStorage'
+            },
+            'relative_path': 'testing/test_movie_002.mov',
+            'url': 'file:///Users/kp/Movies/testing/test_movie_002.mov'
+        },
+        'type': 'Version',
+    }
+
 
 Un-setting local file field values
 ==================================

@@ -1,66 +1,75 @@
 #!/usr/bin/env python
 """
- -----------------------------------------------------------------------------
- Copyright (c) 2009-2019, Shotgun Software Inc.
+-----------------------------------------------------------------------------
+Copyright (c) 2009-2019, Shotgun Software Inc.
 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
 
-  - Redistributions of source code must retain the above copyright notice, this
-    list of conditions and the following disclaimer.
+ - Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
 
-  - Redistributions in binary form must reproduce the above copyright notice,
-    this list of conditions and the following disclaimer in the documentation
-    and/or other materials provided with the distribution.
+ - Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
 
-  - Neither the name of the Shotgun Software Inc nor the names of its
-    contributors may be used to endorse or promote products derived from this
-    software without specific prior written permission.
+ - Neither the name of the Shotgun Software Inc nor the names of its
+   contributors may be used to endorse or promote products derived from this
+   software without specific prior written permission.
 
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
- FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-# Python 2/3 compatibility
-from .lib import six
-from .lib import sgsix
-from .lib.six import BytesIO               # used for attachment upload
-from .lib.six.moves import map
+from __future__ import annotations  # Required for compatibility with Python 3.7
 
-from .lib.six.moves import http_cookiejar  # used for attachment upload
+import base64
+import copy
 import datetime
+import json
+import http.client  # Used for secure file upload
+import http.cookiejar  # used for attachment upload
+import io
 import logging
-import uuid                                # used for attachment upload
+import mimetypes
 import os
 import re
-import copy
-import stat                                # used for attachment upload
+import shutil  # used for attachment download
+import ssl
+import stat  # used for attachment upload
 import sys
 import time
-import json
-from .lib.six.moves import urllib
-import shutil       # used for attachment download
-from .lib.six.moves import http_client      # Used for secure file upload.
-from .lib.httplib2 import Http, ProxyInfo, socks, ssl_error_classes
-from .lib.sgtimezone import SgTimezone
+import urllib.error
+import urllib.parse
+import urllib.request
+import uuid  # used for attachment upload
+import xml.etree.ElementTree
+from typing import (
+    Any,
+    BinaryIO,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 # Import Error and ResponseError (even though they're unused in this file) since they need
 # to be exposed as part of the API.
-from .lib.six.moves.xmlrpc_client import Error, ProtocolError, ResponseError  # noqa
+from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
-
+from .lib.httplib2 import Http, ProxyInfo, socks
+from .lib.sgtimezone import SgTimezone
 
 LOG = logging.getLogger("shotgun_api3")
 """
@@ -73,56 +82,46 @@ handler associated with it.
 """
 LOG.setLevel(logging.WARN)
 
-
-def _is_mimetypes_broken():
-    """
-    Checks if this version of Python ships with a broken version of mimetypes
-
-    :returns: True if the version of mimetypes is broken, False otherwise.
-    """
-    # mimetypes is broken on Windows only and for Python 2.7.0 to 2.7.9 inclusively.
-    # We're bundling the version from 2.7.10.
-    # See bugs :
-    # http://bugs.python.org/issue9291  <- Fixed in 2.7.7
-    # http://bugs.python.org/issue21652 <- Fixed in 2.7.8
-    # http://bugs.python.org/issue22028 <- Fixed in 2.7.10
-    return (sys.platform == "win32" and
-            sys.version_info[0] == 2 and sys.version_info[1] == 7 and
-            sys.version_info[2] >= 0 and sys.version_info[2] <= 9)
-
-
-if _is_mimetypes_broken():
-    from .lib import mimetypes as mimetypes
-else:
-    import mimetypes
-
-
 # mimetypes imported in version specific imports
 mimetypes.add_type("video/webm", ".webm")  # webm and mp4 seem to be missing
-mimetypes.add_type("video/mp4", ".mp4")    # from some OS/distros
+mimetypes.add_type("video/mp4", ".mp4")  # from some OS/distros
 
 SG_TIMEZONE = SgTimezone()
 
-NO_SSL_VALIDATION = False
-"""
-Turns off hostname matching validation for SSL certificates
+SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = False
 
-Sometimes there are cases where certificate validation should be disabled. For example, if you
-have a self-signed internal certificate that isn't included in our certificate bundle, you may
-not require the added security provided by enforcing this.
-"""
-try:
-    import ssl
-except ImportError as e:
-    if "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
-        raise ImportError("%s. SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable prevents "
-                          "disabling SSL certificate validation." % e)
-    LOG.debug("ssl not found, disabling certificate validation")
-    NO_SSL_VALIDATION = True
 
 # ----------------------------------------------------------------------------
 # Version
-__version__ = "3.3.4"
+__version__ = "3.10.2"
+
+
+# ----------------------------------------------------------------------------
+# Types
+
+
+T = TypeVar("T")
+
+if sys.version_info < (3, 9):
+    OrderItem = Dict
+    GroupingItem = Dict
+    BaseEntity = Dict
+else:
+    from typing import TypedDict
+
+    class OrderItem(TypedDict):
+        field_name: str
+        direction: str
+
+    class GroupingItem(TypedDict):
+        field: str
+        type: str
+        direction: str
+
+    class BaseEntity(TypedDict, total=False):
+        id: int
+        type: str
+
 
 # ----------------------------------------------------------------------------
 # Errors
@@ -132,6 +131,7 @@ class ShotgunError(Exception):
     """
     Base for all Shotgun API Errors.
     """
+
     pass
 
 
@@ -139,6 +139,7 @@ class ShotgunFileDownloadError(ShotgunError):
     """
     Exception for file download-related errors.
     """
+
     pass
 
 
@@ -146,6 +147,7 @@ class ShotgunThumbnailNotReady(ShotgunError):
     """
     Exception for when trying to use a 'pending thumbnail' (aka transient thumbnail) in an operation
     """
+
     pass
 
 
@@ -153,6 +155,7 @@ class Fault(ShotgunError):
     """
     Exception when server-side exception detected.
     """
+
     pass
 
 
@@ -160,6 +163,7 @@ class AuthenticationFault(Fault):
     """
     Exception when the server side reports an error related to authentication.
     """
+
     pass
 
 
@@ -168,6 +172,7 @@ class MissingTwoFactorAuthenticationFault(Fault):
     Exception when the server side reports an error related to missing two-factor authentication
     credentials.
     """
+
     pass
 
 
@@ -176,6 +181,7 @@ class UserCredentialsNotAllowedForSSOAuthenticationFault(Fault):
     Exception when the server is configured to use SSO. It is not possible to use
     a username/password pair to authenticate on such server.
     """
+
     pass
 
 
@@ -184,7 +190,9 @@ class UserCredentialsNotAllowedForOxygenAuthenticationFault(Fault):
     Exception when the server is configured to use Oxygen. It is not possible to use
     a username/password pair to authenticate on such server.
     """
+
     pass
+
 
 # ----------------------------------------------------------------------------
 # API
@@ -200,7 +208,7 @@ class ServerCapabilities(object):
         the future. Therefore, usage of this class is discouraged.
     """
 
-    def __init__(self, host, meta):
+    def __init__(self, host: str, meta: Dict[str, Any]) -> None:
         """
         ServerCapabilities.__init__
 
@@ -224,10 +232,12 @@ class ServerCapabilities(object):
         except AttributeError:
             self.version = None
         if not self.version:
-            raise ShotgunError("The ShotGrid Server didn't respond with a version number. "
-                               "This may be because you are running an older version of "
-                               "ShotGrid against a more recent version of the ShotGrid API. "
-                               "For more information, please contact ShotGrid Support.")
+            raise ShotgunError(
+                "The Flow Production Tracking Server didn't respond with a version number. "
+                "This may be because you are running an older version of "
+                "Flow Production Tracking against a more recent version of the Flow Production Tracking API. "
+                "For more information, please contact the Autodesk support."
+            )
 
         if len(self.version) > 3 and self.version[3] == "Dev":
             self.is_dev = True
@@ -237,7 +247,7 @@ class ServerCapabilities(object):
         self.version = tuple(self.version[:3])
         self._ensure_json_supported()
 
-    def _ensure_support(self, feature, raise_hell=True):
+    def _ensure_support(self, feature: Dict[str, Any], raise_hell: bool = True) -> bool:
         """
         Checks the server version supports a given feature, raises an exception if it does not.
 
@@ -254,78 +264,77 @@ class ServerCapabilities(object):
             if raise_hell:
                 raise ShotgunError(
                     "%s requires server version %s or higher, "
-                    "server is %s" % (feature["label"], _version_str(feature["version"]), _version_str(self.version))
+                    "server is %s"
+                    % (
+                        feature["label"],
+                        _version_str(feature["version"]),
+                        _version_str(self.version),
+                    )
                 )
             return False
         else:
             return True
 
-    def _ensure_json_supported(self):
+    def _ensure_json_supported(self) -> None:
         """
         Ensures server has support for JSON API endpoint added in v2.4.0.
         """
-        self._ensure_support({
-            "version": (2, 4, 0),
-            "label": "JSON API"
-        })
+        self._ensure_support({"version": (2, 4, 0), "label": "JSON API"})
 
-    def ensure_include_archived_projects(self):
+    def ensure_include_archived_projects(self) -> None:
         """
         Ensures server has support for archived Projects feature added in v5.3.14.
         """
-        self._ensure_support({
-            "version": (5, 3, 14),
-            "label": "include_archived_projects parameter"
-        })
+        self._ensure_support(
+            {"version": (5, 3, 14), "label": "include_archived_projects parameter"}
+        )
 
-    def ensure_per_project_customization(self):
+    def ensure_per_project_customization(self) -> bool:
         """
         Ensures server has support for per-project customization feature added in v5.4.4.
         """
-        return self._ensure_support({
-            "version": (5, 4, 4),
-            "label": "project parameter"
-        }, True)
+        return self._ensure_support(
+            {"version": (5, 4, 4), "label": "project parameter"}, True
+        )
 
-    def ensure_support_for_additional_filter_presets(self):
+    def ensure_support_for_additional_filter_presets(self) -> bool:
         """
         Ensures server has support for additional filter presets feature added in v7.0.0.
         """
-        return self._ensure_support({
-            "version": (7, 0, 0),
-            "label": "additional_filter_presets parameter"
-        }, True)
+        return self._ensure_support(
+            {"version": (7, 0, 0), "label": "additional_filter_presets parameter"}, True
+        )
 
-    def ensure_user_following_support(self):
+    def ensure_user_following_support(self) -> bool:
         """
         Ensures server has support for listing items a user is following, added in v7.0.12.
         """
-        return self._ensure_support({
-            "version": (7, 0, 12),
-            "label": "user_following parameter"
-        }, True)
+        return self._ensure_support(
+            {"version": (7, 0, 12), "label": "user_following parameter"}, True
+        )
 
-    def ensure_paging_info_without_counts_support(self):
+    def ensure_paging_info_without_counts_support(self) -> bool:
         """
         Ensures server has support for optimized pagination, added in v7.4.0.
         """
-        return self._ensure_support({
-            "version": (7, 4, 0),
-            "label": "optimized pagination"
-        }, False)
+        return self._ensure_support(
+            {"version": (7, 4, 0), "label": "optimized pagination"}, False
+        )
 
-    def ensure_return_image_urls_support(self):
+    def ensure_return_image_urls_support(self) -> bool:
         """
         Ensures server has support for returning thumbnail URLs without additional round-trips, added in v3.3.0.
         """
-        return self._ensure_support({
-            "version": (3, 3, 0),
-            "label": "return thumbnail URLs"
-        }, False)
+        return self._ensure_support(
+            {"version": (3, 3, 0), "label": "return thumbnail URLs"}, False
+        )
 
-    def __str__(self):
-        return "ServerCapabilities: host %s, version %s, is_dev %s"\
-            % (self.host, self.version, self.is_dev)
+    def __str__(self) -> str:
+        return "ServerCapabilities: host %s, version %s, is_dev %s" % (
+            self.host,
+            self.version,
+            self.is_dev,
+        )
 
 
 class ClientCapabilities(object):
@@ -339,12 +348,10 @@ class ClientCapabilities(object):
 
     :ivar str platform: The current client platform. Valid values are ``mac``, ``linux``,
         ``windows``, or ``None`` (if the current platform couldn't be determined).
-    :ivar str local_path_field: The SG field used for local file paths. This is calculated using
+    :ivar str local_path_field: The PTR field used for local file paths. This is calculated using
         the value of ``platform``. Ex. ``local_path_mac``.
-    :ivar str py_version: Simple version of Python executable as a string. Eg. ``2.7``.
-    :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``. This
-        info is only available in Python 2.7+ if the ssl module was imported successfully.
-        Defaults to ``unknown``
+    :ivar str py_version: Simple version of Python executable as a string. Eg. ``3.9``.
+    :ivar str ssl_version: Version of OpenSSL installed. Eg. ``OpenSSL 1.0.2g  1 Mar 2016``.
     """
 
     def __init__(self):
@@ -365,19 +372,14 @@ class ClientCapabilities(object):
             self.local_path_field = None
 
         self.py_version = ".".join(str(x) for x in sys.version_info[:2])
-
-        # extract the OpenSSL version if we can. The version is only available in Python 2.7 and
-        # only if we successfully imported ssl
-        self.ssl_version = "unknown"
-        try:
-            self.ssl_version = ssl.OPENSSL_VERSION
-        except (AttributeError, NameError):
-            pass
+        self.ssl_version = ssl.OPENSSL_VERSION
 
     def __str__(self):
-        return "ClientCapabilities: platform %s, local_path_field %s, "\
-            "py_verison %s, ssl version %s" % (self.platform, self.local_path_field,
-                                               self.py_version, self.ssl_version)
+        return (
+            "ClientCapabilities: platform %s, local_path_field %s, "
+            "py_verison %s, ssl version %s"
+            % (self.platform, self.local_path_field, self.py_version, self.ssl_version)
+        )
 
 
 class _Config(object):
@@ -385,7 +387,7 @@ class _Config(object):
     Container for the client configuration.
     """
 
-    def __init__(self, sg):
+    def __init__(self, sg: "Shotgun"):
         """
         :param sg: Shotgun connection.
         """
@@ -406,42 +408,41 @@ class _Config(object):
         # If the optional timeout parameter is given, blocking operations
         # (like connection attempts) will timeout after that many seconds
         # (if it is not given, the global default timeout setting is used)
-        self.timeout_secs = None
+        self.timeout_secs: Optional[float] = None
         self.api_ver = "api3"
         self.convert_datetimes_to_utc = True
-        self._records_per_page = None
-        self.api_key = None
-        self.script_name = None
-        self.user_login = None
-        self.user_password = None
-        self.auth_token = None
-        self.sudo_as_login = None
+        self._records_per_page: Optional[int] = None
+        self.api_key: Optional[str] = None
+        self.script_name: Optional[str] = None
+        self.user_login: Optional[str] = None
+        self.user_password: Optional[str] = None
+        self.auth_token: Optional[str] = None
+        self.sudo_as_login: Optional[str] = None
         # Authentication parameters to be folded into final auth_params dict
-        self.extra_auth_params = None
+        self.extra_auth_params: Optional[Dict[str, Any]] = None
         # uuid as a string
-        self.session_uuid = None
-        self.scheme = None
-        self.server = None
-        self.api_path = None
+        self.session_uuid: Optional[str] = None
+        self.scheme: Optional[str] = None
+        self.server: Optional[str] = None
+        self.api_path: Optional[str] = None
         # The raw_http_proxy reflects the exact string passed in
         # to the Shotgun constructor. This can be useful if you
         # need to construct a Shotgun API instance based on
         # another Shotgun API instance.
-        self.raw_http_proxy = None
+        self.raw_http_proxy: Optional[str] = None
         # if a proxy server is being used, the proxy_handler
         # below will contain a urllib2.ProxyHandler instance
         # which can be used whenever a request needs to be made.
-        self.proxy_handler = None
-        self.proxy_server = None
+        self.proxy_handler: Optional["urllib.request.ProxyHandler"] = None
+        self.proxy_server: Optional[str] = None
         self.proxy_port = 8080
-        self.proxy_user = None
-        self.proxy_pass = None
-        self.session_token = None
-        self.authorization = None
-        self.no_ssl_validation = False
+        self.proxy_user: Optional[str] = None
+        self.proxy_pass: Optional[str] = None
+        self.session_token: Optional[str] = None
+        self.authorization: Optional[str] = None
         self.localized = False
 
-    def set_server_params(self, base_url):
+    def set_server_params(self, base_url: str) -> None:
         """
         Set the different server related fields based on the passed in URL.
 
@@ -455,25 +456,24 @@ class _Config(object):
 
         :raises ValueError: Raised if protocol is not http or https.
         """
-        self.scheme, self.server, api_base, _, _ = \
-            urllib.parse.urlsplit(base_url)
+        self.scheme, self.server, api_base, _, _ = urllib.parse.urlsplit(base_url)
         if self.scheme not in ("http", "https"):
-            raise ValueError(
-                "base_url must use http or https got '%s'" % base_url
-            )
-        self.api_path = urllib.parse.urljoin(urllib.parse.urljoin(
-            api_base or "/", self.api_ver + "/"), "json"
+            raise ValueError("base_url must use http or https got '%s'" % base_url)
+        self.api_path = urllib.parse.urljoin(
+            urllib.parse.urljoin(api_base or "/", self.api_ver + "/"), "json"
         )
 
     @property
-    def records_per_page(self):
+    def records_per_page(self) -> int:
         """
         The records per page value from the server.
         """
         if self._records_per_page is None:
             # Check for api_max_entities_per_page in the server info and change the record per page
             # value if it is supplied.
-            self._records_per_page = self._sg.server_info.get("api_max_entities_per_page") or 500
+            self._records_per_page = (
+                self._sg.server_info.get("api_max_entities_per_page") or 500
+            )
         return self._records_per_page
 
 
@@ -485,28 +485,31 @@ class Shotgun(object):
     # reg ex from
     # http://underground.infovark.com/2008/07/22/iso-date-validation-regex/
     # Note a length check is done before checking the reg ex
-    _DATE_PATTERN = re.compile(
-        r"^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])$")
+    _DATE_PATTERN = re.compile(r"^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])$")
     _DATE_TIME_PATTERN = re.compile(
         r"^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])"
-        r"(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?)?$")
+        r"(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?)?$"
+    )
 
     _MULTIPART_UPLOAD_CHUNK_SIZE = 20000000
+    MAX_ATTEMPTS = 3  # Retries on failure
+    BACKOFF = 0.75  # Seconds to wait before retry, times the attempt number
 
-    def __init__(self,
-                 base_url,
-                 script_name=None,
-                 api_key=None,
-                 convert_datetimes_to_utc=True,
-                 http_proxy=None,
-                 ensure_ascii=True,
-                 connect=True,
-                 ca_certs=None,
-                 login=None,
-                 password=None,
-                 sudo_as_login=None,
-                 session_token=None,
-                 auth_token=None):
+    def __init__(
+        self,
+        base_url: str,
+        script_name: Optional[str] = None,
+        api_key: Optional[str] = None,
+        convert_datetimes_to_utc: bool = True,
+        http_proxy: Optional[str] = None,
+        connect: bool = True,
+        ca_certs: Optional[str] = None,
+        login: Optional[str] = None,
+        password: Optional[str] = None,
+        sudo_as_login: Optional[str] = None,
+        session_token: Optional[str] = None,
+        auth_token: Optional[str] = None,
+    ) -> None:
         """
         Initializes a new instance of the Shotgun client.
 
@@ -574,33 +577,24 @@ class Shotgun(object):
                 :class:`~shotgun_api3.MissingTwoFactorAuthenticationFault` will be raised if the
                 ``auth_token`` is invalid.
             .. todo: Add this info to the Authentication section of the docs
-
-        .. note:: A note about proxy connections: If you are using Python <= v2.6.2, HTTPS
-            connections through a proxy server will not work due to a bug in the :mod:`urllib2`
-            library (see http://bugs.python.org/issue1424152). This will affect upload and
-            download-related methods in the Shotgun API (eg. :meth:`~shotgun_api3.Shotgun.upload`,
-            :meth:`~shotgun_api3.Shotgun.upload_thumbnail`,
-            :meth:`~shotgun_api3.Shotgun.upload_filmstrip_thumbnail`,
-            :meth:`~shotgun_api3.Shotgun.download_attachment`. Normal CRUD methods for passing JSON
-            data should still work fine. If you cannot upgrade your Python installation, you can see
-            the patch merged into Python v2.6.3 (http://hg.python.org/cpython/rev/0f57b30a152f/) and
-            try and hack it into your installation but YMMV. For older versions of Python there
-            are other patches that were proposed in the bug report that may help you as well.
         """
 
         # verify authentication arguments
         if session_token is not None:
             if script_name is not None or api_key is not None:
-                raise ValueError("cannot provide both session_token "
-                                 "and script_name/api_key")
+                raise ValueError(
+                    "cannot provide both session_token " "and script_name/api_key"
+                )
             if login is not None or password is not None:
-                raise ValueError("cannot provide both session_token "
-                                 "and login/password")
+                raise ValueError(
+                    "cannot provide both session_token " "and login/password"
+                )
 
         if login is not None or password is not None:
             if script_name is not None or api_key is not None:
-                raise ValueError("cannot provide both login/password "
-                                 "and script_name/api_key")
+                raise ValueError(
+                    "cannot provide both login/password " "and script_name/api_key"
+                )
             if login is None:
                 raise ValueError("password provided without login")
             if password is None:
@@ -614,17 +608,20 @@ class Shotgun(object):
 
         if auth_token is not None:
             if login is None or password is None:
-                raise ValueError("must provide a user login and password with an auth_token")
+                raise ValueError(
+                    "must provide a user login and password with an auth_token"
+                )
 
             if script_name is not None or api_key is not None:
                 raise ValueError("cannot provide an auth_code with script_name/api_key")
 
-        # Can't use 'all' with python 2.4
-        if len([x for x in [session_token, script_name, api_key, login, password] if x]) == 0:
+        if not any([session_token, script_name, api_key, login, password]):
             if connect:
-                raise ValueError("must provide login/password, session_token or script_name/api_key")
+                raise ValueError(
+                    "must provide login/password, session_token or script_name/api_key"
+                )
 
-        self.config = _Config(self)
+        self.config: _Config = _Config(self)
         self.config.api_key = api_key
         self.config.script_name = script_name
         self.config.user_login = login
@@ -633,20 +630,34 @@ class Shotgun(object):
         self.config.session_token = session_token
         self.config.sudo_as_login = sudo_as_login
         self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
-        self.config.no_ssl_validation = NO_SSL_VALIDATION
         self.config.raw_http_proxy = http_proxy
 
         try:
-            self.config.rpc_attempt_interval = int(os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000))
+            self.config.rpc_attempt_interval = int(
+                os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000)
+            )
         except ValueError:
             retry_interval = os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000)
-            raise ValueError("Invalid value '%s' found in environment variable "
-                             "SHOTGUN_API_RETRY_INTERVAL, must be int." % retry_interval)
+            raise ValueError(
+                "Invalid value '%s' found in environment variable "
+                "SHOTGUN_API_RETRY_INTERVAL, must be int." % retry_interval
+            )
         if self.config.rpc_attempt_interval < 0:
-            raise ValueError("Value of SHOTGUN_API_RETRY_INTERVAL must be positive, "
-                             "got '%s'." % self.config.rpc_attempt_interval)
+            raise ValueError(
+                "Value of SHOTGUN_API_RETRY_INTERVAL must be positive, "
+                "got '%s'." % self.config.rpc_attempt_interval
+            )
 
-        self._connection = None
+        global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
+        if (
+            os.environ.get("SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", "0")
+            .strip()
+            .lower()
+            == "1"
+        ):
+            SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = True
+
+        self._connection: Optional[Http] = None
 
         self.__ca_certs = self._get_certs_file(ca_certs)
 
@@ -658,12 +669,13 @@ class Shotgun(object):
         # and auth header
 
         # Do NOT self._split_url(self.base_url) here, as it contains the lower
-        # case version of the base_url argument. Doing so would base64encode
+        # case version of the base_url argument. Doing so would base64.encodebytes
         # the lowercase version of the credentials.
         auth, self.config.server = self._split_url(base_url)
         if auth:
-            auth = base64encode(six.ensure_binary(
-                urllib.parse.unquote(auth))).decode("utf-8")
+            auth = base64.encodebytes(
+                urllib.parse.unquote(auth).encode("utf-8")
+            ).decode("utf-8")
             self.config.authorization = "Basic " + auth.strip()
 
         # foo:bar@123.456.789.012:3456
@@ -672,8 +684,7 @@ class Shotgun(object):
             # there might be @ in the user's password.
             p = http_proxy.rsplit("@", 1)
             if len(p) > 1:
-                self.config.proxy_user, self.config.proxy_pass = \
-                    p[0].split(":", 1)
+                self.config.proxy_user, self.config.proxy_pass = p[0].split(":", 1)
                 proxy_server = p[1]
             else:
                 proxy_server = http_proxy
@@ -683,27 +694,35 @@ class Shotgun(object):
                 try:
                     self.config.proxy_port = int(proxy_netloc_list[1])
                 except ValueError:
-                    raise ValueError("Invalid http_proxy address '%s'. Valid "
-                                     "format is '123.456.789.012' or '123.456.789.012:3456'"
-                                     ". If no port is specified, a default of %d will be "
-                                     "used." % (http_proxy, self.config.proxy_port))
+                    raise ValueError(
+                        "Invalid http_proxy address '%s'. Valid "
+                        "format is '123.456.789.012' or '123.456.789.012:3456'"
+                        ". If no port is specified, a default of %d will be "
+                        "used." % (http_proxy, self.config.proxy_port)
+                    )
 
             # now populate self.config.proxy_handler
             if self.config.proxy_user and self.config.proxy_pass:
-                auth_string = "%s:%s@" % (self.config.proxy_user, self.config.proxy_pass)
+                auth_string = "%s:%s@" % (
+                    self.config.proxy_user,
+                    self.config.proxy_pass,
+                )
             else:
                 auth_string = ""
-            proxy_addr = "http://%s%s:%d" % (auth_string, self.config.proxy_server, self.config.proxy_port)
-            self.config.proxy_handler = urllib.request.ProxyHandler({self.config.scheme: proxy_addr})
-
-        if ensure_ascii:
-            self._json_loads = self._json_loads_ascii
+            proxy_addr = "http://%s%s:%d" % (
+                auth_string,
+                self.config.proxy_server,
+                self.config.proxy_port,
+            )
+            self.config.proxy_handler = urllib.request.ProxyHandler(
+                {self.config.scheme: proxy_addr}
+            )
 
         self.client_caps = ClientCapabilities()
         # this relies on self.client_caps being set first
         self.reset_user_agent()
 
-        self._server_caps = None
+        self._server_caps: Optional[ServerCapabilities] = None
         # test to ensure the the server supports the json API
         # call to server will only be made once and will raise error
         if connect:
@@ -717,7 +736,7 @@ class Shotgun(object):
             self.config.user_password = None
             self.config.auth_token = None
 
-    def _split_url(self, base_url):
+    def _split_url(self, base_url: str) -> Tuple[Optional[str], Optional[str]]:
         """
         Extract the hostname:port and username/password/token from base_url
         sent when connect to the API.
@@ -725,7 +744,7 @@ class Shotgun(object):
         In python 3.8 `urllib.parse.splituser` was deprecated warning devs to
         use `urllib.parse.urlparse`.
         """
-        if six.PY38:
+        if (sys.version_info.major, sys.version_info.minor) >= (3, 8):
             auth = None
             results = urllib.parse.urlparse(base_url)
             server = results.hostname
@@ -740,7 +759,8 @@ class Shotgun(object):
 
         else:
             auth, server = urllib.parse.splituser(
-                urllib.parse.urlsplit(base_url).netloc)
+                urllib.parse.urlsplit(base_url).netloc
+            )
 
         return auth, server
 
@@ -748,7 +768,7 @@ class Shotgun(object):
     # API Functions
 
     @property
-    def server_info(self):
+    def server_info(self) -> Dict[str, Any]:
         """
         Property containing server information.
 
@@ -766,7 +786,7 @@ class Shotgun(object):
         return self.server_caps.server_info
 
     @property
-    def server_caps(self):
+    def server_caps(self) -> ServerCapabilities:
         """
         Property containing :class:`ServerCapabilities` object.
 
@@ -781,7 +801,7 @@ class Shotgun(object):
             self._server_caps = ServerCapabilities(self.config.server, self.info())
         return self._server_caps
 
-    def connect(self):
+    def connect(self) -> None:
         """
         Connect client to the server if it is not already connected.
 
@@ -792,7 +812,7 @@ class Shotgun(object):
         self.info()
         return
 
-    def close(self):
+    def close(self) -> None:
         """
         Close the current connection to the server.
 
@@ -801,7 +821,7 @@ class Shotgun(object):
         self._close_connection()
         return
 
-    def info(self):
+    def info(self) -> Dict[str, Any]:
         """
         Get API-related metadata from the Shotgun server.
 
@@ -832,9 +852,17 @@ class Shotgun(object):
         """
         return self._call_rpc("info", None, include_auth_params=False)
 
-    def find_one(self, entity_type, filters, fields=None, order=None,
-        filter_operator=None, retired_only=False, include_archived_projects=False,
-        additional_filter_presets=None):
+    def find_one(
+        self,
+        entity_type: str,
+        filters: Union[List, Tuple, Dict[str, Any]],
+        fields: Optional[List[str]] = None,
+        order: Optional[List[OrderItem]] = None,
+        filter_operator: Optional[str] = None,
+        retired_only: bool = False,
+        include_archived_projects: bool = False,
+        additional_filter_presets: Optional[List[Dict[str, Any]]] = None,
+    ) -> Optional[BaseEntity]:
         """
         Shortcut for :meth:`~shotgun_api3.Shotgun.find` with ``limit=1`` so it returns a single
         result.
@@ -849,24 +877,31 @@ class Shotgun(object):
 
         :param list fields: Optional list of fields to include in each entity record returned.
             Defaults to ``["id"]``.
-        :param int order: Optional list of fields to order the results by. List has the format::
+        :param list order: Optional list of fields to order the results by. List has the format::
 
-            [{'field_name':'foo', 'direction':'asc'}, {'field_name':'bar', 'direction':'desc'}]
+                [
+                    {'field_name':'foo', 'direction':'asc'},
+                    {'field_name':'bar', 'direction':'desc'}
+                ]
 
             Defaults to sorting by ``id`` in ascending order.
         :param str filter_operator: Operator to apply to the filters. Supported values are ``"all"``
             and ``"any"``. These are just another way of defining if the query is an AND or OR
             query. Defaults to ``"all"``.
         :param bool retired_only: Optional boolean when ``True`` will return only entities that have
-            been retried. Defaults to ``False`` which returns only entities which have not been
+            been retired. Defaults to ``False`` which returns only entities which have not been
             retired. There is no option to return both retired and non-retired entities in the
             same query.
         :param bool include_archived_projects: Optional boolean flag to include entities whose projects
             have been archived. Defaults to ``False``.
-        :param additional_filter_presets: Optional list of presets to further filter the result
+        :param list additional_filter_presets: Optional list of presets to further filter the result
             set, list has the form::
 
-                [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
+                [{
+                    "preset_name": <preset_name>,
+                    <optional_param1>: <optional_value1>,
+                    ...
+                }]
 
             Note that these filters are ANDed together and ANDed with the 'filter'
             argument.
@@ -875,21 +910,43 @@ class Shotgun(object):
             :ref:`additional_filter_presets`
         :returns: Dictionary representing a single matching entity with the requested fields,
             and the defaults ``"id"`` and ``"type"`` which are always included.
+
+            .. seealso:: :ref:`entity-fields`
+
         :rtype: dict
         """
 
-        results = self.find(entity_type, filters, fields, order,
-            filter_operator, 1, retired_only, include_archived_projects=include_archived_projects,
-            additional_filter_presets=additional_filter_presets, called_from_find_one=True)
+        results = self.find(
+            entity_type,
+            filters,
+            fields,
+            order,
+            filter_operator,
+            1,
+            retired_only,
+            include_archived_projects=include_archived_projects,
+            additional_filter_presets=additional_filter_presets,
+            called_from_find_one=True,
+        )
 
         if results:
             return results[0]
         return None
 
-    def find(self, entity_type, filters, fields=None, order=None,
-            filter_operator=None, limit=0, retired_only=False, page=0,
-            include_archived_projects=False, additional_filter_presets=None,
-            called_from_find_one=False):
+    def find(
+        self,
+        entity_type: str,
+        filters: Union[List, Tuple, Dict[str, Any]],
+        fields: Optional[List[str]] = None,
+        order: Optional[List[OrderItem]] = None,
+        filter_operator: Optional[str] = None,
+        limit: int = 0,
+        retired_only: bool = False,
+        page: int = 0,
+        include_archived_projects: bool = False,
+        additional_filter_presets: Optional[List[Dict[str, Any]]] = None,
+        called_from_find_one: bool = False,
+    ) -> List[BaseEntity]:
         """
         Find entities matching the given filters.
 
@@ -913,7 +970,7 @@ class Shotgun(object):
              {'code': 'Wet Gopher', 'id': 149, 'sg_asset_type': 'Character', 'type': 'Asset'}]
 
         You can drill through single entity links to filter on fields or display linked fields.
-        This is often called "deep linking" or using "dot syntax".
+        This is often called "deep linking" or using "dot notation".
 
             .. seealso:: :ref:`filter_syntax`
 
@@ -936,15 +993,21 @@ class Shotgun(object):
         :param str entity_type: Shotgun entity type to find.
         :param list filters: list of filters to apply to the query.
 
-            .. seealso:: :ref:`filter_syntax`
+            .. seealso:: :ref:`filter_syntax`, :ref:`combining-related-queries`
 
         :param list fields: Optional list of fields to include in each entity record returned.
             Defaults to ``["id"]``.
+
+            .. seealso:: :ref:`combining-related-queries`
+
         :param list order: Optional list of dictionaries defining how to order the results of the
             query. Each dictionary contains the ``field_name`` to order by and  the ``direction``
             to sort::
 
-                [{'field_name':'foo', 'direction':'asc'}, {'field_name':'bar', 'direction':'desc'}]
+                [
+                    {'field_name':'foo', 'direction':'asc'},
+                    {'field_name':'bar', 'direction':'desc'}
+                ]
 
             Defaults to sorting by ``id`` in ascending order.
         :param str filter_operator: Operator to apply to the filters. Supported values are ``"all"``
@@ -956,15 +1019,19 @@ class Shotgun(object):
             parameter to control how your query results are paged. Defaults to ``0`` which returns
             all entities that match.
         :param bool retired_only: Optional boolean when ``True`` will return only entities that have
-            been retried. Defaults to ``False`` which returns only entities which have not been
+            been retired. Defaults to ``False`` which returns only entities which have not been
             retired. There is no option to return both retired and non-retired entities in the
             same query.
         :param bool include_archived_projects: Optional boolean flag to include entities whose projects
             have been archived. Defaults to ``False``.
-        :param additional_filter_presets: Optional list of presets to further filter the result
+        :param list additional_filter_presets: Optional list of presets to further filter the result
             set, list has the form::
 
-                [{"preset_name": <preset_name>, <optional_param1>: <optional_value1>, ... }]
+                [{
+                    "preset_name": <preset_name>,
+                    <optional_param1>: <optional_value1>,
+                    ...
+                }]
 
             Note that these filters are ANDed together and ANDed with the 'filter'
             argument.
@@ -976,6 +1043,9 @@ class Shotgun(object):
             what's necessary and avoid doubled logs.
         :returns: list of dictionaries representing each entity with the requested fields, and the
             defaults ``"id"`` and ``"type"`` which are always included.
+
+            .. seealso:: :ref:`entity-fields`
+
         :rtype: list
         """
 
@@ -989,8 +1059,10 @@ class Shotgun(object):
             filters = _translate_filters(filters, filter_operator)
         elif filter_operator:
             # TODO: Not sure if this test is correct, replicated from prev api
-            raise ShotgunError("Deprecated: Use of filter_operator for find() is not valid any more."
-                               " See the documentation on find()")
+            raise ShotgunError(
+                "Deprecated: Use of filter_operator for find() is not valid any more."
+                " See the documentation on find()"
+            )
 
         if not include_archived_projects:
             # This defaults to True on the server (no argument is sent)
@@ -1000,13 +1072,15 @@ class Shotgun(object):
         if additional_filter_presets:
             self.server_caps.ensure_support_for_additional_filter_presets()
 
-        params = self._construct_read_parameters(entity_type,
-                                                 fields,
-                                                 filters,
-                                                 retired_only,
-                                                 order,
-                                                 include_archived_projects,
-                                                 additional_filter_presets)
+        params = self._construct_read_parameters(
+            entity_type,
+            fields,
+            filters,
+            retired_only,
+            order,
+            include_archived_projects,
+            additional_filter_presets,
+        )
 
         if self.server_caps.ensure_return_image_urls_support():
             params["api_return_image_urls"] = True
@@ -1062,21 +1136,25 @@ class Shotgun(object):
 
         return self._parse_records(records)
 
-    def _construct_read_parameters(self,
-                                   entity_type,
-                                   fields,
-                                   filters,
-                                   retired_only,
-                                   order,
-                                   include_archived_projects,
-                                   additional_filter_presets):
-        params = {}
+    def _construct_read_parameters(
+        self,
+        entity_type: str,
+        fields: Optional[List[str]],
+        filters: Dict[str, Any],
+        retired_only: bool,
+        order: Optional[List[Dict[str, Any]]],
+        include_archived_projects: bool,
+        additional_filter_presets: Optional[List[Dict[str, Any]]],
+    ) -> Dict[str, Any]:
+        params: Dict[str, Any] = {}
         params["type"] = entity_type
         params["return_fields"] = fields or ["id"]
         params["filters"] = filters
         params["return_only"] = (retired_only and "retired") or "active"
-        params["paging"] = {"entities_per_page": self.config.records_per_page,
-                            "current_page": 1}
+        params["paging"] = {
+            "entities_per_page": self.config.records_per_page,
+            "current_page": 1,
+        }
 
         if additional_filter_presets:
             params["additional_filter_presets"] = additional_filter_presets
@@ -1092,27 +1170,56 @@ class Shotgun(object):
                     # TODO: warn about deprecation of 'column' param name
                     sort["field_name"] = sort["column"]
                 sort.setdefault("direction", "asc")
-                sort_list.append({
-                    "field_name": sort["field_name"],
-                    "direction": sort["direction"]
-                })
+                sort_list.append(
+                    {"field_name": sort["field_name"], "direction": sort["direction"]}
+                )
             params["sorts"] = sort_list
         return params
 
-    def _add_project_param(self, params, project_entity):
+    def _add_project_param(
+        self, params: Dict[str, Any], project_entity
+    ) -> Dict[str, Any]:
 
         if project_entity and self.server_caps.ensure_per_project_customization():
             params["project"] = project_entity
 
         return params
 
-    def summarize(self,
-                  entity_type,
-                  filters,
-                  summary_fields,
-                  filter_operator=None,
-                  grouping=None,
-                  include_archived_projects=False):
+    def _translate_update_params(
+        self,
+        entity_type: str,
+        entity_id: int,
+        data: Dict,
+        multi_entity_update_modes: Optional[Dict],
+    ) -> Dict[str, Any]:
+        global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
+
+        def optimize_field(field_dict):
+            if SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION:
+                return field_dict
+            return {k: _optimize_filter_field(v) for k, v in field_dict.items()}
+
+        full_fields = self._dict_to_list(
+            data,
+            extra_data=self._dict_to_extra_data(
+                multi_entity_update_modes, "multi_entity_update_mode"
+            ),
+        )
+        return {
+            "type": entity_type,
+            "id": entity_id,
+            "fields": [optimize_field(field_dict) for field_dict in full_fields],
+        }
+
+    def summarize(
+        self,
+        entity_type: str,
+        filters: Union[List, Dict[str, Any]],
+        summary_fields: List[Dict[str, str]],
+        filter_operator: Optional[str] = None,
+        grouping: Optional[List[GroupingItem]] = None,
+        include_archived_projects: bool = False,
+    ) -> Dict[str, Any]:
         """
         Summarize field data returned by a query.
 
@@ -1300,9 +1407,7 @@ class Shotgun(object):
             # So we only need to check the server version if it is False
             self.server_caps.ensure_include_archived_projects()
 
-        params = {"type": entity_type,
-                  "summaries": summary_fields,
-                  "filters": filters}
+        params = {"type": entity_type, "summaries": summary_fields, "filters": filters}
 
         if include_archived_projects is False:
             # Defaults to True on the server, so only pass it if it's False
@@ -1314,7 +1419,12 @@ class Shotgun(object):
         records = self._call_rpc("summarize", params)
         return records
 
-    def create(self, entity_type, data, return_fields=None):
+    def create(
+        self,
+        entity_type: str,
+        data: Dict[str, Any],
+        return_fields: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
         """
         Create a new entity of the specified ``entity_type``.
 
@@ -1338,10 +1448,16 @@ class Shotgun(object):
             to the server automatically.
         :param list return_fields: Optional list of additional field values to return from the new
             entity. Defaults to ``id`` field.
+
+            .. seealso:: :ref:`combining-related-queries`
+
         :returns: Shotgun entity dictionary containing the field/value pairs of all of the fields
             set from the ``data`` parameter as well as the defaults ``type`` and ``id``. If any
             additional fields were provided using the ``return_fields`` parameter, these would be
             included as well.
+
+            .. seealso:: :ref:`entity-fields`
+
         :rtype: dict
         """
 
@@ -1356,14 +1472,16 @@ class Shotgun(object):
         upload_filmstrip_image = None
         if "filmstrip_image" in data:
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
-                raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "
-                                   "higher, server is %s" % (self.server_caps.version,))
+                raise ShotgunError(
+                    "Filmstrip thumbnail support requires server version 3.1 or "
+                    "higher, server is %s" % (self.server_caps.version,)
+                )
             upload_filmstrip_image = data.pop("filmstrip_image")
 
         params = {
             "type": entity_type,
             "fields": self._dict_to_list(data),
-            "return_fields": return_fields
+            "return_fields": return_fields,
         }
 
         record = self._call_rpc("create", params, first=True)
@@ -1371,17 +1489,31 @@ class Shotgun(object):
 
         if upload_image:
             self.upload_thumbnail(entity_type, result["id"], upload_image)
-            image = self.find_one(entity_type, [["id", "is", result.get("id")]], fields=["image"])
+            image = self.find_one(
+                entity_type, [["id", "is", result.get("id")]], fields=["image"]
+            )
             result["image"] = image.get("image")
 
         if upload_filmstrip_image:
-            self.upload_filmstrip_thumbnail(entity_type, result["id"], upload_filmstrip_image)
-            filmstrip = self.find_one(entity_type, [["id", "is", result.get("id")]], fields=["filmstrip_image"])
+            self.upload_filmstrip_thumbnail(
+                entity_type, result["id"], upload_filmstrip_image
+            )
+            filmstrip = self.find_one(
+                entity_type,
+                [["id", "is", result.get("id")]],
+                fields=["filmstrip_image"],
+            )
             result["filmstrip_image"] = filmstrip.get("filmstrip_image")
 
         return result
 
-    def update(self, entity_type, entity_id, data, multi_entity_update_modes=None):
+    def update(
+        self,
+        entity_type: str,
+        entity_id: int,
+        data: Dict[str, Any],
+        multi_entity_update_modes: Optional[Dict[str, Any]] = None,
+    ) -> BaseEntity:
         """
         Update the specified entity with the supplied data.
 
@@ -1425,19 +1557,16 @@ class Shotgun(object):
         upload_filmstrip_image = None
         if "filmstrip_image" in data:
             if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
-                raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "
-                                   "higher, server is %s" % (self.server_caps.version,))
+                raise ShotgunError(
+                    "Filmstrip thumbnail support requires server version 3.1 or "
+                    "higher, server is %s" % (self.server_caps.version,)
+                )
             upload_filmstrip_image = data.pop("filmstrip_image")
 
         if data:
-            params = {
-                "type": entity_type,
-                "id": entity_id,
-                "fields": self._dict_to_list(
-                    data,
-                    extra_data=self._dict_to_extra_data(
-                        multi_entity_update_modes, "multi_entity_update_mode"))
-            }
+            params = self._translate_update_params(
+                entity_type, entity_id, data, multi_entity_update_modes
+            )
             record = self._call_rpc("update", params)
             result = self._parse_records(record)[0]
         else:
@@ -1445,17 +1574,25 @@ class Shotgun(object):
 
         if upload_image:
             self.upload_thumbnail(entity_type, entity_id, upload_image)
-            image = self.find_one(entity_type, [["id", "is", result.get("id")]], fields=["image"])
+            image = self.find_one(
+                entity_type, [["id", "is", result.get("id")]], fields=["image"]
+            )
             result["image"] = image.get("image")
 
         if upload_filmstrip_image:
-            self.upload_filmstrip_thumbnail(entity_type, result["id"], upload_filmstrip_image)
-            filmstrip = self.find_one(entity_type, [["id", "is", result.get("id")]], fields=["filmstrip_image"])
+            self.upload_filmstrip_thumbnail(
+                entity_type, result["id"], upload_filmstrip_image
+            )
+            filmstrip = self.find_one(
+                entity_type,
+                [["id", "is", result.get("id")]],
+                fields=["filmstrip_image"],
+            )
             result["filmstrip_image"] = filmstrip.get("filmstrip_image")
 
         return result
 
-    def delete(self, entity_type, entity_id):
+    def delete(self, entity_type: str, entity_id: int) -> bool:
         """
         Retire the specified entity.
 
@@ -1473,16 +1610,13 @@ class Shotgun(object):
             entity was already deleted).
         :rtype: bool
         :raises: :class:`Fault` if entity does not exist (deleted or not).
-       """
+        """
 
-        params = {
-            "type": entity_type,
-            "id": entity_id
-        }
+        params = {"type": entity_type, "id": entity_id}
 
         return self._call_rpc("delete", params)
 
-    def revive(self, entity_type, entity_id):
+    def revive(self, entity_type: str, entity_id: int) -> bool:
         """
         Revive an entity that has previously been deleted.
 
@@ -1496,14 +1630,11 @@ class Shotgun(object):
         :rtype: bool
         """
 
-        params = {
-            "type": entity_type,
-            "id": entity_id
-        }
+        params = {"type": entity_type, "id": entity_id}
 
         return self._call_rpc("revive", params)
 
-    def batch(self, requests):
+    def batch(self, requests: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Make a batch request of several :meth:`~shotgun_api3.Shotgun.create`,
         :meth:`~shotgun_api3.Shotgun.update`, and :meth:`~shotgun_api3.Shotgun.delete` calls.
@@ -1564,7 +1695,9 @@ class Shotgun(object):
         """
 
         if not isinstance(requests, list):
-            raise ShotgunError("batch() expects a list.  Instead was sent a %s" % type(requests))
+            raise ShotgunError(
+                "batch() expects a list.  Instead was sent a %s" % type(requests)
+            )
 
         # If we have no requests, just return an empty list immediately.
         # Nothing to process means nothing to get results of.
@@ -1576,44 +1709,53 @@ class Shotgun(object):
         def _required_keys(message, required_keys, data):
             missing = set(required_keys) - set(data.keys())
             if missing:
-                raise ShotgunError("%s missing required key: %s. "
-                                   "Value was: %s." % (message, ", ".join(missing), data))
+                raise ShotgunError(
+                    "%s missing required key: %s. "
+                    "Value was: %s." % (message, ", ".join(missing), data)
+                )
 
         for req in requests:
-            _required_keys("Batched request",
-                           ["request_type", "entity_type"],
-                           req)
-            request_params = {"request_type": req["request_type"], "type": req["entity_type"]}
+            _required_keys("Batched request", ["request_type", "entity_type"], req)
+            request_params = {
+                "request_type": req["request_type"],
+                "type": req["entity_type"],
+            }
 
             if req["request_type"] == "create":
                 _required_keys("Batched create request", ["data"], req)
                 request_params["fields"] = self._dict_to_list(req["data"])
-                request_params["return_fields"] = req.get("return_fields") or["id"]
+                request_params["return_fields"] = req.get("return_fields") or ["id"]
             elif req["request_type"] == "update":
-                _required_keys("Batched update request",
-                               ["entity_id", "data"],
-                               req)
+                _required_keys("Batched update request", ["entity_id", "data"], req)
                 request_params["id"] = req["entity_id"]
                 request_params["fields"] = self._dict_to_list(
                     req["data"],
                     extra_data=self._dict_to_extra_data(
-                        req.get("multi_entity_update_modes"),
-                        "multi_entity_update_mode"
-                    )
+                        req.get("multi_entity_update_modes"), "multi_entity_update_mode"
+                    ),
                 )
                 if "multi_entity_update_mode" in req:
-                    request_params["multi_entity_update_mode"] = req["multi_entity_update_mode"]
+                    request_params["multi_entity_update_mode"] = req[
+                        "multi_entity_update_mode"
+                    ]
             elif req["request_type"] == "delete":
                 _required_keys("Batched delete request", ["entity_id"], req)
                 request_params["id"] = req["entity_id"]
             else:
-                raise ShotgunError("Invalid request_type '%s' for batch" % (
-                                   req["request_type"]))
+                raise ShotgunError(
+                    "Invalid request_type '%s' for batch" % (req["request_type"])
+                )
             calls.append(request_params)
         records = self._call_rpc("batch", calls)
         return self._parse_records(records)
 
-    def work_schedule_read(self, start_date, end_date, project=None, user=None):
+    def work_schedule_read(
+        self,
+        start_date: str,
+        end_date: str,
+        project: Optional[Dict[str, Any]] = None,
+        user: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         Return the work day rules for a given date range.
 
@@ -1666,23 +1808,31 @@ class Shotgun(object):
         """
 
         if not self.server_caps.version or self.server_caps.version < (3, 2, 0):
-            raise ShotgunError("Work schedule support requires server version 3.2 or "
-                               "higher, server is %s" % (self.server_caps.version,))
+            raise ShotgunError(
+                "Work schedule support requires server version 3.2 or "
+                "higher, server is %s" % (self.server_caps.version,)
+            )
 
         if not isinstance(start_date, str) or not isinstance(end_date, str):
-            raise ShotgunError("The start_date and end_date arguments must be strings in YYYY-MM-DD format")
+            raise ShotgunError(
+                "The start_date and end_date arguments must be strings in YYYY-MM-DD format"
+            )
 
         params = dict(
-            start_date=start_date,
-            end_date=end_date,
-            project=project,
-            user=user
+            start_date=start_date, end_date=end_date, project=project, user=user
         )
 
         return self._call_rpc("work_schedule_read", params)
 
-    def work_schedule_update(self, date, working, description=None, project=None, user=None,
-                             recalculate_field=None):
+    def work_schedule_update(
+        self,
+        date: str,
+        working: bool,
+        description: Optional[str] = None,
+        project: Optional[Dict[str, Any]] = None,
+        user: Optional[Dict[str, Any]] = None,
+        recalculate_field: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """
         Update the work schedule for a given date.
 
@@ -1717,8 +1867,10 @@ class Shotgun(object):
         """
 
         if not self.server_caps.version or self.server_caps.version < (3, 2, 0):
-            raise ShotgunError("Work schedule support requires server version 3.2 or "
-                               "higher, server is %s" % (self.server_caps.version,))
+            raise ShotgunError(
+                "Work schedule support requires server version 3.2 or "
+                "higher, server is %s" % (self.server_caps.version,)
+            )
 
         if not isinstance(date, str):
             raise ShotgunError("The date argument must be string in YYYY-MM-DD format")
@@ -1729,12 +1881,40 @@ class Shotgun(object):
             description=description,
             project=project,
             user=user,
-            recalculate_field=recalculate_field
+            recalculate_field=recalculate_field,
         )
 
         return self._call_rpc("work_schedule_update", params)
 
-    def follow(self, user, entity):
+    def export_page(self, page_id, format, layout_name=None):
+        """
+        Export the specified page to the given format.
+
+        This method allows you to export a page to CSV.
+
+        Respective layout or page should be marked as API Exportable in the Flow Production Tracking UI.
+
+        If ``layout_name`` is not passed in, the default layout name will be used.
+
+        For more information, see `documentation <https://help.autodesk.com/view/SGSUB/ENU/?guid=SG_Tutorials_tu_export_csv_html#enable-api-export-for-a-page>`_ .
+
+            >>> sg.export_page(12345, "csv", layout_name="My Layout")
+            "ID,Name,Status\\n1,Shot 001,ip\\n2,    Shot 002,rev\\n"
+            >>> sg.export_page(12345, "csv")
+            "ID,Name,Status\\n1,Shot 001,ip\\n2,Shot 002,rev\\n"
+
+        :param int page_id: The ID of the page to export.
+        :param str format: The format to export the page to. Supported format is ``"csv"``.
+        :param str layout_name: Optional layout name. This should be the name of the layout seen in the Flow Production Tracking UI.
+        :returns: string containing data of the given page.
+        :rtype: string
+        """
+
+        params = dict(format=format, page_id=page_id, layout_name=layout_name)
+
+        return self._call_rpc("export_page", params)
+
+    def follow(self, user: Dict[str, Any], entity: Dict[str, Any]) -> Dict[str, Any]:
         """
         Add the entity to the user's followed entities.
 
@@ -1753,17 +1933,16 @@ class Shotgun(object):
         """
 
         if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
-            raise ShotgunError("Follow support requires server version 5.2 or "
-                               "higher, server is %s" % (self.server_caps.version,))
+            raise ShotgunError(
+                "Follow support requires server version 5.2 or "
+                "higher, server is %s" % (self.server_caps.version,)
+            )
 
-        params = dict(
-            user=user,
-            entity=entity
-        )
+        params = dict(user=user, entity=entity)
 
         return self._call_rpc("follow", params)
 
-    def unfollow(self, user, entity):
+    def unfollow(self, user: Dict[str, Any], entity: Dict[str, Any]) -> Dict[str, Any]:
         """
         Remove entity from the user's followed entities.
 
@@ -1781,17 +1960,16 @@ class Shotgun(object):
         """
 
         if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
-            raise ShotgunError("Follow support requires server version 5.2 or "
-                               "higher, server is %s" % (self.server_caps.version,))
+            raise ShotgunError(
+                "Follow support requires server version 5.2 or "
+                "higher, server is %s" % (self.server_caps.version,)
+            )
 
-        params = dict(
-            user=user,
-            entity=entity
-        )
+        params = dict(user=user, entity=entity)
 
         return self._call_rpc("unfollow", params)
 
-    def followers(self, entity):
+    def followers(self, entity: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Return all followers for an entity.
 
@@ -1810,16 +1988,21 @@ class Shotgun(object):
         """
 
         if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
-            raise ShotgunError("Follow support requires server version 5.2 or "
-                               "higher, server is %s" % (self.server_caps.version,))
+            raise ShotgunError(
+                "Follow support requires server version 5.2 or "
+                "higher, server is %s" % (self.server_caps.version,)
+            )
 
-        params = dict(
-            entity=entity
-        )
+        params = dict(entity=entity)
 
         return self._call_rpc("followers", params)
 
-    def following(self, user, project=None, entity_type=None):
+    def following(
+        self,
+        user: Dict[str, Any],
+        project: Optional[Dict[str, Any]] = None,
+        entity_type: Optional[str] = None,
+    ) -> List[BaseEntity]:
         """
         Return all entity instances a user is following.
 
@@ -1842,9 +2025,7 @@ class Shotgun(object):
 
         self.server_caps.ensure_user_following_support()
 
-        params = {
-            "user": user
-        }
+        params = {"user": user}
         if project:
             params["project"] = project
         if entity_type:
@@ -1852,7 +2033,9 @@ class Shotgun(object):
 
         return self._call_rpc("following", params)
 
-    def schema_entity_read(self, project_entity=None):
+    def schema_entity_read(
+        self, project_entity: Optional[BaseEntity] = None
+    ) -> Dict[str, Dict[str, Any]]:
         """
         Return all active entity types, their display names, and their visibility.
 
@@ -1887,7 +2070,7 @@ class Shotgun(object):
             The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
         """
 
-        params = {}
+        params: Dict[str, Any] = {}
 
         params = self._add_project_param(params, project_entity)
 
@@ -1896,7 +2079,9 @@ class Shotgun(object):
         else:
             return self._call_rpc("schema_entity_read", None)
 
-    def schema_read(self, project_entity=None):
+    def schema_read(
+        self, project_entity: Optional[BaseEntity] = None
+    ) -> Dict[str, Dict[str, Any]]:
         """
         Get the schema for all fields on all entities.
 
@@ -1959,7 +2144,7 @@ class Shotgun(object):
             The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
         """
 
-        params = {}
+        params: Dict[str, Any] = {}
 
         params = self._add_project_param(params, project_entity)
 
@@ -1968,7 +2153,12 @@ class Shotgun(object):
         else:
             return self._call_rpc("schema_read", None)
 
-    def schema_field_read(self, entity_type, field_name=None, project_entity=None):
+    def schema_field_read(
+        self,
+        entity_type: str,
+        field_name: Optional[str] = None,
+        project_entity: Optional[BaseEntity] = None,
+    ) -> Dict[str, Dict[str, Any]]:
         """
         Get schema for all fields on the specified entity type or just the field name specified
         if provided.
@@ -2032,7 +2222,13 @@ class Shotgun(object):
 
         return self._call_rpc("schema_field_read", params)
 
-    def schema_field_create(self, entity_type, data_type, display_name, properties=None):
+    def schema_field_create(
+        self,
+        entity_type: str,
+        data_type: str,
+        display_name: str,
+        properties: Optional[Dict[str, Any]] = None,
+    ) -> str:
         """
         Create a field for the specified entity type.
 
@@ -2061,15 +2257,21 @@ class Shotgun(object):
         params = {
             "type": entity_type,
             "data_type": data_type,
-            "properties": [
-                {"property_name": "name", "value": display_name}
-            ]
+            "properties": [{"property_name": "name", "value": display_name}],
         }
-        params["properties"].extend(self._dict_to_list(properties, key_name="property_name", value_name="value"))
+        params["properties"].extend(
+            self._dict_to_list(properties, key_name="property_name", value_name="value")
+        )
 
         return self._call_rpc("schema_field_create", params)
 
-    def schema_field_update(self, entity_type, field_name, properties, project_entity=None):
+    def schema_field_update(
+        self,
+        entity_type: str,
+        field_name: str,
+        properties: Dict[str, Any],
+        project_entity: Optional[BaseEntity] = None,
+    ) -> bool:
         """
         Update the properties for the specified field on an entity.
 
@@ -2083,9 +2285,9 @@ class Shotgun(object):
         >>> sg.schema_field_update("Asset", "sg_test_number", properties)
         True
 
-        :param entity_type: Entity type of field to update.
-        :param field_name: Internal Shotgun name of the field to update.
-        :param properties: Dictionary with key/value pairs where the key is the property to be
+        :param str entity_type: Entity type of field to update.
+        :param str field_name: Internal Shotgun name of the field to update.
+        :param dict properties: Dictionary with key/value pairs where the key is the property to be
             updated and the value is the new value.
         :param dict project_entity: Optional Project entity specifying which project to modify the
             ``visible`` property for. If ``visible`` is present in ``properties`` and
@@ -2104,14 +2306,13 @@ class Shotgun(object):
             "type": entity_type,
             "field_name": field_name,
             "properties": [
-                {"property_name": k, "value": v}
-                for k, v in six.iteritems((properties or {}))
-            ]
+                {"property_name": k, "value": v} for k, v in (properties or {}).items()
+            ],
         }
         params = self._add_project_param(params, project_entity)
         return self._call_rpc("schema_field_update", params)
 
-    def schema_field_delete(self, entity_type, field_name):
+    def schema_field_delete(self, entity_type: str, field_name: str) -> bool:
         """
         Delete the specified field from the entity type.
 
@@ -2124,14 +2325,11 @@ class Shotgun(object):
         :rtype: bool
         """
 
-        params = {
-            "type": entity_type,
-            "field_name": field_name
-        }
+        params = {"type": entity_type, "field_name": field_name}
 
         return self._call_rpc("schema_field_delete", params)
 
-    def add_user_agent(self, agent):
+    def add_user_agent(self, agent: str) -> None:
         """
         Add agent to the user-agent header.
 
@@ -2143,7 +2341,7 @@ class Shotgun(object):
         """
         self._user_agents.append(agent)
 
-    def reset_user_agent(self):
+    def reset_user_agent(self) -> None:
         """
         Reset user agent to the default value.
 
@@ -2157,15 +2355,13 @@ class Shotgun(object):
             ua_platform = self.client_caps.platform.capitalize()
 
         # create ssl validation string based on settings
-        validation_str = "validate"
-        if self.config.no_ssl_validation:
-            validation_str = "no-validate"
+        self._user_agents = [
+            "shotgun-json (%s)" % __version__,
+            "Python %s (%s)" % (self.client_caps.py_version, ua_platform),
+            "ssl %s" % (self.client_caps.ssl_version),
+        ]
 
-        self._user_agents = ["shotgun-json (%s)" % __version__,
-                             "Python %s (%s)" % (self.client_caps.py_version, ua_platform),
-                             "ssl %s (%s)" % (self.client_caps.ssl_version, validation_str)]
-
-    def set_session_uuid(self, session_uuid):
+    def set_session_uuid(self, session_uuid: str) -> None:
         """
         Set the browser session_uuid in the current Shotgun API instance.
 
@@ -2181,8 +2377,14 @@ class Shotgun(object):
         self.config.session_uuid = session_uuid
         return
 
-    def share_thumbnail(self, entities, thumbnail_path=None, source_entity=None,
-                        filmstrip_thumbnail=False, **kwargs):
+    def share_thumbnail(
+        self,
+        entities: List[Dict[str, Any]],
+        thumbnail_path: Optional[str] = None,
+        source_entity: Optional[BaseEntity] = None,
+        filmstrip_thumbnail: bool = False,
+        **kwargs: Any,
+    ) -> int:
         """
         Associate a thumbnail with more than one Shotgun entity.
 
@@ -2198,7 +2400,7 @@ class Shotgun(object):
         .. note::
             When sharing a filmstrip thumbnail, it is required to have a static thumbnail in
             place before the filmstrip will be displayed in the Shotgun web UI.
-            If the :ref:`thumbnail is still processing and is using a placeholder 
+            If the :ref:`thumbnail is still processing and is using a placeholder
             <interpreting_image_field_strings>`, this method will error.
 
         Simple use case:
@@ -2225,48 +2427,58 @@ class Shotgun(object):
             share the static thumbnail. Defaults to ``False``.
         :returns: ``id`` of the Attachment entity representing the source thumbnail that is shared.
         :rtype: int
-        :raises: :class:`ShotgunError` if not supported by server version or improperly called, 
+        :raises: :class:`ShotgunError` if not supported by server version or improperly called,
             or :class:`ShotgunThumbnailNotReady` if thumbnail is still pending.
         """
         if not self.server_caps.version or self.server_caps.version < (4, 0, 0):
-            raise ShotgunError("Thumbnail sharing support requires server "
-                               "version 4.0 or higher, server is %s" % (self.server_caps.version,))
+            raise ShotgunError(
+                "Thumbnail sharing support requires server "
+                "version 4.0 or higher, server is %s" % (self.server_caps.version,)
+            )
 
         if not isinstance(entities, list) or len(entities) == 0:
-            raise ShotgunError("'entities' parameter must be a list of entity "
-                               "hashes and may not be empty")
+            raise ShotgunError(
+                "'entities' parameter must be a list of entity "
+                "hashes and may not be empty"
+            )
 
         for e in entities:
             if not isinstance(e, dict) or "id" not in e or "type" not in e:
-                raise ShotgunError("'entities' parameter must be a list of "
-                                   "entity hashes with at least 'type' and 'id' keys.\nInvalid "
-                                   "entity: %s" % e)
+                raise ShotgunError(
+                    "'entities' parameter must be a list of "
+                    "entity hashes with at least 'type' and 'id' keys.\nInvalid "
+                    "entity: %s" % e
+                )
 
-        if (not thumbnail_path and not source_entity) or (thumbnail_path and source_entity):
-            raise ShotgunError("You must supply either thumbnail_path OR source_entity.")
+        if (not thumbnail_path and not source_entity) or (
+            thumbnail_path and source_entity
+        ):
+            raise ShotgunError(
+                "You must supply either thumbnail_path OR source_entity."
+            )
 
         # upload thumbnail
         if thumbnail_path:
             source_entity = entities.pop(0)
             if filmstrip_thumbnail:
                 thumb_id = self.upload_filmstrip_thumbnail(
-                    source_entity["type"],
-                    source_entity["id"],
-                    thumbnail_path,
-                    **kwargs
+                    source_entity["type"], source_entity["id"], thumbnail_path, **kwargs
                 )
             else:
                 thumb_id = self.upload_thumbnail(
-                    source_entity["type"],
-                    source_entity["id"],
-                    thumbnail_path,
-                    **kwargs
+                    source_entity["type"], source_entity["id"], thumbnail_path, **kwargs
                 )
         else:
-            if not isinstance(source_entity, dict) or "id" not in source_entity or "type" not in source_entity:
-                raise ShotgunError("'source_entity' parameter must be a dict "
-                                   "with at least 'type' and 'id' keys.\nGot: %s (%s)"
-                                   % (source_entity, type(source_entity)))
+            if (
+                not isinstance(source_entity, dict)
+                or "id" not in source_entity
+                or "type" not in source_entity
+            ):
+                raise ShotgunError(
+                    "'source_entity' parameter must be a dict "
+                    "with at least 'type' and 'id' keys.\nGot: %s (%s)"
+                    % (source_entity, type(source_entity))
+                )
 
         # only 1 entity in list and we already uploaded the thumbnail to it
         if len(entities) == 0:
@@ -2285,8 +2497,16 @@ class Shotgun(object):
             "filmstrip_thumbnail": filmstrip_thumbnail,
         }
 
-        url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
-                                       "/upload/share_thumbnail", None, None, None))
+        url = urllib.parse.urlunparse(
+            (
+                self.config.scheme,
+                self.config.server,
+                "/upload/share_thumbnail",
+                None,
+                None,
+                None,
+            )
+        )
 
         result = self._send_form(url, params)
 
@@ -2303,7 +2523,9 @@ class Shotgun(object):
 
         return attachment_id
 
-    def upload_thumbnail(self, entity_type, entity_id, path, **kwargs):
+    def upload_thumbnail(
+        self, entity_type: str, entity_id: int, path: str, **kwargs: Any
+    ) -> int:
         """
         Upload a file from a local path and assign it as the thumbnail for the specified entity.
 
@@ -2328,10 +2550,15 @@ class Shotgun(object):
         :param int entity_id: Id of the entity to set the thumbnail for.
         :param str path: Full path to the thumbnail file on disk.
         :returns: Id of the new attachment
+        :rtype: int
         """
-        return self.upload(entity_type, entity_id, path, field_name="thumb_image", **kwargs)
+        return self.upload(
+            entity_type, entity_id, path, field_name="thumb_image", **kwargs
+        )
 
-    def upload_filmstrip_thumbnail(self, entity_type, entity_id, path, **kwargs):
+    def upload_filmstrip_thumbnail(
+        self, entity_type: str, entity_id: int, path: str, **kwargs: Any
+    ) -> int:
         """
         Upload filmstrip thumbnail to specified entity.
 
@@ -2371,13 +2598,25 @@ class Shotgun(object):
         :rtype: int
         """
         if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
-            raise ShotgunError("Filmstrip thumbnail support requires server version 3.1 or "
-                               "higher, server is %s" % (self.server_caps.version,))
+            raise ShotgunError(
+                "Filmstrip thumbnail support requires server version 3.1 or "
+                "higher, server is %s" % (self.server_caps.version,)
+            )
 
-        return self.upload(entity_type, entity_id, path, field_name="filmstrip_thumb_image", **kwargs)
+        return self.upload(
+            entity_type, entity_id, path, field_name="filmstrip_thumb_image", **kwargs
+        )
 
-    def upload(self, entity_type, entity_id, path, field_name=None, display_name=None,
-               tag_list=None):
+    def upload(
+        self,
+        entity_type: str,
+        entity_id: int,
+        path: str,
+        field_name: Optional[str] = None,
+        display_name: Optional[str] = None,
+        tag_list: Optional[str] = None,
+        created_at: Optional[datetime.datetime] = None,
+    ) -> int:
         """
         Upload a file to the specified entity.
 
@@ -2386,7 +2625,7 @@ class Shotgun(object):
         assign tags to the Attachment.
 
         .. note::
-          Make sure to have retries for file uploads. Failures when uploading will occasionally happen. 
+          Make sure to have retries for file uploads. Failures when uploading will occasionally happen.
           When it does, immediately retrying to upload usually works
 
         >>> mov_file = '/data/show/ne2/100_110/anim/01.mlk-02b.mov'
@@ -2401,6 +2640,8 @@ class Shotgun(object):
             This field must be a File/Link field type.
         :param str display_name: The display name to use for the file. Defaults to the file name.
         :param str tag_list: comma-separated string of tags to assign to the file.
+        :param datetime.datetime created_at: Optional datetime value to set as the created_at
+            time for the Attachment entity. If ``None``, the server will use the current time.
         :returns: Id of the Attachment entity that was created for the image.
         :rtype: int
         :raises: :class:`ShotgunError` on upload failure.
@@ -2414,7 +2655,7 @@ class Shotgun(object):
         # have to raise a sane exception. This will always work for ascii and utf-8
         # encoded strings, but will fail on some others if the string includes non
         # ascii characters.
-        if not isinstance(path, six.text_type):
+        if not isinstance(path, str):
             try:
                 path = path.decode("utf-8")
             except UnicodeDecodeError:
@@ -2429,19 +2670,55 @@ class Shotgun(object):
         if os.path.getsize(path) == 0:
             raise ShotgunError("Path cannot be an empty file: '%s'" % path)
 
-        is_thumbnail = (field_name in ["thumb_image", "filmstrip_thumb_image", "image",
-                                       "filmstrip_image"])
+        if created_at is not None:
+            if not isinstance(created_at, datetime.datetime):
+                raise ShotgunError(
+                    "created_at must be a datetime.datetime instance, got '%s'"
+                    % type(created_at)
+                )
+
+        is_thumbnail = field_name in [
+            "thumb_image",
+            "filmstrip_thumb_image",
+            "image",
+            "filmstrip_image",
+        ]
 
         # Supported types can be directly uploaded to Cloud storage
         if self._requires_direct_s3_upload(entity_type, field_name):
-            return self._upload_to_storage(entity_type, entity_id, path, field_name, display_name,
-                                           tag_list, is_thumbnail)
+            return self._upload_to_storage(
+                entity_type,
+                entity_id,
+                path,
+                field_name,
+                display_name,
+                tag_list,
+                is_thumbnail,
+                created_at,
+            )
         else:
-            return self._upload_to_sg(entity_type, entity_id, path, field_name, display_name,
-                                      tag_list, is_thumbnail)
+            return self._upload_to_sg(
+                entity_type,
+                entity_id,
+                path,
+                field_name,
+                display_name,
+                tag_list,
+                is_thumbnail,
+                created_at,
+            )
 
-    def _upload_to_storage(self, entity_type, entity_id, path, field_name, display_name,
-                           tag_list, is_thumbnail):
+    def _upload_to_storage(
+        self,
+        entity_type: str,
+        entity_id: int,
+        path: str,
+        field_name: Optional[str],
+        display_name: Optional[str],
+        tag_list: Optional[str],
+        is_thumbnail: bool,
+        created_at: Optional[datetime.datetime] = None,
+    ) -> int:
         """
         Internal function to upload a file to the Cloud storage and link it to the specified entity.
 
@@ -2453,6 +2730,7 @@ class Shotgun(object):
         :param str display_name: The display name to use for the file. Defaults to the file name.
         :param str tag_list: comma-separated string of tags to assign to the file.
         :param bool is_thumbnail: indicates if the attachment is a thumbnail.
+        :param datetime created_at: The datetime to set for the attachment.
         :returns: Id of the Attachment entity that was created for the image.
         :rtype: int
         """
@@ -2461,9 +2739,11 @@ class Shotgun(object):
 
         # Step 1: get the upload url
 
-        is_multipart_upload = (os.path.getsize(path) > self._MULTIPART_UPLOAD_CHUNK_SIZE)
+        is_multipart_upload = os.path.getsize(path) > self._MULTIPART_UPLOAD_CHUNK_SIZE
 
-        upload_info = self._get_attachment_upload_info(is_thumbnail, filename, is_multipart_upload)
+        upload_info = self._get_attachment_upload_info(
+            is_thumbnail, filename, is_multipart_upload, created_at=created_at
+        )
 
         # Step 2: upload the file
         # We upload large files in multiple parts because it is more robust
@@ -2475,13 +2755,21 @@ class Shotgun(object):
 
         # Step 3: create the attachment
 
-        url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
-                                       "/upload/api_link_file", None, None, None))
+        url = urllib.parse.urlunparse(
+            (
+                self.config.scheme,
+                self.config.server,
+                "/upload/api_link_file",
+                None,
+                None,
+                None,
+            )
+        )
 
         params = {
             "entity_type": entity_type,
             "entity_id": entity_id,
-            "upload_link_info": upload_info["upload_info"]
+            "upload_link_info": upload_info["upload_info"],
         }
 
         params.update(self._auth_params())
@@ -2499,20 +2787,32 @@ class Shotgun(object):
             # None gets converted to a string and added as a tag...
             if tag_list:
                 params["tag_list"] = tag_list
+            if created_at is not None:
+                params["created_at"] = created_at
 
         result = self._send_form(url, params)
         if not result.startswith("1"):
-            raise ShotgunError("Could not upload file successfully, but "
-                               "not sure why.\nPath: %s\nUrl: %s\nError: %s"
-                               % (path, url, result))
+            raise ShotgunError(
+                "Could not upload file successfully, but "
+                "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (path, url, result)
+            )
 
         LOG.debug("Attachment linked to content on Cloud storage")
 
         attachment_id = int(result.split(":", 2)[1].split("\n", 1)[0])
         return attachment_id
 
-    def _upload_to_sg(self, entity_type, entity_id, path, field_name, display_name,
-                      tag_list, is_thumbnail):
+    def _upload_to_sg(
+        self,
+        entity_type: str,
+        entity_id: int,
+        path: str,
+        field_name: Optional[str],
+        display_name: Optional[str],
+        tag_list: Optional[str],
+        is_thumbnail: bool,
+        created_at: Optional[datetime.datetime] = None,
+    ) -> int:
         """
         Internal function to upload a file to Shotgun and link it to the specified entity.
 
@@ -2524,7 +2824,7 @@ class Shotgun(object):
         :param str display_name: The display name to use for the file. Defaults to the file name.
         :param str tag_list: comma-separated string of tags to assign to the file.
         :param bool is_thumbnail: indicates if the attachment is a thumbnail.
-
+        :param datetime created_at: The datetime to set for the attachment.
         :returns: Id of the Attachment entity that was created for the image.
         :rtype: int
         """
@@ -2536,33 +2836,31 @@ class Shotgun(object):
 
         params.update(self._auth_params())
 
-        # If we ended up with a unicode string path, we need to encode it
-        # as a utf-8 string. If we don't, there's a chance that there will
-        # will be an attempt later on to encode it as an ascii string, and
-        # that will fail ungracefully if the path contains any non-ascii
-        # characters.
-        #
-        # On Windows, if the path contains non-ascii characters, the calls
-        # to open later in this method will fail to find the file if given
-        # a non-ascii-encoded string path. In that case, we're going to have
-        # to call open on the unicode path, but we'll use the encoded string
-        # for everything else.
-        path_to_open = path
-        if isinstance(path, six.text_type):
-            path = path.encode("utf-8")
-            if sys.platform != "win32":
-                path_to_open = path
-
         if is_thumbnail:
-            url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
-                                           "/upload/publish_thumbnail", None, None, None))
-            params["thumb_image"] = open(path_to_open, "rb")
+            url = urllib.parse.urlunparse(
+                (
+                    self.config.scheme,
+                    self.config.server,
+                    "/upload/publish_thumbnail",
+                    None,
+                    None,
+                    None,
+                )
+            )
+            params["thumb_image"] = open(path, "rb")
             if field_name == "filmstrip_thumb_image" or field_name == "filmstrip_image":
                 params["filmstrip"] = True
-
         else:
-            url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
-                                           "/upload/upload_file", None, None, None))
+            url = urllib.parse.urlunparse(
+                (
+                    self.config.scheme,
+                    self.config.server,
+                    "/upload/upload_file",
+                    None,
+                    None,
+                    None,
+                )
+            )
             if display_name is None:
                 display_name = os.path.basename(path)
             # we allow linking to nothing for generic reference use cases
@@ -2572,26 +2870,38 @@ class Shotgun(object):
             # None gets converted to a string and added as a tag...
             if tag_list:
                 params["tag_list"] = tag_list
+            if created_at is not None:
+                params["created_at"] = created_at.isoformat()
 
-            params["file"] = open(path_to_open, "rb")
+            params["file"] = open(path, "rb")
 
         result = self._send_form(url, params)
 
         if not result.startswith("1"):
-            raise ShotgunError("Could not upload file successfully, but "
-                               "not sure why.\nPath: %s\nUrl: %s\nError: %s"
-                               % (path, url, result))
+            raise ShotgunError(
+                "Could not upload file successfully, but "
+                "not sure why.\nPath: %s\nUrl: %s\nError: %s" % (path, url, result)
+            )
 
         attachment_id = int(result.split(":", 2)[1].split("\n", 1)[0])
         return attachment_id
 
-    def _get_attachment_upload_info(self, is_thumbnail, filename, is_multipart_upload):
+    def _get_attachment_upload_info(
+        self,
+        is_thumbnail: bool,
+        filename: str,
+        is_multipart_upload: bool,
+        created_at: Optional[datetime.datetime] = None,
+    ) -> Dict[str, Any]:
         """
         Internal function to get the information needed to upload a file to Cloud storage.
 
         :param bool is_thumbnail: indicates if the attachment is a thumbnail.
         :param str filename: name of the file that will be uploaded.
         :param bool is_multipart_upload: Indicates if we want multi-part upload information back.
+        :param datetime created_at: Optional datetime to use as the upload timestamp.
+            When provided, the server generates the S3 key with this timestamp so that
+            the Attachment's created_at and its storage path stay in sync.
 
         :returns: dictionary containing upload details from the server.
             These details are used throughout the upload process.
@@ -2603,21 +2913,25 @@ class Shotgun(object):
         else:
             upload_type = "Attachment"
 
-        params = {
-            "upload_type": upload_type,
-            "filename": filename
-        }
+        params = {"upload_type": upload_type, "filename": filename}
 
         params["multipart_upload"] = is_multipart_upload
 
+        if created_at is not None:
+            params["created_at"] = created_at.isoformat()
+
         upload_url = "/upload/api_get_upload_link_info"
-        url = urllib.parse.urlunparse((self.config.scheme, self.config.server, upload_url, None, None, None))
+        url = urllib.parse.urlunparse(
+            (self.config.scheme, self.config.server, upload_url, None, None, None)
+        )
 
         upload_info = self._send_form(url, params)
         if not upload_info.startswith("1"):
-            raise ShotgunError("Could not get upload_url but "
-                               "not sure why.\nPath: %s\nUrl: %s\nError: %s"
-                               % (filename, url, upload_info))
+            raise ShotgunError(
+                "Could not get upload_url but "
+                "not sure why.\nPath: %s\nUrl: %s\nError: %s"
+                % (filename, url, upload_info)
+            )
 
         LOG.debug("Completed rpc call to %s" % (upload_url))
 
@@ -2628,10 +2942,15 @@ class Shotgun(object):
             "timestamp": upload_info_parts[2],
             "upload_type": upload_info_parts[3],
             "upload_id": upload_info_parts[4],
-            "upload_info": upload_info
+            "upload_info": upload_info,
         }
 
-    def download_attachment(self, attachment=False, file_path=None, attachment_id=None):
+    def download_attachment(
+        self,
+        attachment: Union[Dict[str, Any], bool] = False,
+        file_path: Optional[str] = None,
+        attachment_id: Optional[int] = None,
+    ) -> Union[str, bytes, None]:
         """
         Download the file associated with a Shotgun Attachment.
 
@@ -2663,8 +2982,7 @@ class Shotgun(object):
                 This parameter exists only for backwards compatibility for scripts specifying
                 the parameter with keywords.
         :returns: If ``file_path`` is provided, returns the path to the file on disk.  If
-            ``file_path`` is ``None``, returns the actual data of the file, as str in Python 2 or
-            bytes in Python 3.
+            ``file_path`` is ``None``, returns the actual data of the file, as bytes.
         :rtype: str | bytes
         """
         # backwards compatibility when passed via keyword argument
@@ -2672,29 +2990,34 @@ class Shotgun(object):
             if type(attachment_id) == int:
                 attachment = attachment_id
             else:
-                raise TypeError("Missing parameter 'attachment'. Expected a "
-                                "dict, int, NoneType value or"
-                                "an int for parameter attachment_id")
+                raise TypeError(
+                    "Missing parameter 'attachment'. Expected a "
+                    "dict, int, NoneType value or"
+                    "an int for parameter attachment_id"
+                )
         # write to disk
         if file_path:
             try:
                 fp = open(file_path, "wb")
             except IOError as e:
-                raise IOError("Unable to write Attachment to disk using "
-                              "file_path. %s" % e)
+                raise IOError(
+                    "Unable to write Attachment to disk using " "file_path. %s" % e
+                )
 
         url = self.get_attachment_download_url(attachment)
         if url is None:
             return None
 
-        # We only need to set the auth cookie for downloads from Shotgun server
+        cookie_handler = None
         if self.config.server in url:
-            self.set_up_auth_cookie()
+            # We only need to set the auth cookie for downloads from Shotgun server
+            cookie_handler = self.get_auth_cookie_handler()
 
+        opener = self._build_opener(cookie_handler)
         try:
             request = urllib.request.Request(url)
             request.add_header("user-agent", "; ".join(self._user_agents))
-            req = urllib.request.urlopen(request)
+            req = opener.open(request)
             if file_path:
                 shutil.copyfileobj(req, fp)
             else:
@@ -2710,15 +3033,23 @@ class Shotgun(object):
                     err += "\nAttachment may not exist or is a local file?"
                 elif e.code == 403:
                     # Only parse the body if it is an Amazon S3 url.
-                    if url.find("s3.amazonaws.com") != -1 and e.headers["content-type"] == "application/xml":
-                        body = [six.ensure_text(line) for line in e.readlines()]
+                    if (
+                        url.find("s3.amazonaws.com") != -1
+                        and e.headers["content-type"] == "application/xml"
+                    ):
+                        body = [
+                            line.decode("utf-8") if isinstance(line, bytes) else line
+                            for line in e.readlines()
+                        ]
+
                         if body:
-                            xml = "".join(body)
-                            # Once python 2.4 support is not needed we can think about using
-                            # elementtree. The doc is pretty small so this shouldn't be an issue.
-                            match = re.search("<Message>(.*)</Message>", xml)
-                            if match:
-                                err += " - %s" % (match.group(1))
+                            try:
+                                root = xml.etree.ElementTree.fromstring("".join(body))
+                                message_elem = root.find(".//Message")
+                                if message_elem is not None and message_elem.text:
+                                    err = f"{err} - {message_elem.text}"
+                            except xml.etree.ElementTree.ParseError:
+                                err = f"{err}\n{''.join(body)}\n"
                 elif e.code == 409 or e.code == 410:
                     # we may be dealing with a file that is pending/failed a malware scan, e.g:
                     # 409: This file is undergoing a malware scan, please try again in a few minutes
@@ -2735,23 +3066,41 @@ class Shotgun(object):
             else:
                 return attachment
 
-    def set_up_auth_cookie(self):
+    def get_auth_cookie_handler(self) -> urllib.request.HTTPCookieProcessor:
         """
-        Set up urllib2 with a cookie for authentication on the Shotgun instance.
+        Return an urllib cookie handler containing a cookie for FPTR
+        authentication.
 
-        Looks up session token and sets that in a cookie in the :mod:`urllib2` handler. This is
-        used internally for downloading attachments from the Shotgun server.
+        Looks up session token and sets that in a cookie in the :mod:`urllib2`
+        handler.
+        This is used internally for downloading attachments from FPTR.
         """
         sid = self.get_session_token()
-        cj = http_cookiejar.LWPCookieJar()
-        c = http_cookiejar.Cookie("0", "_session_id", sid, None, False, self.config.server, False,
-                                  False, "/", True, False, None, True, None, None, {})
+        cj = http.cookiejar.LWPCookieJar()
+        c = http.cookiejar.Cookie(
+            "0",
+            "_session_id",
+            sid,
+            None,
+            False,
+            self.config.server,
+            False,
+            False,
+            "/",
+            True,
+            False,
+            None,
+            True,
+            None,
+            None,
+            {},
+        )
         cj.set_cookie(c)
-        cookie_handler = urllib.request.HTTPCookieProcessor(cj)
-        opener = self._build_opener(cookie_handler)
-        urllib.request.install_opener(opener)
+        return urllib.request.HTTPCookieProcessor(cj)
 
-    def get_attachment_download_url(self, attachment):
+    def get_attachment_download_url(
+        self, attachment: Optional[Union[int, dict[str, Any]]]
+    ) -> str:
         """
         Return the URL for downloading provided Attachment.
 
@@ -2779,23 +3128,39 @@ class Shotgun(object):
             try:
                 url = attachment["url"]
             except KeyError:
-                if ("id" in attachment and "type" in attachment and attachment["type"] == "Attachment"):
+                if (
+                    "id" in attachment
+                    and "type" in attachment
+                    and attachment["type"] == "Attachment"
+                ):
                     attachment_id = attachment["id"]
                 else:
                     raise ValueError("Missing 'url' key in Attachment dict")
         elif attachment is None:
             url = None
         else:
-            raise TypeError("Unable to determine download url. Expected "
-                            "dict, int, or NoneType. Instead got %s" % type(attachment))
+            raise TypeError(
+                "Unable to determine download url. Expected "
+                "dict, int, or NoneType. Instead got %s" % type(attachment)
+            )
 
         if attachment_id:
-            url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
-                                           "/file_serve/attachment/%s" % urllib.parse.quote(str(attachment_id)),
-                                           None, None, None))
+            url = urllib.parse.urlunparse(
+                (
+                    self.config.scheme,
+                    self.config.server,
+                    "/file_serve/attachment/%s"
+                    % urllib.parse.quote(str(attachment_id)),
+                    None,
+                    None,
+                    None,
+                )
+            )
         return url
 
-    def authenticate_human_user(self, user_login, user_password, auth_token=None):
+    def authenticate_human_user(
+        self, user_login: str, user_password: str, auth_token: Optional[str] = None
+    ) -> Union[Dict[str, Any], None]:
         """
         Authenticate Shotgun HumanUser.
 
@@ -2830,27 +3195,21 @@ class Shotgun(object):
         self.config.auth_token = auth_token
 
         try:
-            data = self.find_one("HumanUser", [["sg_status_list", "is", "act"],
-                                               ["login", "is", user_login]],
-                                 ["id", "login"], "", "all")
-            # Set back to default - There finally and except cannot be used together in python2.4
+            return self.find_one(
+                "HumanUser",
+                [["sg_status_list", "is", "act"], ["login", "is", user_login]],
+                ["id", "login"],
+                "",
+                "all",
+            )
+        finally:
             self.config.user_login = original_login
             self.config.user_password = original_password
             self.config.auth_token = original_auth_token
-            return data
-        except Fault:
-            # Set back to default - There finally and except cannot be used together in python2.4
-            self.config.user_login = original_login
-            self.config.user_password = original_password
-            self.config.auth_token = original_auth_token
-        except Exception:
-            # Set back to default - There finally and except cannot be used together in python2.4
-            self.config.user_login = original_login
-            self.config.user_password = original_password
-            self.config.auth_token = original_auth_token
-            raise
 
-    def update_project_last_accessed(self, project, user=None):
+    def update_project_last_accessed(
+        self, project: Dict[str, Any], user: Optional[Dict[str, Any]] = None
+    ) -> None:
         """
         Update a Project's ``last_accessed_by_current_user`` field to the current timestamp.
 
@@ -2870,25 +3229,35 @@ class Shotgun(object):
             value from the current instance will be used instead.
         """
         if self.server_caps.version and self.server_caps.version < (5, 3, 20):
-            raise ShotgunError("update_project_last_accessed requires server version 5.3.20 or "
-                               "higher, server is %s" % (self.server_caps.version,))
+            raise ShotgunError(
+                "update_project_last_accessed requires server version 5.3.20 or "
+                "higher, server is %s" % (self.server_caps.version,)
+            )
 
         if not user:
             # Try to use sudo as user if present
             if self.config.sudo_as_login:
-                user = self.find_one("HumanUser", [["login", "is", self.config.sudo_as_login]])
+                user = self.find_one(
+                    "HumanUser", [["login", "is", self.config.sudo_as_login]]
+                )
             # Try to use login if present
             if self.config.user_login:
-                user = self.find_one("HumanUser", [["login", "is", self.config.user_login]])
+                user = self.find_one(
+                    "HumanUser", [["login", "is", self.config.user_login]]
+                )
 
-        params = {"project_id": project["id"], }
+        params = {
+            "project_id": project["id"],
+        }
         if user:
             params["user_id"] = user["id"]
 
         record = self._call_rpc("update_project_last_accessed_by_current_user", params)
         self._parse_records(record)[0]
 
-    def note_thread_read(self, note_id, entity_fields=None):
+    def note_thread_read(
+        self, note_id: int, entity_fields: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
         """
         Return the full conversation for a given note, including Replies and Attachments.
 
@@ -2947,8 +3316,10 @@ class Shotgun(object):
         """
 
         if self.server_caps.version and self.server_caps.version < (6, 2, 0):
-            raise ShotgunError("note_thread requires server version 6.2.0 or "
-                               "higher, server is %s" % (self.server_caps.version,))
+            raise ShotgunError(
+                "note_thread requires server version 6.2.0 or "
+                "higher, server is %s" % (self.server_caps.version,)
+            )
 
         entity_fields = entity_fields or {}
 
@@ -2961,7 +3332,13 @@ class Shotgun(object):
         result = self._parse_records(record)
         return result
 
-    def text_search(self, text, entity_types, project_ids=None, limit=None):
+    def text_search(
+        self,
+        text: str,
+        entity_types: Dict[str, Any],
+        project_ids: Optional[List] = None,
+        limit: Optional[int] = None,
+    ) -> Dict[str, Any]:
         """
         Search across the specified entity types for the given text.
 
@@ -3018,8 +3395,10 @@ class Shotgun(object):
         :rtype: dict
         """
         if self.server_caps.version and self.server_caps.version < (6, 2, 0):
-            raise ShotgunError("auto_complete requires server version 6.2.0 or "
-                               "higher, server is %s" % (self.server_caps.version,))
+            raise ShotgunError(
+                "auto_complete requires server version 6.2.0 or "
+                "higher, server is %s" % (self.server_caps.version,)
+            )
 
         # convert entity_types structure into the form
         # that the API endpoint expects
@@ -3027,28 +3406,39 @@ class Shotgun(object):
             raise ValueError("entity_types parameter must be a dictionary")
 
         api_entity_types = {}
-        for (entity_type, filter_list) in six.iteritems(entity_types):
+        for entity_type, filter_list in entity_types.items():
 
             if isinstance(filter_list, (list, tuple)):
                 resolved_filters = _translate_filters(filter_list, filter_operator=None)
                 api_entity_types[entity_type] = resolved_filters
             else:
-                raise ValueError("value of entity_types['%s'] must "
-                                 "be a list or tuple." % entity_type)
+                raise ValueError(
+                    "value of entity_types['%s'] must "
+                    "be a list or tuple." % entity_type
+                )
 
         project_ids = project_ids or []
 
-        params = {"text": text,
-                  "entity_types": api_entity_types,
-                  "project_ids": project_ids,
-                  "max_results": limit}
+        params = {
+            "text": text,
+            "entity_types": api_entity_types,
+            "project_ids": project_ids,
+            "max_results": limit,
+        }
 
         record = self._call_rpc("query_display_name_cache", params)
         result = self._parse_records(record)[0]
         return result
 
-    def activity_stream_read(self, entity_type, entity_id, entity_fields=None, min_id=None,
-                             max_id=None, limit=None):
+    def activity_stream_read(
+        self,
+        entity_type: str,
+        entity_id: int,
+        entity_fields: Optional[Dict[str, Any]] = None,
+        min_id: Optional[int] = None,
+        max_id: Optional[int] = None,
+        limit: Optional[int] = None,
+    ) -> Dict[str, Any]:
         """
         Retrieve activity stream data from Shotgun.
 
@@ -3114,8 +3504,10 @@ class Shotgun(object):
         :rtype: dict
         """
         if self.server_caps.version and self.server_caps.version < (6, 2, 0):
-            raise ShotgunError("activity_stream requires server version 6.2.0 or "
-                               "higher, server is %s" % (self.server_caps.version,))
+            raise ShotgunError(
+                "activity_stream requires server version 6.2.0 or "
+                "higher, server is %s" % (self.server_caps.version,)
+            )
 
         # set up parameters to send to server.
         entity_fields = entity_fields or {}
@@ -3123,18 +3515,20 @@ class Shotgun(object):
         if not isinstance(entity_fields, dict):
             raise ValueError("entity_fields parameter must be a dictionary")
 
-        params = {"type": entity_type,
-                  "id": entity_id,
-                  "max_id": max_id,
-                  "min_id": min_id,
-                  "limit": limit,
-                  "entity_fields": entity_fields}
+        params = {
+            "type": entity_type,
+            "id": entity_id,
+            "max_id": max_id,
+            "min_id": min_id,
+            "limit": limit,
+            "entity_fields": entity_fields,
+        }
 
         record = self._call_rpc("activity_stream", params)
         result = self._parse_records(record)[0]
         return result
 
-    def nav_expand(self, path, seed_entity_field=None, entity_fields=None):
+    def nav_expand(self, path: str, seed_entity_field=None, entity_fields=None):
         """
         Expand the navigation hierarchy for the supplied path.
 
@@ -3150,11 +3544,13 @@ class Shotgun(object):
             {
                 "path": path,
                 "seed_entity_field": seed_entity_field,
-                "entity_fields": entity_fields
-            }
+                "entity_fields": entity_fields,
+            },
         )
 
-    def nav_search_string(self, root_path, search_string, seed_entity_field=None):
+    def nav_search_string(
+        self, root_path: str, search_string: str, seed_entity_field=None
+    ):
         """
         Search function adapted to work with the navigation hierarchy.
 
@@ -3169,11 +3565,16 @@ class Shotgun(object):
             {
                 "root_path": root_path,
                 "seed_entity_field": seed_entity_field,
-                "search_criteria": {"search_string": search_string}
-            }
+                "search_criteria": {"search_string": search_string},
+            },
         )
 
-    def nav_search_entity(self, root_path, entity, seed_entity_field=None):
+    def nav_search_entity(
+        self,
+        root_path: str,
+        entity: Dict[str, Any],
+        seed_entity_field: Optional[Dict[str, Any]] = None,
+    ):
         """
         Search function adapted to work with the navigation hierarchy.
 
@@ -3189,11 +3590,11 @@ class Shotgun(object):
             {
                 "root_path": root_path,
                 "seed_entity_field": seed_entity_field,
-                "search_criteria": {"entity": entity}
-            }
+                "search_criteria": {"entity": entity},
+            },
         )
 
-    def get_session_token(self):
+    def get_session_token(self) -> str:
         """
         Get the session token associated with the current session.
 
@@ -3217,7 +3618,7 @@ class Shotgun(object):
 
         return session_token
 
-    def preferences_read(self, prefs=None):
+    def preferences_read(self, prefs: Optional[List] = None) -> Dict[str, Any]:
         """
         Get a subset of the site preferences.
 
@@ -3231,20 +3632,63 @@ class Shotgun(object):
         :rtype: dict
         """
         if self.server_caps.version and self.server_caps.version < (7, 10, 0):
-            raise ShotgunError("preferences_read requires server version 7.10.0 or "
-                               "higher, server is %s" % (self.server_caps.version,))
+            raise ShotgunError(
+                "preferences_read requires server version 7.10.0 or "
+                "higher, server is %s" % (self.server_caps.version,)
+            )
 
         prefs = prefs or []
 
         return self._call_rpc("preferences_read", {"prefs": prefs})
 
-    def _build_opener(self, handler):
+    def user_subscriptions_read(self) -> List:
+        """
+        Get the list of user subscriptions.
+
+        :returns: A list of user subscriptions where each subscription is a
+            dictionary containing the ``humanUserId`` and ``subscription``
+            fields.
+        :rtype: list
+        """
+
+        return self._call_rpc("user_subscriptions_read", None)
+
+    def user_subscriptions_create(
+        self, users: List[Dict[str, Union[str, List[str], None]]]
+    ) -> bool:
+        """
+        Assign subscriptions to users.
+
+        :param list users: list of user subscriptions to assign.
+            Each subscription must be a dictionary with the ``humanUserId`` and
+            ``subscription`` fields.
+            The ``subscription`` is either ``None``, a single string, or an
+            array of strings with subscription information.
+
+        :returns: ``True`` if the request succedeed, ``False`` if otherwise.
+        :rtype: bool
+        """
+
+        response = self._call_rpc("user_subscriptions_create", {"users": users})
+
+        if not isinstance(response, dict):
+            return False
+
+        return response.get("status") == "success"
+
+    def _build_opener(self, handler) -> urllib.request.OpenerDirector:
         """
         Build urllib2 opener with appropriate proxy handler.
         """
         handlers = []
-        if self.__ca_certs and not NO_SSL_VALIDATION:
-            handlers.append(CACertsHTTPSHandler(self.__ca_certs))
+        if self.__ca_certs:
+            handlers.append(
+                urllib.request.HTTPSHandler(
+                    context=ssl.create_default_context(
+                        cafile=self.__ca_certs,
+                    ),
+                ),
+            )
 
         if self.config.proxy_handler:
             handlers.append(self.config.proxy_handler)
@@ -3313,25 +3757,15 @@ class Shotgun(object):
             cert_file = os.path.join(cur_dir, "lib", "certifi", "cacert.pem")
             return cert_file
 
-    def _turn_off_ssl_validation(self):
-        """
-        Turn off SSL certificate validation.
-        """
-        global NO_SSL_VALIDATION
-        self.config.no_ssl_validation = True
-        NO_SSL_VALIDATION = True
-        # reset ssl-validation in user-agents
-        self._user_agents = ["ssl %s (no-validate)" % self.client_caps.ssl_version
-                             if ua.startswith("ssl ") else ua
-                             for ua in self._user_agents]
-
     # Deprecated methods from old wrapper
     def schema(self, entity_type):
         """
         .. deprecated:: 3.0.0
            Use :meth:`~shotgun_api3.Shotgun.schema_field_read` instead.
         """
-        raise ShotgunError("Deprecated: use schema_field_read('type':'%s') instead" % entity_type)
+        raise ShotgunError(
+            "Deprecated: use schema_field_read('%s') instead" % entity_type
+        )
 
     def entity_types(self):
         """
@@ -3339,34 +3773,39 @@ class Shotgun(object):
            Use :meth:`~shotgun_api3.Shotgun.schema_entity_read` instead.
         """
         raise ShotgunError("Deprecated: use schema_entity_read() instead")
+
     # ========================================================================
     # RPC Functions
 
-    def _call_rpc(self, method, params, include_auth_params=True, first=False):
+    def _call_rpc(
+        self,
+        method: str,
+        params: Any,
+        include_auth_params: bool = True,
+        first: bool = False,
+    ) -> Any:
         """
         Call the specified method on the Shotgun Server sending the supplied payload.
         """
 
-        LOG.debug("Starting rpc call to %s with params %s" % (
-            method, params))
+        LOG.debug("Starting rpc call to %s with params %s" % (method, params))
 
         params = self._transform_outbound(params)
-        payload = self._build_payload(method, params, include_auth_params=include_auth_params)
+        payload = self._build_payload(
+            method, params, include_auth_params=include_auth_params
+        )
         encoded_payload = self._encode_payload(payload)
 
         req_headers = {
             "content-type": "application/json; charset=utf-8",
-            "connection": "keep-alive"
+            "connection": "keep-alive",
         }
 
         if self.config.localized is True:
             req_headers["locale"] = "auto"
 
         attempt = 1
-        max_attempts = 4 # Three retries on failure
-        backoff = 0.75 # Seconds to wait before retry, times the attempt number
-
-        while attempt <= max_attempts:
+        while attempt <= self.MAX_ATTEMPTS:
             http_status, resp_headers, body = self._make_call(
                 "POST",
                 self.config.api_path,
@@ -3381,12 +3820,12 @@ class Shotgun(object):
             except ProtocolError as e:
                 e.headers = resp_headers
 
-                # We've seen some rare instances of SG returning 502 for issues that
-                # appear to be caused by something internal to SG. We're going to
+                # We've seen some rare instances of PTR returning 502 for issues that
+                # appear to be caused by something internal to PTR. We're going to
                 # allow for limited retries for those specifically.
-                if attempt != max_attempts and e.errcode == 502:
-                    LOG.debug("Got a 502 response. Waiting and retrying...")
-                    time.sleep(float(attempt) * backoff)
+                if attempt != self.MAX_ATTEMPTS and e.errcode in [502, 504]:
+                    LOG.debug("Got a 502 or 504 response. Waiting and retrying...")
+                    time.sleep(float(attempt) * self.BACKOFF)
                     attempt += 1
                     continue
                 elif e.errcode == 403:
@@ -3408,7 +3847,7 @@ class Shotgun(object):
             return results[0]
         return results
 
-    def _auth_params(self):
+    def _auth_params(self) -> Dict[str, Any]:
         """
         Return a dictionary of the authentication parameters being used.
         """
@@ -3431,8 +3870,10 @@ class Shotgun(object):
         # Authenticate using session_id
         elif self.config.session_token:
             if self.server_caps.version and self.server_caps.version < (5, 3, 0):
-                raise ShotgunError("Session token based authentication requires server version "
-                                   "5.3.0 or higher, server is %s" % (self.server_caps.version,))
+                raise ShotgunError(
+                    "Session token based authentication requires server version "
+                    "5.3.0 or higher, server is %s" % (self.server_caps.version,)
+                )
 
             auth_params = {"session_token": str(self.config.session_token)}
 
@@ -3450,8 +3891,10 @@ class Shotgun(object):
         # Make sure sudo_as_login is supported by server version
         if self.config.sudo_as_login:
             if self.server_caps.version and self.server_caps.version < (5, 3, 12):
-                raise ShotgunError("Option 'sudo_as_login' requires server version 5.3.12 or "
-                                   "higher, server is %s" % (self.server_caps.version,))
+                raise ShotgunError(
+                    "Option 'sudo_as_login' requires server version 5.3.12 or "
+                    "higher, server is %s" % (self.server_caps.version,)
+                )
             auth_params["sudo_as_login"] = self.config.sudo_as_login
 
         if self.config.extra_auth_params:
@@ -3459,7 +3902,7 @@ class Shotgun(object):
 
         return auth_params
 
-    def _sanitize_auth_params(self, params):
+    def _sanitize_auth_params(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """
         Given an authentication parameter dictionary, sanitize any sensitive
         information and return the sanitized dict copy.
@@ -3470,7 +3913,9 @@ class Shotgun(object):
                 sanitized_params[k] = "********"
         return sanitized_params
 
-    def _build_payload(self, method, params, include_auth_params=True):
+    def _build_payload(
+        self, method: str, params, include_auth_params: bool = True
+    ) -> Dict[str, Any]:
         """
         Build the payload to be send to the rpc endpoint.
         """
@@ -3486,12 +3931,9 @@ class Shotgun(object):
         if params:
             call_params.append(params)
 
-        return {
-            "method_name": method,
-            "params": call_params
-        }
+        return {"method_name": method, "params": call_params}
 
-    def _encode_payload(self, payload):
+    def _encode_payload(self, payload) -> bytes:
         """
         Encode the payload to a string to be passed to the rpc endpoint.
 
@@ -3500,10 +3942,11 @@ class Shotgun(object):
         be in a single byte encoding to go over the wire.
         """
 
-        wire = json.dumps(payload, ensure_ascii=False)
-        return six.ensure_binary(wire)
+        return json.dumps(payload, ensure_ascii=False).encode("utf-8")
 
-    def _make_call(self, verb, path, body, headers):
+    def _make_call(
+        self, verb: str, path: str, body, headers: Optional[Dict[str, Any]]
+    ) -> Tuple[Tuple[int, str], Dict[str, Any], str]:
         """
         Make an HTTP call to the server.
 
@@ -3522,58 +3965,46 @@ class Shotgun(object):
         max_rpc_attempts = self.config.max_rpc_attempts
         rpc_attempt_interval = self.config.rpc_attempt_interval / 1000.0
 
-        while (attempt < max_rpc_attempts):
+        while attempt < max_rpc_attempts:
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
-            except ssl_error_classes as e:
-                # Test whether the exception is due to the fact that this is an older version of
-                # Python that cannot validate certificates encrypted with SHA-2. If it is, then
-                # fall back on disabling the certificate validation and try again - unless the
-                # SHOTGUN_FORCE_CERTIFICATE_VALIDATION environment variable has been set by the
-                # user. In that case we simply raise the exception. Any other exceptions simply
-                # get raised as well.
-                #
-                # For more info see:
-                # http://blog.shotgunsoftware.com/2016/01/important-ssl-certificate-renewal-and.html
-                #
-                # SHA-2 errors look like this:
-                #   [Errno 1] _ssl.c:480: error:0D0C50A1:asn1 encoding routines:ASN1_item_verify:
-                #   unknown message digest algorithm
-                #
-                # Any other exceptions simply get raised.
-                if "unknown message digest algorithm" not in str(e) or \
-                   "SHOTGUN_FORCE_CERTIFICATE_VALIDATION" in os.environ:
-                    raise
-
-                if self.config.no_ssl_validation is False:
-                    LOG.warning("SSL Error: this Python installation is incompatible with "
-                                "certificates signed with SHA-2. Disabling certificate validation. "
-                                "For more information, see http://blog.shotgunsoftware.com/2016/01/"
-                                "important-ssl-certificate-renewal-and.html")
-                    self._turn_off_ssl_validation()
-                    # reload user agent to reflect that we have turned off ssl validation
-                    req_headers["user-agent"] = "; ".join(self._user_agents)
-
-                self._close_connection()
-                if attempt == max_rpc_attempts:
-                    raise
-            except Exception:
+            except ssl.SSLEOFError as e:
+                # SG-34910 - EOF occurred in violation of protocol (_ssl.c:2426)
+                # This issue seems to be related to proxy and keep alive.
+                # It looks like, sometimes, the proxy drops the connection on
+                # the TCP/TLS level despites the keep-alive. So we need to close
+                # the connection and make a new attempt.
+                LOG.debug("SSLEOFError: {}".format(e))
                 self._close_connection()
                 if attempt == max_rpc_attempts:
                     LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
                     raise
-                LOG.debug(
-                    "Request failed, attempt %d of %d.  Retrying in %.2f seconds..." %
-                    (attempt, max_rpc_attempts, rpc_attempt_interval)
-                )
-                time.sleep(rpc_attempt_interval)
+            except (ssl.SSLError, ssl.CertificateError) as e:
+                self._close_connection()
+                if attempt == max_rpc_attempts:
+                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
+                    raise
+            except Exception as e:
+                self._close_connection()
+                LOG.debug(f"Request failed.  Reason: {e}", exc_info=True)
+                raise
 
-    def _http_request(self, verb, path, body, headers):
+            LOG.debug(
+                "Request failed, attempt %d of %d.  Retrying in %.2f seconds..."
+                % (attempt, max_rpc_attempts, rpc_attempt_interval)
+            )
+            time.sleep(rpc_attempt_interval)
+
+    def _http_request(
+        self, verb: str, path: str, body, headers: Dict[str, Any]
+    ) -> Tuple[Tuple[int, str], Dict[str, Any], str]:
         """
         Make the actual HTTP request.
         """
-        url = urllib.parse.urlunparse((self.config.scheme, self.config.server, path, None, None, None))
+        url = urllib.parse.urlunparse(
+            (self.config.scheme, self.config.server, path, None, None, None)
+        )
         LOG.debug("Request is %s:%s" % (verb, url))
         LOG.debug("Request headers are %s" % headers)
         LOG.debug("Request body is %s" % body)
@@ -3582,10 +4013,7 @@ class Shotgun(object):
         resp, content = conn.request(url, method=verb, body=body, headers=headers)
         # http response code is handled else where
         http_status = (resp.status, resp.reason)
-        resp_headers = dict(
-            (k.lower(), v)
-            for k, v in six.iteritems(resp)
-        )
+        resp_headers = dict((k.lower(), v) for k, v in resp.items())
         resp_body = content
 
         LOG.debug("Response status is %s %s" % http_status)
@@ -3594,7 +4022,9 @@ class Shotgun(object):
 
         return (http_status, resp_headers, resp_body)
 
-    def _make_upload_request(self, request, opener):
+    def _make_upload_request(
+        self, request, opener: "urllib.request.OpenerDirector"
+    ) -> "urllib.request._UrlopenRet":
         """
         Open the given request object, return the
         response, raises URLError on protocol errors.
@@ -3606,7 +4036,7 @@ class Shotgun(object):
             raise
         return result
 
-    def _parse_http_status(self, status):
+    def _parse_http_status(self, status: Tuple) -> None:
         """
         Parse the status returned from the http request.
 
@@ -3619,15 +4049,14 @@ class Shotgun(object):
         if status[0] >= 300:
             headers = "HTTP error from server"
             if status[0] == 503:
-                errmsg = "ShotGrid is currently down for maintenance or too busy to reply. Please try again later."
-            raise ProtocolError(self.config.server,
-                                error_code,
-                                errmsg,
-                                headers)
+                errmsg = "Flow Production Tracking is currently down for maintenance or too busy to reply. Please try again later."
+            raise ProtocolError(self.config.server, error_code, errmsg, headers)
 
         return
 
-    def _decode_response(self, headers, body):
+    def _decode_response(
+        self, headers: Dict[str, Any], body: str
+    ) -> Union[str, Dict[str, Any]]:
         """
         Decode the response from the server from the wire format to
         a python data structure.
@@ -3648,35 +4077,8 @@ class Shotgun(object):
             return self._json_loads(body)
         return body
 
-    def _json_loads(self, body):
+    def _json_loads(self, body: str) -> Any:
         return json.loads(body)
-
-    def _json_loads_ascii(self, body):
-        """
-        See http://stackoverflow.com/questions/956867
-        """
-        def _decode_list(lst):
-            newlist = []
-            for i in lst:
-                if isinstance(i, six.text_type):
-                    i = six.ensure_str(i)
-                elif isinstance(i, list):
-                    i = _decode_list(i)
-                newlist.append(i)
-            return newlist
-
-        def _decode_dict(dct):
-            newdict = {}
-            for k, v in six.iteritems(dct):
-                if isinstance(k, six.text_type):
-                    k = six.ensure_str(k)
-                if isinstance(v, six.text_type):
-                    v = six.ensure_str(v)
-                elif isinstance(v, list):
-                    v = _decode_list(v)
-                newdict[k] = v
-            return newdict
-        return json.loads(body, object_hook=_decode_dict)
 
     def _response_errors(self, sg_response):
         """
@@ -3696,28 +4098,35 @@ class Shotgun(object):
 
         if isinstance(sg_response, dict) and sg_response.get("exception"):
             if sg_response.get("error_code") == ERR_AUTH:
-                raise AuthenticationFault(sg_response.get("message", "Unknown Authentication Error"))
+                raise AuthenticationFault(
+                    sg_response.get("message", "Unknown Authentication Error")
+                )
             elif sg_response.get("error_code") == ERR_2FA:
                 raise MissingTwoFactorAuthenticationFault(
                     sg_response.get("message", "Unknown 2FA Authentication Error")
                 )
             elif sg_response.get("error_code") == ERR_SSO:
                 raise UserCredentialsNotAllowedForSSOAuthenticationFault(
-                    sg_response.get("message",
-                                    "Authentication using username/password is not "
-                                    "allowed for an SSO-enabled ShotGrid site")
+                    sg_response.get(
+                        "message",
+                        "Authentication using username/password is not "
+                        "allowed for an SSO-enabled Flow Production Tracking site",
+                    )
                 )
             elif sg_response.get("error_code") == ERR_OXYG:
                 raise UserCredentialsNotAllowedForOxygenAuthenticationFault(
-                    sg_response.get("message", "Authentication using username/password is not "
-                                    "allowed for an Autodesk Identity enabled ShotGrid site")
+                    sg_response.get(
+                        "message",
+                        "Authentication using username/password is not "
+                        "allowed for an Autodesk Identity enabled Flow Production Tracking site",
+                    )
                 )
             else:
                 # raise general Fault
                 raise Fault(sg_response.get("message", "Unknown Error"))
         return
 
-    def _visit_data(self, data, visitor):
+    def _visit_data(self, data: T, visitor) -> T:
         """
         Walk the data (simple python types) and call the visitor.
         """
@@ -3727,20 +4136,17 @@ class Shotgun(object):
 
         recursive = self._visit_data
         if isinstance(data, list):
-            return [recursive(i, visitor) for i in data]
+            return [recursive(i, visitor) for i in data]  # type: ignore[return-value]
 
         if isinstance(data, tuple):
-            return tuple(recursive(i, visitor) for i in data)
+            return tuple(recursive(i, visitor) for i in data)  # type: ignore[return-value]
 
         if isinstance(data, dict):
-            return dict(
-                (k, recursive(v, visitor))
-                for k, v in six.iteritems(data)
-            )
+            return dict((k, recursive(v, visitor)) for k, v in data.items())  # type: ignore[return-value]
 
         return visitor(data)
 
-    def _transform_outbound(self, data):
+    def _transform_outbound(self, data: T) -> T:
         """
         Transform data types or values before they are sent by the client.
 
@@ -3749,10 +4155,12 @@ class Shotgun(object):
         """
 
         if self.config.convert_datetimes_to_utc:
+
             def _change_tz(value):
                 if value.tzinfo is None:
                     value = value.replace(tzinfo=SG_TIMEZONE.local)
                 return value.astimezone(SG_TIMEZONE.utc)
+
         else:
             _change_tz = None
 
@@ -3775,21 +4183,17 @@ class Shotgun(object):
                     hour=value.hour,
                     minute=value.minute,
                     second=value.second,
-                    microsecond=value.microsecond
+                    microsecond=value.microsecond,
                 )
                 if _change_tz:
                     value = _change_tz(value)
                 return value.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-            # ensure return is six.text_type
-            if isinstance(value, six.string_types):
-                return six.ensure_text(value)
-
             return value
 
         return self._visit_data(data, _outbound_visitor)
 
-    def _transform_inbound(self, data):
+    def _transform_inbound(self, data: T) -> T:
         """
         Transforms data types or values after they are received from the server.
         """
@@ -3797,18 +4201,18 @@ class Shotgun(object):
         # to the local time, otherwise it will fail to compare to datetimes
         # that do not have a time zone.
         if self.config.convert_datetimes_to_utc:
+
             def _change_tz(x):
                 return x.replace(tzinfo=SG_TIMEZONE.utc).astimezone(SG_TIMEZONE.local)
+
         else:
             _change_tz = None
 
         def _inbound_visitor(value):
-            if isinstance(value, six.string_types):
+            if isinstance(value, str):
                 if len(value) == 20 and self._DATE_TIME_PATTERN.match(value):
                     try:
-                        # strptime was not on datetime in python2.4
-                        value = datetime.datetime(
-                            *time.strptime(value, "%Y-%m-%dT%H:%M:%SZ")[:6])
+                        value = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
                     except ValueError:
                         return value
                     if _change_tz:
@@ -3822,7 +4226,7 @@ class Shotgun(object):
     # ========================================================================
     # Connection Functions
 
-    def _get_connection(self):
+    def _get_connection(self) -> Http:
         """
         Return the current connection or creates a new connection to the current server.
         """
@@ -3830,18 +4234,28 @@ class Shotgun(object):
             return self._connection
 
         if self.config.proxy_server:
-            pi = ProxyInfo(socks.PROXY_TYPE_HTTP, self.config.proxy_server,
-                           self.config.proxy_port, proxy_user=self.config.proxy_user,
-                           proxy_pass=self.config.proxy_pass)
-            self._connection = Http(timeout=self.config.timeout_secs, ca_certs=self.__ca_certs,
-                                    proxy_info=pi, disable_ssl_certificate_validation=self.config.no_ssl_validation)
+            pi = ProxyInfo(
+                socks.PROXY_TYPE_HTTP,
+                self.config.proxy_server,
+                self.config.proxy_port,
+                proxy_user=self.config.proxy_user,
+                proxy_pass=self.config.proxy_pass,
+            )
+            self._connection = Http(
+                timeout=self.config.timeout_secs,
+                ca_certs=self.__ca_certs,
+                proxy_info=pi,
+            )
         else:
-            self._connection = Http(timeout=self.config.timeout_secs, ca_certs=self.__ca_certs,
-                                    proxy_info=None, disable_ssl_certificate_validation=self.config.no_ssl_validation)
+            self._connection = Http(
+                timeout=self.config.timeout_secs,
+                ca_certs=self.__ca_certs,
+                proxy_info=None,
+            )
 
         return self._connection
 
-    def _close_connection(self):
+    def _close_connection(self) -> None:
         """
         Close the current connection.
         """
@@ -3856,10 +4270,11 @@ class Shotgun(object):
         self._connection.connections.clear()
         self._connection = None
         return
+
     # ========================================================================
     # Utility
 
-    def _parse_records(self, records):
+    def _parse_records(self, records: List) -> List:
         """
         Parse 'records' returned from the api to do local modifications:
 
@@ -3877,7 +4292,9 @@ class Shotgun(object):
             return []
 
         if not isinstance(records, (list, tuple)):
-            records = [records, ]
+            records = [
+                records,
+            ]
 
         for rec in records:
             # skip results that aren't entity dictionaries
@@ -3885,7 +4302,7 @@ class Shotgun(object):
                 continue
 
             # iterate over each item and check each field for possible injection
-            for k, v in six.iteritems(rec):
+            for k, v in rec.items():
                 if not v:
                     continue
 
@@ -3894,18 +4311,26 @@ class Shotgun(object):
                     rec[k] = rec[k].replace("&lt;", "<")
 
                 # check for thumbnail for older version (<3.3.0) of shotgun
-                if k == "image" and self.server_caps.version and self.server_caps.version < (3, 3, 0):
+                if (
+                    k == "image"
+                    and self.server_caps.version
+                    and self.server_caps.version < (3, 3, 0)
+                ):
                     rec["image"] = self._build_thumb_url(rec["type"], rec["id"])
                     continue
 
-                if isinstance(v, dict) and v.get("link_type") == "local" and self.client_caps.local_path_field in v:
+                if (
+                    isinstance(v, dict)
+                    and v.get("link_type") == "local"
+                    and self.client_caps.local_path_field in v
+                ):
                     local_path = v[self.client_caps.local_path_field]
                     v["local_path"] = local_path
                     v["url"] = "file://%s" % (local_path or "",)
 
         return records
 
-    def _build_thumb_url(self, entity_type, entity_id):
+    def _build_thumb_url(self, entity_type: str, entity_id: int) -> str:
         """
         Return the URL for the thumbnail of an entity given the entity type and the entity id.
 
@@ -3919,10 +4344,14 @@ class Shotgun(object):
         # curl "https://foo.com/upload/get_thumbnail_url?entity_type=Version&entity_id=1"
         # 1
         # /files/0000/0000/0012/232/shot_thumb.jpg.jpg
-        entity_info = {"e_type": urllib.parse.quote(entity_type),
-                       "e_id": urllib.parse.quote(str(entity_id))}
-        url = ("/upload/get_thumbnail_url?" +
-               "entity_type=%(e_type)s&entity_id=%(e_id)s" % entity_info)
+        entity_info = {
+            "e_type": urllib.parse.quote(entity_type),
+            "e_id": urllib.parse.quote(str(entity_id)),
+        }
+        url = (
+            "/upload/get_thumbnail_url?"
+            + "entity_type=%(e_type)s&entity_id=%(e_id)s" % entity_info
+        )
 
         body = self._make_call("GET", url, None, None)[2]
 
@@ -3934,15 +4363,27 @@ class Shotgun(object):
             raise ShotgunError(thumb_url)
 
         if code == 1:
-            return urllib.parse.urlunparse((self.config.scheme,
-                                            self.config.server,
-                                            thumb_url.strip(),
-                                            None, None, None))
+            return urllib.parse.urlunparse(
+                (
+                    self.config.scheme,
+                    self.config.server,
+                    thumb_url.strip(),
+                    None,
+                    None,
+                    None,
+                )
+            )
 
         # Comments in prev version said we can get this sometimes.
         raise RuntimeError("Unknown code %s %s" % (code, thumb_url))
 
-    def _dict_to_list(self, d, key_name="field_name", value_name="value", extra_data=None):
+    def _dict_to_list(
+        self,
+        d: Optional[Dict[str, Any]],
+        key_name: str = "field_name",
+        value_name: str = "value",
+        extra_data=None,
+    ) -> List[Dict[str, Any]]:
         """
         Utility function to convert a dict into a list dicts using the key_name and value_name keys.
 
@@ -3953,22 +4394,24 @@ class Shotgun(object):
         [{'field_name': 'foo', 'value': 'bar', 'thing1': 'value1'}]
         """
         ret = []
-        for k, v in six.iteritems((d or {})):
+        for k, v in (d or {}).items():
             d = {key_name: k, value_name: v}
             d.update((extra_data or {}).get(k, {}))
             ret.append(d)
         return ret
 
-    def _dict_to_extra_data(self, d, key_name="value"):
+    def _dict_to_extra_data(
+        self, d: Optional[Dict[str, Any]], key_name="value"
+    ) -> Dict[str, Any]:
         """
         Utility function to convert a dict into a dict compatible with the extra_data arg
         of _dict_to_list.
 
         e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
         """
-        return dict([(k, {key_name: v}) for (k, v) in six.iteritems((d or {}))])
+        return dict([(k, {key_name: v}) for (k, v) in (d or {}).items()])
 
-    def _upload_file_to_storage(self, path, storage_url):
+    def _upload_file_to_storage(self, path: str, storage_url: str) -> None:
         """
         Internal function to upload an entire file to the Cloud storage.
 
@@ -3988,7 +4431,9 @@ class Shotgun(object):
 
         LOG.debug("File uploaded to Cloud storage: %s", filename)
 
-    def _multipart_upload_file_to_storage(self, path, upload_info):
+    def _multipart_upload_file_to_storage(
+        self, path: str, upload_info: Dict[str, Any]
+    ) -> None:
         """
         Internal function to upload a file to the Cloud storage in multiple parts.
 
@@ -4012,10 +4457,16 @@ class Shotgun(object):
                 data_size = len(data)
                 # keep data as a stream so that we don't need to worry how it was
                 # encoded.
-                data = BytesIO(data)
+                data = io.BytesIO(data)
                 bytes_read += data_size
-                part_url = self._get_upload_part_link(upload_info, filename, part_number)
-                etags.append(self._upload_data_to_storage(data, content_type, data_size, part_url))
+                part_url = self._get_upload_part_link(
+                    upload_info, filename, part_number
+                )
+                etags.append(
+                    self._upload_data_to_storage(
+                        data, content_type, data_size, part_url
+                    )
+                )
                 part_number += 1
 
             self._complete_multipart_upload(upload_info, filename, etags)
@@ -4024,7 +4475,9 @@ class Shotgun(object):
 
         LOG.debug("File uploaded in multiple parts to Cloud storage: %s", path)
 
-    def _get_upload_part_link(self, upload_info, filename, part_number):
+    def _get_upload_part_link(
+        self, upload_info: Dict[str, Any], filename: str, part_number: int
+    ) -> str:
         """
         Internal function to get the url to upload the next part of a file to the
         Cloud storage, in a multi-part upload process.
@@ -4040,11 +4493,19 @@ class Shotgun(object):
             "filename": filename,
             "timestamp": upload_info["timestamp"],
             "upload_id": upload_info["upload_id"],
-            "part_number": part_number
+            "part_number": part_number,
         }
 
-        url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
-                                       "/upload/api_get_upload_link_for_part", None, None, None))
+        url = urllib.parse.urlunparse(
+            (
+                self.config.scheme,
+                self.config.server,
+                "/upload/api_get_upload_link_for_part",
+                None,
+                None,
+                None,
+            )
+        )
         result = self._send_form(url, params)
 
         # Response is of the form: 1\n<url> (for success) or 0\n (for failure).
@@ -4056,7 +4517,9 @@ class Shotgun(object):
         LOG.debug("Got next upload link from server for multipart upload.")
         return result.split("\n", 2)[1]
 
-    def _upload_data_to_storage(self, data, content_type, size, storage_url):
+    def _upload_data_to_storage(
+        self, data: BinaryIO, content_type: str, size: int, storage_url: str
+    ) -> str:
         """
         Internal function to upload data to Cloud storage.
 
@@ -4067,50 +4530,59 @@ class Shotgun(object):
         :returns: upload url.
         :rtype: str
         """
-        opener = self._build_opener(urllib.request.HTTPHandler)
-
-        request = urllib.request.Request(storage_url, data=data)
-        request.add_header("Content-Type", content_type)
-        request.add_header("Content-Length", size)
-        request.get_method = lambda: "PUT"
 
         attempt = 1
-        max_attempts = 4  # Three retries on failure
-        backoff = 0.75  # Seconds to wait before retry, times the attempt number
-
-        while attempt <= max_attempts:
+        while attempt <= self.MAX_ATTEMPTS:
             try:
+                opener = self._build_opener(urllib.request.HTTPHandler)
+
+                request = urllib.request.Request(storage_url, data=data)
+                request.add_header("Content-Type", content_type)
+                request.add_header("Content-Length", size)
+                request.get_method = lambda: "PUT"
                 result = self._make_upload_request(request, opener)
 
                 LOG.debug("Completed request to %s" % request.get_method())
 
             except urllib.error.HTTPError as e:
-                if e.code == 500:
-                    raise ShotgunError("Server encountered an internal error.\n%s\n%s\n\n" % (storage_url, e))
-                elif attempt != max_attempts and e.code == 503:
-                    LOG.debug("Got a 503 response. Waiting and retrying...")
-                    time.sleep(float(attempt) * backoff)
+                if attempt != self.MAX_ATTEMPTS and e.code in [500, 503]:
+                    LOG.debug("Got a %s response. Waiting and retrying..." % e.code)
+                    time.sleep(float(attempt) * self.BACKOFF)
                     attempt += 1
                     continue
+                elif e.code in [500, 503]:
+                    raise ShotgunError(
+                        "Got a %s response when uploading to %s: %s"
+                        % (e.code, storage_url, e)
+                    )
                 else:
-                    if e.code == 503:
-                        raise ShotgunError("Got a 503 response when uploading to %s: %s" % (storage_url, e))
-                    raise ShotgunError("Unanticipated error occurred uploading to %s: %s" % (storage_url, e))
-
+                    raise ShotgunError(
+                        "Unanticipated error occurred uploading to %s: %s"
+                        % (storage_url, e)
+                    )
+            except urllib.error.URLError as e:
+                LOG.debug("Got a '%s' response. Waiting and retrying..." % e)
+                time.sleep(float(attempt) * self.BACKOFF)
+                attempt += 1
+                continue
             else:
                 break
+        else:
+            raise ShotgunError("Max attempts limit reached.")
 
         etag = result.info()["Etag"]
         LOG.debug("Part upload completed successfully.")
         return etag
 
-    def _complete_multipart_upload(self, upload_info, filename, etags):
+    def _complete_multipart_upload(
+        self, upload_info: Dict[str, Any], filename: str, etags: Iterable[str]
+    ) -> None:
         """
         Internal function to complete a multi-part upload to the Cloud storage.
 
         :param dict upload_info: Contains details received from the server, about the upload.
         :param str filename: Name of the file for which we want to complete the upload.
-        :param tupple etags: Contains the etag of each uploaded file part.
+        :param tuple etags: Contains the etag of each uploaded file part.
         """
 
         params = {
@@ -4118,18 +4590,28 @@ class Shotgun(object):
             "filename": filename,
             "timestamp": upload_info["timestamp"],
             "upload_id": upload_info["upload_id"],
-            "etags": ",".join(etags)
+            "etags": ",".join(etags),
         }
 
-        url = urllib.parse.urlunparse((self.config.scheme, self.config.server,
-                                       "/upload/api_complete_multipart_upload", None, None, None))
+        url = urllib.parse.urlunparse(
+            (
+                self.config.scheme,
+                self.config.server,
+                "/upload/api_complete_multipart_upload",
+                None,
+                None,
+                None,
+            )
+        )
         result = self._send_form(url, params)
 
         # Response is of the form: 1\n or 0\n to indicate success or failure of the call.
         if not result.startswith("1"):
             raise ShotgunError("Unable get upload part link: %s" % result)
 
-    def _requires_direct_s3_upload(self, entity_type, field_name):
+    def _requires_direct_s3_upload(
+        self, entity_type: str, field_name: Optional[str]
+    ) -> bool:
         """
         Internal function that determines if an entity_type + field_name combination
         should be uploaded to cloud storage.
@@ -4170,7 +4652,7 @@ class Shotgun(object):
         else:
             return False
 
-    def _send_form(self, url, params):
+    def _send_form(self, url: str, params: Dict[str, Any]) -> str:
         """
         Utility function to send a Form to Shotgun and process any HTTP errors that
         could occur.
@@ -4182,66 +4664,35 @@ class Shotgun(object):
 
         params.update(self._auth_params())
 
-        opener = self._build_opener(FormPostHandler)
+        attempt = 1
+        while attempt <= self.MAX_ATTEMPTS:
+            # Perform the request
+            try:
+                opener = self._build_opener(FormPostHandler)
+                resp = opener.open(url, params)
+                result = resp.read()
+                # response headers are in str(resp.info()).splitlines()
+            except urllib.error.URLError as e:
+                LOG.debug("Got a %s response. Waiting and retrying..." % e)
+                time.sleep(float(attempt) * self.BACKOFF)
+                attempt += 1
+                continue
+            except urllib.error.HTTPError as e:
+                if e.code == 500:
+                    raise ShotgunError(
+                        "Server encountered an internal error. "
+                        "\n%s\n(%s)\n%s\n\n"
+                        % (url, self._sanitize_auth_params(params), e)
+                    )
+                else:
+                    raise ShotgunError("Unanticipated error occurred %s" % (e))
 
-        # Perform the request
-        try:
-            resp = opener.open(url, params)
-            result = resp.read()
-            # response headers are in str(resp.info()).splitlines()
-        except urllib.error.HTTPError as e:
-            if e.code == 500:
-                raise ShotgunError("Server encountered an internal error. "
-                                   "\n%s\n(%s)\n%s\n\n" % (url, self._sanitize_auth_params(params), e))
-            else:
-                raise ShotgunError("Unanticipated error occurred %s" % (e))
+            if isinstance(result, bytes):
+                result = result.decode("utf-8")
 
-        return six.ensure_text(result)
-
-
-class CACertsHTTPSConnection(http_client.HTTPConnection):
-    """"
-    This class allows to create an HTTPS connection that uses the custom certificates
-    passed in.
-    """
-
-    default_port = http_client.HTTPS_PORT
-
-    def __init__(self, *args, **kwargs):
-        """
-        :param args: Positional arguments passed down to the base class.
-        :param ca_certs: Path to the custom CA certs file.
-        :param kwargs: Keyword arguments passed down to the bas class
-        """
-        # Pop that argument,
-        self.__ca_certs = kwargs.pop("ca_certs")
-        http_client.HTTPConnection.__init__(self, *args, **kwargs)
-
-    def connect(self):
-        "Connect to a host on a given (SSL) port."
-        http_client.HTTPConnection.connect(self)
-        # Now that the regular HTTP socket has been created, wrap it with our SSL certs.
-        self.sock = ssl.wrap_socket(
-            self.sock,
-            ca_certs=self.__ca_certs,
-            cert_reqs=ssl.CERT_REQUIRED
-        )
-
-
-class CACertsHTTPSHandler(urllib.request.HTTPSHandler):
-    """
-    Handler that ensures https connections are created with the custom CA certs.
-    """
-
-    def __init__(self, cacerts):
-        urllib.request.HTTPSHandler.__init__(self)
-        self.__ca_certs = cacerts
-
-    def https_open(self, req):
-        return self.do_open(self.create_https_connection, req)
-
-    def create_https_connection(self, *args, **kwargs):
-        return CACertsHTTPSConnection(*args, ca_certs=self.__ca_certs, **kwargs)
+            return result
+        else:
+            raise ShotgunError("Max attempts limit reached.")
 
 
 # Helpers from the previous API, left as is.
@@ -4250,35 +4701,28 @@ class FormPostHandler(urllib.request.BaseHandler):
     """
     Handler for multipart form data
     """
+
     handler_order = urllib.request.HTTPHandler.handler_order - 10  # needs to run first
 
     def http_request(self, request):
-        # get_data was removed in 3.4. since we're testing against 3.6 and
-        # 3.7, this should be sufficient.
-        if six.PY3:
-            data = request.data
-        else:
-            data = request.get_data()
-        if data is not None and not isinstance(data, six.string_types):
+        data = request.data
+        if data is not None and not isinstance(data, str):
             files = []
             params = []
             for key, value in data.items():
-                if isinstance(value, sgsix.file_types):
+                if isinstance(value, io.IOBase):
                     files.append((key, value))
                 else:
                     params.append((key, value))
             if not files:
-                data = six.ensure_binary(urllib.parse.urlencode(params, True))  # sequencing on
+                data = urllib.parse.urlencode(params, True).encode("utf-8")
+                # sequencing on
             else:
                 boundary, data = self.encode(params, files)
                 content_type = "multipart/form-data; boundary=%s" % boundary
                 request.add_unredirected_header("Content-Type", content_type)
-            # add_data was removed in 3.4. since we're testing against 3.6 and
-            # 3.7, this should be sufficient.
-            if six.PY3:
-                request.data = data
-            else:
-                request.add_data(data)
+            request.data = data
+
         return request
 
     def encode(self, params, files, boundary=None, buffer=None):
@@ -4289,42 +4733,50 @@ class FormPostHandler(urllib.request.BaseHandler):
             # We'll do this across both python 2/3 rather than add more branching.
             boundary = uuid.uuid4()
         if buffer is None:
-            buffer = BytesIO()
-        for (key, value) in params:
-            if not isinstance(value, six.string_types):
-                # If value is not a string (e.g. int) cast to text
-                value = six.text_type(value)
-            value = six.ensure_text(value)
-            key = six.ensure_text(key)
+            buffer = io.BytesIO()
+        for key, value in params:
+            if isinstance(key, bytes):
+                key = key.decode("utf-8")
 
-            buffer.write(six.ensure_binary("--%s\r\n" % boundary))
-            buffer.write(six.ensure_binary("Content-Disposition: form-data; name=\"%s\"" % key))
-            buffer.write(six.ensure_binary("\r\n\r\n%s\r\n" % value))
-        for (key, fd) in files:
+            if isinstance(value, bytes):
+                value = value.decode("utf-8")
+            elif not isinstance(value, str):
+                # If value is not a string (e.g. int) cast to text
+                value = str(value)
+
+            buffer.write(f"--{boundary}\r\n".encode("utf-8"))
+            buffer.write(
+                f'Content-Disposition: form-data; name="{key}"'.encode("utf-8")
+            )
+            buffer.write(f"\r\n\r\n{value}\r\n".encode("utf-8"))
+        for key, fd in files:
             # On Windows, it's possible that we were forced to open a file
             # with non-ascii characters as unicode. In that case, we need to
             # encode it as a utf-8 string to remove unicode from the equation.
             # If we don't, the mix of unicode and strings going into the
             # buffer can cause UnicodeEncodeErrors to be raised.
-            filename = fd.name
-            filename = six.ensure_text(filename)
+            filename = (
+                fd.name.decode("utf-8") if isinstance(fd.name, bytes) else fd.name
+            )
             filename = filename.split("/")[-1]
-            key = six.ensure_text(key)
+            if isinstance(key, bytes):
+                key = key.decode("utf-8")
+
             content_type = mimetypes.guess_type(filename)[0]
             content_type = content_type or "application/octet-stream"
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-            buffer.write(six.ensure_binary("--%s\r\n" % boundary))
-            c_dis = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"%s"
+            buffer.write(f"--{boundary}\r\n".encode("utf-8"))
+            c_dis = 'Content-Disposition: form-data; name="%s"; filename="%s"%s'
             content_disposition = c_dis % (key, filename, "\r\n")
-            buffer.write(six.ensure_binary(content_disposition))
-            buffer.write(six.ensure_binary("Content-Type: %s\r\n" % content_type))
-            buffer.write(six.ensure_binary("Content-Length: %s\r\n" % file_size))
+            buffer.write(content_disposition.encode("utf-8"))
+            buffer.write(f"Content-Type: {content_type}\r\n".encode("utf-8"))
+            buffer.write(f"Content-Length: {file_size}\r\n".encode("utf-8"))
 
-            buffer.write(six.ensure_binary("\r\n"))
+            buffer.write(b"\r\n")
             fd.seek(0)
             shutil.copyfileobj(fd, buffer)
-            buffer.write(six.ensure_binary("\r\n"))
-        buffer.write(six.ensure_binary("--%s--\r\n\r\n" % boundary))
+            buffer.write(b"\r\n")
+        buffer.write(f"--{boundary}--\r\n\r\n".encode("utf-8"))
         buffer = buffer.getvalue()
         return boundary, buffer
 
@@ -4332,19 +4784,16 @@ class FormPostHandler(urllib.request.BaseHandler):
         return self.http_request(request)
 
 
-def _translate_filters(filters, filter_operator):
+def _translate_filters(filters: Union[List, Tuple], filter_operator) -> Dict[str, Any]:
     """
     Translate filters params into data structure expected by rpc call.
     """
-    wrapped_filters = {
-        "filter_operator": filter_operator or "all",
-        "filters": filters
-    }
+    wrapped_filters = {"filter_operator": filter_operator or "all", "filters": filters}
 
     return _translate_filters_dict(wrapped_filters)
 
 
-def _translate_filters_dict(sg_filter):
+def _translate_filters_dict(sg_filter: Dict[str, Any]) -> Dict[str, Any]:
     new_filters = {}
     filter_operator = sg_filter.get("filter_operator")
 
@@ -4356,8 +4805,9 @@ def _translate_filters_dict(sg_filter):
         raise ShotgunError("Invalid filter_operator %s" % filter_operator)
 
     if not isinstance(sg_filter["filters"], (list, tuple)):
-        raise ShotgunError("Invalid filters, expected a list or a tuple, got %s"
-                           % sg_filter["filters"])
+        raise ShotgunError(
+            "Invalid filters, expected a list or a tuple, got %s" % sg_filter["filters"]
+        )
 
     new_filters["conditions"] = _translate_filters_list(sg_filter["filters"])
 
@@ -4373,29 +4823,67 @@ def _translate_filters_list(filters):
         elif isinstance(sg_filter, dict):
             conditions.append(_translate_filters_dict(sg_filter))
         else:
-            raise ShotgunError("Invalid filters, expected a list, tuple or dict, got %s"
-                               % sg_filter)
+            raise ShotgunError(
+                "Invalid filters, expected a list, tuple or dict, got %s" % sg_filter
+            )
 
     return conditions
 
 
 def _translate_filters_simple(sg_filter):
-    condition = {
-        "path": sg_filter[0],
-        "relation": sg_filter[1]
-    }
+    condition = {"path": sg_filter[0], "relation": sg_filter[1]}
 
     values = sg_filter[2:]
     if len(values) == 1 and isinstance(values[0], (list, tuple)):
         values = values[0]
+
+    # Payload optimization: Do not send a full object
+    # just send the `type` and `id` when combining related queries
+    global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
+    if (
+        not SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
+        and condition["path"] != "id"
+        and condition["relation"] in ["is", "is_not", "in", "not_in"]
+        and isinstance(values[0], dict)
+    ):
+        values = [_optimize_filter_field(v) for v in values]
 
     condition["values"] = values
 
     return condition
 
 
-def _version_str(version):
+def _version_str(version) -> str:
     """
     Convert a tuple of int's to a '.' separated str.
     """
     return ".".join(map(str, version))
+
+
+def _optimize_filter_field(
+    field_value: Union[Dict[str, Any], List], recursive: bool = True
+) -> Union[Dict, List]:
+    """
+    For an FPT entity, returns a new dictionary with only the type,
+    id, and other allowed keys.
+    If case of any processing error, the original dictionary is returned.
+
+    At least `type` and `id` keys are required to do the optimization
+    """
+    allowed_keys = {
+        "id",
+        "type",
+        "url",
+        "name",
+        "content_type",
+        "local_path",
+        "storage",
+        "relative_path",
+    }
+    if isinstance(field_value, dict) and "id" in field_value and "type" in field_value:
+        return {key: field_value[key] for key in allowed_keys if key in field_value}
+
+    elif recursive and isinstance(field_value, list):
+        return [_optimize_filter_field(fv, recursive=False) for fv in field_value]
+
+    return field_value

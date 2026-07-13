@@ -115,12 +115,12 @@ Below is a non-exhaustive list of things that we still need to implement:
 """
 
 import datetime
+from typing import Any
 
 from ... import ShotgunError
 from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
-from .. import six
 
 # ----------------------------------------------------------------------------
 # Version
@@ -178,7 +178,6 @@ class Shotgun(object):
                  api_key=None,
                  convert_datetimes_to_utc=True,
                  http_proxy=None,
-                 ensure_ascii=True,
                  connect=True,
                  ca_certs=None,
                  login=None,
@@ -201,7 +200,7 @@ class Shotgun(object):
         if schema_path is None or schema_entity_path is None:
             raise MockgunError("Cannot create Mockgun instance because no schema files have been defined. "
                                "Before creating a Mockgun instance, please call Mockgun.set_schema_paths() "
-                               "in order to specify which ShotGrid schema Mockgun should operate against.")
+                               "in order to specify which Flow Production Tracking schema Mockgun should operate against.")
 
         self._schema, self._schema_entity = SchemaFactory.get_schemas(schema_path, schema_entity_path)
 
@@ -294,6 +293,25 @@ class Shotgun(object):
         # handle the ordering of the recordset
         if order:
             # order: [{"field_name": "code", "direction": "asc"}, ... ]
+            def sort_none(k, order_field):
+                """
+                Handle sorting of None consistently.
+                Note: Doesn't handle [checkbox, serializable, url].
+                """
+                field_type = self._get_field_type(k["type"], order_field)
+                value = k[order_field]
+                if value is not None:
+                    return value
+                elif field_type in ("number", "percent", "duration"):
+                    return 0
+                elif field_type == "float":
+                    return 0.0
+                elif field_type in ("text", "entity_type", "date", "list", "status_list"):
+                    return ""
+                elif field_type == "date_time":
+                    return datetime.datetime(datetime.MINYEAR, 1, 1)
+                return None
+
             for order_entry in order:
                 if "field_name" not in order_entry:
                     raise ValueError("Order clauses must be list of dicts with keys 'field_name' and 'direction'!")
@@ -306,7 +324,11 @@ class Shotgun(object):
                 else:
                     raise ValueError("Unknown ordering direction")
 
-                results = sorted(results, key=lambda k: k[order_field], reverse=desc_order)
+                results = sorted(
+                    results,
+                    key=lambda k: sort_none(k, order_field),
+                    reverse=desc_order,
+                )
 
         if fields is None:
             fields = set(["type", "id"])
@@ -335,7 +357,12 @@ class Shotgun(object):
                 results.append(self.create(request["entity_type"], request["data"]))
             elif request["request_type"] == "update":
                 # note: Shotgun.update returns a list of a single item
-                results.append(self.update(request["entity_type"], request["entity_id"], request["data"])[0])
+                results.append(
+                    self.update(request["entity_type"],
+                                request["entity_id"],
+                                request["data"],
+                                request.get("multi_entity_update_modes"))[0]
+                )
             elif request["request_type"] == "delete":
                 results.append(self.delete(request["entity_type"], request["entity_id"]))
             else:
@@ -387,13 +414,13 @@ class Shotgun(object):
 
         return result
 
-    def update(self, entity_type, entity_id, data):
+    def update(self, entity_type, entity_id, data, multi_entity_update_modes=None):
         self._validate_entity_type(entity_type)
         self._validate_entity_data(entity_type, data)
         self._validate_entity_exists(entity_type, entity_id)
 
         row = self._db[entity_type][entity_id]
-        self._update_row(entity_type, row, data)
+        self._update_row(entity_type, row, data, multi_entity_update_modes)
 
         return [dict((field, item) for field, item in row.items() if field in data or field in ("type", "id"))]
 
@@ -423,6 +450,12 @@ class Shotgun(object):
         raise NotImplementedError
 
     def upload_thumbnail(self, entity_type, entity_id, path, **kwargs):
+        pass
+
+    def add_user_agent(self, agent):
+        pass
+
+    def set_session_uuid(self, session_uuid):
         pass
 
     ###################################################################################################
@@ -495,18 +528,18 @@ class Shotgun(object):
                                    "currency": float,
                                    "checkbox": bool,
                                    "percent": int,
-                                   "text": six.string_types,
+                                   "text": str,
                                    "serializable": dict,
-                                   "date": six.string_types,
+                                   "entity_type": str,
+                                   "date": str,
                                    "date_time": datetime.datetime,
-                                   "duration": six.string_types,
-                                   "list": six.string_types,
-                                   "status_list": six.string_types,
-                                   "url": dict,
-                                   "entity_type": six.string_types}[sg_type]
+                                   "duration": int,
+                                   "list": str,
+                                   "status_list": str,
+                                   "url": dict}[sg_type]
                 except KeyError:
                     raise ShotgunError(
-                        "Field %s.%s: Handling for ShotGrid type %s is not implemented" %
+                        "Field %s.%s: Handling for Flow Production Tracking type %s is not implemented" %
                         (entity_type, field, sg_type)
                     )
 
@@ -549,7 +582,7 @@ class Shotgun(object):
             row[field] = default_value
         return row
 
-    def _compare(self, field_type, lval, operator, rval):
+    def _compare(self, field_type: str, lval: Any, operator: str, rval: Any) -> bool:
         """
         Compares a field using the operator and value provide by the filter.
 
@@ -602,12 +635,10 @@ class Shotgun(object):
             # Some operations expect a list but can deal with a single value
             if operator in ("in", "not_in") and not isinstance(rval, list):
                 rval = [rval]
-
             # Some operation expect a string but can deal with None
             elif operator in ("starts_with", "ends_with", "contains", "not_contains"):
                 lval = lval or ''
                 rval = rval or ''
-
             # Shotgun string comparison is case insensitive
             lval = lval.lower() if lval is not None else None
             if isinstance(rval, list):
@@ -772,7 +803,7 @@ class Shotgun(object):
 
             return self._compare(field_type, lval, operator, rval)
 
-    def _rearrange_filters(self, filters):
+    def _rearrange_filters(self, filters: list) -> None:
         """
         Modifies the filter syntax to turn it into a list of three items regardless
         of the actual filter. Most of the filters are list of three elements, so this doesn't change much.
@@ -833,19 +864,29 @@ class Shotgun(object):
         else:
             raise ShotgunError("%s is not a valid filter operator" % filter_operator)
 
-    def _update_row(self, entity_type, row, data):
-        """For a given row of the 'database', update the row with the given data.
-        
-        :param str entity_type: shotgun entity.
-        :param dict row: current definition of the row.
-        :param dict data: data to inject in the row.
-        """
+    def _update_row(self, entity_type, row, data, multi_entity_update_modes=None):
         for field in data:
             field_type = self._get_field_type(entity_type, field)
             if field_type == "entity" and data[field]:
                 row[field] = {"type": data[field]["type"], "id": data[field]["id"]}
             elif field_type == "multi_entity":
-                row[field] = [{"type": item["type"], "id": item["id"]} for item in data[field]]
+                update_mode = multi_entity_update_modes.get(field, "set") if multi_entity_update_modes else "set"
+
+                if update_mode == "add":
+                    for item in data[field]:
+                        new_item = {"type": item["type"], "id": item["id"]}
+                        if new_item not in row[field]:
+                            row[field].append(new_item)
+                elif update_mode == "remove":
+                    row[field] = [
+                        item
+                        for item in row[field]
+                        for new_item in data[field]
+                        if item["id"] != new_item["id"]
+                        or item["type"] != new_item["type"]
+                    ]
+                elif update_mode == "set":
+                    row[field] = [{"type": item["type"], "id": item["id"]} for item in data[field]]
             else:
                 row[field] = data[field]
 

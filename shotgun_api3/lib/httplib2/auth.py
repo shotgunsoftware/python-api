@@ -1,9 +1,15 @@
 import base64
 import re
 
-from ... import pyparsing as pp
+from .. import pyparsing as pp
 
 from .error import *
+
+
+try:  # pyparsing>=3.0.0
+    downcaseTokens = pp.common.downcaseTokens
+except AttributeError:
+    downcaseTokens = pp.downcaseTokens
 
 UNQUOTE_PAIRS = re.compile(r"\\(.)")
 unquote = lambda s, l, t: UNQUOTE_PAIRS.sub(r"\1", t[0][1:-1])
@@ -17,7 +23,7 @@ token68 = pp.Combine(pp.Word("-._~+/" + pp.nums + pp.alphas) + pp.Optional(pp.Wo
 )
 
 quoted_string = pp.dblQuotedString.copy().setName("quoted-string").setParseAction(unquote)
-auth_param_name = token.copy().setName("auth-param-name").addParseAction(pp.downcaseTokens)
+auth_param_name = token.copy().setName("auth-param-name").addParseAction(downcaseTokens)
 auth_param = auth_param_name + pp.Suppress("=") + (quoted_string | token)
 params = pp.Dict(pp.delimitedList(pp.Group(auth_param)))
 

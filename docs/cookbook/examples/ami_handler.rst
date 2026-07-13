@@ -4,15 +4,15 @@
 Handling Action Menu Item Calls
 ###############################
 
-This is an example ActionMenu Python class to handle the ``GET`` request sent from an 
-ActionMenuItem. It doesn't manage dispatching custom protocols but rather takes the arguments 
-from any ``GET`` data and parses them into the easily accessible and correctly typed instance 
+This is an example ActionMenu Python class to handle the ``GET`` request sent from an
+ActionMenuItem. It doesn't manage dispatching custom protocols but rather takes the arguments
+from any ``GET`` data and parses them into the easily accessible and correctly typed instance
 variables for your Python scripts.
 
 Available as a Gist at https://gist.github.com/3253287
 
 .. seealso::
-    Our `support site has more information about Action Menu Items 
+    Our `support site has more information about Action Menu Items
     <https://developer.shotgridsoftware.com/python-api/cookbook/examples/ami_handler.html>`_.
 
 ************
@@ -95,7 +95,6 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
     # Imports
     # ---------------------------------------------------------------------------------------------
     import sys, os
-    import six
     import logging as logger
 
     # ---------------------------------------------------------------------------------------------
@@ -218,7 +217,7 @@ via ``POST``. If you're using a custom protocol the data is sent via ``GET``.
             params = params.split("&")
             p = {"column_display_names": [], "cols": []}
             for arg in params:
-                key, value = map(six.moves.urllib.parse.unquote, arg.split("=", 1))
+                key, value = map(urllib.parse.unquote, arg.split("=", 1))
                 if key == "column_display_names" or key == "cols":
                     p[key].append(value)
                 else:

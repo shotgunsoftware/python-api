@@ -12,48 +12,40 @@
 CRUD functions. These tests always use a mock http connection so not not
 need a live server to run against."""
 
+import configparser
+import base64
 import datetime
+import json
 import os
-import re
-
-from shotgun_api3.lib.six.moves import urllib
-from shotgun_api3.lib import six
-try:
-    import simplejson as json
-except ImportError:
-    try:
-        import json as json
-    except ImportError:
-        import shotgun_api3.lib.simplejson as json
-
 import platform
+import re
 import sys
 import time
 import unittest
-from . import mock
+import unittest.mock
+import urllib.parse
+import urllib.error
 
 import shotgun_api3.lib.httplib2 as httplib2
 import shotgun_api3 as api
 from shotgun_api3.shotgun import ServerCapabilities, SG_TIMEZONE
 from . import base
 
-if six.PY3:
-    from base64 import encodebytes as base64encode
-else:
-    from base64 import encodestring as base64encode
-
 
 def b64encode(val):
-    return base64encode(six.ensure_binary(val)).decode("utf-8")
+    if isinstance(val, str):
+        val = val.encode("utf-8")
+
+    return base64.encodebytes(val).decode("utf-8")
 
 
 class TestShotgunClient(base.MockTestBase):
-    '''Test case for shotgun api with server interactions mocked.'''
+    """Test case for shotgun api with server interactions mocked."""
 
     def setUp(self):
-        super(TestShotgunClient, self).setUp()
+        super().setUp()
         # get domain and uri scheme
-        match = re.search('(https?://)(.*)', self.server_url)
+        match = re.search("(https?://)(.*)", self.server_url)
         self.uri_prefix = match.group(1)
         self.domain = match.group(2)
         # always want the mock on
@@ -75,8 +67,8 @@ class TestShotgunClient(base.MockTestBase):
         # todo test for version string (eg. "1.2.3ng") or "unknown"
 
     def test_detect_server_caps(self):
-        '''test_detect_server_caps tests that ServerCapabilities object is made
-        with appropriate settings for given server version.'''
+        """test_detect_server_caps tests that ServerCapabilities object is made
+        with appropriate settings for given server version."""
         # has paging is tested else where.
         server_info = {"version": [9, 9, 9]}
         self._mock_http(server_info)
@@ -94,12 +86,14 @@ class TestShotgunClient(base.MockTestBase):
         self.assertTrue(self.sg.server_caps.is_dev)
 
     def test_server_version_json(self):
-        '''test_server_version_json tests expected versions for json support.'''
+        """test_server_version_json tests expected versions for json support."""
         sc = ServerCapabilities("foo", {"version": (2, 4, 0)})
 
         sc.version = (2, 3, 99)
         self.assertRaises(api.ShotgunError, sc._ensure_json_supported)
-        self.assertRaises(api.ShotgunError, ServerCapabilities, "foo", {"version": (2, 2, 0)})
+        self.assertRaises(
+            api.ShotgunError, ServerCapabilities, "foo", {"version": (2, 2, 0)}
+        )
 
         sc.version = (0, 0, 0)
         self.assertRaises(api.ShotgunError, sc._ensure_json_supported)
@@ -146,18 +140,20 @@ class TestShotgunClient(base.MockTestBase):
         self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
         self.assertTrue("session_uuid" not in auth_args())
 
-        my_uuid = '5a1d49b0-0c69-11e0-a24c-003048d17544'
+        my_uuid = "5a1d49b0-0c69-11e0-a24c-003048d17544"
         self.sg.set_session_uuid(my_uuid)
         self.assertRaises(api.Fault, self.sg.delete, "FakeType", 1)
         self.assertEqual(my_uuid, auth_args()["session_uuid"])
 
     def test_url(self):
         """Server url is parsed correctly"""
-        login = self.human_user['login']
+        login = self.human_user["login"]
         password = self.human_password
 
         self.assertRaises(ValueError, api.Shotgun, None, None, None, connect=False)
-        self.assertRaises(ValueError, api.Shotgun, "file://foo.com", None, None, connect=False)
+        self.assertRaises(
+            ValueError, api.Shotgun, "file://foo.com", None, None, connect=False
+        )
 
         self.assertEqual("/api3/json", self.sg.config.api_path)
 
@@ -174,7 +170,7 @@ class TestShotgunClient(base.MockTestBase):
         login = "thelogin"
         password = "%thepassw0r#$"
         login_password = "%s:%s" % (login, password)
-        expected = 'dGhlbG9naW46JXRoZXBhc3N3MHIjJA=='
+        expected = "dGhlbG9naW46JXRoZXBhc3N3MHIjJA=="
         result = b64encode(urllib.parse.unquote(login_password)).strip()
         self.assertEqual(expected, result)
 
@@ -182,7 +178,7 @@ class TestShotgunClient(base.MockTestBase):
         """Validate that config values are properly coerced."""
         this_dir = os.path.dirname(os.path.realpath(__file__))
         config_path = os.path.join(this_dir, "test_config_file")
-        config = base.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(config_path)
         result = config.get("SERVER_INFO", "api_key")
         expected = "%abce"
@@ -192,8 +188,7 @@ class TestShotgunClient(base.MockTestBase):
     def test_split_url(self):
         """Validate that url parts are properly extracted."""
 
-        sg = api.Shotgun("https://ci.shotgunstudio.com",
-                         "foo", "bar", connect=False)
+        sg = api.Shotgun("https://ci.shotgunstudio.com", "foo", "bar", connect=False)
 
         base_url = "https://ci.shotgunstudio.com"
         expected_server = "ci.shotgunstudio.com"
@@ -225,7 +220,7 @@ class TestShotgunClient(base.MockTestBase):
 
     def test_authorization(self):
         """Authorization passed to server"""
-        login = self.human_user['login']
+        login = self.human_user["login"]
         password = self.human_password
         login_password = "%s:%s" % (login, password)
         # login:password@domain
@@ -233,7 +228,7 @@ class TestShotgunClient(base.MockTestBase):
 
         self.sg = api.Shotgun(auth_url, "foo", "bar", connect=False)
         self._setup_mock()
-        self._mock_http({'version': [2, 4, 0, u'Dev']})
+        self._mock_http({"version": [2, 4, 0, "Dev"]})
 
         self.sg.info()
 
@@ -244,23 +239,23 @@ class TestShotgunClient(base.MockTestBase):
         self.assertEqual(expected, headers.get("Authorization"))
 
     def test_localization_header_default(self):
-        """Localization header not passed to server without explicitly setting SG localization config to True"""
+        """Localization header not passed to server without explicitly setting PTR localization config to True"""
         self.sg.info()
 
         args, _ = self.sg._http_request.call_args
-        (_, _, _, headers) = args
+        _, _, _, headers = args
         expected_header_value = "auto"
 
         self.assertEqual(None, headers.get("locale"))
 
     def test_localization_header_when_localized(self):
-        """Localization header passed to server when setting SG localization config to True"""
+        """Localization header passed to server when setting PTR localization config to True"""
         self.sg.config.localized = True
 
         self.sg.info()
 
         args, _ = self.sg._http_request.call_args
-        (_, _, _, headers) = args
+        _, _, _, headers = args
         expected_header_value = "auto"
 
         self.assertEqual("auto", headers.get("locale"))
@@ -272,14 +267,13 @@ class TestShotgunClient(base.MockTestBase):
         client_caps = self.sg.client_caps
         config = self.sg.config
         args, _ = self.sg._http_request.call_args
-        (_, _, _, headers) = args
+        _, _, _, headers = args
         ssl_validate_lut = {True: "no-validate", False: "validate"}
-        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s)" % (
+        expected = "shotgun-json (%s); Python %s (%s); ssl %s" % (
             api.__version__,
             client_caps.py_version,
             client_caps.platform.capitalize(),
             client_caps.ssl_version,
-            ssl_validate_lut[config.no_ssl_validation]
         )
         self.assertEqual(expected, headers.get("user-agent"))
 
@@ -287,13 +281,12 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.add_user_agent("test-agent")
         self.sg.info()
         args, _ = self.sg._http_request.call_args
-        (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s); test-agent" % (
+        _, _, _, headers = args
+        expected = "shotgun-json (%s); Python %s (%s); ssl %s; test-agent" % (
             api.__version__,
             client_caps.py_version,
             client_caps.platform.capitalize(),
             client_caps.ssl_version,
-            ssl_validate_lut[config.no_ssl_validation]
         )
         self.assertEqual(expected, headers.get("user-agent"))
 
@@ -301,13 +294,12 @@ class TestShotgunClient(base.MockTestBase):
         self.sg.reset_user_agent()
         self.sg.info()
         args, _ = self.sg._http_request.call_args
-        (_, _, _, headers) = args
-        expected = "shotgun-json (%s); Python %s (%s); ssl %s (%s)" % (
+        _, _, _, headers = args
+        expected = "shotgun-json (%s); Python %s (%s); ssl %s" % (
             api.__version__,
             client_caps.py_version,
             client_caps.platform.capitalize(),
             client_caps.ssl_version,
-            ssl_validate_lut[config.no_ssl_validation]
         )
         self.assertEqual(expected, headers.get("user-agent"))
 
@@ -323,18 +315,11 @@ class TestShotgunClient(base.MockTestBase):
         """Network failure is retried, with a sleep call between retries."""
         self.sg._http_request.side_effect = httplib2.HttpLib2Error
 
-        with mock.patch("time.sleep") as mock_sleep:
+        with unittest.mock.patch("time.sleep") as mock_sleep:
             self.assertRaises(httplib2.HttpLib2Error, self.sg.info)
             self.assertTrue(
-                self.sg.config.max_rpc_attempts == self.sg._http_request.call_count,
-                "Call is repeated")
-            # Ensure that sleep was called with the retry interval between each attempt
-            attempt_interval = self.sg.config.rpc_attempt_interval / 1000.0
-            calls = [mock.callargs(((attempt_interval,), {}))]
-            calls *= (self.sg.config.max_rpc_attempts - 1)
-            self.assertTrue(
-                mock_sleep.call_args_list == calls,
-                "Call is repeated at correct interval."
+                self.sg._http_request.call_count == 1,
+                "Call is repeated",
             )
 
     def test_set_retry_interval(self):
@@ -342,12 +327,15 @@ class TestShotgunClient(base.MockTestBase):
         original_env_val = os.environ.pop("SHOTGUN_API_RETRY_INTERVAL", None)
 
         try:
+
             def run_interval_test(expected_interval, interval_property=None):
-                self.sg = api.Shotgun(self.config.server_url,
-                                      self.config.script_name,
-                                      self.config.api_key,
-                                      http_proxy=self.config.http_proxy,
-                                      connect=self.connect)
+                self.sg = api.Shotgun(
+                    self.config.server_url,
+                    self.config.script_name,
+                    self.config.api_key,
+                    http_proxy=self.config.http_proxy,
+                    connect=self.connect,
+                )
                 self._setup_mock()
                 if interval_property:
                     # if a value was provided for interval_property, set the
@@ -422,33 +410,54 @@ class TestShotgunClient(base.MockTestBase):
         expected = "rpc response with list result, first item"
         self.assertEqual(d["results"][0], rv, expected)
 
-        # Test unicode mixed with utf-8 as reported in Ticket #17959
+        # Test payload encoding with non-ascii characters (using utf-8 literal)
         d = {"results": ["foo", "bar"]}
-        a = {"utf_str": "\xe2\x88\x9a", "unicode_str": six.ensure_text("\xe2\x88\x9a")}
+        a = {
+            "utf_literal": "\xe2\x88\x9a",
+        }
         self._mock_http(d)
         rv = self.sg._call_rpc("list", a)
         expected = "rpc response with list result"
         self.assertEqual(d["results"], rv, expected)
 
-        # Test that we raise on a 502. This is ensuring the retries behavior
-        # in place specific to 502 responses still eventually ends up raising.
+        # Test that we raise on a 5xx. This is ensuring the retries behavior
+        # in place specific to 5xx responses still eventually ends up raising.
+        # 502
         d = {"results": ["foo", "bar"]}
         a = {"some": "args"}
         self._mock_http(d, status=(502, "bad gateway"))
         self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
+        self.assertEqual(
+            self.sg.MAX_ATTEMPTS,
+            self.sg._http_request.call_count,
+            f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times",
+        )
 
-    def test_upload_s3(self):
+        # 504
+        d = {"results": ["foo", "bar"]}
+        a = {"some": "args"}
+        self._mock_http(d, status=(504, "gateway timeout"))
+        self.assertRaises(api.ProtocolError, self.sg._call_rpc, "list", a)
+        self.assertEqual(
+            self.sg.MAX_ATTEMPTS,
+            self.sg._http_request.call_count,
+            f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times",
+        )
+
+    def test_upload_s3_503(self):
         """
         Test 503 response is retried when uploading to S3.
         """
         this_dir, _ = os.path.split(__file__)
         storage_url = "http://foo.com/"
-        path = os.path.abspath(os.path.expanduser(
-            os.path.join(this_dir, "sg_logo.jpg")))
-        max_attempts = 4  # Max retries to S3 server attempts
+        path = os.path.abspath(
+            os.path.expanduser(os.path.join(this_dir, "sg_logo.jpg"))
+        )
         # Expected HTTPError exception error message
-        expected = "The server is currently down or to busy to reply." \
-                   "Please try again later."
+        expected = (
+            "The server is currently down or to busy to reply."
+            "Please try again later."
+        )
 
         # Test the Internal function that is used to upload each
         # data part in the context of multi-part uploads to S3, we
@@ -457,41 +466,132 @@ class TestShotgunClient(base.MockTestBase):
             self.sg._upload_file_to_storage(path, storage_url)
         # Test the max retries attempt
         self.assertTrue(
-            max_attempts == self.sg._make_upload_request.call_count,
-            "Call is repeated up to 3 times")
+            self.sg.MAX_ATTEMPTS == self.sg._make_upload_request.call_count,
+            f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times",
+        )
+
+    def test_upload_s3_500(self):
+        """
+        Test 500 response is retried when uploading to S3.
+        """
+        self._setup_mock(s3_status_code_error=500)
+        this_dir, _ = os.path.split(__file__)
+        storage_url = "http://foo.com/"
+        path = os.path.abspath(
+            os.path.expanduser(os.path.join(this_dir, "sg_logo.jpg"))
+        )
+        # Expected HTTPError exception error message
+        expected = (
+            "The server is currently down or to busy to reply."
+            "Please try again later."
+        )
+
+        # Test the Internal function that is used to upload each
+        # data part in the context of multi-part uploads to S3, we
+        # simulate the HTTPError exception raised with 503 status errors
+        with self.assertRaises(api.ShotgunError, msg=expected):
+            self.sg._upload_file_to_storage(path, storage_url)
+        # Test the max retries attempt
+        self.assertTrue(
+            self.sg.MAX_ATTEMPTS == self.sg._make_upload_request.call_count,
+            f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times",
+        )
+
+    def test_upload_s3_urlerror__get_attachment_upload_info(self):
+        """
+        Test URLError response is retried when invoking _send_form
+        """
+        mock_opener = unittest.mock.Mock()
+        mock_opener.return_value.open.side_effect = urllib.error.URLError(
+            "[WinError 10054] An existing connection was forcibly closed by the remote host"
+        )
+        self.sg._build_opener = mock_opener
+        this_dir, _ = os.path.split(__file__)
+        path = os.path.abspath(
+            os.path.expanduser(os.path.join(this_dir, "sg_logo.jpg"))
+        )
+
+        with self.assertRaises(api.ShotgunError) as cm:
+            self.sg._get_attachment_upload_info(False, path, False)
+
+        # Test the max retries attempt
+        self.assertEqual(
+            self.sg.MAX_ATTEMPTS,
+            mock_opener.return_value.open.call_count,
+            f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times",
+        )
+
+        # Test the exception message
+        the_exception = cm.exception
+        self.assertEqual(str(the_exception), "Max attempts limit reached.")
+
+    def test_upload_s3_urlerror__upload_to_storage(self):
+        """
+        Test URLError response is retried when uploading to S3.
+        """
+        self.sg._make_upload_request = unittest.mock.Mock(
+            spec=api.Shotgun._make_upload_request,
+            side_effect=urllib.error.URLError(
+                "[Errno 104] Connection reset by peer",
+            ),
+        )
+
+        this_dir, _ = os.path.split(__file__)
+        storage_url = "http://foo.com/"
+        path = os.path.abspath(
+            os.path.expanduser(os.path.join(this_dir, "sg_logo.jpg"))
+        )
+
+        # Test the Internal function that is used to upload each
+        # data part in the context of multi-part uploads to S3, we
+        # simulate the HTTPError exception raised with 503 status errors
+        with self.assertRaises(api.ShotgunError) as cm:
+            self.sg._upload_file_to_storage(path, storage_url)
+
+        # Test the max retries attempt
+        self.assertEqual(
+            self.sg.MAX_ATTEMPTS,
+            self.sg._make_upload_request.call_count,
+            f"Call is repeated up to {self.sg.MAX_ATTEMPTS} times",
+        )
+
+        # Test the exception message
+        the_exception = cm.exception
+        self.assertEqual(str(the_exception), "Max attempts limit reached.")
 
     def test_transform_data(self):
         """Outbound data is transformed"""
         timestamp = time.time()
         # microseconds will be last during transforms
         now = datetime.datetime.fromtimestamp(timestamp).replace(
-            microsecond=0, tzinfo=SG_TIMEZONE.local)
-        utc_now = datetime.datetime.utcfromtimestamp(timestamp).replace(
-            microsecond=0)
-        local = {
-            "date": now.strftime('%Y-%m-%d'),
-            "datetime": now,
-            "time": now.time()
-        }
+            microsecond=0, tzinfo=SG_TIMEZONE.local
+        )
+        utc_now = (
+            datetime.datetime.fromtimestamp(timestamp, tz=datetime.timezone.utc)
+            .replace(microsecond=0)
+            .astimezone(None)
+            .replace(tzinfo=None)
+        )
+        local = {"date": now.strftime("%Y-%m-%d"), "datetime": now, "time": now.time()}
         # date will still be the local date, because they are not transformed
         utc = {
-            "date": now.strftime('%Y-%m-%d'),
+            "date": now.strftime("%Y-%m-%d"),
             "datetime": utc_now,
-            "time": utc_now.time()
+            "time": utc_now.time(),
         }
 
         def _datetime(s, f):
             return datetime.datetime(*time.strptime(s, f)[:6])
 
         def assert_wire(wire, match):
-            self.assertTrue(isinstance(wire["date"], six.string_types))
+            self.assertTrue(isinstance(wire["date"], str))
             d = _datetime(wire["date"], "%Y-%m-%d").date()
-            d = wire['date']
+            d = wire["date"]
             self.assertEqual(match["date"], d)
-            self.assertTrue(isinstance(wire["datetime"], six.string_types))
+            self.assertTrue(isinstance(wire["datetime"], str))
             d = _datetime(wire["datetime"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["datetime"], d)
-            self.assertTrue(isinstance(wire["time"], six.string_types))
+            self.assertTrue(isinstance(wire["time"], str))
             d = _datetime(wire["time"], "%Y-%m-%dT%H:%M:%SZ")
             self.assertEqual(match["time"], d.time())
 
@@ -518,38 +618,34 @@ class TestShotgunClient(base.MockTestBase):
     def test_encode_payload(self):
         """Request body is encoded as JSON"""
 
-        d = {"this is ": u"my data \u00E0"}
+        d = {"this is ": "my data \u00e0"}
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, six.binary_type))
+        self.assertTrue(isinstance(j, bytes))
 
-        d = {
-            "this is ": u"my data"
-        }
+        d = {"this is ": "my data"}
         j = self.sg._encode_payload(d)
-        self.assertTrue(isinstance(j, six.binary_type))
+        self.assertTrue(isinstance(j, bytes))
 
     def test_decode_response_ascii(self):
-        self._assert_decode_resonse(True, six.ensure_str(u"my data \u00E0", encoding='utf8'))
+        self._assert_decode_resonse(True, "my data \u00e0")
 
     def test_decode_response_unicode(self):
-        self._assert_decode_resonse(False, u"my data \u00E0")
+        self._assert_decode_resonse(False, "my data \u00e0")
 
     def _assert_decode_resonse(self, ensure_ascii, data):
         """HTTP Response is decoded as JSON or text"""
 
         headers = {"content-type": "application/json;charset=utf-8"}
         d = {"this is ": data}
-        sg = api.Shotgun(self.config.server_url,
-                         self.config.script_name,
-                         self.config.api_key,
-                         http_proxy=self.config.http_proxy,
-                         ensure_ascii=ensure_ascii,
-                         connect=False)
+        sg = api.Shotgun(
+            self.config.server_url,
+            self.config.script_name,
+            self.config.api_key,
+            http_proxy=self.config.http_proxy,
+            connect=False,
+        )
 
-        if six.PY3:
-            j = json.dumps(d, ensure_ascii=ensure_ascii)
-        else:
-            j = json.dumps(d, ensure_ascii=ensure_ascii, encoding="utf-8")
+        j = json.dumps(d, ensure_ascii=ensure_ascii)
         self.assertEqual(d, sg._decode_response(headers, j))
 
         headers["content-type"] = "text/javascript"
@@ -562,12 +658,11 @@ class TestShotgunClient(base.MockTestBase):
         """Parse records to replace thumbnail and local paths"""
 
         system = platform.system().lower()
-        if system == 'darwin':
+        if system == "darwin":
             local_path_field = "local_path_mac"
-        # python 2.4 returns 'Microsoft'
-        elif system in ['windows', 'microsoft']:
+        elif system in ["windows", "microsoft"]:
             local_path_field = "local_path_windows"
-        elif system == 'linux':
+        elif system == "linux":
             local_path_field = "local_path_linux"
         orig = {
             "type": "FakeAsset",
@@ -576,11 +671,10 @@ class TestShotgunClient(base.MockTestBase):
             "foo": {
                 "link_type": "local",
                 local_path_field: "/foo/bar.jpg",
-            }
+            },
         }
         url = "http://foo/files/0000/0000/0012/232/shot_thumb.jpg"
-        self.sg._build_thumb_url = mock.Mock(
-            return_value=url)
+        self.sg._build_thumb_url = unittest.mock.Mock(return_value=url)
 
         modified, txt = self.sg._parse_records([orig, "plain text"])
         self.assertEqual("plain text", txt, "non dict value is left as is")
@@ -603,14 +697,15 @@ class TestShotgunClient(base.MockTestBase):
 
         url = self.sg._build_thumb_url("FakeAsset", 1234)
 
-        self.assertEqual(
-            "http://foo.com/files/0000/0000/0012/232/shot_thumb.jpg", url)
+        self.assertEqual("http://foo.com/files/0000/0000/0012/232/shot_thumb.jpg", url)
         self.assertTrue(self.sg._http_request.called, "http request made to get url")
         args, _ = self.sg._http_request.call_args
         verb, path, body, headers = args
         self.assertEqual(
             "/upload/get_thumbnail_url?entity_type=FakeAsset&entity_id=1234",
-            path, "thumbnail url called with correct args")
+            path,
+            "thumbnail url called with correct args",
+        )
 
         resp = "0\nSome Error"
         self._mock_http(resp, headers={"content-type": "text/plain"})
@@ -622,27 +717,34 @@ class TestShotgunClient(base.MockTestBase):
 
 
 class TestShotgunClientInterface(base.MockTestBase):
-    '''Tests expected interface for shotgun module and client'''
+    """Tests expected interface for shotgun module and client"""
 
     def test_client_interface(self):
-        expected_attributes = ['base_url',
-                               'config',
-                               'client_caps',
-                               'server_caps']
+        expected_attributes = ["base_url", "config", "client_caps", "server_caps"]
         for expected_attribute in expected_attributes:
             if not hasattr(self.sg, expected_attribute):
-                assert False, '%s not found on %s' % (expected_attribute,
-                                                      self.sg)
+                assert False, "%s not found on %s" % (expected_attribute, self.sg)
 
     def test_module_interface(self):
         import shotgun_api3
-        expected_contents = ['Shotgun', 'ShotgunError', 'Fault',
-                             'ProtocolError', 'ResponseError', 'Error',
-                             'sg_timezone', '__version__']
+
+        expected_contents = [
+            "Shotgun",
+            "ShotgunError",
+            "Fault",
+            "ProtocolError",
+            "ResponseError",
+            "Error",
+            "sg_timezone",
+            "__version__",
+        ]
         for expected_content in expected_contents:
             if not hasattr(shotgun_api3, expected_content):
-                assert False, '%s not found on module %s' % (expected_content, shotgun_api3)
+                assert False, "%s not found on module %s" % (
+                    expected_content,
+                    shotgun_api3,
+                )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -26,6 +26,16 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: shotgunsoftware/tk-ci-tools
+      ref: refs/heads/master
+      endpoint: shotgunsoftware
+      # Despite using the "tk-" prefix, tk-ci-tools is not a Toolkit only tool.
+      # We use it to avoid duplicating and maintaining CI pipeline code.
+
 # We've stored some variables in Azure. They contain credentials
 # and are encrypted. They are also not available to clients.
 # This statement says which variable groups this repo requires.
@@ -48,24 +58,54 @@ pr:
     include:
     - "*"
 
+parameters:
+  - name: python_versions
+    type: object
+    default:
+      - '3.9'
+      - '3.10'
+      - '3.11'
+      - '3.13'
+
+  - name: os_versions
+    type: object
+    default:
+      - name: Linux
+        vm_image: ubuntu-latest
+        codecov_download_url: https://uploader.codecov.io/latest/linux/codecov
+
+      - name: macOS
+        vm_image: macOS-latest
+        codecov_download_url: https://uploader.codecov.io/v0.7.3/macos/codecov
+        # macOS & codecov note:
+        # In Nov 2024 (SG-36700), we pinned macOS to codecov v0.7.3 because the
+        # macOS-latest Azure Pipelines agent is Intel (x86_64), but Codecov
+        # started shipping arm64-only binaries.
+        # When we will change the macOs image to a arm64 arch, we can use the
+        # "latest" version again.
+
+      - name: Windows
+        vm_image: windows-latest
+        codecov_download_url: https://uploader.codecov.io/latest/windows/codecov.exe
+
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
 jobs:
-
-# These are jobs templates, they allow to reduce the redundancy between
-# variations of the same build. We pass in the image name
-# and a friendly name that then template can then use to create jobs.
-- template: azure-pipelines-templates/run-tests.yml
+- template: build-pipeline.yml@templates
   parameters:
-    name: Linux
-    vm_image: 'ubuntu-20.04'
+    # Python API does not follow the exact same Python version lifecycle than
+    # Toolkit. So we prefer to control the test execution here instead.
+    has_unit_tests: false
 
-- template: azure-pipelines-templates/run-tests.yml
-  parameters:
-    name: macOS
-    vm_image: 'macOS-10.15'
+    has_ui_resources: false
 
-- template: azure-pipelines-templates/run-tests.yml
-  parameters:
-    name: Windows
-    vm_image: 'windows-2019'
+- template: azure-pipelines-templates/type_checking.yml
+
+- ${{ each os_version in parameters.os_versions }}:
+  - ${{ each python_version in parameters.python_versions }}:
+    - template: azure-pipelines-templates/run-tests.yml
+      parameters:
+        codecov_download_url: ${{ os_version.codecov_download_url }}
+        os_name: ${{ os_version.name }}
+        python_version: ${{ python_version }}
+        vm_image: ${{ os_version.vm_image }}

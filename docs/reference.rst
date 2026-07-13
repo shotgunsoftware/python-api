@@ -15,7 +15,7 @@ The :mod:`~shotgun_api3.shotgun` module is a container for the :class:`~shotgun.
 class. There are a couple of useful attributes to note.
 
 .. automodule:: shotgun_api3.shotgun
-    :members: NO_SSL_VALIDATION, LOG
+    :members: LOG
     :private-members:
     :special-members:
 
@@ -30,27 +30,26 @@ Shotgun()
 Shotgun Methods
 ***************
 
-The majority of functionality is contained within the :class:`~shotgun_api3.Shotgun` class. 
+The majority of functionality is contained within the :class:`~shotgun_api3.Shotgun` class.
 The documentation for all of the methods you'll need in your scripts lives in here.
 
 .. rubric:: Connection & Authentication
 
-.. autosummary:: 
+.. autosummary::
     :nosignatures:
 
     Shotgun.connect
     Shotgun.close
     Shotgun.authenticate_human_user
     Shotgun.get_session_token
-    Shotgun.set_up_auth_cookie
     Shotgun.add_user_agent
     Shotgun.reset_user_agent
     Shotgun.set_session_uuid
-    Shotgun.info  
+    Shotgun.info
 
 .. rubric:: CRUD Methods
 
-.. autosummary:: 
+.. autosummary::
     :nosignatures:
 
     Shotgun.create
@@ -66,11 +65,12 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.update_project_last_accessed
     Shotgun.work_schedule_read
     Shotgun.work_schedule_update
-    Shotgun.preferences_read    
+    Shotgun.preferences_read
+    Shotgun.export_page
 
 .. rubric:: Working With Files
 
-.. autosummary:: 
+.. autosummary::
     :nosignatures:
 
     Shotgun.upload
@@ -82,7 +82,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
 
 .. rubric:: Activity Stream
 
-.. autosummary:: 
+.. autosummary::
     :nosignatures:
 
     Shotgun.activity_stream_read
@@ -93,7 +93,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
 
 .. rubric:: Working with the Shotgun Schema and Preferences
 
-.. autosummary:: 
+.. autosummary::
     :nosignatures:
 
     Shotgun.schema_entity_read
@@ -109,7 +109,7 @@ The documentation for all of the methods you'll need in your scripts lives in he
 Connection & Authentication
 ===========================
 
-These methods are used for connecting and authenticating with your Shotgun server. Most of 
+These methods are used for connecting and authenticating with your Flow Production Tracking server. Most of
 this is done automatically when you instantiate your instance. But if you need finer-grain
 control, these methods are available.
 
@@ -117,11 +117,19 @@ control, these methods are available.
 .. automethod:: Shotgun.close
 .. automethod:: Shotgun.authenticate_human_user
 .. automethod:: Shotgun.get_session_token
-.. automethod:: Shotgun.set_up_auth_cookie
+.. automethod:: Shotgun.get_auth_cookie_handler
 .. automethod:: Shotgun.add_user_agent
 .. automethod:: Shotgun.reset_user_agent
 .. automethod:: Shotgun.set_session_uuid
 .. automethod:: Shotgun.info
+
+Subscription Management
+=======================
+
+These methods are used for reading and assigning user subscriptions.
+
+.. automethod:: Shotgun.user_subscriptions_read
+.. automethod:: Shotgun.user_subscriptions_create
 
 CRUD Methods
 ============
@@ -143,6 +151,7 @@ also some specialized convenience methods for accessing particular types of info
 .. automethod:: Shotgun.work_schedule_read
 .. automethod:: Shotgun.work_schedule_update
 .. automethod:: Shotgun.preferences_read
+.. automethod:: Shotgun.export_page
 
 Working With Files
 ==================
@@ -161,7 +170,7 @@ Methods that handle uploading and downloading files including thumbnails.
 Activity Stream
 ===============
 
-Methods that relate to the activity stream and following of entities in Shotgun.
+Methods that relate to the activity stream and following of entities in Flow Production Tracking.
 
 .. automethod:: Shotgun.activity_stream_read
 .. automethod:: Shotgun.follow
@@ -187,7 +196,7 @@ Methods allow you to introspect and modify the Shotgun schema.
 Exceptions
 **********
 
-These are the various exceptions that the Shotgun API will raise. 
+These are the various exceptions that the Flow Production Tracking API will raise.
 
 .. autoclass:: shotgun_api3.ShotgunError
     :show-inheritance:
@@ -289,7 +298,7 @@ Operators and Arguments
                                        # note that brackets are not literal (eg. ['start_date', 'in_last', 1, 'DAY'])
     'in_next'                   [[int], 'HOUR' | 'DAY' | 'WEEK' | 'MONTH' | 'YEAR']
                                        # note that brackets are not literal (eg. ['start_date', 'in_next', 1, 'DAY'])
-    'in'                        [[field_value] | None, ...] # Array of field values
+    'in'                        [[field_value], ...]        # Array of field values
     'type_is'                   [string] | None             # Shotgun entity type
     'type_is_not'               [string] | None             # Shotgun entity type
     'in_calendar_day'           [int]                       # Offset (e.g. 0 = today, 1 = tomorrow,
@@ -471,19 +480,19 @@ Valid Operators By Data Type
 Additional Filter Presets
 =========================
 
-As of Shotgun version 7.0 it is possible to also use filter presets. These presets provide a simple 
-way to specify powerful query filters that would otherwise be costly and difficult to craft using 
+As of Flow Production Tracking version 7.0 it is possible to also use filter presets. These presets provide a simple
+way to specify powerful query filters that would otherwise be costly and difficult to craft using
 traditional filters.
 
 Multiple presets can be specified in cases where it makes sense.
 
-Also, these presets can be used alongside normal filters. The result returned is an AND operation 
+Also, these presets can be used alongside normal filters. The result returned is an AND operation
 between the specified filters.
 
 Example Uses
 ------------
 
-The following query will return the Version with the name 'ABC' that is linked to the latest entity 
+The following query will return the Version with the name 'ABC' that is linked to the latest entity
 created::
 
     additional_filter_presets = [
@@ -498,7 +507,7 @@ created::
     result = sg.find('Version', filters = filters, additional_filter_presets = additional_filter_presets)
 
 
-The following query will find all CutItems associated to Cut #1 and return all Versions associated 
+The following query will find all CutItems associated to Cut #1 and return all Versions associated
 to the Shot linked to each of these CutItems::
 
     additional_filter_presets = [
@@ -515,7 +524,7 @@ Available Filter Presets by Entity Type
 
 Allowed filter presets (and preset parameter values) depend on the entity type being searched.
 
-The table bellow gives the details about which filter preset can be used on each entity type and 
+The table bellow gives the details about which filter preset can be used on each entity type and
 with which parameters.
 
 ::
@@ -545,9 +554,9 @@ with which parameters.
                 LATEST            [string] latest_by  'ENTITIES_CREATED_AT':
                                                         When dealing with multiple
                                                         Versions associated to a group
-                                                        of entities, returns only the
-                                                        last Version created for each
-                                                        entity.
+                                                        of entities, this will return
+                                                        only the last Version created
+                                                        for each entity.
                                                         For example, when dealing with a
                                                         set of Shots, this preset allows
                                                         to find the latest Version created
@@ -570,6 +579,23 @@ with which parameters.
                                                         will return the Version associated
                                                         to the Task with the highest
                                                         step.list_order value.
+    Published   LATEST            [string] latest_by  'ENTITIES_CREATED_AT':
+    Files                                               When dealing with multiple
+                                                        PublishedFiles associated to a
+                                                        group of entities, this will return
+                                                        only the last PublishedFiles created
+                                                        for each entity.
+                                                        For example, when dealing with a
+                                                        set of Versions, this preset allows
+                                                        you to find the latest PublishedFile
+                                                        created for each of these Versions.
+
+                                                      'VERSION_NUMBER':
+                                                        When dealing with multiple
+                                                        PublishedFiles associated with a
+                                                        group of entities, this returns only
+                                                        the PublishedFile with the highest
+                                                        version_number.
 
 .. _data_types:
 
@@ -626,7 +652,7 @@ date_time
 :range: Year must be >= 1970
 
     .. note::
-        Datetimes are stored as UTC on the server. The Shotgun API is configured to automatically
+        Datetimes are stored as UTC on the server. The Flow Production Tracking API is configured to automatically
         convert between client local time and UTC. This can be overridden.
 
 duration
@@ -779,8 +805,13 @@ Additional keys exist for local file links
       'local_path_linux': "string" | None,
       'local_path_mac': "string" | None,
       'local_path_windows': "string" | None,
-      'local_storage': {dictionary},
+      'local_storage': {
+        'type': 'LocalStorage',
+        'id': int | None,
+        'name': "string" | None,
+      },
       'name': "string",
+      'relative_path': "string" | None
       'url': "string",
     }
     API versions < v3.0.3:
@@ -818,7 +849,7 @@ There are three possible states for values returned by an ``image`` field:
 .. note::
     Other upcoming features are likely to require the use of other transient thumbnails.
     For this reason, it is highly recommended to use the prefix part of the placeholder path
-    (e.g. https://yoursubdomain.shotgunstudio.com/images/status/transient/)
+    (e.g. https://my-site.shotgrid.autodesk.com/images/status/transient/)
     to detect any transient URLs rather than use the full path of the thumbnail.
 
 .. _event_types:
@@ -827,17 +858,17 @@ There are three possible states for values returned by an ``image`` field:
 Event Types
 ***********
 
-Whenever a user makes a change to any data in Shotgun, an event log entry record is created, 
-capturing the value before and after. Shotgun also logs some additional useful events that help keep 
-track of various activity on your Shotgun instance.
+Whenever a user makes a change to any data in Flow Production Tracking, an event log entry record is created,
+capturing the value before and after. Flow Production Tracking also logs some additional useful events that help keep
+track of various activity on your Flow Production Tracking instance.
 
 Event-based Triggers
 ====================
 
 Events are particularlly useful when used in conjunction with a trigger framework like the
-`Shotgun Event Daemon <https://github.com/shotgunsoftware/shotgunEvents>`_. This allows you to 
+`Flow Production Tracking Event Daemon <https://github.com/shotgunsoftware/shotgunEvents>`_. This allows you to
 write plug-ins that watch for certain types of events and then run code when they occur.
-   
+
 Structure of Event Types
 ========================
 
@@ -845,64 +876,64 @@ The basic structure of event types is broken into 3 parts:
 
 ``Application_EntityType_Action``
 
-- ``Application``: Is always "Shotgun" for events automatically created by the Shotgun server. 
-  Other Shotgun products may use their name in here, for example, Toolkit has its own events
-  that it logs and the application portion is identified by "Toolkit". If you decide to use the 
+- ``Application``: Is always "Shotgun" for events automatically created by the Flow Production Tracking server.
+  Other Flow Production Tracking products may use their name in here, for example, Toolkit has its own events
+  that it logs and the application portion is identified by "Toolkit". If you decide to use the
   EventLogEntry entity to log events for your scripts or tools, you would use your tool name here.
-- ``EntityType``: This is the entity type in Shotgun that was acted upon (eg. Shot, Asset, etc.)
-- ``Action``: The general action that was taken. (eg. New, Change, Retirement, Revival)   
-   
+- ``EntityType``: This is the entity type in Flow Production Tracking that was acted upon (eg. Shot, Asset, etc.)
+- ``Action``: The general action that was taken. (eg. New, Change, Retirement, Revival)
+
 
 Standard Event Types
 ====================
 
-Each entity type has a standard set of events associated with it when it's created, updated, 
+Each entity type has a standard set of events associated with it when it's created, updated,
 deleted, and revived. They follow this pattern:
 
 - ``Shotgun_EntityType_New``: a new entity was created. Example: ``Shotgun_Task_New``
 - ``Shotgun_EntityType_Change``: an entity was modified. Example: ``Shotgun_HumanUser_Change``
 - ``Shotgun_EntityType_Retirement``: an entity was deleted. Example: ``Shotgun_Ticket_Retirement``
-- ``Shotgun_EntityType_Revival``: an entity was revived. Example: ``Shotgun_CustomEntity03_Revival``   
+- ``Shotgun_EntityType_Revival``: an entity was revived. Example: ``Shotgun_CustomEntity03_Revival``
 
 Additional Event Types
 ======================
 
-These are _some_ of the additional event types that are logged by Shotgun:
- 
+These are _some_ of the additional event types that are logged by Flow Production Tracking:
+
 - ``Shotgun_Attachment_View``: an Attachment (file) was viewed by a user.
-- ``Shotgun_Reading_Change``: a threaded entity has been marked read or unread. For example, a 
-  Note was read by a user. The readings are unique to the entity<->user connection so when a 
+- ``Shotgun_Reading_Change``: a threaded entity has been marked read or unread. For example, a
+  Note was read by a user. The readings are unique to the entity<->user connection so when a
   Note is read by user "joe" it may still be unread by user "jane".
-- ``Shotgun_User_Login``: a user logged in to Shotgun.
-- ``Shotgun_User_Logout``: a user logged out of Shotgun. 
-   
+- ``Shotgun_User_Login``: a user logged in to Flow Production Tracking.
+- ``Shotgun_User_Logout``: a user logged out of Flow Production Tracking.
+
 
 Custom Event Types
 ==================
 
-Since ``EventLogEntries`` are entities themselves, you can create them using the API just like any 
-other entity type. As mentioned previously, if you'd like to have your scripts or tools log to 
-the Shotgun event log, simply devise a thoughtful naming structure for your event types and 
+Since ``EventLogEntries`` are entities themselves, you can create them using the API just like any
+other entity type. As mentioned previously, if you'd like to have your scripts or tools log to
+the Flow Production Tracking event log, simply devise a thoughtful naming structure for your event types and
 create the EventLogEntry as needed following the usual methods for creating entities via the API.
 
-Again, other Shotgun products like Toolkit use event logs this way.
+Again, other Flow Production Tracking products like Toolkit use event logs this way.
 
-.. note:: 
-    EventLogEntries cannot be updated or deleted (that would defeat the purpose of course).   
-   
+.. note::
+    EventLogEntries cannot be updated or deleted (that would defeat the purpose of course).
+
 Performance
 ===========
 
-Event log database tables can get large very quickly. While Shotgun does very well with event logs 
-that get into the millions of records, there's an inevitable degradation of performance for pages 
-that display them in the web application as well as any API queries for events when they get too 
-big. This volume of events is not the norm, but can be reached if your server expereinces high 
-usage. 
+Event log database tables can get large very quickly. While Flow Production Tracking does very well with event logs
+that get into the millions of records, there's an inevitable degradation of performance for pages
+that display them in the web application as well as any API queries for events when they get too
+big. This volume of events is not the norm, but can be reached if your server expereinces high
+usage.
 
-This **does not** mean your Shotgun server performance will suffer in general, just any pages that 
+This **does not** mean your Flow Production Tracking server performance will suffer in general, just any pages that
 are specifically displaying EventLogEntries in the web application, or API queries on the event
 log that are run. We are always looking for ways to improve this in the future. If you have any
-immediate concerns, please `reach out to our support team <https://developer.shotgridsoftware.com>`_
+immediate concerns, please `reach out to our support team <https://www.autodesk.com/support>`_
 
 *********************
 Environment Variables
@@ -911,8 +942,19 @@ Environment Variables
 SHOTGUN_API_CACERTS
 ===================
 
-Used to specify a path to an external SSL certificates file.  This environment variable can be used in place of the ``ca_certs`` keyword argument to the :class:`~shotgun.Shotgun` constructor.  In the case that both this environment variable is set and the keyword argument is provided, the value from the keyword argument will be used.
+Use this variable to override the default Trusted Root Certification Authorities
+Certificate Store bundled with this library.
+By default, the library relies on `certifi <https://pypi.org/project/certifi/>`_
+as its Root CA store.
 
+This environment variable can be used in place of the ``ca_certs`` keyword
+argument to the :class:`~shotgun.Shotgun` constructor.
+In the case that both this environment variable is set and the keyword argument
+is provided, the value from the keyword argument will be used.
+
+For an example about using ``SHOTGUN_API_CACERTS`` to fix a certificate issue,
+see the `SSLHandshakeError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed <https://help.autodesk.com/view/SGDEV/ENU/?guid=SGD_qa_troubleshooting_qa_sslhandshakeerror_ssl_certificate_verify_failed_html>`_
+article.
 
 SHOTGUN_API_RETRY_INTERVAL
 ==========================
@@ -924,11 +966,54 @@ Stores the number of milliseconds to wait between request retries.  By default, 
 
 In the case that both this environment variable and the config's ``rpc_attempt_interval`` property are set, the value in ``rpc_attempt_interal`` will be used.
 
+
+SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
+=======================================
+
+.. note:: (v3.7.0) This is an experimental feature. Feel free to disable this feature if you are experiencing any issues.
+
+When set to ``1``, this environment variable will disable the entity optimization feature.
+This feature is enabled by default and is used to reduce the payload size made to the server when retrieving entities
+improving overall performance by decreasing network latency and server processing.
+
+For example, a ``find`` call like this:
+
+.. code-block:: python
+
+    sg.find('Asset', [['project', 'is', {
+        'created_at': datetime.datetime(2015, 12, 16, 11, 2, 10, tzinfo),
+        'id': 9999,
+        'name': 'Demo: Game',
+        'type': 'Project',
+        # More entity attributes
+    }]])
+
+
+Will internally be transformed as if you invoked something like this:
+
+.. code-block:: python
+
+    sg.find('Asset', [['project', 'is', {'id': 999, 'type': 'Project'}]])
+
+
+SHOTGUN_ALLOW_OLD_PYTHON
+========================
+
+When set to ``1``, ``shotgun_api3``  will allow being imported from Python versions that are no longer supported.
+Otherwise, when unset (or set to any other value), importing the module will raise an exception.
+
+This is not recommended and should only be used for testing purposes.
+
+.. important::
+    The ability to import the module does not guarantee that the module will work properly on the unsupported Python
+    version. In fact, it is very likely that it will not work properly.
+
+
 ************
 Localization
 ************
 
-The Shotgun API offers the ability to return localized display names in the current user's language.
+The Flow Production Tracking API offers the ability to return localized display names in the current user's language.
 Requests made from script/API users are localized in the site settings.
 
 This functionality is currently supported by the methods ``Shotgun.schema_entity_read``, ``Shotgun.schema_field_read``, and ``Shotgun.schema_read``.
@@ -964,6 +1049,3 @@ Example for a user whose language preference is set to Japanese:
     },
     ...
     }
-
-.. note::
-    If needed, the encoding of the returned localized string can be ensured regardless the Python version using shotgun_api3.lib.six.ensure_text().

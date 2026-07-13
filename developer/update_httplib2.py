@@ -3,7 +3,7 @@
 """
 Updates the httplib2 module.
 
-Run as "./upgrade_httplib2.py vX.Y.Z" to get a specific release from github.
+Run as "./update_httplib2.py vX.Y.Z" to get a specific release from github.
 """
 
 import pathlib
@@ -17,18 +17,20 @@ class Utilities:
     def download_archive(self, file_path, file_name):
         """Download the archive from github."""
         print(f"Downloading {file_name}")
-        subprocess.check_output([
-            "curl",
-            "-L",
-            f"https://github.com/httplib2/httplib2/archive/{file_name}",
-            "-o",
-            file_path])
+        subprocess.check_output(
+            [
+                "curl",
+                "-L",
+                f"https://github.com/httplib2/httplib2/archive/{file_name}",
+                "-o",
+                file_path,
+            ]
+        )
 
     def unzip_archive(self, file_path, file_name, temp_dir):
         """Unzip in a temp dir."""
         print(f"Unzipping {file_name}")
-        subprocess.check_output(
-            ["unzip", str(file_path), "-d", str(temp_dir)])
+        subprocess.check_output(["unzip", str(file_path), "-d", str(temp_dir)])
 
     def remove_folder(self, path):
         """Remove a folder recursively."""
@@ -38,11 +40,14 @@ class Utilities:
     def git_remove(self, target):
         print(f"Removing {target} in git.")
         try:
-            subprocess.check_output([
-                "git",
-                "rm",
-                "-rf",
-            ] + target)
+            subprocess.check_output(
+                [
+                    "git",
+                    "rm",
+                    "-rf",
+                ]
+                + target
+            )
         except Exception as e:
             pass
 
@@ -58,8 +63,8 @@ class Utilities:
         contents = contents.replace("from httplib2.", "from .")
         contents = contents.replace("from httplib2", "from .")
         contents = contents.replace(
-            "import pyparsing as pp",
-            "from ... import pyparsing as pp")
+            "import pyparsing as pp", "from .. import pyparsing as pp"
+        )
 
         with open(file_path, "w") as f:
             f.write(contents)
@@ -68,8 +73,6 @@ class Utilities:
 def main(temp_path, repo_root, version):
     # Paths and file names
     httplib2_dir = repo_root / "shotgun_api3" / "lib" / "httplib2"
-    python2_dir = str(httplib2_dir / "python2")
-    python3_dir = str(httplib2_dir / "python3")
     file_name = f"{version}.zip"
     file_path = temp_path / file_name
 
@@ -83,25 +86,19 @@ def main(temp_path, repo_root, version):
     unzipped_folder.mkdir()
     utilities.unzip_archive(file_path, file_name, unzipped_folder)
 
-    # Remove current httplib2/python2 and httplib2/python3 folders
-    utilities.remove_folder(python2_dir)
-    utilities.remove_folder(python3_dir)
-
     # Removes the previous version of httplib2
-    utilities.git_remove([
-        str(python2_dir),
-        str(python3_dir)
-    ])
+    utilities.git_remove([str(httplib2_dir)])
+    utilities.remove_folder(httplib2_dir)
 
     # Copies a new version into place.
     print("Copying new version of httplib2")
     root_folder = unzipped_folder / f"httplib2-{version[1:]}"
-    utilities.copy_folder(
-        str(root_folder / "python2" / "httplib2"), python2_dir)
-    utilities.copy_folder(
-        str(root_folder / "python3" / "httplib2"), python3_dir)
-    utilities.remove_folder(f"{python2_dir}/test")
-    utilities.remove_folder(f"{python3_dir}/test")
+    # Older releases had python3/httplib2/; newer ones have httplib2/ at root.
+    python3_path = root_folder / "python3" / "httplib2"
+    flat_path = root_folder / "httplib2"
+    src_path = python3_path if python3_path.exists() else flat_path
+    utilities.copy_folder(str(src_path), httplib2_dir)
+    utilities.remove_folder(f"{httplib2_dir}/test")
 
     # Patches the httplib2 imports so they are relative instead of absolute.
     print("Patching imports")
@@ -110,12 +107,20 @@ def main(temp_path, repo_root, version):
 
     # Adding files to the git repo.
     print("Adding to git")
-    subprocess.check_output(["git", "add", str(python2_dir), str(python3_dir)])
+    subprocess.check_output(["git", "add", str(httplib2_dir)])  # nosec B607
+
+
+def find_repo_root():
+    path = pathlib.Path(__file__).resolve()
+    for parent in [path, *path.parents]:
+        if (parent / ".git").exists():
+            return parent
+    raise RuntimeError("Could not find repo root (no .git directory found)")
 
 
 if __name__ == "__main__":
     try:
         temp_path = pathlib.Path(tempfile.mkdtemp())
-        main(temp_path, pathlib.Path(__file__).parent, sys.argv[1])
+        main(temp_path, find_repo_root(), sys.argv[1])
     finally:
         shutil.rmtree(temp_path)

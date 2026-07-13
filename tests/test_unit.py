@@ -11,12 +11,14 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
+import ssl
 import unittest
-from .mock import patch
+from unittest import mock
+import urllib.request
+import urllib.error
+
 import shotgun_api3 as api
-from shotgun_api3.shotgun import _is_mimetypes_broken
-from shotgun_api3.lib.six.moves import range, urllib
-from shotgun_api3.lib.httplib2 import Http, ssl_error_classes
+from shotgun_api3.lib.httplib2 import Http
 
 
 class TestShotgunInit(unittest.TestCase):
@@ -152,8 +154,11 @@ class TestShotgunSummarize(unittest.TestCase):
     Does not require database connection or test data."""
 
     def setUp(self):
-        self.sg = api.Shotgun(
-            "http://server_path", "script_name", "api_key", connect=False
+        self.sg = api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        # Pre-populate server_caps to avoid conflicts with include_archive_projects
+        # attribute now defaulting to False
+        self.sg._server_caps = api.shotgun.ServerCapabilities(
+            self.sg.config.server, {"version": (8, 0, 0)}
         )
 
     def test_filter_operator_none(self):
@@ -184,11 +189,9 @@ class TestShotgunSummarize(unittest.TestCase):
         args = ["", [[path, relation, value]], None]
         result = self.get_call_rpc_params(args, {})
         actual_condition = result["filters"]["conditions"][0]
-        self.assertEquals(expected_condition, actual_condition)
 
-    @patch("shotgun_api3.shotgun.ServerCapabilities")
-    @patch("shotgun_api3.Shotgun._call_rpc")
-    def get_call_rpc_params(self, args, kws, call_rpc, server_caps):
+    @mock.patch("shotgun_api3.Shotgun._call_rpc")
+    def get_call_rpc_params(self, args, kws, call_rpc):
         """Return params sent to _call_rpc from summarize."""
         if not args:
             args = [None, [], None]
@@ -205,16 +208,12 @@ class TestShotgunSummarize(unittest.TestCase):
 
     def test_grouping_type(self):
         """test_grouping_type tests that grouping parameter is a list or None"""
-        self.assertRaises(
-            ValueError, self.sg.summarize, "", [], [], grouping="Not a list"
-        )
+        self.assertRaises(ValueError, self.sg.summarize, "", [], [], grouping="Not a list")
 
 
 class TestShotgunBatch(unittest.TestCase):
     def setUp(self):
-        self.sg = api.Shotgun(
-            "http://server_path", "script_name", "api_key", connect=False
-        )
+        self.sg = api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
 
     def test_missing_required_key(self):
         req = {}
@@ -254,15 +253,11 @@ class TestServerCapabilities(unittest.TestCase):
         )
 
     def test_dev_version(self):
-        serverCapabilities = api.shotgun.ServerCapabilities(
-            "host", {"version": (3, 4, 0, "Dev")}
-        )
+        serverCapabilities = api.shotgun.ServerCapabilities("host", {"version": (3, 4, 0, "Dev")})
         self.assertEqual(serverCapabilities.version, (3, 4, 0))
         self.assertTrue(serverCapabilities.is_dev)
 
-        serverCapabilities = api.shotgun.ServerCapabilities(
-            "host", {"version": (2, 4, 0)}
-        )
+        serverCapabilities = api.shotgun.ServerCapabilities("host", {"version": (2, 4, 0)})
         self.assertEqual(serverCapabilities.version, (2, 4, 0))
         self.assertFalse(serverCapabilities.is_dev)
 
@@ -299,7 +294,7 @@ class TestClientCapabilities(unittest.TestCase):
         finally:
             api.shotgun.sys.platform = platform
 
-    @patch("shotgun_api3.shotgun.sys")
+    @mock.patch("shotgun_api3.shotgun.sys")
     def test_py_version(self, mock_sys):
         major = 2
         minor = 7
@@ -311,6 +306,8 @@ class TestClientCapabilities(unittest.TestCase):
 
 
 class TestFilters(unittest.TestCase):
+    maxDiff = None
+
     def test_empty(self):
         expected = {"logical_operator": "and", "conditions": []}
 
@@ -407,27 +404,338 @@ class TestFilters(unittest.TestCase):
 
     def test_invalid(self):
         self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, [], "bogus")
-        self.assertRaises(
-            api.ShotgunError, api.shotgun._translate_filters, ["bogus"], "all"
-        )
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, ["bogus"], "all")
 
         filters = [{"filter_operator": "bogus", "filters": []}]
 
-        self.assertRaises(
-            api.ShotgunError, api.shotgun._translate_filters, filters, "all"
-        )
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
 
         filters = [{"filters": []}]
 
-        self.assertRaises(
-            api.ShotgunError, api.shotgun._translate_filters, filters, "all"
-        )
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
 
         filters = [{"filter_operator": "all", "filters": {"bogus": "bogus"}}]
 
-        self.assertRaises(
-            api.ShotgunError, api.shotgun._translate_filters, filters, "all"
-        )
+        self.assertRaises(api.ShotgunError, api.shotgun._translate_filters, filters, "all")
+
+    @mock.patch.dict(os.environ, {"SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION": "1"})
+    def test_related_object(self):
+        filters = [
+            [
+                "project",
+                "is",
+                {
+                    "foo": "foo",
+                    "bar": "bar",
+                    "id": 999,
+                    "baz": "baz",
+                    "type": "Anything",
+                },
+            ],
+        ]
+        expected = {
+            "logical_operator": "and",
+            "conditions": [
+                {
+                    "path": "project",
+                    "relation": "is",
+                    "values": [
+                        {
+                            "foo": "foo",
+                            "bar": "bar",
+                            "baz": "baz",
+                            "id": 999,
+                            "type": "Anything",
+                        }
+                    ],
+                }
+            ],
+        }
+        api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = api.shotgun._translate_filters(filters, "all")
+        self.assertEqual(result, expected)
+
+    @mock.patch("shotgun_api3.shotgun.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
+    def test_related_object_entity_optimization_is(self):
+        filters = [
+            [
+                "project",
+                "is",
+                {
+                    "foo": "foo",
+                    "bar": "bar",
+                    "id": 999,
+                    "baz": "baz",
+                    "type": "Anything",
+                },
+            ],
+        ]
+        expected = {
+            "logical_operator": "and",
+            "conditions": [
+                {
+                    "path": "project",
+                    "relation": "is",
+                    "values": [
+                        {
+                            "id": 999,
+                            "type": "Anything",
+                        }
+                    ],
+                }
+            ],
+        }
+        api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = api.shotgun._translate_filters(filters, "all")
+        self.assertEqual(result, expected)
+
+        # Now test a non-related object. The expected result should not be optimized.
+        filters = [
+            [
+                "something",
+                "is",
+                {"foo": "foo", "bar": "bar"},
+            ],
+        ]
+        expected = {
+            "logical_operator": "and",
+            "conditions": [
+                {
+                    "path": "something",
+                    "relation": "is",
+                    "values": [{"bar": "bar", "foo": "foo"}],
+                }
+            ],
+        }
+        api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = api.shotgun._translate_filters(filters, "all")
+        self.assertEqual(result, expected)
+
+    @mock.patch("shotgun_api3.shotgun.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
+    def test_related_object_entity_optimization_in(self):
+        filters = [
+            [
+                "project",
+                "in",
+                [
+                    {
+                        "foo1": "foo1",
+                        "bar1": "bar1",
+                        "id": 999,
+                        "baz1": "baz1",
+                        "type": "Anything",
+                    },
+                    {
+                        "foo2": "foo2",
+                        "bar2": "bar2",
+                        "id": 998,
+                        "baz2": "baz2",
+                        "type": "Anything",
+                    },
+                    {"foo3": "foo3", "bar3": "bar3"},
+                ],
+            ],
+        ]
+        expected = {
+            "logical_operator": "and",
+            "conditions": [
+                {
+                    "path": "project",
+                    "relation": "in",
+                    "values": [
+                        {
+                            "id": 999,
+                            "type": "Anything",
+                        },
+                        {
+                            "id": 998,
+                            "type": "Anything",
+                        },
+                        {
+                            "foo3": "foo3",
+                            "bar3": "bar3",
+                        },
+                    ],
+                }
+            ],
+        }
+        api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = api.shotgun._translate_filters(filters, "all")
+        self.assertEqual(result, expected)
+
+    def test_related_object_update_entity(self):
+        entity_type = "Anything"
+        entity_id = 999
+        multi_entity_update_modes = {"link": "set", "name": "set"}
+        data = {
+            "name": "test",
+            "link": {
+                "name": "test",
+                "url": "http://test.com",
+            },
+        }
+        expected = {
+            "id": 999,
+            "type": "Anything",
+            "fields": [
+                {
+                    "field_name": "name",
+                    "value": "test",
+                    "multi_entity_update_mode": "set",
+                },
+                {
+                    "field_name": "link",
+                    "value": {
+                        "name": "test",
+                        "url": "http://test.com",
+                    },
+                    "multi_entity_update_mode": "set",
+                },
+            ],
+        }
+        sg = api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = sg._translate_update_params(entity_type, entity_id, data, multi_entity_update_modes)
+        self.assertEqual(result, expected)
+
+    @mock.patch("shotgun_api3.shotgun.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
+    def test_related_object_update_optimization_entity(self):
+        entity_type = "Anything"
+        entity_id = 999
+        multi_entity_update_modes = {"project": "set", "link": "set", "name": "set"}
+        data = {
+            "name": "test",
+            "link": {
+                "name": "test",
+                "url": "http://test.com",
+            },
+            "project": {
+                "foo1": "foo1",
+                "bar1": "bar1",
+                "id": 888,
+                "baz1": "baz1",
+                "type": "Project",
+            },
+        }
+        expected = {
+            "id": 999,
+            "type": "Anything",
+            "fields": [
+                {
+                    "field_name": "name",
+                    "value": "test",
+                    "multi_entity_update_mode": "set",
+                },
+                {
+                    "field_name": "link",
+                    "value": {
+                        "name": "test",
+                        "url": "http://test.com",
+                    },
+                    "multi_entity_update_mode": "set",
+                },
+                {
+                    "field_name": "project",
+                    "multi_entity_update_mode": "set",
+                    "value": {
+                        # Entity is optimized with type/id fields.
+                        "id": 888,
+                        "type": "Project",
+                    },
+                },
+            ],
+        }
+        sg = api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = sg._translate_update_params(entity_type, entity_id, data, multi_entity_update_modes)
+        self.assertEqual(result, expected)
+
+    @mock.patch("shotgun_api3.shotgun.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
+    def test_related_object_update_optimization_entity_multi(self):
+        entity_type = "Asset"
+        entity_id = 6626
+        data = {
+            "sg_status_list": "ip",
+            "project": {"id": 70, "type": "Project", "name": "important name 70"},
+            "sg_vvv": [
+                {"id": 6440, "type": "Asset"},
+                {"id": 6441, "type": "Asset", "custom_name": "disposable name 6441"},
+                {
+                    # To be kept
+                    "id": 6442,
+                    "type": "Asset",
+                    "url": "http://test.com/asset/6442",
+                    # to be removed
+                    "custom_name": "disposable name 1",
+                    "custom_name2": "disposable name 2",
+                    "custom_name3": "disposable name 3",
+                    "custom_name4": "disposable name 4",
+                },
+                {"sg_nested": {"level1": {"level2": {"id": 123, "type": "Entity", "foo": "bar"}}}},
+            ],
+            "sg_class": {
+                # To be kept
+                "id": 1,
+                "type": "CustomEntity53",
+                "url": "http://test.com",
+                "name": "important class name",
+                "local_path": "/some/local/path",
+                # to be removed
+                "custom_name": "disposable name 1",
+                "custom_name2": "disposable name 2",
+                "custom_name3": "disposable name 3",
+                "custom_name4": "disposable name 4",
+            },
+        }
+        expected = {
+            "type": "Asset",
+            "id": 6626,
+            "fields": [
+                {"field_name": "sg_status_list", "value": "ip"},
+                {
+                    "field_name": "project",
+                    "value": {
+                        "type": "Project",
+                        "id": 70,
+                        "name": "important name 70",
+                    },
+                },
+                {
+                    "field_name": "sg_vvv",
+                    "value": [
+                        {"id": 6440, "type": "Asset"},
+                        {"id": 6441, "type": "Asset"},
+                        {
+                            "id": 6442,
+                            "type": "Asset",
+                            "url": "http://test.com/asset/6442",
+                        },
+                        {
+                            "sg_nested": {
+                                "level1": {
+                                    "level2": {
+                                        "id": 123,
+                                        "type": "Entity",
+                                        "foo": "bar",
+                                    }
+                                }
+                            }
+                        },
+                    ],
+                },
+                {
+                    "field_name": "sg_class",
+                    "value": {
+                        "type": "CustomEntity53",
+                        "id": 1,
+                        "name": "important class name",
+                        "url": "http://test.com",
+                        "local_path": "/some/local/path",
+                    },
+                },
+            ],
+        }
+        sg = api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
+        result = sg._translate_update_params(entity_type, entity_id, data, None)
+        self.assertEqual(result, expected)
 
 
 class TestCerts(unittest.TestCase):
@@ -444,9 +752,7 @@ class TestCerts(unittest.TestCase):
     ]
 
     def setUp(self):
-        self.sg = api.Shotgun(
-            "http://server_path", "script_name", "api_key", connect=False
-        )
+        self.sg = api.Shotgun("http://server_path", "script_name", "api_key", connect=False)
 
         # Get the location of the certs file
         self.certs = self.sg._get_certs_file(None)
@@ -463,7 +769,7 @@ class TestCerts(unittest.TestCase):
         """
         Given a url it will perform a simple request and return a result.
         """
-        # create a request using the opener generated by the SG API.
+        # create a request using the opener generated by the PTR API.
         # The `_build_opener` method internally should use the correct certs.
         opener = self.sg._build_opener(urllib.request.HTTPHandler)
         request = urllib.request.Request(url)
@@ -483,7 +789,7 @@ class TestCerts(unittest.TestCase):
             # Call dirname to remove from __init__.py
             os.path.join(os.path.dirname(api.__file__), "lib", "certifi", "cacert.pem")
         )
-        # Now ensure that the path the SG API has found is correct.
+        # Now ensure that the path the PTR API has found is correct.
         self.assertEqual(cert_path, self.certs)
         self.assertTrue(os.path.isfile(self.certs))
 
@@ -494,7 +800,7 @@ class TestCerts(unittest.TestCase):
         """
         # First check that we get an error when trying to connect to a known dummy bad URL
         self.assertRaises(
-            ssl_error_classes,
+            (ssl.SSLError, ssl.CertificateError),
             self._check_url_with_sg_api_httplib2,
             self.bad_url,
             self.certs,
@@ -511,43 +817,12 @@ class TestCerts(unittest.TestCase):
         certificate with urllib.
         """
         # First check that we get an error when trying to connect to a known dummy bad URL
-        self.assertRaises(
-            urllib.error.URLError, self._check_url_with_urllib, self.bad_url
-        )
+        self.assertRaises(urllib.error.URLError, self._check_url_with_urllib, self.bad_url)
 
         # Now check that the good urls connect properly using the certs
         for url in self.test_urls:
             response = self._check_url_with_urllib(url)
             assert response is not None
-
-
-class TestMimetypesFix(unittest.TestCase):
-    """
-    Makes sure that the mimetypes fix will be imported.
-    """
-
-    @patch("shotgun_api3.shotgun.sys")
-    def _test_mimetypes_import(
-        self, platform, major, minor, patch_number, result, mock
-    ):
-        """
-        Mocks sys.platform and sys.version_info to test the mimetypes import code.
-        """
-
-        mock.version_info = [major, minor, patch_number]
-        mock.platform = platform
-        self.assertEqual(_is_mimetypes_broken(), result)
-
-    def test_correct_mimetypes_imported(self):
-        """
-        Makes sure fix is imported for only for Python 2.7.0 to 2.7.7 on win32
-        """
-        self._test_mimetypes_import("win32", 2, 6, 9, False)
-        for patch_number in range(0, 10):  # 0 to 9 inclusively
-            self._test_mimetypes_import("win32", 2, 7, patch_number, True)
-        self._test_mimetypes_import("win32", 2, 7, 10, False)
-        self._test_mimetypes_import("win32", 3, 0, 0, False)
-        self._test_mimetypes_import("darwin", 2, 7, 0, False)
 
 
 if __name__ == "__main__":

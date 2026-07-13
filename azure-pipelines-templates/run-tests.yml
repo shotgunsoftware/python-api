@@ -26,52 +26,58 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# This is the list of parameters for this template and their default values.
 parameters:
-  name: ''
-  vm_image: ''
+  # Using the most formal way of defining parameters so we don't define a
+  # default value for mandatory parameters. This way, CI will fail if we forget
+  # to pass it when invoking the template.
+
+  - name: codecov_download_url
+    type: string
+
+  - name: os_name
+    type: string
+
+  - name: python_version
+    type: string
+
+  - name: vm_image
+    type: string
 
 jobs:
-  # The job will be named after the OS and Azure will suffix the strategy to make it unique
-  # so we'll have a job name "Windows Python27" for example. What's a strategy? Strategies are the
-  # name of the keys under the strategy.matrix scope. So for each OS we'll have "<OS> Python27" and 
-  # "<OS> Python37".
-- job: ${{ parameters.name }}
+- job:
+  displayName: "${{ parameters.os_name }} - Python ${{ parameters.python_version }}"
   pool:
     vmImage: ${{ parameters.vm_image }}
-  # The strategy is another way of removing repetition. It will create one job per entry in the
-  # matrix.
-  strategy:
-    matrix:
-      # We support these two versions of Python.
-      Python27:
-        python.version: '2.7'
-      Python37:
-        python.version: '3.7'
-      Python39:
-        python.version: '3.9'
+
+  variables:
+    group: sg-credentials
 
   # These are the steps that will be executed inside each job.
   steps:
-  # Specifies which version of Python we want to use. That's where the strategy comes in.
-  # Each job will share this set of steps, but each of them will receive a different
-  # $(python.version)
+  # Specifies which version of Python we want to use.
+  # TODO: We should provide `githubToken` if we want to download a python release.
+  #       Otherwise we may hit the GitHub anonymous download limit.
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '$(python.version)'
-      addToPath: True
+      versionSpec: ${{ parameters.python_version }}
 
-  # Install all dependencies needed for running the tests. This command is good for
-  # Python 2 and 3, but also for all OSes
-  - script: |
-      python -m pip install --upgrade pip setuptools wheel
-      python -m pip install -r tests/ci_requirements.txt
-    displayName: Install tools
+  # Install all dependencies needed for running the tests. This command is good
+  # for all OSes
+  - task: Bash@3
+    displayName: Install dependencies
+    inputs:
+      targetType: inline
+      script: |
+        set -e
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools wheel
+        python -m pip install --upgrade --requirement tests/requirements.txt
+      # Need to use the "python -m" prefix to make Windows happy.
 
   # The {{}} syntax is meant for the the pre-processor of Azure pipeline. Every statement inside
   # a {{}} block will be evaluated and substituted before the file is parsed to create the jobs.
   # So here we're inserting an extra step if the template is being invoked for Windows.
-  - ${{ if eq(parameters.name, 'Windows') }}:
+  - ${{ if eq(parameters.os_name, 'Windows') }}:
     # On Windows, we need to update the certificates, the cert store is missing the newer one
     # from Amazon like some clients experienced a while back. Who would have thought Microsoft
     # would have been out of date! ;)
@@ -82,15 +88,27 @@ jobs:
         Import-Certificate -FilePath $cert_file.FullName -CertStoreLocation Cert:\LocalMachine\Root
       displayName: Updating OS Certificates
 
-  # Runs the tests and generates test coverage. The tests results are uploaded to Azure Pipelines in the
-  # Tests tab of the build and each test run will be named after the --test-run-title argument to pytest,
-  # for example 'Windows - 2.7'
-  - bash: |
-      cp ./tests/example_config ./tests/config
-      pytest -v --cov shotgun_api3 --cov-report xml --test-run-title="${{parameters.name}}-$(python.version)"
+  # Runs the tests and generates both test report and code coverage
+  - task: Bash@3
     displayName: Running tests
+    inputs:
+      targetType: inline
+      script: |
+        set -e
+        cp ./tests/example_config ./tests/config
+        python -m pytest \
+          --cov \
+          --cov-report xml:coverage.xml \
+          --durations=0 \
+          --nunit-xml=test-results.xml \
+          --verbose \
+          --reruns 1 \
+          --reruns-delay 2 \
     env:
-      # Pass the values needed to authenticate with the Shotgun site and create some entities.
+      # Tell Pytest that we're running in a CI environment
+      CI: 1
+
+      # Pass the values needed to authenticate with the Flow Production Tracking site and create some entities.
       # Remember, on a pull request from a client or on forked repos, those variables
       # will be empty!
       SG_SERVER_URL: $(ci_site)
@@ -103,42 +121,76 @@ jobs:
       # build variables are available. Because of this, we need to find another way to generate a
       # unique login. So instead, we'll use the the name of the platform and the python version,
       # which should make it unique.
-      SG_HUMAN_LOGIN: $(python_api_human_login)-${{parameters.name}}-$(python.version)
+      SG_HUMAN_LOGIN: $(python_api_human_login)-${{ parameters.os_name }}-${{ parameters.python_version }}
       # This will give a user name like 'something macOS 2.7'
-      SG_HUMAN_NAME: $(python_api_human_name) ${{parameters.name}} $(python.version)
+      SG_HUMAN_NAME: $(python_api_human_name) ${{ parameters.os_name }} ${{ parameters.python_version }}
       SG_HUMAN_PASSWORD: $(python_api_human_password)
-      # So, first, we need to make sure that two builds running at the same time do not manipulate
-      # the same entities, so we're sandboxing build nodes based on their name.
-      SG_PROJECT_NAME: Python API CI - $(Agent.Name)
-      # The entities created and then reused between tests assume that the same user is always
-      # manipulating them. Because different builds will be assigned different agents and therefore
-      # different projects, it means each project needs to have an entity specific to a given user.
-      # Again, this would have been a lot simpler if we could simply have had a login based on the
-      # agent name, but alas, the agent name has a space in it which needs to be replaced to something
-      # else and string substitution can't be made on build variables, only template parameters.
-      SG_ASSET_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
-      SG_VERSION_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
-      SG_SHOT_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
-      SG_TASK_CONTENT: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
-      SG_TICKET_TILE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
-      SG_PLAYLIST_CODE: CI-$(python_api_human_login)-${{parameters.name}}-$(python.version)
+      # Each job gets its own ephemeral project, scoped to this build + OS + Python version.
+      # This eliminates state bleed between concurrent runs and across successive builds on the
+      # same agent. The project is retired in the "Cleanup test project" step below.
+      SG_PROJECT_NAME: Python API CI - $(Build.BuildId) - ${{ parameters.os_name }} - ${{ parameters.python_version }}
 
-  # Upload the code coverage result to codecov.io.
-  - ${{ if eq(parameters.name, 'Windows') }}:
-    - powershell: |
-        $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
-        .\codecov.exe -f coverage.xml
-      displayName: Uploading code coverage
-  - ${{ elseif eq(parameters.name, 'Linux') }}:        
-    - script: |
-        curl -Os https://uploader.codecov.io/latest/linux/codecov
+  - task: PythonScript@0
+    displayName: Cleanup test project
+    condition: always()
+    inputs:
+      scriptSource: inline
+      workingDirectory: $(Build.SourcesDirectory)
+      script: |
+        import os, shotgun_api3, sys
+        sg = shotgun_api3.Shotgun(
+            os.environ['SG_SERVER_URL'],
+            script_name=os.environ['SG_SCRIPT_NAME'],
+            api_key=os.environ['SG_API_KEY'],
+        )
+        project = sg.find_one(
+            entity_type='Project',
+            filters=[['name', 'is', os.environ['SG_PROJECT_NAME']]],
+        )
+        if not project:
+            print('Project not found, nothing to clean up.')
+            sys.exit(0)
+        sg.delete(entity_type='Project', entity_id=project['id'])
+        print('Retired project:', os.environ['SG_PROJECT_NAME'])
+    env:
+      PYTHONPATH: $(Build.SourcesDirectory)
+      SG_SERVER_URL: $(ci_site)
+      SG_SCRIPT_NAME: $(ci_site_script_name)
+      SG_API_KEY: $(ci_site_script_key)
+      SG_PROJECT_NAME: Python API CI - $(Build.BuildId) - ${{ parameters.os_name }} - ${{ parameters.python_version }}
+
+  # Explicit call to PublishTestResults@2 and PublishCodeCoverageResults@2 here
+  # instead of relying on pytest-azurepipelines because pytest-azurepipelines
+  # does not seem to be maintained anymore and is still using earlier versions
+  # of the PublishTestResults and PublishCodeCoverageResults Azure Pipelines
+  # jobs.
+
+  - task: PublishTestResults@2
+    displayName: Publish test results
+    inputs:
+      failTaskOnFailureToPublishResults: true
+      failTaskOnMissingResultsFile: true
+      testResultsFiles: test-results.xml
+      testResultsFormat: NUnit
+      testRunTitle: "${{ parameters.os_name }} - Python ${{ parameters.python_version }}"
+    condition: succeededOrFailed()
+
+  - task: PublishCodeCoverageResults@2
+    displayName: Publish code coverage
+    inputs:
+      summaryFileLocation: coverage.xml
+      failIfCoverageEmpty: true
+
+  - task: Bash@3
+    displayName: Uploading coverage to Codecov.io
+    inputs:
+      targetType: inline
+      script: |
+        set -e
+        curl --remote-name --silent "${{ parameters.codecov_download_url }}"
         chmod +x codecov
-        ./codecov -f coverage.xml
-      displayName: Uploading code coverage
-  - ${{ else }}:
-    - script: |
-        curl -Os https://uploader.codecov.io/latest/macos/codecov
-        chmod +x codecov
-        ./codecov -f coverage.xml
-      displayName: Uploading code coverage
+        ./codecov  \
+          --file coverage.xml \
+          --flags "${{ parameters.os_name }}" \
+          --flags "Python-${{ parameters.python_version }}" \
+          --name "Tested on ${{ parameters.os_name }} with Python ${{ parameters.python_version }}" \
