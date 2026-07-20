@@ -740,27 +740,18 @@ class Shotgun(object):
         """
         Extract the hostname:port and username/password/token from base_url
         sent when connect to the API.
-
-        In python 3.8 `urllib.parse.splituser` was deprecated warning devs to
-        use `urllib.parse.urlparse`.
         """
-        if (sys.version_info.major, sys.version_info.minor) >= (3, 8):
-            auth = None
-            results = urllib.parse.urlparse(base_url)
-            server = results.hostname
-            if results.port:
-                server = "{}:{}".format(server, results.port)
+        auth = None
+        results = urllib.parse.urlparse(base_url)
+        server = results.hostname
+        if results.port:
+            server = "{}:{}".format(server, results.port)
 
-            if results.username:
-                auth = results.username
+        if results.username:
+            auth = results.username
 
-                if results.password:
-                    auth = "{}:{}".format(auth, results.password)
-
-        else:
-            auth, server = urllib.parse.splituser(
-                urllib.parse.urlsplit(base_url).netloc
-            )
+            if results.password:
+                auth = "{}:{}".format(auth, results.password)
 
         return auth, server
 
