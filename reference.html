@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; python-api v3.10.2 documentation</title>
+  <title>API Reference &mdash; python-api v3.10.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -255,7 +255,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.2.<br>
+    <b>python-api</b> v3.10.3.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -2666,9 +2666,14 @@ is “ip” AND is linked to either Asset #9 OR Asset #23:</p>
 <span class="s1">&#39;not_between&#39;</span>               <span class="p">[[</span><span class="n">field_value</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="n">field_value</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 <span class="s1">&#39;in_last&#39;</span>                   <span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="s1">&#39;HOUR&#39;</span> <span class="o">|</span> <span class="s1">&#39;DAY&#39;</span> <span class="o">|</span> <span class="s1">&#39;WEEK&#39;</span> <span class="o">|</span> <span class="s1">&#39;MONTH&#39;</span> <span class="o">|</span> <span class="s1">&#39;YEAR&#39;</span><span class="p">]</span>
                                    <span class="c1"># note that brackets are not literal (eg. [&#39;start_date&#39;, &#39;in_last&#39;, 1, &#39;DAY&#39;])</span>
+<span class="s1">&#39;not_in_last&#39;</span>               <span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="s1">&#39;HOUR&#39;</span> <span class="o">|</span> <span class="s1">&#39;DAY&#39;</span> <span class="o">|</span> <span class="s1">&#39;WEEK&#39;</span> <span class="o">|</span> <span class="s1">&#39;MONTH&#39;</span> <span class="o">|</span> <span class="s1">&#39;YEAR&#39;</span><span class="p">]</span>
+                                   <span class="c1"># note that brackets are not literal (eg. [&#39;start_date&#39;, &#39;not_in_last&#39;, 1, &#39;DAY&#39;])</span>
 <span class="s1">&#39;in_next&#39;</span>                   <span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="s1">&#39;HOUR&#39;</span> <span class="o">|</span> <span class="s1">&#39;DAY&#39;</span> <span class="o">|</span> <span class="s1">&#39;WEEK&#39;</span> <span class="o">|</span> <span class="s1">&#39;MONTH&#39;</span> <span class="o">|</span> <span class="s1">&#39;YEAR&#39;</span><span class="p">]</span>
                                    <span class="c1"># note that brackets are not literal (eg. [&#39;start_date&#39;, &#39;in_next&#39;, 1, &#39;DAY&#39;])</span>
+<span class="s1">&#39;not_in_next&#39;</span>               <span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="s1">&#39;HOUR&#39;</span> <span class="o">|</span> <span class="s1">&#39;DAY&#39;</span> <span class="o">|</span> <span class="s1">&#39;WEEK&#39;</span> <span class="o">|</span> <span class="s1">&#39;MONTH&#39;</span> <span class="o">|</span> <span class="s1">&#39;YEAR&#39;</span><span class="p">]</span>
+                                   <span class="c1"># note that brackets are not literal (eg. [&#39;start_date&#39;, &#39;not_in_next&#39;, 1, &#39;DAY&#39;])</span>
 <span class="s1">&#39;in&#39;</span>                        <span class="p">[[</span><span class="n">field_value</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>        <span class="c1"># Array of field values</span>
+<span class="s1">&#39;not_in&#39;</span>                    <span class="p">[[</span><span class="n">field_value</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>        <span class="c1"># Array of field values</span>
 <span class="s1">&#39;type_is&#39;</span>                   <span class="p">[</span><span class="n">string</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>             <span class="c1"># Shotgun entity type</span>
 <span class="s1">&#39;type_is_not&#39;</span>               <span class="p">[</span><span class="n">string</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>             <span class="c1"># Shotgun entity type</span>
 <span class="s1">&#39;in_calendar_day&#39;</span>           <span class="p">[</span><span class="nb">int</span><span class="p">]</span>                       <span class="c1"># Offset (e.g. 0 = today, 1 = tomorrow,</span>
@@ -2677,8 +2682,11 @@ is “ip” AND is linked to either Asset #9 OR Asset #23:</p>
                                                         <span class="c1"># -1 = last week)</span>
 <span class="s1">&#39;in_calendar_month&#39;</span>         <span class="p">[</span><span class="nb">int</span><span class="p">]</span>                       <span class="c1"># Offset (e.g. 0 = this month, 1 = next month,</span>
                                                         <span class="c1"># -1 = last month)</span>
+<span class="s1">&#39;in_calendar_year&#39;</span>          <span class="p">[</span><span class="nb">int</span><span class="p">]</span>                       <span class="c1"># Offset (e.g. 0 = this year, 1 = next year,</span>
+                                                        <span class="c1"># -1 = last year)</span>
 <span class="s1">&#39;name_contains&#39;</span>             <span class="p">[</span><span class="n">string</span><span class="p">]</span>
 <span class="s1">&#39;name_not_contains&#39;</span>         <span class="p">[</span><span class="n">string</span><span class="p">]</span>
+<span class="s1">&#39;name_is&#39;</span>                   <span class="p">[</span><span class="n">string</span><span class="p">]</span>
 <span class="s1">&#39;name_starts_with&#39;</span>          <span class="p">[</span><span class="n">string</span><span class="p">]</span>
 <span class="s1">&#39;name_ends_with&#39;</span>            <span class="p">[</span><span class="n">string</span><span class="p">]</span>
 </pre></div>
@@ -2818,9 +2826,13 @@ is “ip” AND is linked to either Asset #9 OR Asset #23:</p>
 <span class="n">tag_list</span>                    <span class="s1">&#39;is&#39;</span>  <span class="o">**</span> <span class="n">Note</span><span class="p">:</span>  <span class="n">when</span> <span class="n">used</span> <span class="n">on</span> <span class="n">tag_list</span><span class="p">,</span> <span class="n">this</span> <span class="n">functions</span> <span class="k">as</span>
                                             <span class="n">you</span> <span class="n">would</span> <span class="n">expect</span> <span class="s1">&#39;contains&#39;</span> <span class="n">to</span> <span class="n">function</span>
                             <span class="s1">&#39;is_not&#39;</span>
+                            <span class="s1">&#39;type_is&#39;</span>
+                            <span class="s1">&#39;type_is_not&#39;</span>
                             <span class="s1">&#39;name_contains&#39;</span>
                             <span class="s1">&#39;name_not_contains&#39;</span>
-                            <span class="s1">&#39;name_id&#39;</span>
+                            <span class="s1">&#39;name_is&#39;</span>
+                            <span class="s1">&#39;in&#39;</span>
+                            <span class="s1">&#39;not_in&#39;</span>
 
 <span class="n">text</span>                        <span class="s1">&#39;is&#39;</span>
                             <span class="s1">&#39;is_not&#39;</span>
