@@ -329,6 +329,14 @@ class ServerCapabilities(object):
             {"version": (3, 3, 0), "label": "return thumbnail URLs"}, False
         )
 
+    def ensure_custom_entity_config_support(self) -> None:
+        """
+        Ensures server has support for the custom entity config API (read, enable, configure, disable), added in v8.88.0.
+        """
+        self._ensure_support(
+            {"version": (8, 88, 0), "label": "custom entity config API"}
+        )
+
     def __str__(self) -> str:
         return "ServerCapabilities: host %s, version %s, is_dev %s" % (
             self.host,
@@ -3670,6 +3678,152 @@ class Shotgun(object):
             return False
 
         return response.get("status") == "success"
+
+    def custom_entity_read(self, entity_type: str) -> Dict[str, Any]:
+        """
+        Read the current configuration of a Custom Entity.
+
+        >>> sg.custom_entity_read("CustomEntity08")
+        {
+            "entity_type": "CustomEntity08",
+            "enabled": True,
+            "display_name": "My Shots",
+            "entity_config": {"enable_tasks": True, ...}
+        }
+
+        :param str entity_type: The Custom Entity type to read, in its singular
+            CamelCase form (e.g. ``"CustomEntity08"``). Required.
+        :returns: The entity config snapshot dict with ``entity_type``, ``enabled``,
+            ``display_name``, and ``entity_config``.
+        :rtype: dict
+        :raises shotgun_api3.ShotgunError: if the entity type is invalid (fault code 104).
+        """
+        self.server_caps.ensure_custom_entity_config_support()
+
+        return self._call_rpc("custom_entity_read", {"entity_type": entity_type})
+
+    def custom_entity_enable(self, entity_type: str) -> Dict[str, Any]:
+        """
+        Enable a Custom Entity.
+
+        This call is idempotent: if the entity is already enabled the current
+        snapshot is returned without error. To set the display name or feature
+        flags use :meth:`custom_entity_configure` after enabling.
+
+        >>> sg.custom_entity_enable("CustomEntity08")
+        {
+            "entity_type": "CustomEntity08",
+            "enabled": True,
+            "display_name": "Custom Entity08",
+            "entity_config": {
+                "enable_tasks": False,
+                "enable_versions": False,
+                "enable_publishes": False,
+                "enable_detail_page": True,
+                "include_in_search": False,
+                "include_in_global_menu": True,
+            }
+        }
+
+        :param str entity_type: The Custom Entity type to enable, in its singular
+            CamelCase form (e.g. ``"CustomEntity08"``). Required.
+        :returns: The entity config snapshot dict with ``entity_type``, ``enabled``,
+            ``display_name``, and ``entity_config``.
+        :rtype: dict
+        :raises shotgun_api3.ShotgunError: if the entity type is invalid
+            (fault code 104).
+        """
+        self.server_caps.ensure_custom_entity_config_support()
+
+        return self._call_rpc("custom_entity_enable", {"entity_type": entity_type})
+
+    def custom_entity_configure(
+        self,
+        entity_type: str,
+        display_name: Optional[str] = None,
+        entity_config: Optional[Dict[str, bool]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Update an already-enabled Custom Entity's display name and/or feature flags.
+
+        Only the keys present in ``entity_config`` are mutated; omitted flags
+        keep their current values.
+
+        >>> sg.custom_entity_configure("CustomEntity08", display_name="Episode")
+        {
+            "entity_type": "CustomEntity08",
+            "enabled": True,
+            "display_name": "Episode",
+            "entity_config": {...}
+        }
+
+        :param str entity_type: The Custom Entity type to configure, in its singular
+            CamelCase form (e.g. ``"CustomEntity08"``). The entity must already be
+            enabled. Required.
+        :param str display_name: Optional new display name for the entity.
+        :param dict entity_config: Optional dict of feature flag booleans. Only the
+            flags present are mutated; omitted flags are left unchanged. Keys and
+            boolean values are passed through as-is. Recognized flags:
+            ``enable_tasks``, ``enable_versions``, ``enable_publishes``,
+            ``enable_detail_page``, ``include_in_search``, ``include_in_global_menu``.
+        :returns: The updated entity config snapshot dict with ``entity_type``,
+            ``enabled``, ``display_name``, and ``entity_config``.
+        :rtype: dict
+        :raises shotgun_api3.ShotgunError: if the entity type is invalid or not
+            yet enabled (fault code 104).
+        """
+        self.server_caps.ensure_custom_entity_config_support()
+
+        params = {"entity_type": entity_type}
+        if display_name is not None:
+            params["display_name"] = display_name
+        if entity_config is not None:
+            params["entity_config"] = entity_config
+
+        return self._call_rpc("custom_entity_configure", params)
+
+    def custom_entity_disable(
+        self, entity_type: str, force: bool = False
+    ) -> Dict[str, Any]:
+        """
+        Disable a Custom Entity, clearing its feature flags.
+
+        This call is idempotent: if the entity is already disabled the current
+        snapshot is returned without error and the record guard is not checked.
+
+        Disabling a Custom Entity that has existing records does **not** delete the
+        data, but it does make the data inaccessible: the records will not appear in
+        the UI, will not be returned via the API, and any fields on other entities
+        that link to it become broken references. Because this is destructive in
+        effect, the server refuses to disable an entity that still has records unless
+        ``force`` is ``True``, and the error reports how many records were found.
+
+        >>> sg.custom_entity_disable("CustomEntity08")
+        {
+            "entity_type": "CustomEntity08",
+            "enabled": False,
+            "display_name": "My Shots"
+        }
+
+        :param str entity_type: The Custom Entity type to disable, in its singular
+            CamelCase form (e.g. ``"CustomEntity08"``). Required.
+        :param bool force: Disable the entity even if it still has active records.
+            Defaults to ``False``, which makes the call fail rather than render
+            existing data unreachable. Only a literal ``True`` is accepted; any
+            other truthy value is treated as ``False``.
+        :returns: The entity config snapshot dict with ``enabled`` set to ``False``.
+        :rtype: dict
+        :raises shotgun_api3.ShotgunError: if the entity type is invalid
+            (fault code 104), or if the entity has active records and ``force``
+            was not set (fault code 104).
+        """
+        self.server_caps.ensure_custom_entity_config_support()
+
+        params = {"entity_type": entity_type}
+        if force:
+            params["force"] = True
+
+        return self._call_rpc("custom_entity_disable", params)
 
     def _build_opener(self, handler) -> urllib.request.OpenerDirector:
         """
