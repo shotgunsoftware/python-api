@@ -11,6 +11,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
+import socket
 import ssl
 import unittest
 from unittest import mock
@@ -18,6 +19,7 @@ import urllib.request
 import urllib.error
 
 import shotgun_api3 as api
+from shotgun_api3 import shotgun
 from shotgun_api3.lib.httplib2 import Http
 
 
@@ -852,6 +854,304 @@ class TestCerts(unittest.TestCase):
         for url in self.test_urls:
             response = self._check_url_with_urllib(url)
             assert response is not None
+
+
+class _FakeClock(object):
+    """Controllable stand-in for time.monotonic."""
+
+    def __init__(self, now=1000.0):
+        self.now = now
+
+    def __call__(self):
+        return self.now
+
+    def advance(self, seconds):
+        self.now += seconds
+
+
+class TestConnectionIdleExpiry(unittest.TestCase):
+    """
+    Test that connections idle for longer than config.max_connection_idle_secs
+    are closed and recreated instead of reused (SG-44724).
+
+    A NAT or load balancer can silently drop an idle keep-alive session, and
+    reusing that socket blocks until the socket timeout expires. None of these
+    tests make network requests.
+    """
+
+    def setUp(self):
+        self.sg = api.Shotgun(
+            "http://server_path", "script_name", "api_key", connect=False
+        )
+        self.clock = _FakeClock()
+        self.created_connections = []
+
+        clock_patcher = mock.patch(
+            "shotgun_api3.shotgun.time.monotonic", side_effect=self.clock
+        )
+        clock_patcher.start()
+        self.addCleanup(clock_patcher.stop)
+
+        http_patcher = mock.patch(
+            "shotgun_api3.shotgun.Http", side_effect=self._make_connection
+        )
+        http_patcher.start()
+        self.addCleanup(http_patcher.stop)
+
+    def _make_connection(self, *args, **kwargs):
+        """Build a fake Http whose request() returns a minimal 200 response."""
+        conn = mock.MagicMock()
+        conn.connections = {"http:server_path": mock.MagicMock()}
+        conn.init_kwargs = kwargs
+        response = mock.MagicMock()
+        response.status = 200
+        response.reason = "OK"
+        response.items.return_value = [("content-type", "application/json")]
+        conn.request.return_value = (response, "{}")
+        self.created_connections.append(conn)
+        return conn
+
+    def _request(self):
+        return self.sg._http_request("GET", "/path", None, {})
+
+    def test_stale_connection_is_replaced(self):
+        """A connection idle beyond the limit is closed and recreated."""
+        self._request()
+        first = self.sg._get_connection()
+
+        self.clock.advance(self.sg.config.max_connection_idle_secs + 1)
+        self._request()
+        second = self.sg._get_connection()
+
+        self.assertIsNot(first, second)
+        self.assertEqual(len(self.created_connections), 2)
+        # The stale connection's socket must actually be closed, not just
+        # dropped from the cache.
+        self.assertEqual(first.connections, {})
+
+    def test_fresh_connection_is_reused(self):
+        """A connection used recently is reused as before."""
+        self._request()
+        first = self.sg._get_connection()
+
+        self.clock.advance(self.sg.config.max_connection_idle_secs - 1)
+        self._request()
+        second = self.sg._get_connection()
+
+        self.assertIs(first, second)
+        self.assertEqual(len(self.created_connections), 1)
+
+    def test_expiry_is_measured_from_last_use_not_creation(self):
+        """Steady traffic keeps a connection alive indefinitely."""
+        self._request()
+        first = self.sg._get_connection()
+
+        for _ in range(5):
+            self.clock.advance(self.sg.config.max_connection_idle_secs - 1)
+            self._request()
+
+        self.assertIs(first, self.sg._get_connection())
+        self.assertEqual(len(self.created_connections), 1)
+
+    def test_unused_connection_is_not_expired(self):
+        """A connection created but never used has no idle time to expire."""
+        first = self.sg._get_connection()
+        self.clock.advance(self.sg.config.max_connection_idle_secs + 1)
+
+        self.assertIs(first, self.sg._get_connection())
+        self.assertEqual(len(self.created_connections), 1)
+
+    def test_failed_request_does_not_refresh_idle_clock(self):
+        """
+        A request that raised is no evidence the socket is alive, so it must not
+        reset the idle clock.
+        """
+        self._request()
+        first = self.sg._get_connection()
+        first.request.side_effect = Exception("boom")
+
+        self.clock.advance(self.sg.config.max_connection_idle_secs - 1)
+        with self.assertRaises(Exception):
+            self._request()
+
+        # Only 1 second of headroom remains; without the failed attempt
+        # refreshing the clock, 2 more seconds must expire the connection.
+        self.clock.advance(2)
+        self.assertIsNot(first, self.sg._get_connection())
+
+    def test_expiry_can_be_disabled(self):
+        """None and 0 both mean 'reuse regardless of idle time'."""
+        for disabled_value in (None, 0):
+            self.sg._close_connection()
+            self.created_connections = []
+            self.sg.config.max_connection_idle_secs = disabled_value
+
+            self._request()
+            first = self.sg._get_connection()
+            self.clock.advance(3600)
+
+            self.assertIs(first, self.sg._get_connection())
+            self.assertEqual(len(self.created_connections), 1)
+
+    def test_expiry_preserves_proxy_configuration(self):
+        """The replacement connection is built with the same proxy settings."""
+        self.sg.config.proxy_server = "proxy.example.com"
+        self.sg.config.proxy_port = 8080
+
+        self._request()
+        first = self.sg._get_connection()
+        self.clock.advance(self.sg.config.max_connection_idle_secs + 1)
+        self._request()
+        second = self.sg._get_connection()
+
+        self.assertIsNot(first, second)
+        self.assertIsNotNone(second.init_kwargs["proxy_info"])
+        self.assertEqual(
+            second.init_kwargs["proxy_info"].proxy_host, "proxy.example.com"
+        )
+
+
+class TestSocketKeepalive(unittest.TestCase):
+    """
+    Test that sockets get TCP keepalive enabled once connected (SG-44724).
+
+    Keepalive lets the kernel notice a peer that vanished without FIN or RST.
+    These tests assert only that the options are attempted, since which timers
+    are adjustable and whether the OS accepts them is platform dependent. No
+    network requests are made.
+    """
+
+    def _keepalive_calls(self, sock):
+        return [
+            call
+            for call in sock.setsockopt.call_args_list
+            if call[0][:2] == (socket.SOL_SOCKET, socket.SO_KEEPALIVE)
+        ]
+
+    def _addrinfo(self, port):
+        return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("127.0.0.1", port))]
+
+    def test_keepalive_enabled_on_socket(self):
+        sock = mock.MagicMock()
+        shotgun._set_socket_keepalive(sock)
+
+        self.assertEqual(len(self._keepalive_calls(sock)), 1)
+        self.assertEqual(self._keepalive_calls(sock)[0][0][2], 1)
+
+    def test_unsupported_options_are_ignored(self):
+        """Platform tuning is best effort; a rejecting OS must not raise."""
+        sock = mock.MagicMock()
+        sock.setsockopt.side_effect = OSError("unsupported")
+        sock.ioctl.side_effect = OSError("unsupported")
+
+        # Must not raise.
+        shotgun._set_socket_keepalive(sock)
+
+    def test_http_connection_enables_keepalive(self):
+        sock = mock.MagicMock()
+        with mock.patch("socket.socket", return_value=sock), mock.patch(
+            "socket.getaddrinfo", return_value=self._addrinfo(80)
+        ):
+            conn = shotgun.KeepaliveHTTPConnection("server_path")
+            conn.connect()
+
+        self.assertEqual(len(self._keepalive_calls(sock)), 1)
+
+    def test_https_connection_enables_keepalive(self):
+        """
+        For HTTPS the option lands on the SSL-wrapped socket, which delegates to
+        the underlying socket.
+        """
+        wrapped = mock.MagicMock()
+        with mock.patch("socket.socket", return_value=mock.MagicMock()), mock.patch(
+            "socket.getaddrinfo", return_value=self._addrinfo(443)
+        ), mock.patch("ssl.SSLContext.wrap_socket", return_value=wrapped):
+            conn = shotgun.KeepaliveHTTPSConnection("server_path")
+            conn.connect()
+
+        self.assertEqual(len(self._keepalive_calls(wrapped)), 1)
+
+    def test_proxied_socket_enables_keepalive(self):
+        sock = mock.MagicMock()
+        proxy_info = api.lib.httplib2.ProxyInfo(
+            api.lib.httplib2.socks.PROXY_TYPE_HTTP, "proxy.example.com", 8080
+        )
+        with mock.patch.object(
+            api.lib.httplib2.socks, "socksocket", return_value=sock
+        ), mock.patch("socket.getaddrinfo", return_value=self._addrinfo(80)):
+            conn = shotgun.KeepaliveHTTPConnection("server_path", proxy_info=proxy_info)
+            conn.connect()
+
+        self.assertEqual(len(self._keepalive_calls(sock)), 1)
+
+    def test_keepalive_failure_does_not_break_connect(self):
+        """A socket that rejects keepalive must still yield a usable conn."""
+
+        def reject_keepalive(level, option, value):
+            # Leave httplib2's own TCP_NODELAY alone; rejecting that is
+            # pre-existing behaviour unrelated to keepalive.
+            if (level, option) == (socket.IPPROTO_TCP, socket.TCP_NODELAY):
+                return None
+            raise OSError("unsupported")
+
+        sock = mock.MagicMock()
+        sock.setsockopt.side_effect = reject_keepalive
+        with mock.patch("socket.socket", return_value=sock), mock.patch(
+            "socket.getaddrinfo", return_value=self._addrinfo(80)
+        ):
+            conn = shotgun.KeepaliveHTTPConnection("server_path")
+            conn.connect()
+
+        self.assertIs(conn.sock, sock)
+
+
+class TestKeepaliveConnectionType(unittest.TestCase):
+    """
+    Test that the keepalive-enabled connection classes are injected into
+    httplib2 via its connection_type parameter, so the bundled httplib2 needs
+    no modification (SG-44724).
+    """
+
+    def _connection_type_used(self, url):
+        sg = api.Shotgun(url, "script_name", "api_key", connect=False)
+        conn = mock.MagicMock()
+        response = mock.MagicMock()
+        response.status = 200
+        response.reason = "OK"
+        response.items.return_value = []
+        conn.request.return_value = (response, "{}")
+
+        with mock.patch.object(sg, "_get_connection", return_value=conn):
+            sg._http_request("GET", "/path", None, {})
+
+        return conn.request.call_args[1]["connection_type"]
+
+    def test_https_uses_keepalive_connection(self):
+        self.assertIs(
+            self._connection_type_used("https://server_path"),
+            shotgun.KeepaliveHTTPSConnection,
+        )
+
+    def test_http_uses_keepalive_connection(self):
+        self.assertIs(
+            self._connection_type_used("http://server_path"),
+            shotgun.KeepaliveHTTPConnection,
+        )
+
+    def test_connection_classes_are_httplib2_subclasses(self):
+        """httplib2 branches on the class to pick constructor arguments."""
+        self.assertTrue(
+            issubclass(
+                shotgun.KeepaliveHTTPSConnection,
+                api.lib.httplib2.HTTPSConnectionWithTimeout,
+            )
+        )
+        self.assertTrue(
+            issubclass(
+                shotgun.KeepaliveHTTPConnection,
+                api.lib.httplib2.HTTPConnectionWithTimeout,
+            )
+        )
 
 
 if __name__ == "__main__":
