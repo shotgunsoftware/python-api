@@ -161,10 +161,12 @@ def _set_socket_keepalive(sock) -> None:
         return
 
     # Windows exposes the timers through an ioctl rather than socket options.
-    if hasattr(socket, "SIO_KEEPALIVE_VALS") and hasattr(sock, "ioctl"):
+    # Read via getattr so this branch stays reachable in tests on any platform.
+    keepalive_vals = getattr(socket, "SIO_KEEPALIVE_VALS", None)
+    if keepalive_vals is not None and hasattr(sock, "ioctl"):
         try:
             sock.ioctl(
-                socket.SIO_KEEPALIVE_VALS,
+                keepalive_vals,
                 (1, KEEPALIVE_IDLE_SECS * 1000, KEEPALIVE_INTERVAL_SECS * 1000),
             )
         except OSError:

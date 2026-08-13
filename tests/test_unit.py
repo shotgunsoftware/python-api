@@ -1021,11 +1021,21 @@ class TestSocketKeepalive(unittest.TestCase):
     network requests are made.
     """
 
+    # Stand-in for the Windows-only socket.SIO_KEEPALIVE_VALS constant.
+    SIO_SENTINEL = 2550136836
+
     def _keepalive_calls(self, sock):
         return [
             call
             for call in sock.setsockopt.call_args_list
             if call[0][:2] == (socket.SOL_SOCKET, socket.SO_KEEPALIVE)
+        ]
+
+    def _tcp_option_calls(self, sock):
+        return [
+            call
+            for call in sock.setsockopt.call_args_list
+            if call[0][0] == socket.IPPROTO_TCP
         ]
 
     def _addrinfo(self, port):
@@ -1039,13 +1049,82 @@ class TestSocketKeepalive(unittest.TestCase):
         self.assertEqual(self._keepalive_calls(sock)[0][0][2], 1)
 
     def test_unsupported_options_are_ignored(self):
-        """Platform tuning is best effort; a rejecting OS must not raise."""
+        """A socket that refuses keepalive outright must not raise."""
         sock = mock.MagicMock()
         sock.setsockopt.side_effect = OSError("unsupported")
         sock.ioctl.side_effect = OSError("unsupported")
 
         # Must not raise.
         shotgun._set_socket_keepalive(sock)
+
+        # Nothing is tuned once the socket has rejected SO_KEEPALIVE.
+        sock.ioctl.assert_not_called()
+        self.assertEqual(len(self._keepalive_calls(sock)), 1)
+
+    def test_windows_timers_tuned_via_ioctl(self):
+        """
+        On Windows the timers are set with an ioctl rather than socket options.
+        SIO_KEEPALIVE_VALS is patched in so the branch runs on any platform.
+        """
+        sock = mock.MagicMock()
+        with mock.patch.object(
+            socket, "SIO_KEEPALIVE_VALS", self.SIO_SENTINEL, create=True
+        ):
+            shotgun._set_socket_keepalive(sock)
+
+        sock.ioctl.assert_called_once_with(
+            self.SIO_SENTINEL,
+            (
+                1,
+                shotgun.KEEPALIVE_IDLE_SECS * 1000,
+                shotgun.KEEPALIVE_INTERVAL_SECS * 1000,
+            ),
+        )
+        # The POSIX socket options must not also be attempted.
+        self.assertEqual(len(self._tcp_option_calls(sock)), 0)
+
+    def test_windows_ioctl_failure_is_ignored(self):
+        """Keepalive stays enabled even if the timers cannot be tuned."""
+        sock = mock.MagicMock()
+        sock.ioctl.side_effect = OSError("unsupported")
+        with mock.patch.object(
+            socket, "SIO_KEEPALIVE_VALS", self.SIO_SENTINEL, create=True
+        ):
+            # Must not raise.
+            shotgun._set_socket_keepalive(sock)
+
+        self.assertEqual(len(self._keepalive_calls(sock)), 1)
+
+    def test_timers_tuned_via_socket_options(self):
+        """
+        Off Windows the timers are socket options. SIO_KEEPALIVE_VALS is patched
+        out so the branch runs there too.
+        """
+        sock = mock.MagicMock()
+        with mock.patch.object(socket, "SIO_KEEPALIVE_VALS", None, create=True):
+            shotgun._set_socket_keepalive(sock)
+
+        sock.ioctl.assert_not_called()
+        # Which timers exist is platform dependent, but at least the idle timer
+        # is available everywhere this library is supported.
+        self.assertGreater(len(self._tcp_option_calls(sock)), 0)
+
+    def test_rejected_timer_options_are_ignored(self):
+        """A platform that rejects the timers must still get keepalive."""
+        sock = mock.MagicMock()
+
+        def reject_tcp_options(level, option, value):
+            if level == socket.IPPROTO_TCP:
+                raise OSError("unsupported")
+            return None
+
+        sock.setsockopt.side_effect = reject_tcp_options
+        with mock.patch.object(socket, "SIO_KEEPALIVE_VALS", None, create=True):
+            # Must not raise.
+            shotgun._set_socket_keepalive(sock)
+
+        self.assertEqual(len(self._keepalive_calls(sock)), 1)
+        self.assertGreater(len(self._tcp_option_calls(sock)), 0)
 
     def test_http_connection_enables_keepalive(self):
         sock = mock.MagicMock()
