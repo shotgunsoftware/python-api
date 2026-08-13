@@ -190,7 +190,26 @@ def _set_socket_keepalive(sock) -> None:
             LOG.debug("Unable to set %s on socket." % option_name, exc_info=True)
 
 
-class KeepaliveHTTPConnection(HTTPConnectionWithTimeout):
+class _KeepaliveConnectionMixin(http.client.HTTPConnection):
+    """
+    Mixin that enables TCP keepalive once the connection is established.
+
+    Must be listed before the httplib2 connection class so that this
+    ``connect()`` runs and delegates to the real one. ``self.sock`` is the
+    SSL-wrapped socket for HTTPS, which delegates ``setsockopt`` to the socket
+    underneath.
+
+    Derives from ``http.client.HTTPConnection``, the common base of both
+    httplib2 connection classes, so that ``super().connect()`` resolves for type
+    checkers. It is never instantiated on its own.
+    """
+
+    def connect(self) -> None:
+        super().connect()
+        _set_socket_keepalive(self.sock)
+
+
+class KeepaliveHTTPConnection(_KeepaliveConnectionMixin, HTTPConnectionWithTimeout):
     """
     httplib2 HTTP connection that enables TCP keepalive once connected.
 
@@ -198,22 +217,14 @@ class KeepaliveHTTPConnection(HTTPConnectionWithTimeout):
     bundled httplib2 does not need to be modified.
     """
 
-    def connect(self) -> None:
-        super().connect()
-        _set_socket_keepalive(self.sock)
 
-
-class KeepaliveHTTPSConnection(HTTPSConnectionWithTimeout):
+class KeepaliveHTTPSConnection(_KeepaliveConnectionMixin, HTTPSConnectionWithTimeout):
     """
     httplib2 HTTPS connection that enables TCP keepalive once connected.
 
     Passed to ``httplib2.Http.request()`` as its ``connection_type`` so that the
     bundled httplib2 does not need to be modified.
     """
-
-    def connect(self) -> None:
-        super().connect()
-        _set_socket_keepalive(self.sock)
 
 
 # ----------------------------------------------------------------------------
