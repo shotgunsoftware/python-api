@@ -854,5 +854,96 @@ class TestCerts(unittest.TestCase):
             assert response is not None
 
 
+class CustomEntityConfigTestBase(unittest.TestCase):
+    """Shared setup for the custom entity config API test cases.
+
+    The custom_entity_* methods are gated on server version 8.88.0"""
+
+    def setUp(self):
+        self.sg = api.Shotgun(
+            "http://server_path", "script_name", "api_key", connect=False
+        )
+        self.set_server_version([8, 88, 0])
+
+    def set_server_version(self, version):
+        self.sg._server_caps = api.shotgun.ServerCapabilities(
+            self.sg.config.server, {"version": version}
+        )
+
+
+class TestShotgunCustomEntityRead(CustomEntityConfigTestBase):
+    """Test case for Shotgun.custom_entity_read"""
+
+    @mock.patch("shotgun_api3.Shotgun._call_rpc")
+    def test_entity_type_sent(self, call_rpc):
+        self.sg.custom_entity_read("CustomEntity08")
+        self.assertEqual("custom_entity_read", call_rpc.call_args[0][0])
+        self.assertEqual({"entity_type": "CustomEntity08"}, call_rpc.call_args[0][1])
+
+
+class TestShotgunCustomEntityEnable(CustomEntityConfigTestBase):
+    """Test case for Shotgun.custom_entity_enable"""
+
+    @mock.patch("shotgun_api3.Shotgun._call_rpc")
+    def test_entity_type_sent(self, call_rpc):
+        self.sg.custom_entity_enable("CustomEntity08")
+        self.assertEqual("custom_entity_enable", call_rpc.call_args[0][0])
+        self.assertEqual({"entity_type": "CustomEntity08"}, call_rpc.call_args[0][1])
+
+
+class TestShotgunCustomEntityConfigure(CustomEntityConfigTestBase):
+    """Test case for Shotgun.custom_entity_configure"""
+
+    @mock.patch("shotgun_api3.Shotgun._call_rpc")
+    def test_optional_params_omitted_by_default(self, call_rpc):
+        self.sg.custom_entity_configure("CustomEntity08")
+        self.assertEqual("custom_entity_configure", call_rpc.call_args[0][0])
+        self.assertEqual({"entity_type": "CustomEntity08"}, call_rpc.call_args[0][1])
+
+    @mock.patch("shotgun_api3.Shotgun._call_rpc")
+    def test_display_name_sent_without_entity_config(self, call_rpc):
+        self.sg.custom_entity_configure("CustomEntity08", display_name="Episode")
+        self.assertEqual(
+            {"entity_type": "CustomEntity08", "display_name": "Episode"},
+            call_rpc.call_args[0][1],
+        )
+
+    @mock.patch("shotgun_api3.Shotgun._call_rpc")
+    def test_entity_config_sent_without_display_name(self, call_rpc):
+        entity_config = {"enable_versions": False}
+        self.sg.custom_entity_configure("CustomEntity08", entity_config=entity_config)
+        self.assertEqual(
+            {"entity_type": "CustomEntity08", "entity_config": entity_config},
+            call_rpc.call_args[0][1],
+        )
+
+    @mock.patch("shotgun_api3.Shotgun._call_rpc")
+    def test_empty_optional_params_sent(self, call_rpc):
+        """Empty values are distinct from omitted ones and must reach the server."""
+        self.sg.custom_entity_configure(
+            "CustomEntity08", display_name="", entity_config={}
+        )
+        self.assertEqual(
+            {"entity_type": "CustomEntity08", "display_name": "", "entity_config": {}},
+            call_rpc.call_args[0][1],
+        )
+
+
+class TestShotgunCustomEntityDisable(CustomEntityConfigTestBase):
+    """Test case for Shotgun.custom_entity_disable"""
+
+    @mock.patch("shotgun_api3.Shotgun._call_rpc")
+    def test_force_omitted_by_default(self, call_rpc):
+        self.sg.custom_entity_disable("CustomEntity08")
+        self.assertEqual({"entity_type": "CustomEntity08"}, call_rpc.call_args[0][1])
+
+    @mock.patch("shotgun_api3.Shotgun._call_rpc")
+    def test_force_sent_when_set(self, call_rpc):
+        self.sg.custom_entity_disable("CustomEntity08", force=True)
+        self.assertEqual(
+            {"entity_type": "CustomEntity08", "force": True}, call_rpc.call_args[0][1]
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
