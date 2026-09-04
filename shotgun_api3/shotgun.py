@@ -43,6 +43,7 @@ import mimetypes
 import os
 import re
 import shutil  # used for attachment download
+import socket  # used to configure TCP keepalive
 import ssl
 import stat  # used for attachment upload
 import sys
@@ -68,7 +69,14 @@ from typing import (
 # to be exposed as part of the API.
 from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 
-from .lib.httplib2 import Http, ProxyInfo, socks
+from .lib.httplib2 import (
+    DEFAULT_MAX_REDIRECTS,
+    Http,
+    HTTPConnectionWithTimeout,
+    HTTPSConnectionWithTimeout,
+    ProxyInfo,
+    socks,
+)
 from .lib.sgtimezone import SgTimezone
 
 LOG = logging.getLogger("shotgun_api3")
@@ -121,6 +129,146 @@ else:
     class BaseEntity(TypedDict, total=False):
         id: int
         type: str
+
+
+# ----------------------------------------------------------------------------
+# Connection keepalive
+
+# Enable OS-level TCP keepalive so the kernel can notice a peer that has gone
+# away silently -- a NAT, firewall or load balancer dropping an idle session
+# without sending FIN or RST -- instead of leaving a dead socket in httplib2's
+# connection cache. The values below aim to detect such a drop within roughly a
+# minute of idling.
+#
+# Keepalive is best effort only: the probe timers are not adjustable on every
+# platform, and probes do not run while data is still unacknowledged. It
+# complements rather than replaces _Config.max_connection_idle_secs.
+KEEPALIVE_IDLE_SECS = 30
+KEEPALIVE_INTERVAL_SECS = 10
+KEEPALIVE_PROBE_COUNT = 3
+
+
+def _set_socket_keepalive(sock) -> None:
+    """
+    Best-effort enabling of TCP keepalive on an already connected socket.
+
+    :param sock: Connected socket, or SSL-wrapped socket, to configure.
+    """
+    try:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+    except OSError:
+        # Nothing further to tune if the socket rejects keepalive outright.
+        LOG.debug("Unable to enable TCP keepalive on socket.", exc_info=True)
+        return
+
+    # Windows exposes the timers through an ioctl rather than socket options.
+    # Read via getattr so this branch stays reachable in tests on any platform.
+    keepalive_vals = getattr(socket, "SIO_KEEPALIVE_VALS", None)
+    if keepalive_vals is not None and hasattr(sock, "ioctl"):
+        try:
+            sock.ioctl(
+                keepalive_vals,
+                (1, KEEPALIVE_IDLE_SECS * 1000, KEEPALIVE_INTERVAL_SECS * 1000),
+            )
+        except OSError:
+            LOG.debug("Unable to tune TCP keepalive timers.", exc_info=True)
+        return
+
+    # TCP_KEEPIDLE is the idle timer on Linux, TCP_KEEPALIVE on macOS; only one
+    # of them exists on most platforms, and neither exists on some.
+    for option_name, value in (
+        ("TCP_KEEPIDLE", KEEPALIVE_IDLE_SECS),
+        ("TCP_KEEPALIVE", KEEPALIVE_IDLE_SECS),
+        ("TCP_KEEPINTVL", KEEPALIVE_INTERVAL_SECS),
+        ("TCP_KEEPCNT", KEEPALIVE_PROBE_COUNT),
+    ):
+        option = getattr(socket, option_name, None)
+        if option is None:
+            continue
+        try:
+            sock.setsockopt(socket.IPPROTO_TCP, option, value)
+        except OSError:
+            LOG.debug("Unable to set %s on socket." % option_name, exc_info=True)
+
+
+class _KeepaliveConnectionMixin(http.client.HTTPConnection):
+    """
+    Mixin that enables TCP keepalive once the connection is established.
+
+    Must be listed before the httplib2 connection class so that this
+    ``connect()`` runs and delegates to the real one. ``self.sock`` is the
+    SSL-wrapped socket for HTTPS, which delegates ``setsockopt`` to the socket
+    underneath.
+
+    Derives from ``http.client.HTTPConnection``, the common base of both
+    httplib2 connection classes, so that ``super().connect()`` resolves for type
+    checkers. It is never instantiated on its own.
+    """
+
+    def connect(self) -> None:
+        super().connect()
+        _set_socket_keepalive(self.sock)
+
+
+class KeepaliveHTTPConnection(_KeepaliveConnectionMixin, HTTPConnectionWithTimeout):
+    """
+    httplib2 HTTP connection that enables TCP keepalive once connected.
+
+    Passed to ``httplib2.Http.request()`` as its ``connection_type`` so that the
+    bundled httplib2 does not need to be modified.
+    """
+
+
+class KeepaliveHTTPSConnection(_KeepaliveConnectionMixin, HTTPSConnectionWithTimeout):
+    """
+    httplib2 HTTPS connection that enables TCP keepalive once connected.
+
+    Passed to ``httplib2.Http.request()`` as its ``connection_type`` so that the
+    bundled httplib2 does not need to be modified.
+    """
+
+
+KEEPALIVE_CONNECTION_TYPES = {
+    "http": KeepaliveHTTPConnection,
+    "https": KeepaliveHTTPSConnection,
+}
+
+
+class KeepaliveHttp(Http):
+    """
+    httplib2 ``Http`` that routes every request through a keepalive-enabled
+    connection class.
+
+    The scheme is resolved per call rather than once at construction because
+    httplib2 follows redirects by calling ``self.request()`` again, without
+    forwarding the ``connection_type`` argument it was given. Overriding
+    ``request()`` catches those recursive calls too, so a redirect to another
+    authority -- or from http to https -- still gets keepalive. Doing it here
+    also keeps the bundled httplib2 unmodified.
+    """
+
+    def request(
+        self,
+        uri: str,
+        method: str = "GET",
+        body=None,
+        headers: Optional[Dict[str, Any]] = None,
+        redirections: int = DEFAULT_MAX_REDIRECTS,
+        connection_type=None,
+    ):
+        if connection_type is None:
+            scheme = urllib.parse.urlsplit(uri).scheme.lower()
+            # An unknown scheme is left as None so httplib2 raises its own
+            # error rather than being handed a connection class it cannot use.
+            connection_type = KEEPALIVE_CONNECTION_TYPES.get(scheme)
+        return super().request(
+            uri,
+            method=method,
+            body=body,
+            headers=headers,
+            redirections=redirections,
+            connection_type=connection_type,
+        )
 
 
 # ----------------------------------------------------------------------------
@@ -409,6 +557,22 @@ class _Config(object):
         # (like connection attempts) will timeout after that many seconds
         # (if it is not given, the global default timeout setting is used)
         self.timeout_secs: Optional[float] = None
+        # max_connection_idle_secs bounds how long a cached HTTP(S) connection
+        # may sit idle before it is closed and recreated rather than reused. A
+        # NAT, firewall or load balancer along the path can silently drop an
+        # idle TCP session without sending FIN or RST; reusing such a socket
+        # blocks in getresponse() until the socket timeout expires. 60 seconds
+        # sits below the idle timeouts commonly configured on that hardware.
+        # Set to 0 (or None) to reuse connections regardless of idle time,
+        # restoring the behaviour of releases before this one.
+        #
+        #      sg = Shotgun(site_name, script_name, script_key)
+        #      sg.config.max_connection_idle_secs = 30
+        #
+        # Or by setting the ``SHOTGUN_API_MAX_CONNECTION_IDLE`` environment
+        # variable. In the case that the environment variable is already set,
+        # setting the property on the config will override it.
+        self.max_connection_idle_secs: Optional[float] = 60
         self.api_ver = "api3"
         self.convert_datetimes_to_utc = True
         self._records_per_page: Optional[int] = None
@@ -648,6 +812,21 @@ class Shotgun(object):
                 "got '%s'." % self.config.rpc_attempt_interval
             )
 
+        max_idle = os.environ.get("SHOTGUN_API_MAX_CONNECTION_IDLE")
+        if max_idle is not None:
+            try:
+                self.config.max_connection_idle_secs = int(max_idle)
+            except ValueError:
+                raise ValueError(
+                    "Invalid value '%s' found in environment variable "
+                    "SHOTGUN_API_MAX_CONNECTION_IDLE, must be int." % max_idle
+                )
+            if self.config.max_connection_idle_secs < 0:
+                raise ValueError(
+                    "Value of SHOTGUN_API_MAX_CONNECTION_IDLE must be positive, "
+                    "got '%s'." % self.config.max_connection_idle_secs
+                )
+
         global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
         if (
             os.environ.get("SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", "0")
@@ -658,6 +837,10 @@ class Shotgun(object):
             SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = True
 
         self._connection: Optional[Http] = None
+        # Monotonic timestamp of the last request that completed on
+        # self._connection, used to expire connections that have gone stale
+        # while idle. None means the connection has not been used yet.
+        self._connection_last_used: Optional[float] = None
 
         self.__ca_certs = self._get_certs_file(ca_certs)
 
@@ -3996,7 +4179,13 @@ class Shotgun(object):
         LOG.debug("Request body is %s" % body)
 
         conn = self._get_connection()
+        # KeepaliveHttp picks the keepalive-enabled connection class itself, for
+        # this request and for any redirect it follows.
         resp, content = conn.request(url, method=verb, body=body, headers=headers)
+        # Record the idle-clock start only once the request has completed. A
+        # request that raised must not refresh it, or the next call would reuse
+        # a connection we have no evidence is alive.
+        self._connection_last_used = time.monotonic()
         # http response code is handled else where
         http_status = (resp.status, resp.reason)
         resp_headers = dict((k.lower(), v) for k, v in resp.items())
@@ -4215,9 +4404,24 @@ class Shotgun(object):
     def _get_connection(self) -> Http:
         """
         Return the current connection or creates a new connection to the current server.
+
+        A cached connection that has been idle for longer than
+        ``config.max_connection_idle_secs`` is closed and recreated instead of
+        being reused, since the peer may have silently dropped the TCP session.
         """
         if self._connection is not None:
-            return self._connection
+            if self._is_connection_stale():
+                LOG.debug(
+                    "Connection has been idle for more than %s seconds, "
+                    "closing it and reconnecting."
+                    % self.config.max_connection_idle_secs
+                )
+                # _close_connection() resets self._connection to None, so this
+                # falls through to build a replacement below. httplib2 opens the
+                # new socket lazily on the next request.
+                self._close_connection()
+            else:
+                return self._connection
 
         if self.config.proxy_server:
             pi = ProxyInfo(
@@ -4227,13 +4431,13 @@ class Shotgun(object):
                 proxy_user=self.config.proxy_user,
                 proxy_pass=self.config.proxy_pass,
             )
-            self._connection = Http(
+            self._connection = KeepaliveHttp(
                 timeout=self.config.timeout_secs,
                 ca_certs=self.__ca_certs,
                 proxy_info=pi,
             )
         else:
-            self._connection = Http(
+            self._connection = KeepaliveHttp(
                 timeout=self.config.timeout_secs,
                 ca_certs=self.__ca_certs,
                 proxy_info=None,
@@ -4241,10 +4445,28 @@ class Shotgun(object):
 
         return self._connection
 
+    def _is_connection_stale(self) -> bool:
+        """
+        Return True if the cached connection has been idle long enough that it
+        should be replaced rather than reused.
+        """
+        max_idle = self.config.max_connection_idle_secs
+        if not max_idle:
+            return False
+
+        # A connection that was created but never used successfully has no
+        # recorded idle time, so there is nothing to expire.
+        if self._connection_last_used is None:
+            return False
+
+        return (time.monotonic() - self._connection_last_used) >= max_idle
+
     def _close_connection(self) -> None:
         """
         Close the current connection.
         """
+        self._connection_last_used = None
+
         if self._connection is None:
             return
 
