@@ -13,6 +13,7 @@
 import os
 import socket
 import ssl
+import threading
 import unittest
 from unittest import mock
 import urllib.request
@@ -893,7 +894,7 @@ class TestConnectionIdleExpiry(unittest.TestCase):
         self.addCleanup(clock_patcher.stop)
 
         http_patcher = mock.patch(
-            "shotgun_api3.shotgun.Http", side_effect=self._make_connection
+            "shotgun_api3.shotgun.KeepaliveHttp", side_effect=self._make_connection
         )
         http_patcher.start()
         self.addCleanup(http_patcher.stop)
@@ -1186,36 +1187,47 @@ class TestSocketKeepalive(unittest.TestCase):
 
 class TestKeepaliveConnectionType(unittest.TestCase):
     """
-    Test that the keepalive-enabled connection classes are injected into
-    httplib2 via its connection_type parameter, so the bundled httplib2 needs
-    no modification (SG-44724).
+    Test that KeepaliveHttp injects the keepalive-enabled connection classes
+    into httplib2, so the bundled httplib2 needs no modification (SG-44724).
     """
 
-    def _connection_type_used(self, url):
-        sg = api.Shotgun(url, "script_name", "api_key", connect=False)
-        conn = mock.MagicMock()
-        response = mock.MagicMock()
-        response.status = 200
-        response.reason = "OK"
-        response.items.return_value = []
-        conn.request.return_value = (response, "{}")
-
-        with mock.patch.object(sg, "_get_connection", return_value=conn):
-            sg._http_request("GET", "/path", None, {})
-
-        return conn.request.call_args[1]["connection_type"]
+    def _injected_for(self, uri):
+        """Return the connection_type KeepaliveHttp hands to httplib2."""
+        http = shotgun.KeepaliveHttp()
+        with mock.patch.object(
+            shotgun.Http, "request", return_value=(mock.MagicMock(), b"")
+        ) as base:
+            http.request(uri)
+        return base.call_args[1]["connection_type"]
 
     def test_https_uses_keepalive_connection(self):
         self.assertIs(
-            self._connection_type_used("https://server_path"),
+            self._injected_for("https://server_path/x"),
             shotgun.KeepaliveHTTPSConnection,
         )
 
     def test_http_uses_keepalive_connection(self):
         self.assertIs(
-            self._connection_type_used("http://server_path"),
+            self._injected_for("http://server_path/x"),
             shotgun.KeepaliveHTTPConnection,
         )
+
+    def test_unknown_scheme_is_left_to_httplib2(self):
+        """httplib2 should raise its own error rather than be handed a class."""
+        self.assertIsNone(self._injected_for("ftp://server_path/x"))
+
+    def test_explicit_connection_type_is_respected(self):
+        http = shotgun.KeepaliveHttp()
+        sentinel = shotgun.KeepaliveHTTPConnection
+        with mock.patch.object(
+            shotgun.Http, "request", return_value=(mock.MagicMock(), b"")
+        ) as base:
+            http.request("https://server_path/x", connection_type=sentinel)
+        self.assertIs(base.call_args[1]["connection_type"], sentinel)
+
+    def test_shotgun_uses_keepalive_http(self):
+        sg = api.Shotgun("https://server_path", "script_name", "api_key", connect=False)
+        self.assertIsInstance(sg._get_connection(), shotgun.KeepaliveHttp)
 
     def test_connection_classes_are_httplib2_subclasses(self):
         """httplib2 branches on the class to pick constructor arguments."""
@@ -1231,6 +1243,120 @@ class TestKeepaliveConnectionType(unittest.TestCase):
                 api.lib.httplib2.HTTPConnectionWithTimeout,
             )
         )
+
+
+class TestMaxConnectionIdleEnvVar(unittest.TestCase):
+    """
+    SHOTGUN_API_MAX_CONNECTION_IDLE lets operators tune or disable the idle
+    expiry without code changes (SG-44724).
+    """
+
+    def _make(self):
+        return api.Shotgun(
+            "http://server_path", "script_name", "api_key", connect=False
+        )
+
+    def test_default_is_60(self):
+        with mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("SHOTGUN_API_MAX_CONNECTION_IDLE", None)
+            self.assertEqual(self._make().config.max_connection_idle_secs, 60)
+
+    def test_env_var_overrides_default(self):
+        with mock.patch.dict(os.environ, {"SHOTGUN_API_MAX_CONNECTION_IDLE": "15"}):
+            self.assertEqual(self._make().config.max_connection_idle_secs, 15)
+
+    def test_env_var_zero_disables_expiry(self):
+        with mock.patch.dict(os.environ, {"SHOTGUN_API_MAX_CONNECTION_IDLE": "0"}):
+            sg = self._make()
+        self.assertEqual(sg.config.max_connection_idle_secs, 0)
+        self.assertFalse(sg._is_connection_stale())
+
+    def test_non_integer_env_var_raises(self):
+        with mock.patch.dict(os.environ, {"SHOTGUN_API_MAX_CONNECTION_IDLE": "banana"}):
+            self.assertRaises(ValueError, self._make)
+
+    def test_negative_env_var_raises(self):
+        with mock.patch.dict(os.environ, {"SHOTGUN_API_MAX_CONNECTION_IDLE": "-5"}):
+            self.assertRaises(ValueError, self._make)
+
+
+class TestKeepaliveAcrossRedirects(unittest.TestCase):
+    """
+    httplib2 follows a redirect by calling self.request() again without
+    forwarding connection_type, so injecting it at the call site would lose
+    keepalive on the redirected connection. KeepaliveHttp overrides request(),
+    which catches those recursive calls too (SG-44724).
+
+    Uses two loopback servers; no external network.
+    """
+
+    def setUp(self):
+        self.stop = threading.Event()
+        self.addCleanup(self.stop.set)
+        self.target_port = self._serve(self._target)
+        self.redirect_port = self._serve(self._redirect)
+
+    def _serve(self, handler):
+        listener = socket.socket()
+        listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        listener.bind(("127.0.0.1", 0))
+        listener.listen(4)
+        port = listener.getsockname()[1]
+        self.addCleanup(listener.close)
+
+        def loop():
+            while not self.stop.is_set():
+                try:
+                    conn, _ = listener.accept()
+                except OSError:
+                    return
+                try:
+                    conn.settimeout(5)
+                    conn.recv(4096)
+                    conn.sendall(handler())
+                except OSError:
+                    pass
+                finally:
+                    conn.close()
+
+        thread = threading.Thread(target=loop)
+        thread.daemon = True
+        thread.start()
+        return port
+
+    def _target(self):
+        return (
+            b"HTTP/1.1 200 OK\r\n"
+            b"Content-Length: 2\r\n"
+            b"Connection: close\r\n"
+            b"\r\n"
+            b"{}"
+        )
+
+    def _redirect(self):
+        # 302 to a different authority, which forces httplib2 to build a second
+        # connection -- the one that used to miss keepalive.
+        return (
+            "HTTP/1.1 302 Found\r\n"
+            "Location: http://127.0.0.1:%d/target\r\n"
+            "Content-Length: 0\r\n"
+            "Connection: close\r\n"
+            "\r\n" % self.target_port
+        ).encode("ascii")
+
+    def test_redirected_connection_is_keepalive_enabled(self):
+        http = shotgun.KeepaliveHttp()
+        response, _ = http.request(
+            "http://127.0.0.1:%d/start" % self.redirect_port, method="GET"
+        )
+
+        self.assertEqual(response["status"], "200")
+        # Both the original and the redirect target are cached; neither may be a
+        # plain httplib2 connection.
+        cached = list(http.connections.items())
+        self.assertEqual(len(cached), 2, cached)
+        for key, conn in cached:
+            self.assertIsInstance(conn, shotgun.KeepaliveHTTPConnection, key)
 
 
 if __name__ == "__main__":

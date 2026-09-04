@@ -70,6 +70,7 @@ from typing import (
 from xmlrpc.client import Error, ProtocolError, ResponseError  # noqa
 
 from .lib.httplib2 import (
+    DEFAULT_MAX_REDIRECTS,
     Http,
     HTTPConnectionWithTimeout,
     HTTPSConnectionWithTimeout,
@@ -225,6 +226,49 @@ class KeepaliveHTTPSConnection(_KeepaliveConnectionMixin, HTTPSConnectionWithTim
     Passed to ``httplib2.Http.request()`` as its ``connection_type`` so that the
     bundled httplib2 does not need to be modified.
     """
+
+
+KEEPALIVE_CONNECTION_TYPES = {
+    "http": KeepaliveHTTPConnection,
+    "https": KeepaliveHTTPSConnection,
+}
+
+
+class KeepaliveHttp(Http):
+    """
+    httplib2 ``Http`` that routes every request through a keepalive-enabled
+    connection class.
+
+    The scheme is resolved per call rather than once at construction because
+    httplib2 follows redirects by calling ``self.request()`` again, without
+    forwarding the ``connection_type`` argument it was given. Overriding
+    ``request()`` catches those recursive calls too, so a redirect to another
+    authority -- or from http to https -- still gets keepalive. Doing it here
+    also keeps the bundled httplib2 unmodified.
+    """
+
+    def request(
+        self,
+        uri: str,
+        method: str = "GET",
+        body=None,
+        headers: Optional[Dict[str, Any]] = None,
+        redirections: int = DEFAULT_MAX_REDIRECTS,
+        connection_type=None,
+    ):
+        if connection_type is None:
+            scheme = urllib.parse.urlsplit(uri).scheme.lower()
+            # An unknown scheme is left as None so httplib2 raises its own
+            # error rather than being handed a connection class it cannot use.
+            connection_type = KEEPALIVE_CONNECTION_TYPES.get(scheme)
+        return super().request(
+            uri,
+            method=method,
+            body=body,
+            headers=headers,
+            redirections=redirections,
+            connection_type=connection_type,
+        )
 
 
 # ----------------------------------------------------------------------------
@@ -519,11 +563,15 @@ class _Config(object):
         # idle TCP session without sending FIN or RST; reusing such a socket
         # blocks in getresponse() until the socket timeout expires. 60 seconds
         # sits below the idle timeouts commonly configured on that hardware.
-        # Set to None or 0 to reuse connections regardless of idle time.
+        # Set to 0 (or None) to reuse connections regardless of idle time,
+        # restoring the behaviour of releases before this one.
         #
         #      sg = Shotgun(site_name, script_name, script_key)
         #      sg.config.max_connection_idle_secs = 30
         #
+        # Or by setting the ``SHOTGUN_API_MAX_CONNECTION_IDLE`` environment
+        # variable. In the case that the environment variable is already set,
+        # setting the property on the config will override it.
         self.max_connection_idle_secs: Optional[float] = 60
         self.api_ver = "api3"
         self.convert_datetimes_to_utc = True
@@ -763,6 +811,21 @@ class Shotgun(object):
                 "Value of SHOTGUN_API_RETRY_INTERVAL must be positive, "
                 "got '%s'." % self.config.rpc_attempt_interval
             )
+
+        max_idle = os.environ.get("SHOTGUN_API_MAX_CONNECTION_IDLE")
+        if max_idle is not None:
+            try:
+                self.config.max_connection_idle_secs = int(max_idle)
+            except ValueError:
+                raise ValueError(
+                    "Invalid value '%s' found in environment variable "
+                    "SHOTGUN_API_MAX_CONNECTION_IDLE, must be int." % max_idle
+                )
+            if self.config.max_connection_idle_secs < 0:
+                raise ValueError(
+                    "Value of SHOTGUN_API_MAX_CONNECTION_IDLE must be positive, "
+                    "got '%s'." % self.config.max_connection_idle_secs
+                )
 
         global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
         if (
@@ -4116,21 +4179,9 @@ class Shotgun(object):
         LOG.debug("Request body is %s" % body)
 
         conn = self._get_connection()
-        # connection_type is httplib2's injection point for a custom connection
-        # class, and is only consulted when a new connection is created. Using
-        # it keeps the keepalive setup out of the bundled httplib2. The scheme
-        # here is the one `url` was built from just above.
-        if self.config.scheme == "https":
-            connection_type = KeepaliveHTTPSConnection
-        else:
-            connection_type = KeepaliveHTTPConnection
-        resp, content = conn.request(
-            url,
-            method=verb,
-            body=body,
-            headers=headers,
-            connection_type=connection_type,
-        )
+        # KeepaliveHttp picks the keepalive-enabled connection class itself, for
+        # this request and for any redirect it follows.
+        resp, content = conn.request(url, method=verb, body=body, headers=headers)
         # Record the idle-clock start only once the request has completed. A
         # request that raised must not refresh it, or the next call would reuse
         # a connection we have no evidence is alive.
@@ -4365,6 +4416,9 @@ class Shotgun(object):
                     "closing it and reconnecting."
                     % self.config.max_connection_idle_secs
                 )
+                # _close_connection() resets self._connection to None, so this
+                # falls through to build a replacement below. httplib2 opens the
+                # new socket lazily on the next request.
                 self._close_connection()
             else:
                 return self._connection
@@ -4377,13 +4431,13 @@ class Shotgun(object):
                 proxy_user=self.config.proxy_user,
                 proxy_pass=self.config.proxy_pass,
             )
-            self._connection = Http(
+            self._connection = KeepaliveHttp(
                 timeout=self.config.timeout_secs,
                 ca_certs=self.__ca_certs,
                 proxy_info=pi,
             )
         else:
-            self._connection = Http(
+            self._connection = KeepaliveHttp(
                 timeout=self.config.timeout_secs,
                 ca_certs=self.__ca_certs,
                 proxy_info=None,
