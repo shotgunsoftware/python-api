@@ -49,3 +49,20 @@ from .shotgun import (
     __version__,
 )
 from .shotgun import SG_TIMEZONE as sg_timezone  # noqa unused imports
+
+# expose imports to avoid linting warnings
+__all__ = [
+    'Shotgun',
+    'ShotgunError',
+    'ShotgunFileDownloadError',
+    'ShotgunThumbnailNotReady',
+    'Fault',
+    'AuthenticationFault',
+    'MissingTwoFactorAuthenticationFault',
+    'UserCredentialsNotAllowedForSSOAuthenticationFault',
+    'ProtocolError',
+    'ResponseError',
+    'Error',
+    '__version__',
+    'sg_timezone',
+]
