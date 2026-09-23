@@ -3820,7 +3820,7 @@ class Shotgun(object):
         self.server_caps.ensure_custom_entity_config_support()
 
         params = {"entity_type": entity_type}
-        if force:
+        if force is True:
             params["force"] = True
 
         return self._call_rpc("custom_entity_disable", params)
