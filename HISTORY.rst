@@ -4,6 +4,13 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.10.3 (2026 Jul 20)
+=====================
+
+- Removed Python 3.7/3.8 compatibility code: simplified the version guard to a
+  single Python 3.9 check, and removed the dead pre-3.8 branch in
+  ``Shotgun._split_url()`` that used the deprecated ``urllib.parse.splituser``.
+
 v3.10.2 (2026 Jun 26)
 =====================
 
