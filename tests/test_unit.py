@@ -1359,8 +1359,6 @@ class TestKeepaliveAcrossRedirects(unittest.TestCase):
             self.assertIsInstance(conn, shotgun.KeepaliveHTTPConnection, key)
 
 
-
-
 class CustomEntityConfigTestBase(unittest.TestCase):
     """Shared setup for the custom entity config API test cases.
 
