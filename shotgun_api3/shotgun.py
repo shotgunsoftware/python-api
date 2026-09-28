@@ -356,6 +356,11 @@ class ServerCapabilities(object):
         the future. Therefore, usage of this class is discouraged.
     """
 
+    # Minimum server version required for the custom entity config API (read, enable,
+    # configure, disable). Update this single constant once the feature is rolled out
+    # with the correct FlowPT version. Tests reference it too, so they stay in sync.
+    CUSTOM_ENTITY_CONFIG_MIN_VERSION = (8, 88, 0)
+
     def __init__(self, host: str, meta: Dict[str, Any]) -> None:
         """
         ServerCapabilities.__init__
@@ -482,7 +487,10 @@ class ServerCapabilities(object):
         Ensures server has support for the custom entity config API (read, enable, configure, disable), added in v8.88.0.
         """
         self._ensure_support(
-            {"version": (8, 88, 0), "label": "custom entity config API"}
+            {
+                "version": self.CUSTOM_ENTITY_CONFIG_MIN_VERSION,
+                "label": "custom entity config API",
+            }
         )
 
     def __str__(self) -> str:
