@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flow Production Tracking Python API library &mdash; python-api v3.10.3 documentation</title>
+  <title>Flow Production Tracking Python API library &mdash; python-api v3.10.4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -85,7 +85,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.3.<br>
+    <b>python-api</b> v3.10.4.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -127,7 +127,7 @@
              
   <section id="flow-production-tracking-python-api-library">
 <h1>Flow Production Tracking Python API library<a class="headerlink" href="#flow-production-tracking-python-api-library" title="Permalink to this heading"></a></h1>
-<p>Release v3.10.3. (<a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a>)</p>
+<p>Release v3.10.4. (<a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a>)</p>
 <img alt="https://img.shields.io/badge/shotgun-api-blue.svg" src="https://img.shields.io/badge/shotgun-api-blue.svg" /><p>Flow Production Tracking (FPTR) provides a simple Python-based API for accessing FPTR and integrating with other tools.
 The Flow Production Tracking API3, also known as “Python API”, allows users to integrate their tools with Flow Production Tracking very easily. Using this simple
 but powerful python module, you can quickly get your scripts integrated with Flow Production Tracking’s CRUD-based
@@ -142,28 +142,28 @@ of the of the FPTR API3.</p>
 filmstrip thumbnails, images, uploaded, and both locally and remotely linked media like
 Quicktimes, etc.</p>
 <p><strong>Example</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span><span class="p">,</span>
-                          <span class="n">login</span><span class="o">=</span><span class="s2">&quot;rhendriks&quot;</span><span class="p">,</span>
-                          <span class="n">password</span><span class="o">=</span><span class="s2">&quot;c0mPre$Hi0n&quot;</span><span class="p">)</span>
-<span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Shot&quot;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;sg_status_list&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="s2">&quot;ip&quot;</span><span class="p">]],</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="s2">&quot;sg_status_list&quot;</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">"https://my-site.shotgrid.autodesk.com"</span><span class="p">,</span>
+                          <span class="n">login</span><span class="o">=</span><span class="s2">"rhendriks"</span><span class="p">,</span>
+                          <span class="n">password</span><span class="o">=</span><span class="s2">"c0mPre$Hi0n"</span><span class="p">)</span>
+<span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"Shot"</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[[</span><span class="s2">"sg_status_list"</span><span class="p">,</span> <span class="s2">"is"</span><span class="p">,</span> <span class="s2">"ip"</span><span class="p">]],</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">"code"</span><span class="p">,</span> <span class="s2">"sg_status_list"</span><span class="p">])</span>
 </pre></div>
 </div>
 <p><strong>Output</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0170&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">896</span><span class="p">,</span>
-  <span class="s1">&#39;sg_sequence&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Sequence&#39;</span><span class="p">},</span>
-  <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
- <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0200&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">899</span><span class="p">,</span>
-  <span class="s1">&#39;sg_sequence&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Sequence&#39;</span><span class="p">},</span>
-  <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
- <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_030_0080&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">907</span><span class="p">,</span>
-  <span class="s1">&#39;sg_sequence&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_030&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Sequence&#39;</span><span class="p">},</span>
-  <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">}]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">'code'</span><span class="p">:</span> <span class="s1">'bunny_020_0170'</span><span class="p">,</span>
+  <span class="s1">'id'</span><span class="p">:</span> <span class="mi">896</span><span class="p">,</span>
+  <span class="s1">'sg_sequence'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'bunny_020'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Sequence'</span><span class="p">},</span>
+  <span class="s1">'sg_status_list'</span><span class="p">:</span> <span class="s1">'ip'</span><span class="p">,</span>
+  <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Shot'</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">'code'</span><span class="p">:</span> <span class="s1">'bunny_020_0200'</span><span class="p">,</span>
+  <span class="s1">'id'</span><span class="p">:</span> <span class="mi">899</span><span class="p">,</span>
+  <span class="s1">'sg_sequence'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'bunny_020'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Sequence'</span><span class="p">},</span>
+  <span class="s1">'sg_status_list'</span><span class="p">:</span> <span class="s1">'ip'</span><span class="p">,</span>
+  <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Shot'</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">'code'</span><span class="p">:</span> <span class="s1">'bunny_030_0080'</span><span class="p">,</span>
+  <span class="s1">'id'</span><span class="p">:</span> <span class="mi">907</span><span class="p">,</span>
+  <span class="s1">'sg_sequence'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'bunny_030'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Sequence'</span><span class="p">},</span>
+  <span class="s1">'sg_status_list'</span><span class="p">:</span> <span class="s1">'ip'</span><span class="p">,</span>
+  <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Shot'</span><span class="p">}]</span>
 </pre></div>
 </div>
 <section id="user-guide">

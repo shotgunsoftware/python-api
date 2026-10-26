@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Subversion (SVN) Integration &mdash; python-api v3.10.3 documentation</title>
+  <title>Subversion (SVN) Integration &mdash; python-api v3.10.4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -102,7 +102,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.3.<br>
+    <b>python-api</b> v3.10.4.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -171,11 +171,11 @@ will do all the heavy lifting.  Lines 4 thru 8 queue up some objects that we’l
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w"> </span><span class="c1">#!/bin/sh</span>
 <span class="linenos"> 2</span><span class="w"> </span><span class="c1"># POST-COMMIT HOOK</span>
 <span class="linenos"> 3</span>
-<span class="linenos"> 4</span><span class="w"> </span><span class="nv">REPOS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
-<span class="linenos"> 5</span><span class="w"> </span><span class="nv">REV</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+<span class="linenos"> 4</span><span class="w"> </span><span class="nv">REPOS</span><span class="o">=</span><span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>
+<span class="linenos"> 5</span><span class="w"> </span><span class="nv">REV</span><span class="o">=</span><span class="s2">"</span><span class="nv">$2</span><span class="s2">"</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">AUTHOR</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook<span class="w"> </span>author<span class="w"> </span><span class="nv">$REPOS</span><span class="w"> </span>--revision<span class="w"> </span><span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
-<span class="linenos"> 8</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">COMMENT</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>svnlook<span class="w"> </span>log<span class="w"> </span><span class="nv">$REPOS</span><span class="w"> </span>--revision<span class="w"> </span><span class="nv">$REV</span><span class="k">)</span><span class="s2">&quot;</span>
+<span class="linenos"> 7</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">AUTHOR</span><span class="o">=</span><span class="s2">"</span><span class="k">$(</span>svnlook<span class="w"> </span>author<span class="w"> </span><span class="nv">$REPOS</span><span class="w"> </span>--revision<span class="w"> </span><span class="nv">$REV</span><span class="k">)</span><span class="s2">"</span>
+<span class="linenos"> 8</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">COMMENT</span><span class="o">=</span><span class="s2">"</span><span class="k">$(</span>svnlook<span class="w"> </span>log<span class="w"> </span><span class="nv">$REPOS</span><span class="w"> </span>--revision<span class="w"> </span><span class="nv">$REV</span><span class="k">)</span><span class="s2">"</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="w"> </span>/Absolute/path/to/shotgun_api_script.py
 </pre></div>
@@ -213,45 +213,45 @@ link to the Revision.</p>
 <span class="linenos">11</span> <span class="c1"># ---------------------------------------------------------------------------------------------</span>
 <span class="linenos">12</span> <span class="c1"># Globals - update all of these values to those of your studio</span>
 <span class="linenos">13</span> <span class="c1"># ---------------------------------------------------------------------------------------------</span>
-<span class="linenos">14</span> <span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s1">&#39;https ://my-site.shotgrid.autodesk.com&#39;</span> <span class="c1"># or http:</span>
-<span class="linenos">15</span> <span class="n">SCRIPT_USER</span> <span class="o">=</span> <span class="s1">&#39;script_name&#39;</span>
-<span class="linenos">16</span> <span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">&#39;3333333333333333333333333333333333333333&#39;</span>
-<span class="linenos">17</span> <span class="n">REVISIONS_PATH</span> <span class="o">=</span> <span class="s1">&#39;https ://serveraddress/trac/changeset/&#39;</span> <span class="c1"># or other web-based UI</span>
-<span class="linenos">18</span> <span class="n">PROJECT</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">27</span><span class="p">}</span>
+<span class="linenos">14</span> <span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s1">'https ://my-site.shotgrid.autodesk.com'</span> <span class="c1"># or http:</span>
+<span class="linenos">15</span> <span class="n">SCRIPT_USER</span> <span class="o">=</span> <span class="s1">'script_name'</span>
+<span class="linenos">16</span> <span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">'3333333333333333333333333333333333333333'</span>
+<span class="linenos">17</span> <span class="n">REVISIONS_PATH</span> <span class="o">=</span> <span class="s1">'https ://serveraddress/trac/changeset/'</span> <span class="c1"># or other web-based UI</span>
+<span class="linenos">18</span> <span class="n">PROJECT</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span><span class="s1">'Project'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">:</span><span class="mi">27</span><span class="p">}</span>
 <span class="linenos">19</span>
 <span class="linenos">20</span> <span class="c1"># ---------------------------------------------------------------------------------------------</span>
 <span class="linenos">21</span> <span class="c1"># Main</span>
 <span class="linenos">22</span> <span class="c1"># ---------------------------------------------------------------------------------------------</span>
-<span class="linenos">23</span> <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="linenos">23</span> <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
 <span class="linenos">24</span>
 <span class="linenos">25</span>    <span class="n">sg</span> <span class="o">=</span> <span class="n">Shotgun</span><span class="p">(</span><span class="n">SERVER_PATH</span><span class="p">,</span> <span class="n">SCRIPT_USER</span><span class="p">,</span> <span class="n">SCRIPT_KEY</span><span class="p">)</span>
 <span class="linenos">26</span>
 <span class="linenos">27</span>    <span class="c1"># Set Python variables from the environment objects</span>
-<span class="linenos">28</span>    <span class="n">revision_code</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;REV&#39;</span><span class="p">]</span>
-<span class="linenos">29</span>    <span class="n">repository</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;REPOS&#39;</span><span class="p">]</span>
-<span class="linenos">30</span>    <span class="n">description</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;COMMENT&#39;</span><span class="p">]</span>
-<span class="linenos">31</span>    <span class="n">author</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;AUTHOR&#39;</span><span class="p">]</span>
+<span class="linenos">28</span>    <span class="n">revision_code</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'REV'</span><span class="p">]</span>
+<span class="linenos">29</span>    <span class="n">repository</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'REPOS'</span><span class="p">]</span>
+<span class="linenos">30</span>    <span class="n">description</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'COMMENT'</span><span class="p">]</span>
+<span class="linenos">31</span>    <span class="n">author</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'AUTHOR'</span><span class="p">]</span>
 <span class="linenos">32</span>
 <span class="linenos">33</span>    <span class="c1"># Set the Trac path for this specific revision</span>
 <span class="linenos">34</span>    <span class="n">revision_url</span> <span class="o">=</span> <span class="n">REVISIONS_PATH</span> <span class="o">+</span> <span class="n">revision_code</span>
 <span class="linenos">35</span>
 <span class="linenos">36</span>    <span class="c1"># Validate that author is a valid Flow Production Tracking HumanUser</span>
-<span class="linenos">37</span>    <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s2">&quot;HumanUser&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">author</span><span class="p">]])</span>
+<span class="linenos">37</span>    <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s2">"HumanUser"</span><span class="p">,</span> <span class="p">[[</span><span class="s1">'login'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="n">author</span><span class="p">]])</span>
 <span class="linenos">38</span>    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
 <span class="linenos">39</span>        <span class="c1"># Create Revision</span>
-<span class="linenos">40</span>        <span class="n">url</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;content_type&#39;</span><span class="p">:</span><span class="s1">&#39;http_url&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">:</span><span class="n">revision_url</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;Trac&#39;</span><span class="p">}</span>
-<span class="linenos">41</span>        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;project&#39;</span><span class="p">:</span><span class="n">PROJECT</span><span class="p">,</span>
-<span class="linenos">42</span>                        <span class="s1">&#39;code&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">revision_code</span><span class="p">),</span>
-<span class="linenos">43</span>                        <span class="s1">&#39;description&#39;</span><span class="p">:</span><span class="n">description</span><span class="p">,</span>
-<span class="linenos">44</span>                        <span class="s1">&#39;attachment&#39;</span><span class="p">:</span><span class="n">url</span><span class="p">,</span>
-<span class="linenos">45</span>                        <span class="s1">&#39;created_by&#39;</span><span class="p">:{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;HumanUser&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]}</span>
+<span class="linenos">40</span>        <span class="n">url</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'content_type'</span><span class="p">:</span><span class="s1">'http_url'</span><span class="p">,</span> <span class="s1">'url'</span><span class="p">:</span><span class="n">revision_url</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span><span class="s1">'Trac'</span><span class="p">}</span>
+<span class="linenos">41</span>        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'project'</span><span class="p">:</span><span class="n">PROJECT</span><span class="p">,</span>
+<span class="linenos">42</span>                        <span class="s1">'code'</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">revision_code</span><span class="p">),</span>
+<span class="linenos">43</span>                        <span class="s1">'description'</span><span class="p">:</span><span class="n">description</span><span class="p">,</span>
+<span class="linenos">44</span>                        <span class="s1">'attachment'</span><span class="p">:</span><span class="n">url</span><span class="p">,</span>
+<span class="linenos">45</span>                        <span class="s1">'created_by'</span><span class="p">:{</span><span class="s2">"type"</span><span class="p">:</span><span class="s2">"HumanUser"</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">:</span><span class="n">result</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]}</span>
 <span class="linenos">46</span>                        <span class="p">}</span>
-<span class="linenos">47</span>        <span class="n">revision</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;Revision&quot;</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
-<span class="linenos">48</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;created Revision #&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">revision_code</span><span class="p">))</span>
+<span class="linenos">47</span>        <span class="n">revision</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">"Revision"</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+<span class="linenos">48</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">"created Revision #"</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">revision_code</span><span class="p">))</span>
 <span class="linenos">49</span>
 <span class="linenos">50</span>    <span class="c1"># Send error message if valid HumanUser is not found</span>
 <span class="linenos">51</span>    <span class="k">else</span><span class="p">:</span>
-<span class="linenos">52</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unable to find a valid Flow Production Tracking User with login: </span><span class="si">{}</span><span class="s2">, Revision not created in Flow Production Tracking.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">author</span><span class="p">))</span>
+<span class="linenos">52</span>        <span class="nb">print</span><span class="p">(</span><span class="s2">"Unable to find a valid Flow Production Tracking User with login: </span><span class="si">{}</span><span class="s2">, Revision not created in Flow Production Tracking."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">author</span><span class="p">))</span>
 </pre></div>
 </div>
 <section id="id1">

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Using an ActionMenuItem to Package Versions for a Client &mdash; python-api v3.10.3 documentation</title>
+  <title>Using an ActionMenuItem to Package Versions for a Client &mdash; python-api v3.10.4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -102,7 +102,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.3.<br>
+    <b>python-api</b> v3.10.4.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -156,11 +156,11 @@ script to package up files for a client. It performs the following:</p>
 <p>It is intended to be used in conjunction with the script dicussed in <a class="reference internal" href="ami_handler.html#ami-handler"><span class="std std-ref">Handling Action Menu Item Calls</span></a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># encoding: utf-8</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">version_packager.py</span>
 
 <span class="sd">This example script is meant to be run from an ActionMenuItem in Flow Production Tracking. The menu item uses a custom</span>
-<span class="sd">protocol in order to launch this script, and is followed by the action &#39;package4client&#39;. So the full</span>
+<span class="sd">protocol in order to launch this script, and is followed by the action 'package4client'. So the full</span>
 <span class="sd">url would be something like launchme://package4client?.... See:</span>
 <span class="sd">https://developer.shotgridsoftware.com/python-api/cookbook/examples/ami_handler.html</span>
 
@@ -170,17 +170,17 @@ script to package up files for a client. It performs the following:</p>
 
 <span class="sd">The purpose of this script is to download attachment files from Flow Production Tracking, create an archive of them</span>
 <span class="sd">and copy them to a specified directory. You can invoke it with the following minimal example to connect</span>
-<span class="sd">to Flow Production Tracking, download any file that exists in the specified field (&#39;sg_qt&#39;) for each selected_id passed from the</span>
+<span class="sd">to Flow Production Tracking, download any file that exists in the specified field ('sg_qt') for each selected_id passed from the</span>
 <span class="sd">ActionMenu. Then it will create a single archive of the files and move it to the specified directory</span>
-<span class="sd">(&#39;/path/where/i/want/to/put/the/archive/&#39;). The archive is named with the Project Name, timestamp, and user</span>
-<span class="sd">login who ran the ActionMenuItem (&#39;Demo_Project_2010-04-29-172210_kp.tar.gz&#39;):</span>
+<span class="sd">('/path/where/i/want/to/put/the/archive/'). The archive is named with the Project Name, timestamp, and user</span>
+<span class="sd">login who ran the ActionMenuItem ('Demo_Project_2010-04-29-172210_kp.tar.gz'):</span>
 
 <span class="sd">    sa = ShotgunAction(sys.argv[1])</span>
 <span class="sd">    sg = shotgun_connect()</span>
-<span class="sd">    if sa.action == &#39;package4client&#39;:</span>
-<span class="sd">        r = packageFilesForClient(&#39;sg_qt&#39;,&#39;/path/where/i/want/to/put/the/archive/&#39;)</span>
+<span class="sd">    if sa.action == 'package4client':</span>
+<span class="sd">        r = packageFilesForClient('sg_qt','/path/where/i/want/to/put/the/archive/')</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
 <span class="c1"># Imports</span>
@@ -200,20 +200,20 @@ script to package up files for a client. It performs the following:</p>
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
 <span class="c1"># Flow Production Tracking server auth info</span>
 <span class="n">shotgun_conf</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;url&#39;</span><span class="p">:</span><span class="s1">&#39;https://my-site.shotgrid.autodesk.com&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;YOUR_SCRIPT_NAME_HERE&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;key&#39;</span><span class="p">:</span><span class="s1">&#39;YOUR_SCRIPT_KEY_HERE&#39;</span>
+    <span class="s1">'url'</span><span class="p">:</span><span class="s1">'https://my-site.shotgrid.autodesk.com'</span><span class="p">,</span>
+    <span class="s1">'name'</span><span class="p">:</span><span class="s1">'YOUR_SCRIPT_NAME_HERE'</span><span class="p">,</span>
+    <span class="s1">'key'</span><span class="p">:</span><span class="s1">'YOUR_SCRIPT_KEY_HERE'</span>
     <span class="p">}</span>
 
 <span class="c1"># location to write logfile for this script</span>
-<span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;/version_packager.log&quot;</span>
+<span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">"/version_packager.log"</span>
 
 <span class="c1"># temporary directory to download movie files to and create thumbnail files in</span>
-<span class="n">file_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;/tmp&quot;</span>
+<span class="n">file_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s2">"/tmp"</span>
 
 <span class="c1"># compress command</span>
 <span class="c1"># tar czf /home/user/backup_www.tar.gz -C / var/www/html</span>
-<span class="n">compress_cmd</span> <span class="o">=</span> <span class="s2">&quot;tar czf </span><span class="si">%s</span><span class="s2"> -C / </span><span class="si">%s</span><span class="s2">&quot;</span>
+<span class="n">compress_cmd</span> <span class="o">=</span> <span class="s2">"tar czf </span><span class="si">%s</span><span class="s2"> -C / </span><span class="si">%s</span><span class="s2">"</span>
 
 
 
@@ -228,16 +228,16 @@ script to package up files for a client. It performs the following:</p>
 <span class="c1"># ----------------------------------------------</span>
 <span class="c1"># Set up logging</span>
 <span class="c1"># ----------------------------------------------</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">init_log</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;version_packager.log&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">init_log</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">"version_packager.log"</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
-                        <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(levelname)-8s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
-                        <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y-%b-</span><span class="si">%d</span><span class="s1"> %H:%M:</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                        <span class="nb">format</span><span class="o">=</span><span class="s1">'</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(levelname)-8s</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">'</span><span class="p">,</span>
+                        <span class="n">datefmt</span><span class="o">=</span><span class="s1">'%Y-%b-</span><span class="si">%d</span><span class="s1"> %H:%M:</span><span class="si">%s</span><span class="s1">'</span><span class="p">,</span>
                         <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
-                        <span class="n">filemode</span><span class="o">=</span><span class="s1">&#39;w+&#39;</span><span class="p">)</span>
+                        <span class="n">filemode</span><span class="o">=</span><span class="s1">'w+'</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">IOError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ShotgunException</span> <span class="p">(</span><span class="s2">&quot;Unable to open logfile for writing: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Version Packager logging started.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ShotgunException</span> <span class="p">(</span><span class="s2">"Unable to open logfile for writing: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Version Packager logging started."</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">logger</span>
 
 
@@ -246,13 +246,13 @@ script to package up files for a client. It performs the following:</p>
 <span class="c1"># ----------------------------------------------</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">extract_attachment_id</span><span class="p">(</span><span class="n">attachment</span><span class="p">):</span>
     <span class="c1"># extract the Attachment id from the url location</span>
-    <span class="n">attachment_id</span> <span class="o">=</span> <span class="n">attachment</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">attachment_id</span> <span class="o">=</span> <span class="n">attachment</span><span class="p">[</span><span class="s1">'url'</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">attachment_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">attachment_id</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="c1"># not an integer.</span>
         <span class="k">return</span> <span class="kc">None</span>
-        <span class="c1"># raise ShotgunException(&quot;invalid Attachment id returned. Expected an integer: %s &quot;% attachment_id)</span>
+        <span class="c1"># raise ShotgunException("invalid Attachment id returned. Expected an integer: %s "% attachment_id)</span>
 
     <span class="k">return</span> <span class="n">attachment_id</span>
 
@@ -265,33 +265,33 @@ script to package up files for a client. It performs the following:</p>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">attachment_id</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="c1"># download the attachment file from Flow Production Tracking and write it to local disk</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Downloading Attachment #</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">attachment_id</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Downloading Attachment #</span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">attachment_id</span><span class="p">))</span>
     <span class="n">stream</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">download_attachment</span><span class="p">(</span><span class="n">attachment_id</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">destination_filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">destination_filename</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
         <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Downloaded attachment </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">destination_filename</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Downloaded attachment </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">destination_filename</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ShotgunException</span><span class="p">(</span><span class="s2">&quot;unable to write attachment to disk: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ShotgunException</span><span class="p">(</span><span class="s2">"unable to write attachment to disk: </span><span class="si">%s</span><span class="s2">"</span><span class="o">%</span> <span class="n">e</span><span class="p">)</span>
 
 
 <span class="c1"># ----------------------------------------------</span>
 <span class="c1"># Compress files</span>
 <span class="c1"># ----------------------------------------------</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">compress_files</span><span class="p">(</span><span class="n">files</span><span class="p">,</span><span class="n">destination_filename</span><span class="p">):</span>
-    <span class="n">destination_filename</span> <span class="o">+=</span> <span class="s2">&quot;.tar.gz&quot;</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
-    <span class="n">squish_me</span> <span class="o">=</span> <span class="n">compress_cmd</span> <span class="o">%</span> <span class="p">(</span><span class="n">destination_filename</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Compressing </span><span class="si">%s</span><span class="s2"> files...&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">))</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running command: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">squish_me</span><span class="p">)</span>
+    <span class="n">destination_filename</span> <span class="o">+=</span> <span class="s2">".tar.gz"</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+    <span class="n">squish_me</span> <span class="o">=</span> <span class="n">compress_cmd</span> <span class="o">%</span> <span class="p">(</span><span class="n">destination_filename</span><span class="p">,</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Compressing </span><span class="si">%s</span><span class="s2"> files..."</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Running command: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">squish_me</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">squish_me</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;tar/gzip command returned: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">output</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'tar/gzip command returned: </span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">output</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ShotgunException</span><span class="p">(</span><span class="s2">&quot;unable compress files: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span> <span class="n">e</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;compressed files to: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">destination_filename</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ShotgunException</span><span class="p">(</span><span class="s2">"unable compress files: </span><span class="si">%s</span><span class="s2">"</span><span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"compressed files to: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">destination_filename</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">destination_filename</span>
 
 
@@ -299,16 +299,16 @@ script to package up files for a client. It performs the following:</p>
 <span class="c1"># Remove downloaded files</span>
 <span class="c1"># ----------------------------------------------</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">remove_downloaded_files</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
-    <span class="n">remove_me</span> <span class="o">=</span> <span class="s1">&#39;rm </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Removing </span><span class="si">%s</span><span class="s2"> files...&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">))</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running command: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">remove_me</span><span class="p">)</span>
+    <span class="n">remove_me</span> <span class="o">=</span> <span class="s1">'rm </span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Removing </span><span class="si">%s</span><span class="s2"> files..."</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Running command: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">remove_me</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">remove_me</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;rm command returned: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">output</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;removed downloaded files&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'rm command returned: </span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">output</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"removed downloaded files"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;unable remove files: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"unable remove files: </span><span class="si">%s</span><span class="s2">"</span><span class="o">%</span> <span class="n">e</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
 
@@ -317,20 +317,20 @@ script to package up files for a client. It performs the following:</p>
 <span class="c1"># ----------------------------------------------</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">copy_files</span><span class="p">(</span><span class="n">files</span><span class="p">,</span><span class="n">destination_directory</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
-        <span class="n">files</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
-    <span class="n">copy_me_args</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">destination_directory</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Running command: mv </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">copy_me_args</span><span class="p">)</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+    <span class="n">copy_me_args</span> <span class="o">=</span> <span class="s2">"</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">destination_directory</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Running command: mv </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">copy_me_args</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="s2">&quot;mv &quot;</span> <span class="o">+</span> <span class="n">copy_me_args</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="s2">"mv "</span> <span class="o">+</span> <span class="n">copy_me_args</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
         <span class="c1"># 0 = success, 1 = recoverable issues</span>
         <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Copy failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span> <span class="n">response</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">ShotgunException</span><span class="p">(</span><span class="s2">&quot;Copy failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span> <span class="n">response</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Copy failed: </span><span class="si">%s</span><span class="s2">"</span><span class="o">%</span> <span class="n">response</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ShotgunException</span><span class="p">(</span><span class="s2">"Copy failed: </span><span class="si">%s</span><span class="s2">"</span><span class="o">%</span> <span class="n">response</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">OSError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ShotgunException</span><span class="p">(</span><span class="s2">&quot;unable copy files: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ShotgunException</span><span class="p">(</span><span class="s2">"unable copy files: </span><span class="si">%s</span><span class="s2">"</span><span class="o">%</span> <span class="n">e</span><span class="p">)</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;copied files to: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">destination_directory</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"copied files to: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">destination_directory</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">destination_directory</span>
 
 
@@ -338,30 +338,30 @@ script to package up files for a client. It performs the following:</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">packageFilesForClient</span><span class="p">(</span><span class="n">file_field</span><span class="p">,</span><span class="n">destination_dir</span><span class="p">):</span>
 
     <span class="c1"># get entities matching the selected ids</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Querying Shotgun for </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">s&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">selected_ids_filter</span><span class="p">),</span> <span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;entity_type&#39;</span><span class="p">]))</span>
-    <span class="n">entities</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;entity_type&#39;</span><span class="p">],</span><span class="n">sa</span><span class="o">.</span><span class="n">selected_ids_filter</span><span class="p">,[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="s1">&#39;code&#39;</span><span class="p">,</span><span class="n">file_field</span><span class="p">],</span><span class="n">filter_operator</span><span class="o">=</span><span class="s1">&#39;any&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Querying Shotgun for </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">s"</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">selected_ids_filter</span><span class="p">),</span> <span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'entity_type'</span><span class="p">]))</span>
+    <span class="n">entities</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'entity_type'</span><span class="p">],</span><span class="n">sa</span><span class="o">.</span><span class="n">selected_ids_filter</span><span class="p">,[</span><span class="s1">'id'</span><span class="p">,</span><span class="s1">'code'</span><span class="p">,</span><span class="n">file_field</span><span class="p">],</span><span class="n">filter_operator</span><span class="o">=</span><span class="s1">'any'</span><span class="p">)</span>
 
     <span class="c1"># download the attachments for each entity, zip them, and copy to destination directory</span>
     <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">e</span><span class="p">[</span><span class="n">file_field</span><span class="p">]:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> #</span><span class="si">%s</span><span class="s2">: No file exists. Skippinsa.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;entity_type&#39;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> #</span><span class="si">%s</span><span class="s2">: No file exists. Skippinsa."</span> <span class="o">%</span> <span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'entity_type'</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> #</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;entity_type&#39;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="n">file_field</span><span class="p">]))</span>
-            <span class="n">path_to_file</span> <span class="o">=</span> <span class="n">file_dir</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="n">file_field</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> #</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'entity_type'</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="s1">'id'</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="n">file_field</span><span class="p">]))</span>
+            <span class="n">path_to_file</span> <span class="o">=</span> <span class="n">file_dir</span><span class="o">+</span><span class="s2">"/"</span><span class="o">+</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\s+"</span><span class="p">,</span> <span class="s1">'_'</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="n">file_field</span><span class="p">][</span><span class="s1">'name'</span><span class="p">])</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">download_attachment_to_disk</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="n">file_field</span><span class="p">],</span> <span class="n">path_to_file</span> <span class="p">)</span>
 
-            <span class="c1"># only include attachments. urls won&#39;t return true</span>
+            <span class="c1"># only include attachments. urls won't return true</span>
             <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
                 <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">)</span>
 
     <span class="c1"># compress files</span>
     <span class="c1"># create a nice valid destination filename</span>
-    <span class="n">project_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="k">if</span> <span class="s1">&#39;project_name&#39;</span> <span class="ow">in</span> <span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
-        <span class="n">project_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;project_name&#39;</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;_&#39;</span>
-    <span class="n">dest_filename</span> <span class="o">=</span> <span class="n">project_name</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">-%H%M%S&#39;</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;user_login&#39;</span><span class="p">]</span>
-    <span class="n">archive</span> <span class="o">=</span> <span class="n">compress_files</span><span class="p">(</span><span class="n">files</span><span class="p">,</span><span class="n">file_dir</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">dest_filename</span><span class="p">)</span>
+    <span class="n">project_name</span> <span class="o">=</span> <span class="s1">''</span>
+    <span class="k">if</span> <span class="s1">'project_name'</span> <span class="ow">in</span> <span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+        <span class="n">project_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"\s+"</span><span class="p">,</span> <span class="s1">'_'</span><span class="p">,</span> <span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'project_name'</span><span class="p">])</span><span class="o">+</span><span class="s1">'_'</span>
+    <span class="n">dest_filename</span> <span class="o">=</span> <span class="n">project_name</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">-%H%M%S'</span><span class="p">)</span><span class="o">+</span><span class="s2">"_"</span><span class="o">+</span><span class="n">sa</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'user_login'</span><span class="p">]</span>
+    <span class="n">archive</span> <span class="o">=</span> <span class="n">compress_files</span><span class="p">(</span><span class="n">files</span><span class="p">,</span><span class="n">file_dir</span><span class="o">+</span><span class="s2">"/"</span><span class="o">+</span><span class="n">dest_filename</span><span class="p">)</span>
 
     <span class="c1"># now that we have the archive, remove the downloads</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">remove_downloaded_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
@@ -375,24 +375,24 @@ script to package up files for a client. It performs the following:</p>
 <span class="c1"># ----------------------------------------------</span>
 <span class="c1"># Main Block</span>
 <span class="c1"># ----------------------------------------------</span>
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">init_log</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">sa</span> <span class="o">=</span> <span class="n">ShotgunAction</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Firing... </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Firing... </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">)</span>
     <span class="k">except</span> <span class="ne">IndexError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ShotgunException</span><span class="p">(</span><span class="s2">&quot;Missing POST arguments&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ShotgunException</span><span class="p">(</span><span class="s2">"Missing POST arguments"</span><span class="p">)</span>
 
-    <span class="n">sg</span> <span class="o">=</span> <span class="n">Shotgun</span><span class="p">(</span><span class="n">shotgun_conf</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">],</span> <span class="n">shotgun_conf</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">shotgun_conf</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">],</span><span class="n">convert_datetimes_to_utc</span><span class="o">=</span><span class="n">convert_tz</span><span class="p">)</span>
+    <span class="n">sg</span> <span class="o">=</span> <span class="n">Shotgun</span><span class="p">(</span><span class="n">shotgun_conf</span><span class="p">[</span><span class="s1">'url'</span><span class="p">],</span> <span class="n">shotgun_conf</span><span class="p">[</span><span class="s1">'name'</span><span class="p">],</span> <span class="n">shotgun_conf</span><span class="p">[</span><span class="s1">'key'</span><span class="p">],</span><span class="n">convert_datetimes_to_utc</span><span class="o">=</span><span class="n">convert_tz</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">sa</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;package4client&#39;</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">packageFilesForClient</span><span class="p">(</span><span class="s1">&#39;sg_qt&#39;</span><span class="p">,</span><span class="s1">&#39;/Users/kp/Documents/shotgun/dev/api/files/&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sa</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s1">'package4client'</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">packageFilesForClient</span><span class="p">(</span><span class="s1">'sg_qt'</span><span class="p">,</span><span class="s1">'/Users/kp/Documents/shotgun/dev/api/files/'</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ShotgunException</span><span class="p">(</span><span class="s2">&quot;Unknown action... :</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sa</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ShotgunException</span><span class="p">(</span><span class="s2">"Unknown action... :</span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">sa</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
 
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Version Packager done!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Version Packager done!"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

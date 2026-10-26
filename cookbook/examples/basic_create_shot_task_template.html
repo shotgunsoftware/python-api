@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create a Shot with a Task Template &mdash; python-api v3.10.3 documentation</title>
+  <title>Create a Shot with a Task Template &mdash; python-api v3.10.4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -107,7 +107,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.3.<br>
+    <b>python-api</b> v3.10.4.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -155,8 +155,8 @@
 <section id="find-the-task-template">
 <h2>Find the Task Template<a class="headerlink" href="#find-the-task-template" title="Permalink to this heading"></a></h2>
 <p>First we need to find the Task Template we’re going to apply. We’ll assume you know the name of the Task Template you want to use.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span><span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;3D Shot Template&#39;</span> <span class="p">]]</span>
-<span class="n">template</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">&#39;TaskTemplate&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">'code'</span><span class="p">,</span><span class="s1">'is'</span><span class="p">,</span> <span class="s1">'3D Shot Template'</span> <span class="p">]]</span>
+<span class="n">template</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">'TaskTemplate'</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -164,18 +164,18 @@
 <h2>The Resulting Task Template<a class="headerlink" href="#the-resulting-task-template" title="Permalink to this heading"></a></h2>
 <p>Assuming the task template was found, we will now have something like this in our <code class="docutils literal notranslate"><span class="pre">template</span></code>
 variable:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;TaskTemplate&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'TaskTemplate'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">:</span> <span class="mi">12</span><span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="create-the-shot">
 <h2>Create the Shot<a class="headerlink" href="#create-the-shot" title="Permalink to this heading"></a></h2>
 <p>Now we can create the Shot with the link to the <code class="docutils literal notranslate"><span class="pre">TaskTemplate</span></code> to apply.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
-        <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;dark shot with wicked cool ninjas&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;task_template&#39;</span><span class="p">:</span> <span class="n">template</span> <span class="p">}</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'project'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Project'</span><span class="p">,</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+        <span class="s1">'code'</span><span class="p">:</span> <span class="s1">'100_010'</span><span class="p">,</span>
+        <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'dark shot with wicked cool ninjas'</span><span class="p">,</span>
+        <span class="s1">'task_template'</span><span class="p">:</span> <span class="n">template</span> <span class="p">}</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">'Shot'</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This will create a new Shot named “100_010” linked to the TaskTemplate “3D Shot Template” and
@@ -195,20 +195,20 @@ previous block by searching</p></li>
 <h2>Create Shot Result<a class="headerlink" href="#create-shot-result" title="Permalink to this heading"></a></h2>
 <p>The variable <code class="docutils literal notranslate"><span class="pre">result</span></code> now contains the dictionary of the new Shot that was created.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;010_010&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;dark shot with wicked cool ninjas&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">2345</span><span class="p">,</span>
-    <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Gunslinger&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;task_template&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-                   <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;3D Shot Template&#39;</span><span class="p">,</span>
-                   <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;TaskTemplate&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span>
+    <span class="s1">'code'</span><span class="p">:</span> <span class="s1">'010_010'</span><span class="p">,</span>
+    <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'dark shot with wicked cool ninjas'</span><span class="p">,</span>
+    <span class="s1">'id'</span><span class="p">:</span> <span class="mi">2345</span><span class="p">,</span>
+    <span class="s1">'project'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Gunslinger'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Project'</span><span class="p">},</span>
+    <span class="s1">'task_template'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+                   <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'3D Shot Template'</span><span class="p">,</span>
+                   <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'TaskTemplate'</span><span class="p">},</span>
+    <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Shot'</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>If we now search for the Tasks linked to the Shot, we’ll find the Tasks that match our
 <code class="docutils literal notranslate"><span class="pre">TaskTemplate</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tasks</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;entity&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">result</span><span class="p">]])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tasks</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'Task'</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="p">[[</span><span class="s1">'entity'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="n">result</span><span class="p">]])</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -218,11 +218,11 @@ done above. Flow Production Tracking will only look at the <code class="docutils
 This is a handy way to pass around entity dictionaries without having to reformat them.</p>
 </div>
 <p>Now the <code class="docutils literal notranslate"><span class="pre">tasks</span></code> variable contains the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3253</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">},</span>
- <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3254</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">},</span>
- <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3255</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">},</span>
- <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3256</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">},</span>
- <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">3257</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">}]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">3253</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Task'</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">3254</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Task'</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">3255</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Task'</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">3256</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Task'</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">3257</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Task'</span><span class="p">}]</span>
 </pre></div>
 </div>
 </section>

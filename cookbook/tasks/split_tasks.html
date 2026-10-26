@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Split Tasks &mdash; python-api v3.10.3 documentation</title>
+  <title>Split Tasks &mdash; python-api v3.10.4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -102,7 +102,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.3.<br>
+    <b>python-api</b> v3.10.4.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -153,7 +153,7 @@ further, a good understanding of <a class="reference internal" href="updating_ta
 <p>The Task entity has a field called <code class="docutils literal notranslate"><span class="pre">splits</span></code> which is a list of dictionaries. Each dictionary
 in the list has two string keys, <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">end</span></code>, who’s values are strings representing dates
 in the <code class="docutils literal notranslate"><span class="pre">YYYY-mm-dd</span></code> format.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-11&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-12&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-18&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-19&#39;</span><span class="p">}]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">'start'</span><span class="p">:</span> <span class="s1">'2012-12-11'</span><span class="p">,</span> <span class="s1">'end'</span><span class="p">:</span> <span class="s1">'2012-12-12'</span><span class="p">},</span> <span class="p">{</span><span class="s1">'start'</span><span class="p">:</span> <span class="s1">'2012-12-18'</span><span class="p">,</span> <span class="s1">'end'</span><span class="p">:</span> <span class="s1">'2012-12-19'</span><span class="p">}]</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -167,15 +167,15 @@ are not gaps.</p></li>
 </ul>
 <p>If there are multiple splits but there between two or more splits there is no gap, an error will be
 raised. For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;splits&#39;</span><span class="p">:[{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-10&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-11&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-12&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-14&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-19&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span><span class="s1">&#39;2012-12-20&#39;</span><span class="p">}]})</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Task'</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span><span class="s1">'splits'</span><span class="p">:[{</span><span class="s1">'start'</span><span class="p">:</span><span class="s1">'2012-12-10'</span><span class="p">,</span> <span class="s1">'end'</span><span class="p">:</span><span class="s1">'2012-12-11'</span><span class="p">},</span> <span class="p">{</span><span class="s1">'start'</span><span class="p">:</span><span class="s1">'2012-12-12'</span><span class="p">,</span> <span class="s1">'end'</span><span class="p">:</span><span class="s1">'2012-12-14'</span><span class="p">},</span> <span class="p">{</span><span class="s1">'start'</span><span class="p">:</span><span class="s1">'2012-12-19'</span><span class="p">,</span> <span class="s1">'end'</span><span class="p">:</span><span class="s1">'2012-12-20'</span><span class="p">}]})</span>
 <span class="gt">Traceback (most recent call last):</span>
-  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
-  File <span class="nb">&quot;/shotgun/src/python-api/shotgun_api3/shotgun.py&quot;</span>, line <span class="m">600</span>, in <span class="n">update</span>
-<span class="w">    </span><span class="n">record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-  File <span class="nb">&quot;/shotgun/src/python-api/shotgun_api3/shotgun.py&quot;</span>, line <span class="m">1239</span>, in <span class="n">_call_rpc</span>
+  File <span class="nb">"&lt;stdin&gt;"</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">"/shotgun/src/python-api/shotgun_api3/shotgun.py"</span>, line <span class="m">600</span>, in <span class="n">update</span>
+<span class="w">    </span><span class="n">record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_rpc</span><span class="p">(</span><span class="s2">"update"</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+  File <span class="nb">"/shotgun/src/python-api/shotgun_api3/shotgun.py"</span>, line <span class="m">1239</span>, in <span class="n">_call_rpc</span>
 <span class="w">    </span><span class="bp">self</span><span class="o">.</span><span class="n">_response_errors</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-  File <span class="nb">&quot;/shotgun/src/python-api/shotgun_api3/shotgun.py&quot;</span>, line <span class="m">1435</span>, in <span class="n">_response_errors</span>
-<span class="w">    </span><span class="s2">&quot;Unknown Error&quot;</span><span class="p">))</span>
+  File <span class="nb">"/shotgun/src/python-api/shotgun_api3/shotgun.py"</span>, line <span class="m">1435</span>, in <span class="n">_response_errors</span>
+<span class="w">    </span><span class="s2">"Unknown Error"</span><span class="p">))</span>
 <span class="w">    </span><span class="n">shotgun_api3</span><span class="o">.</span><span class="n">shotgun</span><span class="o">.</span><span class="n">Fault</span><span class="p">:</span> <span class="n">API</span> <span class="n">update</span><span class="p">()</span> <span class="n">CRUD</span> <span class="n">ERROR</span> <span class="c1">#5: Update failed for [Task.splits]: (task.rb) The start date in split segment 2 is only one calendar day away from  the end date of the previous segment. There must be calendar days between split segments.</span>
 </pre></div>
 </div>
@@ -210,23 +210,23 @@ removed or shortened until the new duration is met.</p></li>
 <p>Throughout the following examples, each successive one will build on the previous.</p>
 <section id="start-date-due-date-and-duration-being-ignored">
 <h4>start_date, due_date and duration being ignored<a class="headerlink" href="#start-date-due-date-and-duration-being-ignored" title="Permalink to this heading"></a></h4>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
-    <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-06&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-23&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
-    <span class="s1">&#39;splits&#39;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-11&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-12&#39;</span><span class="p">},</span>
-        <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-18&#39;</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-19&#39;</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Task'</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">'start_date'</span><span class="p">:</span> <span class="s1">'2012-12-06'</span><span class="p">,</span>
+    <span class="s1">'due_date'</span><span class="p">:</span> <span class="s1">'2012-12-23'</span><span class="p">,</span>
+    <span class="s1">'duration'</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
+    <span class="s1">'splits'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">'start'</span><span class="p">:</span> <span class="s1">'2012-12-11'</span><span class="p">,</span> <span class="s1">'end'</span><span class="p">:</span> <span class="s1">'2012-12-12'</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">'start'</span><span class="p">:</span> <span class="s1">'2012-12-18'</span><span class="p">,</span> <span class="s1">'end'</span><span class="p">:</span> <span class="s1">'2012-12-19'</span><span class="p">}</span>
     <span class="p">]</span>
 <span class="p">})</span>
 
 <span class="c1"># Task = {</span>
-<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-11&#39;,</span>
-<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-19&#39;,</span>
-<span class="c1">#     &#39;duration&#39;: 2400,</span>
-<span class="c1">#     &#39;splits&#39;: [</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-11&#39;, &#39;end&#39;: &#39;2012-12-12&#39;},</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-18&#39;, &#39;end&#39;: &#39;2012-12-19&#39;}</span>
+<span class="c1">#     'start_date': '2012-12-11',</span>
+<span class="c1">#     'due_date': '2012-12-19',</span>
+<span class="c1">#     'duration': 2400,</span>
+<span class="c1">#     'splits': [</span>
+<span class="c1">#         {'start': '2012-12-11', 'end': '2012-12-12'},</span>
+<span class="c1">#         {'start': '2012-12-18', 'end': '2012-12-19'}</span>
 <span class="c1">#     ]</span>
 <span class="c1"># }</span>
 </pre></div>
@@ -236,16 +236,16 @@ removed or shortened until the new duration is met.</p></li>
 </section>
 <section id="moving-the-start-date-of-a-split-task">
 <h4>Moving the start_date of a split task<a class="headerlink" href="#moving-the-start-date-of-a-split-task" title="Permalink to this heading"></a></h4>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
-    <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-10&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Task'</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">'start_date'</span><span class="p">:</span> <span class="s1">'2012-12-10'</span>
 <span class="p">})</span>
 
 <span class="c1"># Task = {</span>
-<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-10&#39;,</span>
-<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-18&#39;,</span>
-<span class="c1">#     &#39;splits&#39;: [</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-10&#39;, &#39;end&#39;: &#39;2012-12-11&#39;},</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-14&#39;, &#39;end&#39;: &#39;2012-12-18&#39;}</span>
+<span class="c1">#     'start_date': '2012-12-10',</span>
+<span class="c1">#     'due_date': '2012-12-18',</span>
+<span class="c1">#     'splits': [</span>
+<span class="c1">#         {'start': '2012-12-10', 'end': '2012-12-11'},</span>
+<span class="c1">#         {'start': '2012-12-14', 'end': '2012-12-18'}</span>
 <span class="c1">#     ]</span>
 <span class="c1"># }</span>
 </pre></div>
@@ -255,16 +255,16 @@ removed or shortened until the new duration is met.</p></li>
 </section>
 <section id="moving-the-due-date-of-a-split-task">
 <h4>Moving the due_date of a split task<a class="headerlink" href="#moving-the-due-date-of-a-split-task" title="Permalink to this heading"></a></h4>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
-    <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-19&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Task'</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">'due_date'</span><span class="p">:</span> <span class="s1">'2012-12-19'</span>
 <span class="p">})</span>
 
 <span class="c1"># Task = {</span>
-<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-10&#39;,</span>
-<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-19&#39;,</span>
-<span class="c1">#     &#39;splits&#39;: [</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-10&#39;, &#39;end&#39;: &#39;2012-12-11&#39;},</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-14&#39;, &#39;end&#39;: &#39;2012-12-19&#39;}</span>
+<span class="c1">#     'start_date': '2012-12-10',</span>
+<span class="c1">#     'due_date': '2012-12-19',</span>
+<span class="c1">#     'splits': [</span>
+<span class="c1">#         {'start': '2012-12-10', 'end': '2012-12-11'},</span>
+<span class="c1">#         {'start': '2012-12-14', 'end': '2012-12-19'}</span>
 <span class="c1">#     ]</span>
 <span class="c1"># }</span>
 </pre></div>
@@ -274,17 +274,17 @@ removed or shortened until the new duration is met.</p></li>
 </section>
 <section id="setting-a-longer-duration">
 <h4>Setting a longer duration<a class="headerlink" href="#setting-a-longer-duration" title="Permalink to this heading"></a></h4>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
-    <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">4200</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Task'</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">'duration'</span><span class="p">:</span> <span class="mi">4200</span>
 <span class="p">})</span>
 
 <span class="c1"># Task = {</span>
-<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-10&#39;,</span>
-<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-21&#39;,</span>
-<span class="c1">#     &#39;duration&#39;: 4200,</span>
-<span class="c1">#     &#39;splits&#39;: [</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-10&#39;, &#39;end&#39;: &#39;2012-12-11&#39;},</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-14&#39;, &#39;end&#39;: &#39;2012-12-21&#39;}</span>
+<span class="c1">#     'start_date': '2012-12-10',</span>
+<span class="c1">#     'due_date': '2012-12-21',</span>
+<span class="c1">#     'duration': 4200,</span>
+<span class="c1">#     'splits': [</span>
+<span class="c1">#         {'start': '2012-12-10', 'end': '2012-12-11'},</span>
+<span class="c1">#         {'start': '2012-12-14', 'end': '2012-12-21'}</span>
 <span class="c1">#     ]</span>
 <span class="c1"># }</span>
 </pre></div>
@@ -294,17 +294,17 @@ removed or shortened until the new duration is met.</p></li>
 </section>
 <section id="setting-a-shorter-duration">
 <h4>Setting a shorter duration<a class="headerlink" href="#setting-a-shorter-duration" title="Permalink to this heading"></a></h4>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
-    <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">2400</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Task'</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">'duration'</span><span class="p">:</span> <span class="mi">2400</span>
 <span class="p">})</span>
 
 <span class="c1"># Task = {</span>
-<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-10&#39;,</span>
-<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-18&#39;,</span>
-<span class="c1">#     &#39;duration&#39;: 2400,</span>
-<span class="c1">#     &#39;splits&#39;: [</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-10&#39;, &#39;end&#39;: &#39;2012-12-11&#39;},</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-14&#39;, &#39;end&#39;: &#39;2012-12-18&#39;}</span>
+<span class="c1">#     'start_date': '2012-12-10',</span>
+<span class="c1">#     'due_date': '2012-12-18',</span>
+<span class="c1">#     'duration': 2400,</span>
+<span class="c1">#     'splits': [</span>
+<span class="c1">#         {'start': '2012-12-10', 'end': '2012-12-11'},</span>
+<span class="c1">#         {'start': '2012-12-14', 'end': '2012-12-18'}</span>
 <span class="c1">#     ]</span>
 <span class="c1"># }</span>
 </pre></div>
@@ -317,17 +317,17 @@ removed or shortened until the new duration is met.</p></li>
 <p>We won’t be using the previous result for this example but rather, the following:</p>
 <img alt="../../_images/split_tasks_6.png" src="../../_images/split_tasks_6.png" />
 <p>who’s duration we will shorten past the last split.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
-    <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">1800</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Task'</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">'duration'</span><span class="p">:</span> <span class="mi">1800</span>
 <span class="p">})</span>
 
 <span class="c1"># Task = {</span>
-<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-10&#39;,</span>
-<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-18&#39;,</span>
-<span class="c1">#     &#39;duration&#39;: 2400,</span>
-<span class="c1">#     &#39;splits&#39;: [</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-10&#39;, &#39;end&#39;: &#39;2012-12-11&#39;},</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-14&#39;, &#39;end&#39;: &#39;2012-12-18&#39;}</span>
+<span class="c1">#     'start_date': '2012-12-10',</span>
+<span class="c1">#     'due_date': '2012-12-18',</span>
+<span class="c1">#     'duration': 2400,</span>
+<span class="c1">#     'splits': [</span>
+<span class="c1">#         {'start': '2012-12-10', 'end': '2012-12-11'},</span>
+<span class="c1">#         {'start': '2012-12-14', 'end': '2012-12-18'}</span>
 <span class="c1">#     ]</span>
 <span class="c1"># }</span>
 </pre></div>
@@ -341,17 +341,17 @@ removed or shortened until the new duration is met.</p></li>
 a day when work will be done.</p>
 <p>For this example let’s assume as a starting point the result of the 5th example:</p>
 <img alt="../../_images/split_tasks_8.png" src="../../_images/split_tasks_8.png" />
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
-    <span class="s1">&#39;due_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2012-12-13&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Task'</span><span class="p">,</span> <span class="mi">2088</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s1">'due_date'</span><span class="p">:</span> <span class="s1">'2012-12-13'</span>
 <span class="p">})</span>
 
 <span class="c1"># Task = {</span>
-<span class="c1">#     &#39;start_date&#39;: &#39;2012-12-10&#39;,</span>
-<span class="c1">#     &#39;due_date&#39;: &#39;2012-12-13&#39;,</span>
-<span class="c1">#     &#39;duration&#39;: 1800,</span>
-<span class="c1">#     &#39;splits&#39;: [</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-10&#39;, &#39;end&#39;: &#39;2012-12-11&#39;},</span>
-<span class="c1">#         {&#39;start&#39;: &#39;2012-12-13&#39;, &#39;end&#39;: &#39;2012-12-13&#39;}</span>
+<span class="c1">#     'start_date': '2012-12-10',</span>
+<span class="c1">#     'due_date': '2012-12-13',</span>
+<span class="c1">#     'duration': 1800,</span>
+<span class="c1">#     'splits': [</span>
+<span class="c1">#         {'start': '2012-12-10', 'end': '2012-12-11'},</span>
+<span class="c1">#         {'start': '2012-12-13', 'end': '2012-12-13'}</span>
 <span class="c1">#     ]</span>
 <span class="c1"># }</span>
 </pre></div>

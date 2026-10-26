@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Usage Tips &mdash; python-api v3.10.3 documentation</title>
+  <title>API Usage Tips &mdash; python-api v3.10.4 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -113,7 +113,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.3.<br>
+    <b>python-api</b> v3.10.4.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -186,7 +186,7 @@ one connection object per thread and not share the connection.</p>
 <p>When you do a <code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code> or a <code class="xref py py-meth docutils literal notranslate"><span class="pre">create()</span></code> call
 that returns a field of type <strong>entity</strong> or <strong>multi-entity</strong> (for example the ‘Assets’ column on Shot),
 the entities are returned in a standard dictionary:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Asset&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;redBall&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Asset'</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'redBall'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>For each entity returned, you will get a <code class="docutils literal notranslate"><span class="pre">type</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, and <code class="docutils literal notranslate"><span class="pre">id</span></code> key. This does not mean
@@ -211,15 +211,15 @@ Something like the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># studio_globals.py</span>
 
 <span class="n">entity_type_map</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s1">&#39;Widget&#39;</span><span class="p">:</span> <span class="s1">&#39;CustomEntity01&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;Foobar&#39;</span><span class="p">:</span> <span class="s1">&#39;CustomEntity02&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;Baz&#39;</span><span class="p">:</span> <span class="s1">&#39;CustomNonProjectEntity01,</span>
+  <span class="s1">'Widget'</span><span class="p">:</span> <span class="s1">'CustomEntity01'</span><span class="p">,</span>
+  <span class="s1">'Foobar'</span><span class="p">:</span> <span class="s1">'CustomEntity02'</span><span class="p">,</span>
+  <span class="s1">'Baz'</span><span class="p">:</span> <span class="s1">'CustomNonProjectEntity01,</span>
 <span class="p">}</span>
 
 <span class="c1"># or even simpler, you could use a global like this</span>
-<span class="n">ENTITY_WIDGET</span> <span class="o">=</span> <span class="s1">&#39;CustomEntity01&#39;</span>
-<span class="n">ENTITY_FOOBAR</span> <span class="o">=</span> <span class="s1">&#39;CustomEntity02&#39;</span>
-<span class="n">ENTITY_BAZ</span> <span class="o">=</span> <span class="s1">&#39;CustomNonProjectEntity01&#39;</span>
+<span class="n">ENTITY_WIDGET</span> <span class="o">=</span> <span class="s1">'CustomEntity01'</span>
+<span class="n">ENTITY_FOOBAR</span> <span class="o">=</span> <span class="s1">'CustomEntity02'</span>
+<span class="n">ENTITY_BAZ</span> <span class="o">=</span> <span class="s1">'CustomNonProjectEntity01'</span>
 </pre></div>
 </div>
 <p>Then when you’re writing scripts, you don’t need to worry about remembering which Custom Entity
@@ -227,10 +227,10 @@ Something like the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">shotgun_api3</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">studio_globals</span>
 
-<span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s1">&#39;https://my-site.shotgrid.autodesk.com&#39;</span><span class="p">,</span> <span class="s1">&#39;script_name&#39;</span><span class="p">,</span> <span class="s1">&#39;0123456789abcdef0123456789abcdef0123456&#39;</span><span class="p">)</span>
+<span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s1">'https://my-site.shotgrid.autodesk.com'</span><span class="p">,</span> <span class="s1">'script_name'</span><span class="p">,</span> <span class="s1">'0123456789abcdef0123456789abcdef0123456'</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">studio_globals</span><span class="o">.</span><span class="n">ENTITY_WIDGET</span><span class="p">,</span>
-                 <span class="n">filters</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;sg_status_list&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;ip&#39;</span><span class="p">]],</span>
-                 <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span> <span class="s1">&#39;sg_shot&#39;</span><span class="p">])</span>
+                 <span class="n">filters</span><span class="o">=</span><span class="p">[[</span><span class="s1">'sg_status_list'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="s1">'ip'</span><span class="p">]],</span>
+                 <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">'code'</span><span class="p">,</span> <span class="s1">'sg_shot'</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
@@ -247,58 +247,58 @@ each _instance_ of the Version in a Playlist. These instances are tracked using 
 entities in Shtogun and are accessible just like any other entity type in Flow Production Tracking.</p>
 <p>To find information about your Versions in the Playlist “Director Review” (let’s say it has an
 <code class="docutils literal notranslate"><span class="pre">id</span></code> of 4). We’d run a query like so:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;playlist&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Playlist&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">}]]</span>
-<span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;playlist.Playlist.code&#39;</span><span class="p">,</span> <span class="s1">&#39;sg_sort_order&#39;</span><span class="p">,</span> <span class="s1">&#39;version.Version.code&#39;</span><span class="p">,</span> <span class="s1">&#39;version.Version.user&#39;</span><span class="p">,</span> <span class="s1">&#39;version.Version.entity&#39;</span><span class="p">]</span>
-<span class="n">order</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;column&#39;</span><span class="p">:</span><span class="s1">&#39;sg_sort_order&#39;</span><span class="p">,</span><span class="s1">&#39;direction&#39;</span><span class="p">:</span><span class="s1">&#39;asc&#39;</span><span class="p">}]</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;PlaylistVersionConnection&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">'playlist'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span><span class="s1">'Playlist'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">:</span><span class="mi">4</span><span class="p">}]]</span>
+<span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'playlist.Playlist.code'</span><span class="p">,</span> <span class="s1">'sg_sort_order'</span><span class="p">,</span> <span class="s1">'version.Version.code'</span><span class="p">,</span> <span class="s1">'version.Version.user'</span><span class="p">,</span> <span class="s1">'version.Version.entity'</span><span class="p">]</span>
+<span class="n">order</span><span class="o">=</span><span class="p">[{</span><span class="s1">'column'</span><span class="p">:</span><span class="s1">'sg_sort_order'</span><span class="p">,</span><span class="s1">'direction'</span><span class="p">:</span><span class="s1">'asc'</span><span class="p">}]</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'PlaylistVersionConnection'</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Which returns the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">28</span><span class="p">,</span>
-  <span class="s1">&#39;playlist.Playlist.code&#39;</span><span class="p">:</span> <span class="s1">&#39;Director Review&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sg_sort_order&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;PlaylistVersionConnection&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;version.Version.code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0010_comp_v003&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;version.Version.entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">880</span><span class="p">,</span>
-                             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0010&#39;</span><span class="p">,</span>
-                             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
-  <span class="s1">&#39;version.Version.user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Artist 1&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span><span class="p">}},</span>
- <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">29</span><span class="p">,</span>
-  <span class="s1">&#39;playlist.Playlist.code&#39;</span><span class="p">:</span> <span class="s1">&#39;Director Review&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sg_sort_order&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
-  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;PlaylistVersionConnection&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;version.Version.code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0020_comp_v003&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;version.Version.entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">881</span><span class="p">,</span>
-                             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0020&#39;</span><span class="p">,</span>
-                             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
-  <span class="s1">&#39;version.Version.user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Artist 8&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span><span class="p">}},</span>
- <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
-  <span class="s1">&#39;playlist.Playlist.code&#39;</span><span class="p">:</span> <span class="s1">&#39;Director Review&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sg_sort_order&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>
-  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;PlaylistVersionConnection&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;version.Version.code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0030_comp_v003&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;version.Version.entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">882</span><span class="p">,</span>
-                             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0030&#39;</span><span class="p">,</span>
-                             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
-  <span class="s1">&#39;version.Version.user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Admin 5&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span><span class="p">}},</span>
- <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
-  <span class="s1">&#39;playlist.Playlist.code&#39;</span><span class="p">:</span> <span class="s1">&#39;Director Review&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sg_sort_order&#39;</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>
-  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;PlaylistVersionConnection&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;version.Version.code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0040_comp_v003&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;version.Version.entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">883</span><span class="p">,</span>
-                             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0040&#39;</span><span class="p">,</span>
-                             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
-  <span class="s1">&#39;version.Version.user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Artist 2&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span><span class="p">}},</span>
- <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
-  <span class="s1">&#39;playlist.Playlist.code&#39;</span><span class="p">:</span> <span class="s1">&#39;Director Review&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;sg_sort_order&#39;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
-  <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;PlaylistVersionConnection&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;version.Version.code&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0050_comp_v003&#39;</span><span class="p">,</span>
-  <span class="s1">&#39;version.Version.entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">884</span><span class="p">,</span>
-                             <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;bunny_020_0050&#39;</span><span class="p">,</span>
-                             <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">},</span>
-  <span class="s1">&#39;version.Version.user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Artist 5&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span><span class="p">}}]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">28</span><span class="p">,</span>
+  <span class="s1">'playlist.Playlist.code'</span><span class="p">:</span> <span class="s1">'Director Review'</span><span class="p">,</span>
+  <span class="s1">'sg_sort_order'</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+  <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'PlaylistVersionConnection'</span><span class="p">,</span>
+  <span class="s1">'version.Version.code'</span><span class="p">:</span> <span class="s1">'bunny_020_0010_comp_v003'</span><span class="p">,</span>
+  <span class="s1">'version.Version.entity'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">880</span><span class="p">,</span>
+                             <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'bunny_020_0010'</span><span class="p">,</span>
+                             <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Shot'</span><span class="p">},</span>
+  <span class="s1">'version.Version.user'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Artist 1'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'HumanUser'</span><span class="p">}},</span>
+ <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">29</span><span class="p">,</span>
+  <span class="s1">'playlist.Playlist.code'</span><span class="p">:</span> <span class="s1">'Director Review'</span><span class="p">,</span>
+  <span class="s1">'sg_sort_order'</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+  <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'PlaylistVersionConnection'</span><span class="p">,</span>
+  <span class="s1">'version.Version.code'</span><span class="p">:</span> <span class="s1">'bunny_020_0020_comp_v003'</span><span class="p">,</span>
+  <span class="s1">'version.Version.entity'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">881</span><span class="p">,</span>
+                             <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'bunny_020_0020'</span><span class="p">,</span>
+                             <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Shot'</span><span class="p">},</span>
+  <span class="s1">'version.Version.user'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Artist 8'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'HumanUser'</span><span class="p">}},</span>
+ <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+  <span class="s1">'playlist.Playlist.code'</span><span class="p">:</span> <span class="s1">'Director Review'</span><span class="p">,</span>
+  <span class="s1">'sg_sort_order'</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>
+  <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'PlaylistVersionConnection'</span><span class="p">,</span>
+  <span class="s1">'version.Version.code'</span><span class="p">:</span> <span class="s1">'bunny_020_0030_comp_v003'</span><span class="p">,</span>
+  <span class="s1">'version.Version.entity'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">882</span><span class="p">,</span>
+                             <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'bunny_020_0030'</span><span class="p">,</span>
+                             <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Shot'</span><span class="p">},</span>
+  <span class="s1">'version.Version.user'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Admin 5'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'HumanUser'</span><span class="p">}},</span>
+ <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
+  <span class="s1">'playlist.Playlist.code'</span><span class="p">:</span> <span class="s1">'Director Review'</span><span class="p">,</span>
+  <span class="s1">'sg_sort_order'</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>
+  <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'PlaylistVersionConnection'</span><span class="p">,</span>
+  <span class="s1">'version.Version.code'</span><span class="p">:</span> <span class="s1">'bunny_020_0040_comp_v003'</span><span class="p">,</span>
+  <span class="s1">'version.Version.entity'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">883</span><span class="p">,</span>
+                             <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'bunny_020_0040'</span><span class="p">,</span>
+                             <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Shot'</span><span class="p">},</span>
+  <span class="s1">'version.Version.user'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Artist 2'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'HumanUser'</span><span class="p">}},</span>
+ <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+  <span class="s1">'playlist.Playlist.code'</span><span class="p">:</span> <span class="s1">'Director Review'</span><span class="p">,</span>
+  <span class="s1">'sg_sort_order'</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+  <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'PlaylistVersionConnection'</span><span class="p">,</span>
+  <span class="s1">'version.Version.code'</span><span class="p">:</span> <span class="s1">'bunny_020_0050_comp_v003'</span><span class="p">,</span>
+  <span class="s1">'version.Version.entity'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">884</span><span class="p">,</span>
+                             <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'bunny_020_0050'</span><span class="p">,</span>
+                             <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Shot'</span><span class="p">},</span>
+  <span class="s1">'version.Version.user'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Artist 5'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'HumanUser'</span><span class="p">}}]</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -374,14 +374,14 @@ automatically set whenever an entity is created or updated.</p>
 <p>To write logging output from the Flow Production Tracking API to a file, define a file handler in your script:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shotgun_api3</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">shotgun</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;/path/to/your/log&#39;</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">'/path/to/your/log'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To suppress the logging output from the API in a script which uses logging, set the level of the
 Flow Production Tracking logger to a higher level:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shotgun_api3</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">shotgun</span>
-<span class="n">sg_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;shotgun_api3&#39;</span><span class="p">)</span>
+<span class="n">sg_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">'shotgun_api3'</span><span class="p">)</span>
 <span class="n">sg_log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -398,17 +398,17 @@ data returned.</p>
 associated with. Without using “field hopping” in an API call, you would first get the project and
 then use that data for your follow up query, like so:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the project</span>
-<span class="n">project_name</span> <span class="o">=</span> <span class="s1">&#39;Big Buck Bunny&#39;</span>
-<span class="n">sg_project</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Project&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">project_name</span><span class="p">]])</span>
+<span class="n">project_name</span> <span class="o">=</span> <span class="s1">'Big Buck Bunny'</span>
+<span class="n">sg_project</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"Project"</span><span class="p">,</span> <span class="p">[[</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="n">project_name</span><span class="p">]])</span>
 
 <span class="c1"># Use project result to get associated shots</span>
-<span class="n">sg_shots</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Shot&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">sg_project</span><span class="p">]],</span> <span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">])</span>
+<span class="n">sg_shots</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"Shot"</span><span class="p">,</span> <span class="p">[[</span><span class="s1">'project'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="n">sg_project</span><span class="p">]],</span> <span class="p">[</span><span class="s1">'code'</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>With “field hopping” you can combine these queries into:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all shots on &#39;Big Buck Bunny&#39; project</span>
-<span class="n">project_name</span> <span class="o">=</span> <span class="s1">&#39;Big Buck Bunny&#39;</span>
-<span class="n">sg_shots</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Shot&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;project.Project.name&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">project_name</span><span class="p">]],</span> <span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get all shots on 'Big Buck Bunny' project</span>
+<span class="n">project_name</span> <span class="o">=</span> <span class="s1">'Big Buck Bunny'</span>
+<span class="n">sg_shots</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"Shot"</span><span class="p">,</span> <span class="p">[[</span><span class="s1">'project.Project.name'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="n">project_name</span><span class="p">]],</span> <span class="p">[</span><span class="s1">'code'</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>As you can see above, the syntax is to use “<code class="docutils literal notranslate"><span class="pre">.</span></code>” dot notation, joining field names to entity
@@ -417,9 +417,9 @@ specify we’re looking for the “name” field on the Project entity by specif
 <p>Now that we’ve demonstrated querying using dot notation, let’s take a look at returning linked data
 by adding the status of each Sequence entity associated with each Shot in our previous query:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get shot codes and sequence status all in one query</span>
-<span class="n">project_name</span> <span class="o">=</span> <span class="s1">&#39;Big Buck Bunny&#39;</span>
-<span class="n">sg_shots</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Shot&quot;</span><span class="p">,</span> <span class="p">[[</span><span class="s1">&#39;project.Project.name&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">project_name</span><span class="p">]],</span>
-                   <span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span> <span class="s1">&#39;sg_sequence.Sequence.sg_status_list&#39;</span><span class="p">])</span>
+<span class="n">project_name</span> <span class="o">=</span> <span class="s1">'Big Buck Bunny'</span>
+<span class="n">sg_shots</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"Shot"</span><span class="p">,</span> <span class="p">[[</span><span class="s1">'project.Project.name'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="n">project_name</span><span class="p">]],</span>
+                   <span class="p">[</span><span class="s1">'code'</span><span class="p">,</span> <span class="s1">'sg_sequence.Sequence.sg_status_list'</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>The previous examples use the <code class="xref py py-meth docutils literal notranslate"><span class="pre">find()</span></code> method. However, it’s also applicable

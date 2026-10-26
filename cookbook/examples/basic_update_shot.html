@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Update A Shot &mdash; python-api v3.10.3 documentation</title>
+  <title>Update A Shot &mdash; python-api v3.10.4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -107,7 +107,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.3.<br>
+    <b>python-api</b> v3.10.4.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -156,10 +156,10 @@
 <p>To update a Shot, you need to provide the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the Shot and a list of fields you want to
 update.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span>
+    <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'Open on a beautiful field with fuzzy bunnies'</span><span class="p">,</span>
+    <span class="s1">'sg_status_list'</span><span class="p">:</span> <span class="s1">'ip'</span>
     <span class="p">}</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="mi">40435</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Shot'</span><span class="p">,</span> <span class="mi">40435</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This will update the <code class="docutils literal notranslate"><span class="pre">description</span></code> and the <code class="docutils literal notranslate"><span class="pre">sg_status_list</span></code> fields for the Shot with <code class="docutils literal notranslate"><span class="pre">id</span></code> of
@@ -177,10 +177,10 @@ with.</p></li>
 <h2>Result<a class="headerlink" href="#result" title="Permalink to this heading"></a></h2>
 <p>The variable <code class="docutils literal notranslate"><span class="pre">result</span></code> now contains the Shot object that with the updated values.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Opening establishing shot with titles and fuzzy bunnies&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">40435</span>
+    <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'Opening establishing shot with titles and fuzzy bunnies'</span><span class="p">,</span>
+    <span class="s1">'sg_status_list'</span><span class="p">:</span> <span class="s1">'ip'</span><span class="p">,</span>
+    <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Shot'</span><span class="p">,</span>
+    <span class="s1">'id'</span><span class="p">:</span> <span class="mi">40435</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -204,14 +204,14 @@ representing an entity.</p>
 <span class="c1"># Globals</span>
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># make sure to change this to match your Flow Production Tracking server and auth credentials.</span>
-<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span>
-<span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="s1">&#39;my_script&#39;</span>
-<span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">&#39;27b65d7063f46b82e670fe807bd2b6f3fd1676c1&#39;</span>
+<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">"https://my-site.shotgrid.autodesk.com"</span>
+<span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="s1">'my_script'</span>
+<span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">'27b65d7063f46b82e670fe807bd2b6f3fd1676c1'</span>
 
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Main</span>
 <span class="c1"># --------------------------------------</span>
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
 
     <span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="n">SERVER_PATH</span><span class="p">,</span> <span class="n">SCRIPT_NAME</span><span class="p">,</span> <span class="n">SCRIPT_KEY</span><span class="p">)</span>
 
@@ -219,18 +219,18 @@ representing an entity.</p>
     <span class="c1"># Update Shot with data</span>
     <span class="c1"># --------------------------------------</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Open on a beautiful field with fuzzy bunnies&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span>
+        <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'Open on a beautiful field with fuzzy bunnies'</span><span class="p">,</span>
+        <span class="s1">'sg_status_list'</span><span class="p">:</span> <span class="s1">'ip'</span>
         <span class="p">}</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="mi">40435</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Shot'</span><span class="p">,</span> <span class="mi">40435</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>And here is the output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;Opening establishing shot with titles and fuzzy bunnies&#39;</span><span class="p">,</span>
- <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">40435</span><span class="p">,</span>
- <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span>
- <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'description'</span><span class="p">:</span> <span class="s1">'Opening establishing shot with titles and fuzzy bunnies'</span><span class="p">,</span>
+ <span class="s1">'id'</span><span class="p">:</span> <span class="mi">40435</span><span class="p">,</span>
+ <span class="s1">'sg_status_list'</span><span class="p">:</span> <span class="s1">'ip'</span><span class="p">,</span>
+ <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Shot'</span><span class="p">}</span>
 </pre></div>
 </div>
 </section>

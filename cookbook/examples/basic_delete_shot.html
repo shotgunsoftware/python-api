@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Delete A Shot &mdash; python-api v3.10.3 documentation</title>
+  <title>Delete A Shot &mdash; python-api v3.10.4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -107,7 +107,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.3.<br>
+    <b>python-api</b> v3.10.4.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -154,7 +154,7 @@
 <section id="calling-delete">
 <h2>Calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">delete()</span></code><a class="headerlink" href="#calling-delete" title="Permalink to this heading"></a></h2>
 <p>Deleting an entity in Flow Production Tracking is pretty straight-forward. No extraneous steps required.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;Shot&quot;</span><span class="p">,</span> <span class="mi">40435</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">"Shot"</span><span class="p">,</span> <span class="mi">40435</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -179,21 +179,21 @@
 <span class="c1"># Globals</span>
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># make sure to change this to match your Flow Production Tracking server and auth credentials.</span>
-<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span>
-<span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="s1">&#39;my_script&#39;</span>
-<span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">&#39;27b65d7063f46b82e670fe807bd2b6f3fd1676c1&#39;</span>
+<span class="n">SERVER_PATH</span> <span class="o">=</span> <span class="s2">"https://my-site.shotgrid.autodesk.com"</span>
+<span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="s1">'my_script'</span>
+<span class="n">SCRIPT_KEY</span> <span class="o">=</span> <span class="s1">'27b65d7063f46b82e670fe807bd2b6f3fd1676c1'</span>
 
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># Main</span>
 <span class="c1"># --------------------------------------</span>
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
 
     <span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="n">SERVER_PATH</span><span class="p">,</span> <span class="n">SCRIPT_NAME</span><span class="p">,</span> <span class="n">SCRIPT_KEY</span><span class="p">)</span>
 
     <span class="c1"># --------------------------------------</span>
     <span class="c1"># Delete a Shot by id</span>
     <span class="c1"># --------------------------------------</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;Shot&quot;</span><span class="p">,</span> <span class="mi">40435</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">"Shot"</span><span class="p">,</span> <span class="mi">40435</span><span class="p">)</span>
     <span class="n">pprint</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </pre></div>
 </div>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Handling Action Menu Item Calls &mdash; python-api v3.10.3 documentation</title>
+  <title>Handling Action Menu Item Calls &mdash; python-api v3.10.4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -102,7 +102,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.3.<br>
+    <b>python-api</b> v3.10.4.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -175,35 +175,35 @@ select a lot of rows and launch your custom protocol, you may encounter
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
 <span class="c1"># Description</span>
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">The values sent by the Action Menu Item are in the form of a GET request that is similar to the</span>
 <span class="sd">format: myCoolProtocol://doSomethingCool?user_id=24&amp;user_login=shotgun&amp;title=All%20Versions&amp;...</span>
 
 <span class="sd">In a more human-readable state that would translate to something like this:</span>
 <span class="sd">{</span>
-<span class="sd">    &#39;project_name&#39;: &#39;Demo Project&#39;,</span>
-<span class="sd">     &#39;user_id&#39;: &#39;24&#39;,</span>
-<span class="sd">     &#39;title&#39;: &#39;All Versions&#39;,</span>
-<span class="sd">     &#39;user_login&#39;: &#39;shotgun&#39;,</span>
-<span class="sd">     &#39;sort_column&#39;: &#39;created_at&#39;,</span>
-<span class="sd">     &#39;entity_type&#39;: &#39;Version&#39;,</span>
-<span class="sd">     &#39;cols&#39;: &#39;created_at&#39;,</span>
-<span class="sd">     &#39;ids&#39;: &#39;5,2&#39;,</span>
-<span class="sd">     &#39;selected_ids&#39;: &#39;2,5&#39;,</span>
-<span class="sd">     &#39;sort_direction&#39;: &#39;desc&#39;,</span>
-<span class="sd">     &#39;project_id&#39;: &#39;4&#39;,</span>
-<span class="sd">     &#39;session_uuid&#39;: &#39;d8592bd6-fc41-11e1-b2c5-000c297a5f50&#39;,</span>
-<span class="sd">     &#39;column_display_names&#39;:</span>
+<span class="sd">    'project_name': 'Demo Project',</span>
+<span class="sd">     'user_id': '24',</span>
+<span class="sd">     'title': 'All Versions',</span>
+<span class="sd">     'user_login': 'shotgun',</span>
+<span class="sd">     'sort_column': 'created_at',</span>
+<span class="sd">     'entity_type': 'Version',</span>
+<span class="sd">     'cols': 'created_at',</span>
+<span class="sd">     'ids': '5,2',</span>
+<span class="sd">     'selected_ids': '2,5',</span>
+<span class="sd">     'sort_direction': 'desc',</span>
+<span class="sd">     'project_id': '4',</span>
+<span class="sd">     'session_uuid': 'd8592bd6-fc41-11e1-b2c5-000c297a5f50',</span>
+<span class="sd">     'column_display_names':</span>
 <span class="sd">    [</span>
-<span class="sd">        &#39;Version Name&#39;,</span>
-<span class="sd">         &#39;Thumbnail&#39;,</span>
-<span class="sd">         &#39;Link&#39;,</span>
-<span class="sd">         &#39;Artist&#39;,</span>
-<span class="sd">         &#39;Description&#39;,</span>
-<span class="sd">         &#39;Status&#39;,</span>
-<span class="sd">         &#39;Path to frames&#39;,</span>
-<span class="sd">         &#39;QT&#39;,</span>
-<span class="sd">         &#39;Date Created&#39;</span>
+<span class="sd">        'Version Name',</span>
+<span class="sd">         'Thumbnail',</span>
+<span class="sd">         'Link',</span>
+<span class="sd">         'Artist',</span>
+<span class="sd">         'Description',</span>
+<span class="sd">         'Status',</span>
+<span class="sd">         'Path to frames',</span>
+<span class="sd">         'QT',</span>
+<span class="sd">         'Date Created'</span>
 <span class="sd">    ]</span>
 <span class="sd">}</span>
 
@@ -216,15 +216,15 @@ select a lot of rows and launch your custom protocol, you may encounter
 <span class="sd">    (string) action: doSomethingCool</span>
 <span class="sd">    (dict)   params: user_id=123&amp;user_login=miled&amp;title=All%20Versions&amp;...</span>
 
-<span class="sd">The parameters variable will be returned as a dictionary of string key/value pairs. Here&#39;s</span>
+<span class="sd">The parameters variable will be returned as a dictionary of string key/value pairs. Here's</span>
 <span class="sd">how to instantiate:</span>
 
 <span class="sd">  sa = ShotgunAction(sys.argv[1]) # sys.argv[1]</span>
 
-<span class="sd">  sa.params[&#39;user_login&#39;] # returns &#39;miled&#39;</span>
-<span class="sd">  sa.params[&#39;user_id&#39;] # returns 123</span>
-<span class="sd">  sa.protocol # returns &#39;myCoolProtocol&#39;</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  sa.params['user_login'] # returns 'miled'</span>
+<span class="sd">  sa.params['user_id'] # returns 123</span>
+<span class="sd">  sa.protocol # returns 'myCoolProtocol'</span>
+<span class="sd">"""</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
@@ -238,7 +238,7 @@ select a lot of rows and launch your custom protocol, you may encounter
 <span class="c1"># ---------------------------------------------------------------------------------------------</span>
 <span class="c1"># location to write logfile for this script</span>
 <span class="c1"># logging is a bit of overkill for this class, but can still be useful.</span>
-<span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;/shotgun_action.log&quot;</span>
+<span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s2">"/shotgun_action.log"</span>
 
 
 <span class="c1"># ----------------------------------------------</span>
@@ -258,28 +258,28 @@ select a lot of rows and launch your custom protocol, you may encounter
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_url</span><span class="p">()</span>
 
         <span class="c1"># entity type that the page was displaying</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;entity_type&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">entity_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"entity_type"</span><span class="p">]</span>
 
         <span class="c1"># Project info (if the ActionMenuItem was launched from a page not belonging</span>
         <span class="c1"># to a Project (Global Page, My Page, etc.), this will be blank</span>
-        <span class="k">if</span> <span class="s2">&quot;project_id&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"project_id"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;project_id&quot;</span><span class="p">]),</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;project_name&quot;</span><span class="p">],</span>
+                <span class="s2">"id"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"project_id"</span><span class="p">]),</span>
+                <span class="s2">"name"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"project_name"</span><span class="p">],</span>
             <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Internal column names currently displayed on the page</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;cols&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"cols"</span><span class="p">]</span>
 
         <span class="c1"># Human readable names of the columns currently displayed on the page</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">column_display_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;column_display_names&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">column_display_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"column_display_names"</span><span class="p">]</span>
 
         <span class="c1"># All ids of the entities returned by the query (not just those visible on the page)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ids</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"ids"</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"ids"</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
 
         <span class="c1"># All ids of the entities returned by the query in filter format ready</span>
@@ -288,8 +288,8 @@ select a lot of rows and launch your custom protocol, you may encounter
 
         <span class="c1"># ids of entities that were currently selected</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selected_ids</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;selected_ids&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">sids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;selected_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"selected_ids"</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"selected_ids"</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">selected_ids</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">sids</span><span class="p">]</span>
 
         <span class="c1"># All selected ids of the entities returned by the query in filter format ready</span>
@@ -297,39 +297,39 @@ select a lot of rows and launch your custom protocol, you may encounter
         <span class="bp">self</span><span class="o">.</span><span class="n">selected_ids_filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_ids_to_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_ids</span><span class="p">)</span>
 
         <span class="c1"># sort values for the page</span>
-        <span class="c1"># (we don&#39;t allow no sort anymore, but not sure if there&#39;s legacy here)</span>
-        <span class="k">if</span> <span class="s2">&quot;sort_column&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+        <span class="c1"># (we don't allow no sort anymore, but not sure if there's legacy here)</span>
+        <span class="k">if</span> <span class="s2">"sort_column"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sort</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;column&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sort_column&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;direction&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;sort_direction&quot;</span><span class="p">],</span>
+                <span class="s2">"column"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"sort_column"</span><span class="p">],</span>
+                <span class="s2">"direction"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"sort_direction"</span><span class="p">],</span>
             <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sort</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># title of the page</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span>
 
         <span class="c1"># user info who launched the ActionMenuItem</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">],</span> <span class="s2">&quot;login&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;user_login&quot;</span><span class="p">]}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"id"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"user_id"</span><span class="p">],</span> <span class="s2">"login"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"user_login"</span><span class="p">]}</span>
 
         <span class="c1"># session_uuid</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session_uuid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;session_uuid&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session_uuid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"session_uuid"</span><span class="p">]</span>
 
     <span class="c1"># ----------------------------------------------</span>
     <span class="c1"># Set up logging</span>
     <span class="c1"># ----------------------------------------------</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_init_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;shotgun_action.log&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">"shotgun_action.log"</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
                 <span class="n">level</span><span class="o">=</span><span class="n">logger</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
-                <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)-8s</span><span class="s2"> </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;%Y-%b-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span>
+                <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(levelname)-8s</span><span class="s2"> </span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">datefmt</span><span class="o">=</span><span class="s2">"%Y-%b-</span><span class="si">%d</span><span class="s2"> %H:%M:%S"</span><span class="p">,</span>
                 <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
-                <span class="n">filemode</span><span class="o">=</span><span class="s2">&quot;w+&quot;</span><span class="p">,</span>
+                <span class="n">filemode</span><span class="o">=</span><span class="s2">"w+"</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ShotgunActionException</span><span class="p">(</span><span class="s2">&quot;Unable to open logfile for writing: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;ShotgunAction logging started.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ShotgunActionException</span><span class="p">(</span><span class="s2">"Unable to open logfile for writing: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"ShotgunAction logging started."</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">logger</span>
 
         <span class="c1"># ----------------------------------------------</span>
@@ -337,29 +337,29 @@ select a lot of rows and launch your custom protocol, you may encounter
     <span class="c1"># Parse ActionMenuItem call into protocol, action and params</span>
     <span class="c1"># ----------------------------------------------</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Parsing full url received: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Parsing full url received: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
 
         <span class="c1"># get the protocol used</span>
-        <span class="n">protocol</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;protocol: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">protocol</span><span class="p">)</span>
+        <span class="n">protocol</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"protocol: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">protocol</span><span class="p">)</span>
 
         <span class="c1"># extract the action</span>
-        <span class="n">action</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">action</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;action: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">action</span><span class="p">)</span>
+        <span class="n">action</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"?"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"action: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">action</span><span class="p">)</span>
 
         <span class="c1"># extract the parameters</span>
-        <span class="c1"># &#39;column_display_names&#39; and &#39;cols&#39; occurs once for each column displayed so we store it as a list</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">)</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;column_display_names&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;cols&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="c1"># 'column_display_names' and 'cols' occurs once for each column displayed so we store it as a list</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"&amp;"</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"column_display_names"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"cols"</span><span class="p">:</span> <span class="p">[]}</span>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">unquote</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;column_display_names&quot;</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;cols&quot;</span><span class="p">:</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">unquote</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"column_display_names"</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"cols"</span><span class="p">:</span>
                 <span class="n">p</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">p</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">p</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;params: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">params</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"params: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="n">params</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">protocol</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
     <span class="c1"># ----------------------------------------------</span>
@@ -368,21 +368,21 @@ select a lot of rows and launch your custom protocol, you may encounter
     <span class="k">def</span><span class="w"> </span><span class="nf">_convert_ids_to_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">):</span>
         <span class="nb">filter</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
-            <span class="nb">filter</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="p">])</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;parsed ids into: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">filter</span><span class="p">)</span>
+            <span class="nb">filter</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"is"</span><span class="p">,</span> <span class="nb">id</span><span class="p">])</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"parsed ids into: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="nb">filter</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">filter</span>
 
 
 <span class="c1"># ----------------------------------------------</span>
 <span class="c1"># Main Block</span>
 <span class="c1"># ----------------------------------------------</span>
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">sa</span> <span class="o">=</span> <span class="n">ShotgunAction</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;ShotgunAction: Firing... </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"ShotgunAction: Firing... </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
     <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">ShotgunActionException</span><span class="p">(</span><span class="s2">&quot;Missing GET arguments&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;ShotgunAction process finished.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">ShotgunActionException</span><span class="p">(</span><span class="s2">"Missing GET arguments"</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"ShotgunAction process finished."</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

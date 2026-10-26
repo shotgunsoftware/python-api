@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Packaging an application with py2app (or py2exe) &mdash; python-api v3.10.3 documentation</title>
+  <title>Packaging an application with py2app (or py2exe) &mdash; python-api v3.10.4 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -94,7 +94,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.3.<br>
+    <b>python-api</b> v3.10.4.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -150,7 +150,7 @@ file imported by your application, py2app will not know to include it in your pa
 need to be explicitly specified in your <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file (edit the path based on the location
 where your <code class="docutils literal notranslate"><span class="pre">shotgun_api3</span></code> package is located):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DATA_FILES</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">(</span><span class="s1">&#39;shotgun_api3&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;/shotgun/src/python-api/shotgun_api3/lib/httplib2/cacerts.txt&#39;</span><span class="p">])</span>
+    <span class="p">(</span><span class="s1">'shotgun_api3'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'/shotgun/src/python-api/shotgun_api3/lib/httplib2/cacerts.txt'</span><span class="p">])</span>
 <span class="p">]</span>
 </pre></div>
 </div>
@@ -162,8 +162,8 @@ following structure:</p>
 </div>
 <p>Where in <code class="docutils literal notranslate"><span class="pre">my_script.py</span></code> you can access the <code class="docutils literal notranslate"><span class="pre">cacerts.txt</span></code> file using a relative path to pass it
 into the Flow Production Tracking connection’s constructor:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ca_certs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;shotgun_api3&#39;</span><span class="p">,</span> <span class="s1">&#39;cacerts.txt&#39;</span><span class="p">)</span>
-<span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s1">&#39;https://my-site.shotgrid.autodesk.com&#39;</span><span class="p">,</span> <span class="s1">&#39;script_name&#39;</span><span class="p">,</span> <span class="s1">&#39;script_key&#39;</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ca_certs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">'shotgun_api3'</span><span class="p">,</span> <span class="s1">'cacerts.txt'</span><span class="p">)</span>
+<span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s1">'https://my-site.shotgrid.autodesk.com'</span><span class="p">,</span> <span class="s1">'script_name'</span><span class="p">,</span> <span class="s1">'script_key'</span><span class="p">,</span>
                           <span class="n">ca_certs</span><span class="o">=</span><span class="n">ca_certs</span><span class="p">)</span>
 </pre></div>
 </div>

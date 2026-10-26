@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create a Version Linked to a Shot &mdash; python-api v3.10.3 documentation</title>
+  <title>Create a Version Linked to a Shot &mdash; python-api v3.10.4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
@@ -107,7 +107,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.3.<br>
+    <b>python-api</b> v3.10.4.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -157,9 +157,9 @@ new <code class="docutils literal notranslate"><span class="pre">Version</span><
 <h2>Find the Shot<a class="headerlink" href="#find-the-shot" title="Permalink to this heading"></a></h2>
 <p>First we need to find the Shot since we’ll need to know know its <code class="docutils literal notranslate"><span class="pre">id</span></code> in order to link our Version
 to it.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}],</span>
-            <span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;100_010&#39;</span><span class="p">]</span> <span class="p">]</span>
-<span class="n">shot</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">'project'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Project'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">:</span> <span class="mi">4</span><span class="p">}],</span>
+            <span class="p">[</span><span class="s1">'code'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="s1">'100_010'</span><span class="p">]</span> <span class="p">]</span>
+<span class="n">shot</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">'Shot'</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -168,10 +168,10 @@ to it.</p>
 <p>Now we find the Task that the Version relates to, again so we can use the <code class="docutils literal notranslate"><span class="pre">id</span></code> to link it to the
 Version we’re creating. For this search we’ll use the Shot <code class="docutils literal notranslate"><span class="pre">id</span></code> (which we have now in the <code class="docutils literal notranslate"><span class="pre">shot</span></code>
 variable from the previous search) and the Task Name, which maps to the <code class="docutils literal notranslate"><span class="pre">content</span></code> field.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">&#39;project&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}],</span>
-            <span class="p">[</span><span class="s1">&#39;entity&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">shot</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]}],</span>
-            <span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;Animation&#39;</span><span class="p">]</span> <span class="p">]</span>
-<span class="n">task</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="s1">'project'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Project'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">:</span> <span class="mi">4</span><span class="p">}],</span>
+            <span class="p">[</span><span class="s1">'entity'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,{</span><span class="s1">'type'</span><span class="p">:</span><span class="s1">'Shot'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">:</span> <span class="n">shot</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]}],</span>
+            <span class="p">[</span><span class="s1">'content'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="s1">'Animation'</span><span class="p">]</span> <span class="p">]</span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="s1">'Task'</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -184,15 +184,15 @@ in Flow Production Tracking. We highly recommend doing this whenever possible.</
 <section id="create-the-version">
 <h2>Create the Version<a class="headerlink" href="#create-the-version" title="Permalink to this heading"></a></h2>
 <p>Now we can create the Version with the link to the Shot and the Task:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;project&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Project&#39;</span><span class="p">,</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
-         <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="s1">&#39;100_010_anim_v1&#39;</span><span class="p">,</span>
-         <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="s1">&#39;first pass at opening shot with bunnies&#39;</span><span class="p">,</span>
-         <span class="s1">&#39;sg_path_to_frames&#39;</span><span class="p">:</span> <span class="s1">&#39;/v1/gun/s100/010/frames/anim/100_010_animv1_jack.#.jpg&#39;</span><span class="p">,</span>
-         <span class="s1">&#39;sg_status_list&#39;</span><span class="p">:</span> <span class="s1">&#39;rev&#39;</span><span class="p">,</span>
-         <span class="s1">&#39;entity&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Shot&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">shot</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]},</span>
-         <span class="s1">&#39;sg_task&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Task&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">task</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]},</span>
-         <span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;HumanUser&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">165</span><span class="p">}</span> <span class="p">}</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Version&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">'project'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Project'</span><span class="p">,</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+         <span class="s1">'code'</span><span class="p">:</span> <span class="s1">'100_010_anim_v1'</span><span class="p">,</span>
+         <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'first pass at opening shot with bunnies'</span><span class="p">,</span>
+         <span class="s1">'sg_path_to_frames'</span><span class="p">:</span> <span class="s1">'/v1/gun/s100/010/frames/anim/100_010_animv1_jack.#.jpg'</span><span class="p">,</span>
+         <span class="s1">'sg_status_list'</span><span class="p">:</span> <span class="s1">'rev'</span><span class="p">,</span>
+         <span class="s1">'entity'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Shot'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">:</span> <span class="n">shot</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]},</span>
+         <span class="s1">'sg_task'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'Task'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">:</span> <span class="n">task</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]},</span>
+         <span class="s1">'user'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'HumanUser'</span><span class="p">,</span> <span class="s1">'id'</span><span class="p">:</span> <span class="mi">165</span><span class="p">}</span> <span class="p">}</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">'Version'</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This will create a new Version named ‘100_010_anim_v1’ linked to the ‘Animation’ Task for Shot
@@ -212,8 +212,8 @@ same entity format as the Shot link, but pointing to the Task entity this time.<
 <li><p><code class="docutils literal notranslate"><span class="pre">user</span></code> is another entity column where we set the artist responsible for this masterpiece. In
 this example, I know the ‘id’ that corresponds to this user, but if you don’t know the id you can
 look it up by searching on any of the fields, similar to what we did for the Shot above, like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;jschmoe&#39;</span><span class="p">]]</span>
-<span class="n">user</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;HumanUser&#39;</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">'login'</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="s1">'jschmoe'</span><span class="p">]]</span>
+<span class="n">user</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'HumanUser'</span><span class="p">,</span> <span class="n">filters</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>

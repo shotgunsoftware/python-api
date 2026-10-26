@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Authentication &mdash; python-api v3.10.3 documentation</title>
+  <title>Authentication &mdash; python-api v3.10.4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -99,7 +99,7 @@
                              text-decoration: underline; }
     </style>
 
-    <b>python-api</b> v3.10.3.<br>
+    <b>python-api</b> v3.10.4.<br>
     
     For more information, please visit
     <a class=custom_post_menu href='https://help.autodesk.com/view/SGDEV/ENU/'>The Flow Production Tracking developer portal.</a>.
@@ -145,18 +145,18 @@
 <section id="user-based-authentication">
 <h2>User-based Authentication<a class="headerlink" href="#user-based-authentication" title="Permalink to this heading"></a></h2>
 <p>When authenticating as a user, you provide your normal login and password when instantiating your <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun</span></code> object. The actions performed by this instance will be limited to your permission level just as they are in the  web application.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span><span class="p">,</span>
-                          <span class="n">login</span><span class="o">=</span><span class="s2">&quot;rhendriks&quot;</span><span class="p">,</span>
-                          <span class="n">password</span><span class="o">=</span><span class="s2">&quot;c0mPre$Hi0n&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">"https://my-site.shotgrid.autodesk.com"</span><span class="p">,</span>
+                          <span class="n">login</span><span class="o">=</span><span class="s2">"rhendriks"</span><span class="p">,</span>
+                          <span class="n">password</span><span class="o">=</span><span class="s2">"c0mPre$Hi0n"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="script-based-authentication">
 <h2>Script-based Authentication<a class="headerlink" href="#script-based-authentication" title="Permalink to this heading"></a></h2>
 <p>In order to authenticate as a script, your script must be <a class="reference internal" href="#setting-up-shotgrid"><span class="std std-ref">registered with Flow Production Tracking and have a valid API key</span></a>. When creating your <code class="xref py py-class docutils literal notranslate"><span class="pre">shotgun_api3.Shotgun</span></code> object, provide the <code class="docutils literal notranslate"><span class="pre">script_name</span></code> and <code class="docutils literal notranslate"><span class="pre">api_key</span></code>.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">&quot;https://my-site.shotgrid.autodesk.com&quot;</span><span class="p">,</span>
-                          <span class="n">script_name</span><span class="o">=</span><span class="s2">&quot;compress&quot;</span><span class="p">,</span>
-                          <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sg</span> <span class="o">=</span> <span class="n">shotgun_api3</span><span class="o">.</span><span class="n">Shotgun</span><span class="p">(</span><span class="s2">"https://my-site.shotgrid.autodesk.com"</span><span class="p">,</span>
+                          <span class="n">script_name</span><span class="o">=</span><span class="s2">"compress"</span><span class="p">,</span>
+                          <span class="n">api_key</span><span class="o">=</span><span class="s2">"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
