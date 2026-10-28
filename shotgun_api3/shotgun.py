@@ -3952,7 +3952,9 @@ class Shotgun(object):
             ``enabled``, ``display_name``, and ``entity_config``.
         :rtype: dict
         :raises shotgun_api3.ShotgunError: if the entity type is invalid or not
-            yet enabled (fault code 104).
+            yet enabled (fault code 104), or if ``display_name`` or
+            ``entity_config`` is invalid, such as a blank display name or an
+            unknown flag (fault code 103).
         """
         self.server_caps.ensure_custom_entity_config_support()
 
