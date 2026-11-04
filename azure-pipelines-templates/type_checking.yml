@@ -29,13 +29,12 @@ jobs:
 - job: type_checking
   displayName: Type Checking (beta)
   pool:
-    # Pinned: ubuntu-latest has no Python 3.9, which we still support SG-45286
-    vm_image: ubuntu-24.04
+    vm_image: ubuntu-latest
 
   steps:
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: 3.9
+      versionSpec: 3.11
       addToPath: True
       architecture: 'x64'
 
