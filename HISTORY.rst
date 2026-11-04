@@ -4,6 +4,11 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+v3.10.5 (2026 Nov 4)
+=====================
+
+- Align package metadata with the v3.10.4 release. (No code changes)
+
 v3.10.4 (2026 Oct 23)
 =====================
 
