@@ -5116,6 +5116,11 @@ class FormPostHandler(urllib.request.BaseHandler):
                 # If value is not a string (e.g. int) cast to text
                 value = str(value)
 
+            # The boundary delimiter can't appear inside a part's content.
+            if f"--{boundary}" in value:
+                raise ValueError("Form field %r contains the multipart boundary" % key)
+            key = _escape_multipart_name(key)
+
             buffer.write(f"--{boundary}\r\n".encode("utf-8"))
             buffer.write(
                 f'Content-Disposition: form-data; name="{key}"'.encode("utf-8")
@@ -5130,7 +5135,7 @@ class FormPostHandler(urllib.request.BaseHandler):
             filename = (
                 fd.name.decode("utf-8") if isinstance(fd.name, bytes) else fd.name
             )
-            filename = filename.split("/")[-1]
+            filename = re.split(r"[/\\]", filename)[-1]
             if isinstance(key, bytes):
                 key = key.decode("utf-8")
 
@@ -5139,7 +5144,11 @@ class FormPostHandler(urllib.request.BaseHandler):
             file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
             buffer.write(f"--{boundary}\r\n".encode("utf-8"))
             c_dis = 'Content-Disposition: form-data; name="%s"; filename="%s"%s'
-            content_disposition = c_dis % (key, filename, "\r\n")
+            content_disposition = c_dis % (
+                _escape_multipart_name(key),
+                _escape_multipart_name(filename),
+                "\r\n",
+            )
             buffer.write(content_disposition.encode("utf-8"))
             buffer.write(f"Content-Type: {content_type}\r\n".encode("utf-8"))
             buffer.write(f"Content-Length: {file_size}\r\n".encode("utf-8"))
@@ -5154,6 +5163,14 @@ class FormPostHandler(urllib.request.BaseHandler):
 
     def https_request(self, request):
         return self.http_request(request)
+
+
+def _escape_multipart_name(name: str) -> str:
+    """
+    Encode a multipart field name or file name the way browsers do (WHATWG
+    multipart/form-data encoding): CR, LF and double quotes are percent-encoded.
+    """
+    return name.replace("\r", "%0D").replace("\n", "%0A").replace('"', "%22")
 
 
 def _translate_filters(filters: Union[List, Tuple], filter_operator) -> Dict[str, Any]:
