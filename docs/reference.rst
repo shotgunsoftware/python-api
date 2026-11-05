@@ -105,6 +105,16 @@ The documentation for all of the methods you'll need in your scripts lives in he
     Shotgun.schema
     Shotgun.entity_types
 
+.. rubric:: Custom Entity Configuration
+
+.. autosummary::
+    :nosignatures:
+
+    Shotgun.custom_entity_read
+    Shotgun.custom_entity_enable
+    Shotgun.custom_entity_configure
+    Shotgun.custom_entity_disable
+
 
 Connection & Authentication
 ===========================
@@ -191,6 +201,17 @@ Methods allow you to introspect and modify the Shotgun schema.
 .. automethod:: Shotgun.schema_read
 .. automethod:: Shotgun.schema
 .. automethod:: Shotgun.entity_types
+
+Custom Entity Configuration
+===========================
+
+Methods to read and configure Custom Entities at the site level. They require administrator
+privileges and a server running v8.88.0 or higher.
+
+.. automethod:: Shotgun.custom_entity_read
+.. automethod:: Shotgun.custom_entity_enable
+.. automethod:: Shotgun.custom_entity_configure
+.. automethod:: Shotgun.custom_entity_disable
 
 **********
 Exceptions
