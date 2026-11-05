@@ -71,7 +71,8 @@ parameters:
     type: object
     default:
       - name: Linux
-        vm_image: ubuntu-latest
+        # Pinned: ubuntu-latest has no Python 3.9, which we still support SG-45286
+        vm_image: ubuntu-24.04
         codecov_download_url: https://uploader.codecov.io/latest/linux/codecov
 
       - name: macOS

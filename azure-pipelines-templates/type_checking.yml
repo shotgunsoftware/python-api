@@ -29,7 +29,8 @@ jobs:
 - job: type_checking
   displayName: Type Checking (beta)
   pool:
-    vmImage: 'ubuntu-latest'
+    # Pinned: ubuntu-latest has no Python 3.9, which we still support SG-45286
+    vmImage: 'ubuntu-24.04'
 
   steps:
   - task: UsePythonVersion@0
