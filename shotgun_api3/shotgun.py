@@ -359,7 +359,7 @@ class ServerCapabilities(object):
     # Minimum server version required for the custom entity config API (read, enable,
     # configure, disable). Update this single constant once the feature is rolled out
     # with the correct FlowPT version. Tests reference it too, so they stay in sync.
-    CUSTOM_ENTITY_CONFIG_MIN_VERSION = (8, 88, 0)
+    CUSTOM_ENTITY_CONFIG_MIN_VERSION = (8, 91, 0)
 
     def __init__(self, host: str, meta: Dict[str, Any]) -> None:
         """
@@ -484,7 +484,7 @@ class ServerCapabilities(object):
 
     def ensure_custom_entity_config_support(self) -> None:
         """
-        Ensures server has support for the custom entity config API (read, enable, configure, disable), added in v8.88.0.
+        Ensures server has support for the custom entity config API (read, enable, configure, disable), added in v8.91.0.
         """
         self._ensure_support(
             {

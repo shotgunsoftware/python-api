@@ -206,7 +206,7 @@ Custom Entity Configuration
 ===========================
 
 Methods to read and configure Custom Entities at the site level. They require administrator
-privileges and a server running v8.88.0 or higher.
+privileges and a server running v8.91.0 or higher.
 
 .. automethod:: Shotgun.custom_entity_read
 .. automethod:: Shotgun.custom_entity_enable

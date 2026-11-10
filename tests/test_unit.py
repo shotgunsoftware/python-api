@@ -1362,7 +1362,7 @@ class TestKeepaliveAcrossRedirects(unittest.TestCase):
 class CustomEntityConfigTestBase(unittest.TestCase):
     """Shared setup for the custom entity config API test cases.
 
-    The custom_entity_* methods are gated on server version 8.88.0"""
+    The custom_entity_* methods are gated on server version 8.91.0"""
 
     def setUp(self):
         self.sg = api.Shotgun(
