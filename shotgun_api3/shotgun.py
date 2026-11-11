@@ -3826,14 +3826,14 @@ class Shotgun(object):
 
         return self._call_rpc("preferences_read", {"prefs": prefs})
 
-    def user_subscriptions_read(self) -> List:
+    def user_subscriptions_read(self) -> Dict[str, Union[str, List[str], None]]:
         """
-        Get the list of user subscriptions.
+        Get the user subscriptions.
 
-        :returns: A list of user subscriptions where each subscription is a
-            dictionary containing the ``humanUserId`` and ``subscription``
-            fields.
-        :rtype: list
+        :returns: A dictionary of user subscriptions keyed by HumanUser id
+            (as a string). Each subscription is ``None``, a single string, or
+            an array of strings.
+        :rtype: dict
         """
 
         return self._call_rpc("user_subscriptions_read", None)
@@ -3850,16 +3850,15 @@ class Shotgun(object):
             The ``subscription`` is either ``None``, a single string, or an
             array of strings with subscription information.
 
-        :returns: ``True`` if the request succedeed, ``False`` if otherwise.
+        :returns: ``True`` if the request succeeded, ``False`` if otherwise.
         :rtype: bool
         """
 
-        response = self._call_rpc("user_subscriptions_create", {"users": users})
+        # The server expects each subscription keyed by its HumanUser id.
+        params = {str(user["humanUserId"]): user["subscription"] for user in users}
+        response = self._call_rpc("user_subscriptions_create", params)
 
-        if not isinstance(response, dict):
-            return False
-
-        return response.get("status") == "success"
+        return isinstance(response, dict)
 
     def custom_entity_read(self, entity_type: str) -> Dict[str, Any]:
         """
