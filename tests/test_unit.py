@@ -11,8 +11,10 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 import os
+import shutil
 import socket
 import ssl
+import tempfile
 import threading
 import unittest
 from unittest import mock
@@ -1490,6 +1492,95 @@ class TestCustomEntityConfigVersionGate(unittest.TestCase):
         self._set_server_version(list(self.MIN_VERSION))
         self.sg.custom_entity_read("CustomEntity08")
         call_rpc.assert_called_once()
+
+
+class _NamedFile(object):
+    """A real file object reporting an arbitrary name."""
+
+    def __init__(self, fd, name):
+        self._fd = fd
+        self.name = name
+
+    def __getattr__(self, attr):
+        return getattr(self._fd, attr)
+
+
+class TestFormPostHandlerEncode(unittest.TestCase):
+    """
+    Multipart encoding of form fields and file names.
+    """
+
+    BOUNDARY = "BOUNDARY"
+
+    def setUp(self):
+        tmp_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp_dir)
+        self.path = os.path.join(tmp_dir, "data.txt")
+        with open(self.path, "wb") as fh:
+            fh.write(b"data")
+
+    def _file(self, name):
+        fd = open(self.path, "rb")
+        self.addCleanup(fd.close)
+        return _NamedFile(fd, name)
+
+    def _encode(self, params, files):
+        _, body = shotgun.FormPostHandler().encode(
+            params, files, boundary=self.BOUNDARY
+        )
+        return body
+
+    def test_plain_upload_is_unchanged(self):
+        body = self._encode(
+            [("entity_id", 1), ("display_name", "report.txt")],
+            [("file", self._file("/renders/report.txt"))],
+        )
+        self.assertIn(
+            b'Content-Disposition: form-data; name="display_name"'
+            b"\r\n\r\nreport.txt\r\n",
+            body,
+        )
+        self.assertIn(
+            b'Content-Disposition: form-data; name="file"; filename="report.txt"\r\n'
+            b"Content-Type: text/plain\r\nContent-Length: 4\r\n\r\ndata\r\n",
+            body,
+        )
+        self.assertEqual(body.count(b"--BOUNDARY\r\n"), 3)
+
+    def test_value_containing_boundary_raises(self):
+        display_name = "report.txt\r\n--BOUNDARY\r\nmore text"
+        with self.assertRaises(ValueError):
+            self._encode(
+                [("entity_id", 1), ("display_name", display_name)],
+                [("file", self._file("report.txt"))],
+            )
+
+    def test_value_with_line_breaks_is_kept(self):
+        body = self._encode(
+            [("tag_list", "a\r\nb")], [("file", self._file("report.txt"))]
+        )
+        self.assertIn(b"\r\n\r\na\r\nb\r\n--BOUNDARY\r\n", body)
+        self.assertEqual(body.count(b"--BOUNDARY\r\n"), 2)
+
+    def test_filename_special_characters_are_percent_encoded(self):
+        name = 'shot\r\nv2: final\r\n\r\n"notes.txt'
+        body = self._encode([], [("file", self._file(name))])
+        self.assertNotIn(b"\r\nv2: final", body)
+        self.assertIn(
+            b'filename="shot%0D%0Av2: final%0D%0A%0D%0A%22notes.txt"\r\n',
+            body,
+        )
+
+    def test_field_name_special_characters_are_percent_encoded(self):
+        body = self._encode(
+            [('entity_id"\r\nv2: final', 1)], [("file", self._file("a.txt"))]
+        )
+        self.assertNotIn(b"\r\nv2: final", body)
+        self.assertIn(b'name="entity_id%22%0D%0Av2: final"\r\n\r\n1\r\n', body)
+
+    def test_windows_path_is_reduced_to_base_name(self):
+        body = self._encode([], [("file", self._file("C:\\renders\\shot.txt"))])
+        self.assertIn(b'filename="shot.txt"', body)
 
 
 if __name__ == "__main__":
