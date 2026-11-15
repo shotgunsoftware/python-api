@@ -122,6 +122,9 @@ from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
 
+# Page size of a find that gives a page without a limit; the server's api_max_entities_per_page defaults to 500.
+_RECORDS_PER_PAGE = 500
+
 # ----------------------------------------------------------------------------
 # Version
 __version__ = "0.0.1"
@@ -330,6 +333,16 @@ class Shotgun(object):
                     reverse=desc_order,
                 )
 
+        if not isinstance(limit, int) or limit < 0:
+            raise ValueError("limit parameter must be a positive integer")
+        if not isinstance(page, int) or page < 0:
+            raise ValueError("page parameter must be a positive integer")
+        if page:
+            page_size = limit or _RECORDS_PER_PAGE
+            results = results[(page - 1) * page_size:page * page_size]
+        elif limit:
+            results = results[:limit]
+
         if fields is None:
             fields = set(["type", "id"])
         else:
@@ -346,7 +359,7 @@ class Shotgun(object):
     ):
         results = self.find(
             entity_type, filters, fields=fields,
-            order=order, filter_operator=filter_operator, retired_only=retired_only
+            order=order, filter_operator=filter_operator, limit=1, retired_only=retired_only
         )
         return results[0] if results else None
 
