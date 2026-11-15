@@ -755,5 +755,29 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(mockgun.config.api_path, "/something/api3/json")
 
 
+class TestMoreFieldTypes(unittest.TestCase):
+    """
+    Writes to and filters on field types that Mockgun used to reject.
+    """
+
+    def setUp(self):
+        self._mockgun = Mockgun(
+            "https://test.shotgunstudio.com", login="user", password="1234"
+        )
+
+    def test_color_and_image(self):
+        task = self._mockgun.create(
+            "Task", {"content": "comp", "color": "255,0,0", "image": "/tmp/thumb.jpg"}
+        )
+        self.assertEqual(task["color"], "255,0,0")
+        self.assertEqual(task["image"], "/tmp/thumb.jpg")
+        found = self._mockgun.find("Task", [["color", "starts_with", "255"]], ["color"])
+        self.assertEqual([t["id"] for t in found], [task["id"]])
+
+    def test_wrong_python_type_still_rejected(self):
+        with self.assertRaises(ShotgunError):
+            self._mockgun.create("Task", {"content": "comp", "color": 255})
+
+
 if __name__ == "__main__":
     unittest.main()

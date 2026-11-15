@@ -122,6 +122,9 @@ from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
 
+# Field types Mockgun compares and sorts like another type that holds the same values.
+_COMPARE_AS = {"currency": "float", "timecode": "number", "uuid": "text", "color": "text", "password": "text"}
+
 # ----------------------------------------------------------------------------
 # Version
 __version__ = "0.0.1"
@@ -535,7 +538,14 @@ class Shotgun(object):
                                    "duration": int,
                                    "list": str,
                                    "status_list": str,
-                                   "url": dict}[sg_type]
+                                   "url": dict,
+                                   "currency": (int, float),
+                                   "timecode": int,
+                                   "uuid": str,
+                                   "color": str,
+                                   "password": str,
+                                   "image": str,
+                                   "jsonb": dict}[sg_type]
                 except KeyError:
                     raise ShotgunError(
                         "Field %s.%s: Handling for Flow Production Tracking type %s is not implemented" %
@@ -763,7 +773,9 @@ class Shotgun(object):
             field2, entity_type2, field3 = field.split(".", 2)
             return self._get_field_type(entity_type2, field3)
         except ValueError:
-            return self._schema[entity_type][field]["data_type"]["value"]
+            field_type = self._schema[entity_type][field]["data_type"]["value"]
+            # Filter and sort these like the type that holds the same values.
+            return _COMPARE_AS.get(field_type, field_type)
 
     def _row_matches_filter(self, entity_type, row, sg_filter, retired_only):
 
