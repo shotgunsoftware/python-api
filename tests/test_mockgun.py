@@ -755,5 +755,46 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(mockgun.config.api_path, "/something/api3/json")
 
 
+class TestLimitAndPage(unittest.TestCase):
+    """
+    find honours limit and page as the server does.
+    """
+
+    def setUp(self):
+        self._mockgun = Mockgun(
+            "https://test.shotgunstudio.com", login="user", password="1234"
+        )
+        self._ids = [
+            self._mockgun.create("Shot", {"code": "shot%d" % i})["id"] for i in range(5)
+        ]
+
+    def _find(self, **kwargs):
+        order = [{"field_name": "id", "direction": "asc"}]
+        return [s["id"] for s in self._mockgun.find("Shot", [], order=order, **kwargs)]
+
+    def test_limit(self):
+        self.assertEqual(self._find(limit=2), self._ids[:2])
+        self.assertEqual(self._find(limit=0), self._ids)
+
+    def test_page(self):
+        self.assertEqual(self._find(limit=2, page=2), self._ids[2:4])
+        self.assertEqual(self._find(limit=2, page=3), self._ids[4:])
+        self.assertEqual(self._find(limit=2, page=4), [])
+        self.assertEqual(
+            self._find(page=1), self._ids
+        )  # a page is 500 records without a limit
+
+    def test_limit_after_order(self):
+        order = [{"field_name": "id", "direction": "desc"}]
+        found = self._mockgun.find("Shot", [], order=order, limit=1)
+        self.assertEqual([s["id"] for s in found], [self._ids[-1]])
+
+    def test_invalid(self):
+        with self.assertRaises(ValueError):
+            self._mockgun.find("Shot", [], limit=-1)
+        with self.assertRaises(ValueError):
+            self._mockgun.find("Shot", [], page=-1)
+
+
 if __name__ == "__main__":
     unittest.main()
