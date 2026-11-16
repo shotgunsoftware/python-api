@@ -36,13 +36,14 @@ and can be run on their own by typing "python test_mockgun.py".
 """
 
 import datetime
+import gc
 import re
 import os
 import shutil
 import tempfile
 import unittest
 from shotgun_api3.lib.mockgun import Shotgun as Mockgun
-from shotgun_api3 import ShotgunError
+from shotgun_api3 import ShotgunError, ShotgunFileDownloadError
 
 mockgun_schema_folder = os.path.join(os.path.dirname(__file__), "mockgun")
 
@@ -853,6 +854,57 @@ class TestUpload(unittest.TestCase):
             )
         with self.assertRaises(ShotgunError):
             self._mockgun.upload("Version", version_id + 100, self._path)
+
+
+class TestDownloadAttachment(unittest.TestCase):
+    """
+    download_attachment returns what was uploaded, and the file of a local file link.
+    """
+
+    setUp = TestUpload.setUp
+
+    def test_download_upload(self):
+        self._mockgun.upload(
+            "Version", self._version["id"], self._path, field_name="sg_uploaded_movie"
+        )
+        movie = self._mockgun.find_one(
+            "Version", [["id", "is", self._version["id"]]], ["sg_uploaded_movie"]
+        )["sg_uploaded_movie"]
+        self.assertEqual(self._mockgun.download_attachment(movie), b"movie")
+        self.assertEqual(self._mockgun.download_attachment(movie["id"]), b"movie")
+        self.assertEqual(
+            self._mockgun.download_attachment(attachment_id=movie["id"]), b"movie"
+        )
+        target = os.path.join(os.path.dirname(self._path), "downloaded.mov")
+        self.assertEqual(
+            self._mockgun.download_attachment(movie, file_path=target), target
+        )
+        with open(target, "rb") as f:
+            self.assertEqual(f.read(), b"movie")
+
+    def test_copy_outlives_source(self):
+        attachment_id = self._mockgun.upload("Version", self._version["id"], self._path)
+        os.remove(self._path)
+        self.assertEqual(self._mockgun.download_attachment(attachment_id), b"movie")
+
+    def test_download_local_file_link(self):
+        link = {"local_path": self._path, "link_type": "local", "name": "v001.mov"}
+        self.assertEqual(self._mockgun.download_attachment(link), b"movie")
+
+    def test_download_missing(self):
+        self.assertIsNone(self._mockgun.download_attachment(None))
+        with self.assertRaises(ShotgunFileDownloadError):
+            self._mockgun.download_attachment(12345)
+        with self.assertRaises(TypeError):
+            self._mockgun.download_attachment()
+
+    def test_folder_removed_with_instance(self):
+        self._mockgun.upload("Version", self._version["id"], self._path)
+        folder = self._mockgun._upload_folder
+        self.assertTrue(os.path.isdir(folder))
+        del self._mockgun
+        gc.collect()
+        self.assertFalse(os.path.exists(folder))
 
 
 if __name__ == "__main__":

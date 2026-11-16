@@ -117,9 +117,12 @@ Below is a non-exhaustive list of things that we still need to implement:
 import datetime
 import mimetypes
 import os
+import shutil
+import tempfile
+import weakref
 from typing import Any
 
-from ... import ShotgunError
+from ... import ShotgunError, ShotgunFileDownloadError
 from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
@@ -208,6 +211,9 @@ class Shotgun(object):
 
         # initialize the "database"
         self._db = dict((entity, {}) for entity in self._schema)
+        # the copies of uploaded files, by Attachment id, in a folder made on the first upload
+        self._uploads = {}
+        self._upload_folder = None
 
         # set some basic public members that exist in the Shotgun API
         self.base_url = base_url
@@ -452,7 +458,8 @@ class Shotgun(object):
                created_at=None):
         """
         Leaves the records an upload leaves on the server: an Attachment linked to the entity, and
-        the entity's field pointing at it, with the tags of tag_list. The file itself is not stored.
+        the entity's field pointing at it, with the tags of tag_list. A copy of the file is kept in a
+        temporary folder, which download_attachment returns and which is removed with this instance.
 
         :returns: Id of the Attachment entity, as the server returns.
         """
@@ -483,6 +490,13 @@ class Shotgun(object):
         # Schemas differ between sites: only set the fields this one has.
         data = dict((k, v) for k, v in data.items() if v is not None and k in self._schema["Attachment"])
         attachment_id = self.create("Attachment", data)["id"]
+        if self._upload_folder is None:
+            self._upload_folder = tempfile.mkdtemp(prefix="mockgun_uploads_")
+            weakref.finalize(self, shutil.rmtree, self._upload_folder, True)
+        copy = os.path.join(self._upload_folder, str(attachment_id), filename)
+        os.makedirs(os.path.dirname(copy))
+        shutil.copyfile(path, copy)
+        self._uploads[attachment_id] = copy
 
         url = "%s://%s/file_serve/attachment/%d" % (self.config.scheme, self.config.server, attachment_id)
         this_file = {
@@ -508,6 +522,38 @@ class Shotgun(object):
         elif field_name:
             self.update(entity_type, entity_id, {field_name: this_file})
         return attachment_id
+
+    def download_attachment(self, attachment=False, file_path=None, attachment_id=None):
+        """
+        Returns a file this instance uploaded, or the file a local file link points at.
+
+        :param attachment: An Attachment entity, the value of a File/Link field, or an Attachment id.
+        :param str file_path: Optional path to write the file to.
+        :returns: file_path if given, the file's content as bytes otherwise, None for an attachment of None.
+        """
+        if attachment is False:
+            if isinstance(attachment_id, int):
+                attachment = attachment_id
+            else:
+                raise TypeError(
+                    "Missing parameter 'attachment'. Expected a dict, int, NoneType value or "
+                    "an int for parameter attachment_id"
+                )
+        if attachment is None:
+            return None
+        if isinstance(attachment, dict) and attachment.get("link_type") == "local":
+            source = attachment.get("local_path")
+        else:
+            source = self._uploads.get(attachment.get("id") if isinstance(attachment, dict) else attachment)
+        if not source or not os.path.isfile(source):
+            raise ShotgunFileDownloadError(
+                "Failed to open %s\nAttachment may not exist or is a local file?" % (attachment,)
+            )
+        if file_path:
+            shutil.copyfile(source, file_path)
+            return file_path
+        with open(source, "rb") as f:
+            return f.read()
 
     def upload_thumbnail(self, entity_type, entity_id, path, **kwargs):
         pass
