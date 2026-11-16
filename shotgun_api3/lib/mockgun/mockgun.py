@@ -564,21 +564,25 @@ class Shotgun(object):
 
     def _get_default_value(self, entity_type, field):
         field_info = self._schema[entity_type][field]
-        if field_info["data_type"]["value"] == "multi_entity":
+        field_type = field_info["data_type"]["value"]
+        default_value = field_info["properties"]["default_value"]["value"]
+        # Return the default as Flow Production Tracking does, whatever form the schema stores it in.
+        if field_type == "multi_entity":
             default_value = []
-        else:
-            default_value = field_info["properties"]["default_value"]["value"]
+        elif field_type == "checkbox":
+            default_value = bool(default_value)
+        elif field_type == "text" and default_value == "":
+            default_value = None
+        elif field_type in ("number", "percent", "duration", "timecode") and isinstance(default_value, str):
+            default_value = int(default_value) if default_value else None
+        elif field_type in ("float", "currency") and isinstance(default_value, str):
+            default_value = float(default_value) if default_value else None
         return default_value
 
     def _get_new_row(self, entity_type):
         row = {"type": entity_type, "__retired": False}
         for field in self._schema[entity_type]:
-            field_info = self._schema[entity_type][field]
-            if field_info["data_type"]["value"] == "multi_entity":
-                default_value = []
-            else:
-                default_value = field_info["properties"]["default_value"]["value"]
-            row[field] = default_value
+            row[field] = self._get_default_value(entity_type, field)
         return row
 
     def _compare(self, field_type: str, lval: Any, operator: str, rval: Any) -> bool:

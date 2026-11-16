@@ -755,5 +755,45 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(mockgun.config.api_path, "/something/api3/json")
 
 
+class TestDefaultValues(unittest.TestCase):
+    """
+    A new record holds its defaults in the types Flow Production Tracking returns.
+    """
+
+    def setUp(self):
+        self._mockgun = Mockgun(
+            "https://test.shotgunstudio.com", login="user", password="1234"
+        )
+
+    def test_unset_checkbox_is_false(self):
+        # The schema stores None as this checkbox's default.
+        project = self._mockgun.create("Project", {"name": "prj"})
+        found = self._mockgun.find_one(
+            "Project", [["id", "is", project["id"]]], ["current_user_favorite"]
+        )
+        self.assertIs(found["current_user_favorite"], False)
+
+    def test_empty_text_is_none(self):
+        # The schema stores "" as this text field's default.
+        user = self._mockgun.create("HumanUser", {"name": "someone"})
+        found = self._mockgun.find_one(
+            "HumanUser", [["id", "is", user["id"]]], ["email"]
+        )
+        self.assertIsNone(found["email"])
+
+    def test_number_stored_as_string(self):
+        # Mockgun caches the schema for every instance, so the change is undone after the test.
+        default = self._mockgun._schema["Shot"]["sg_cut_order"]["properties"][
+            "default_value"
+        ]
+        self.addCleanup(default.__setitem__, "value", default["value"])
+        default["value"] = "0"
+        shot = self._mockgun.create("Shot", {"code": "shot"})
+        found = self._mockgun.find_one(
+            "Shot", [["id", "is", shot["id"]]], ["sg_cut_order"]
+        )
+        self.assertEqual(found["sg_cut_order"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()
