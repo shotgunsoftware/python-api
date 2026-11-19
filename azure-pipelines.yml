@@ -64,31 +64,16 @@ pr:
 jobs:
 - template: build-pipeline.yml@templates
   parameters:
+    # Run the tests with the shared tk-ci-tools test jobs. They come with a lot
+    # of default behavior (Python versions, Qt wrappers, operating systems and
+    # runner images), defined in internal/run-tests.yml of tk-ci-tools. Review
+    # those defaults when they change, and override them with
+    # run_tests_extra_parameters if this repository needs something else.
+    has_unit_tests: true
+
     has_ui_resources: false
 
     extra_test_dependencies:
     - -r tests/requirements.txt
-
-    # Python API does not follow the exact same Python version lifecycle than
-    # Toolkit, so it lists its own Python versions. Each one runs on Linux,
-    # macOS and Windows with their -latest image, unless os_versions says
-    # otherwise.
-    run_tests_extra_parameters:
-      platform_versions:
-      - name: Python 3.9
-        python_version: '3.9'
-        qt_wrapper: PySide2==5.15.2.1
-        os_versions:
-          # ubuntu-latest (Ubuntu 26.04) does not provide Python 3.9
-          Linux: ubuntu-24.04
-      - name: Python 3.10
-        python_version: '3.10'
-        qt_wrapper: PySide2==5.15.2.1
-      - name: Python 3.11
-        python_version: '3.11'
-        qt_wrapper: PySide6~=6.6.3
-      - name: Python 3.13
-        python_version: '3.13'
-        qt_wrapper: PySide6~=6.8.3
 
 - template: azure-pipelines-templates/type_checking.yml
