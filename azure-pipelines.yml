@@ -31,7 +31,8 @@ resources:
     - repository: templates
       type: github
       name: shotgunsoftware/tk-ci-tools
-      ref: refs/heads/master
+      # Testing the tk-ci-tools branch, revert to master before merging.
+      ref: refs/heads/ticket/SG-47353-test-matrix-latest-images
       endpoint: shotgunsoftware
       # Despite using the "tk-" prefix, tk-ci-tools is not a Toolkit only tool.
       # We use it to avoid duplicating and maintaining CI pipeline code.
@@ -58,55 +59,27 @@ pr:
     include:
     - "*"
 
-parameters:
-  - name: python_versions
-    type: object
-    default:
-      - '3.9'
-      - '3.10'
-      - '3.11'
-      - '3.13'
-
-  - name: os_versions
-    type: object
-    default:
-      - name: Linux
-        # Pinned: ubuntu-latest has no Python 3.9, which we still support SG-45286
-        vm_image: ubuntu-24.04
-        codecov_download_url: https://uploader.codecov.io/latest/linux/codecov
-
-      - name: macOS
-        vm_image: macOS-latest
-        codecov_download_url: https://uploader.codecov.io/v0.7.3/macos/codecov
-        # macOS & codecov note:
-        # In Nov 2024 (SG-36700), we pinned macOS to codecov v0.7.3 because the
-        # macOS-latest Azure Pipelines agent is Intel (x86_64), but Codecov
-        # started shipping arm64-only binaries.
-        # When we will change the macOs image to a arm64 arch, we can use the
-        # "latest" version again.
-
-      - name: Windows
-        vm_image: windows-latest
-        codecov_download_url: https://uploader.codecov.io/latest/windows/codecov.exe
-
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
 jobs:
 - template: build-pipeline.yml@templates
   parameters:
-    # Python API does not follow the exact same Python version lifecycle than
-    # Toolkit. So we prefer to control the test execution here instead.
-    has_unit_tests: false
+    # Run the tests with the shared tk-ci-tools test jobs. They come with a lot
+    # of default behavior (Python versions, Qt wrappers, operating systems and
+    # runner images), defined in internal/run-tests.yml of tk-ci-tools. Review
+    # those defaults when they change, and override them with
+    # run_tests_extra_parameters if this repository needs something else.
+    has_unit_tests: true
 
     has_ui_resources: false
 
-- template: azure-pipelines-templates/type_checking.yml
+    extra_test_dependencies:
+    - -r tests/requirements.txt
 
-- ${{ each os_version in parameters.os_versions }}:
-  - ${{ each python_version in parameters.python_versions }}:
-    - template: azure-pipelines-templates/run-tests.yml
-      parameters:
-        codecov_download_url: ${{ os_version.codecov_download_url }}
-        os_name: ${{ os_version.name }}
-        python_version: ${{ python_version }}
-        vm_image: ${{ os_version.vm_image }}
+    run_tests_extra_parameters:
+      # The Python API is not a Toolkit component. Without this, the tests
+      # would import the shotgun_api3 bundled with tk-core instead of this
+      # repository's code.
+      use_tk_core: false
+
+- template: azure-pipelines-templates/type_checking.yml
