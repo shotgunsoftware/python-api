@@ -76,4 +76,10 @@ jobs:
     extra_test_dependencies:
     - -r tests/requirements.txt
 
+    run_tests_extra_parameters:
+      # The Python API is not a Toolkit component. Without this, the tests
+      # would import the shotgun_api3 bundled with tk-core instead of this
+      # repository's code.
+      use_tk_core: false
+
 - template: azure-pipelines-templates/type_checking.yml
