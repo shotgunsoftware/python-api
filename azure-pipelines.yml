@@ -62,8 +62,13 @@ pr:
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
 jobs:
+- template: azure-pipelines-templates/type_checking.yml
+
 - template: build-pipeline.yml@templates
   parameters:
+    # The Python API has no UI, so there are no resources to validate.
+    has_ui_resources: false
+
     # Run the tests with the shared tk-ci-tools test jobs. They come with a lot
     # of default behavior (Python versions, Qt wrappers, operating systems and
     # runner images), defined in internal/run-tests.yml of tk-ci-tools. Review
@@ -71,12 +76,10 @@ jobs:
     # run_tests_extra_parameters if this repository needs something else.
     has_unit_tests: true
 
-    has_ui_resources: false
-
-    extra_test_dependencies:
-    - -r tests/requirements.txt
-
     run_tests_extra_parameters:
+      extra_test_dependencies:
+      - -r tests/requirements.txt
+
       # The Python API is not a Toolkit component. Without this, the tests
       # would import the shotgun_api3 bundled with tk-core instead of this
       # repository's code.
@@ -145,5 +148,3 @@ jobs:
         SG_SCRIPT_NAME: $(ci_site_script_name)
         SG_API_KEY: $(ci_site_script_key)
         SG_PROJECT_NAME: Python API CI - $(Build.BuildId) - $(tk_ci_os_name) - $(tk_ci_python_version)
-
-- template: azure-pipelines-templates/type_checking.yml
