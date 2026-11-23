@@ -31,8 +31,7 @@ resources:
     - repository: templates
       type: github
       name: shotgunsoftware/tk-ci-tools
-      # Testing the tk-ci-tools branch, revert to master before merging.
-      ref: refs/heads/ticket/SG-47353-test-matrix-latest-images
+      ref: refs/heads/master
       endpoint: shotgunsoftware
       # Despite using the "tk-" prefix, tk-ci-tools is not a Toolkit only tool.
       # We use it to avoid duplicating and maintaining CI pipeline code.
