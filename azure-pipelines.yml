@@ -31,7 +31,7 @@ resources:
     - repository: templates
       type: github
       name: shotgunsoftware/tk-ci-tools
-      ref: refs/heads/master
+      ref: refs/heads/ticket/SG-47353-toolkit-flag
       endpoint: shotgunsoftware
       # Despite using the "tk-" prefix, tk-ci-tools is not a Toolkit only tool.
       # We use it to avoid duplicating and maintaining CI pipeline code.
@@ -72,21 +72,21 @@ jobs:
     # of default behavior (Python versions, Qt wrappers, operating systems and
     # runner images), defined in internal/run-tests.yml of tk-ci-tools. Review
     # those defaults when they change, and override them with
-    # run_tests_extra_parameters if this repository needs something else.
+    # run_tests_parameters if this repository needs something else.
     has_unit_tests: true
 
-    run_tests_extra_parameters:
-      extra_test_dependencies:
+    run_tests_parameters:
+      # The Python API is not a Toolkit component: no Qt wrapper, tk-toolchain
+      # or tk-core. With tk-core, the tests would import the shotgun_api3
+      # bundled with tk-core instead of this repository's code.
+      toolkit: false
+
+      dependencies:
       - -r tests/requirements.txt
 
-      # The Python API is not a Toolkit component. Without this, the tests
-      # would import the shotgun_api3 bundled with tk-core instead of this
-      # repository's code.
-      use_tk_core: false
-
-      pre_tests_steps:
+      pre_steps:
       # The tests read the test data names from this file. The site and the
-      # credentials come from the SG_* variables of tests_env.
+      # credentials come from the SG_* variables of env below.
       - bash: cp ./tests/example_config ./tests/config
         displayName: Create the test configuration
 
@@ -102,7 +102,7 @@ jobs:
 
       # Authenticate with the test site. On pull requests from forks, the
       # secrets are not available.
-      tests_env:
+      env:
         SG_SERVER_URL: $(ci_site)
         SG_SCRIPT_NAME: $(ci_site_script_name)
         SG_API_KEY: $(ci_site_script_key)
@@ -116,7 +116,7 @@ jobs:
         SG_PROJECT_NAME: Python API CI - $(Build.BuildId) - $(tk_ci_os_name) - $(tk_ci_python_version)
 
       # Retry the tests that fail because of the test site.
-      pytest_extra_args: [--reruns, '1', --reruns-delay, '2']
+      pytest_args: [--reruns, '1', --reruns-delay, '2']
 
     post_tests_steps:
     - task: PythonScript@0
