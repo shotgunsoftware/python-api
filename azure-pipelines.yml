@@ -82,7 +82,7 @@ jobs:
       toolkit: false
 
       dependencies:
-      - -r tests/requirements.txt
+      - --requirement=tests/requirements.txt
 
       pre_steps:
       # The tests read the test data names from this file. The site and the
