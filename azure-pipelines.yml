@@ -81,7 +81,7 @@ jobs:
       # bundled with tk-core instead of this repository's code.
       toolkit: false
 
-      dependencies:
+      pip_requirements:
       - --requirement=tests/requirements.txt
 
       pre_steps:
