@@ -58,55 +58,92 @@ pr:
     include:
     - "*"
 
-parameters:
-  - name: python_versions
-    type: object
-    default:
-      - '3.9'
-      - '3.10'
-      - '3.11'
-      - '3.13'
-
-  - name: os_versions
-    type: object
-    default:
-      - name: Linux
-        # Pinned: ubuntu-latest has no Python 3.9, which we still support SG-45286
-        vm_image: ubuntu-24.04
-        codecov_download_url: https://uploader.codecov.io/latest/linux/codecov
-
-      - name: macOS
-        vm_image: macOS-latest
-        codecov_download_url: https://uploader.codecov.io/v0.7.3/macos/codecov
-        # macOS & codecov note:
-        # In Nov 2024 (SG-36700), we pinned macOS to codecov v0.7.3 because the
-        # macOS-latest Azure Pipelines agent is Intel (x86_64), but Codecov
-        # started shipping arm64-only binaries.
-        # When we will change the macOs image to a arm64 arch, we can use the
-        # "latest" version again.
-
-      - name: Windows
-        vm_image: windows-latest
-        codecov_download_url: https://uploader.codecov.io/latest/windows/codecov.exe
-
 # This here is the list of jobs we want to run for our build.
 # Jobs run in parallel.
 jobs:
-- template: build-pipeline.yml@templates
-  parameters:
-    # Python API does not follow the exact same Python version lifecycle than
-    # Toolkit. So we prefer to control the test execution here instead.
-    has_unit_tests: false
-
-    has_ui_resources: false
-
 - template: azure-pipelines-templates/type_checking.yml
 
-- ${{ each os_version in parameters.os_versions }}:
-  - ${{ each python_version in parameters.python_versions }}:
-    - template: azure-pipelines-templates/run-tests.yml
-      parameters:
-        codecov_download_url: ${{ os_version.codecov_download_url }}
-        os_name: ${{ os_version.name }}
-        python_version: ${{ python_version }}
-        vm_image: ${{ os_version.vm_image }}
+- template: build-pipeline.yml@templates
+  parameters:
+    # The Python API has no UI, so there are no resources to validate.
+    has_ui_resources: false
+
+    # Run the tests with the shared tk-ci-tools test jobs. They come with a lot
+    # of default behavior (Python versions, Qt wrappers, operating systems and
+    # runner images), defined in internal/run-tests.yml of tk-ci-tools. Review
+    # those defaults when they change, and override them with
+    # run_tests_parameters if this repository needs something else.
+    has_unit_tests: true
+
+    run_tests_parameters:
+      # The Python API is not a Toolkit component: no Qt wrapper, tk-toolchain
+      # or tk-core. With tk-core, the tests would import the shotgun_api3
+      # bundled with tk-core instead of this repository's code.
+      toolkit: false
+
+      pip_requirements:
+      - --requirement=tests/requirements.txt
+
+      pre_steps:
+      # The tests read the test data names from this file. The site and the
+      # credentials come from the SG_* variables of env below.
+      - bash: cp ./tests/example_config ./tests/config
+        displayName: Create the test configuration
+
+      # The Windows certificate store is missing the newer Amazon root
+      # certificate, which some clients experienced too.
+      - powershell: |
+          $cert_url = "https://www.amazontrust.com/repository/SFSRootCAG2.cer"
+          $cert_file = New-TemporaryFile
+          Invoke-WebRequest -Uri $cert_url -UseBasicParsing -OutFile $cert_file.FullName
+          Import-Certificate -FilePath $cert_file.FullName -CertStoreLocation Cert:\LocalMachine\Root
+        displayName: Updating OS Certificates
+        condition: and(succeeded(), eq(variables['Agent.OS'], 'Windows_NT'))
+
+      # Authenticate with the test site. On pull requests from forks, the
+      # secrets are not available.
+      env:
+        SG_SERVER_URL: $(ci_site)
+        SG_SCRIPT_NAME: $(ci_site_script_name)
+        SG_API_KEY: $(ci_site_script_key)
+        # The tests modify the human user, so each job uses its own. These
+        # users exist on the test site, one per OS and Python version, e.g.
+        # <login>-Linux-3.9.
+        SG_HUMAN_LOGIN: $(python_api_human_login)-$(tk_ci_os_name)-$(tk_ci_python_version)
+        SG_HUMAN_NAME: $(python_api_human_name) $(tk_ci_os_name) $(tk_ci_python_version)
+        SG_HUMAN_PASSWORD: $(python_api_human_password)
+        # Each job gets its own project, deleted in the cleanup step below.
+        SG_PROJECT_NAME: Python API CI - $(Build.BuildId) - $(tk_ci_os_name) - $(tk_ci_python_version)
+
+      # Retry the tests that fail because of the test site.
+      pytest_args: [--reruns, '1', --reruns-delay, '2']
+
+    post_tests_steps:
+    - task: PythonScript@0
+      displayName: Cleanup test project
+      condition: always()
+      inputs:
+        scriptSource: inline
+        workingDirectory: $(Build.SourcesDirectory)
+        script: |
+          import os, shotgun_api3, sys
+          sg = shotgun_api3.Shotgun(
+              os.environ['SG_SERVER_URL'],
+              script_name=os.environ['SG_SCRIPT_NAME'],
+              api_key=os.environ['SG_API_KEY'],
+          )
+          project = sg.find_one(
+              entity_type='Project',
+              filters=[['name', 'is', os.environ['SG_PROJECT_NAME']]],
+          )
+          if not project:
+              print('Project not found, nothing to clean up.')
+              sys.exit(0)
+          sg.delete(entity_type='Project', entity_id=project['id'])
+          print('Retired project:', os.environ['SG_PROJECT_NAME'])
+      env:
+        PYTHONPATH: $(Build.SourcesDirectory)
+        SG_SERVER_URL: $(ci_site)
+        SG_SCRIPT_NAME: $(ci_site_script_name)
+        SG_API_KEY: $(ci_site_script_key)
+        SG_PROJECT_NAME: Python API CI - $(Build.BuildId) - $(tk_ci_os_name) - $(tk_ci_python_version)
