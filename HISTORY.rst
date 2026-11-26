@@ -4,6 +4,19 @@ Flow Production Tracking Python API Changelog
 
 Here you can see the full list of changes between each Python API release.
 
+Unreleased
+==========
+
+- Add ``AsyncShotgun``, an asyncio client for concurrent requests, built on ``httpx``. It is an
+  optional dependency: ``pip install shotgun_api3[async]``. It supports the record, schema,
+  following, note, activity, work schedule and custom entity methods. Uploads, downloads,
+  ``auth_token`` authentication and Mockgun are not supported yet; the methods involved raise
+  ``NotImplementedError``. See the "Async client" page of
+  the advanced topics.
+- Move logic shared by the blocking and async clients into the private ``shotgun_api3._core``
+  module. The public API is unchanged. ``SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION`` (the module
+  attribute behind the environment variable) now lives in ``shotgun_api3._core``.
+
 v3.10.5 (2026 Nov 4)
 =====================
 

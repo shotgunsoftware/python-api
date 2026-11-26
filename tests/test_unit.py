@@ -10,6 +10,7 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+import copy
 import os
 import shutil
 import socket
@@ -475,7 +476,7 @@ class TestFilters(unittest.TestCase):
         result = api.shotgun._translate_filters(filters, "all")
         self.assertEqual(result, expected)
 
-    @mock.patch("shotgun_api3.shotgun.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
+    @mock.patch("shotgun_api3._core.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
     def test_related_object_entity_optimization_is(self):
         filters = [
             [
@@ -531,7 +532,7 @@ class TestFilters(unittest.TestCase):
         result = api.shotgun._translate_filters(filters, "all")
         self.assertEqual(result, expected)
 
-    @mock.patch("shotgun_api3.shotgun.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
+    @mock.patch("shotgun_api3._core.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
     def test_related_object_entity_optimization_in(self):
         filters = [
             [
@@ -619,7 +620,7 @@ class TestFilters(unittest.TestCase):
         )
         self.assertEqual(result, expected)
 
-    @mock.patch("shotgun_api3.shotgun.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
+    @mock.patch("shotgun_api3._core.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
     def test_related_object_update_optimization_entity(self):
         entity_type = "Anything"
         entity_id = 999
@@ -672,7 +673,7 @@ class TestFilters(unittest.TestCase):
         )
         self.assertEqual(result, expected)
 
-    @mock.patch("shotgun_api3.shotgun.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
+    @mock.patch("shotgun_api3._core.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", False)
     def test_related_object_update_optimization_entity_multi(self):
         entity_type = "Asset"
         entity_id = 6626
@@ -1581,6 +1582,534 @@ class TestFormPostHandlerEncode(unittest.TestCase):
     def test_windows_path_is_reduced_to_base_name(self):
         body = self._encode([], [("file", self._file("C:\\renders\\shot.txt"))])
         self.assertIn(b'filename="shot.txt"', body)
+
+
+class TestAuthParamsServerCaps(unittest.TestCase):
+    """Version-gated auth params: the shared core never fetches server caps itself."""
+
+    URL = "http://server_path"
+
+    def _caps(self, version):
+        return shotgun.ServerCapabilities("server_path", {"version": version})
+
+    def _script_sg(self, **kw):
+        return api.Shotgun(self.URL, "script", "key", connect=False, **kw)
+
+    def _session_sg(self):
+        return api.Shotgun(self.URL, session_token="tok", connect=False)
+
+    def test_script_auth_needs_no_caps(self):
+        sg = self._script_sg()
+        with mock.patch.object(sg, "info") as info:
+            params = sg._auth_params()
+        self.assertEqual({"script_name": "script", "script_key": "key"}, params)
+        info.assert_not_called()
+
+    def test_core_requires_caps_for_session_token(self):
+        sg = self._session_sg()
+        with self.assertRaises(shotgun._ServerCapsRequired):
+            shotgun._SGCore._auth_params(sg)
+
+    def test_core_requires_caps_for_sudo_as_login(self):
+        sg = self._script_sg(sudo_as_login="someone")
+        with self.assertRaises(shotgun._ServerCapsRequired):
+            shotgun._SGCore._auth_params(sg)
+
+    def test_session_token_version_gate(self):
+        sg = self._session_sg()
+        with self.assertRaises(api.ShotgunError):
+            shotgun._SGCore._auth_params(sg, self._caps((5, 2, 9)))
+
+        params = shotgun._SGCore._auth_params(sg, self._caps((5, 3, 0)))
+        self.assertEqual("tok", params["session_token"])
+        self.assertNotIn("reject_if_expired", params)
+
+        params = shotgun._SGCore._auth_params(sg, self._caps((5, 4, 4)))
+        self.assertTrue(params["reject_if_expired"])
+
+    def test_sudo_as_login_version_gate(self):
+        sg = self._script_sg(sudo_as_login="someone")
+        with self.assertRaises(api.ShotgunError):
+            shotgun._SGCore._auth_params(sg, self._caps((5, 3, 11)))
+
+        params = shotgun._SGCore._auth_params(sg, self._caps((5, 3, 12)))
+        self.assertEqual("someone", params["sudo_as_login"])
+
+    def test_sync_client_fetches_caps_lazily(self):
+        sg = self._session_sg()
+        with mock.patch.object(sg, "info", return_value={"version": [5, 4, 4]}) as info:
+            params = sg._auth_params()
+            sg._auth_params()
+        self.assertTrue(params["reject_if_expired"])
+        info.assert_called_once_with()  # fetched once, then cached
+
+    def test_sync_client_gate_error_after_lazy_fetch(self):
+        sg = self._session_sg()
+        with mock.patch.object(sg, "info", return_value={"version": [5, 2, 0]}):
+            with self.assertRaises(api.ShotgunError):
+                sg._auth_params()
+
+    def test_build_payload_passes_caps_through(self):
+        sg = self._session_sg()
+        payload = sg._build_payload("read", {"a": 1}, caps=self._caps((5, 4, 4)))
+        self.assertEqual("read", payload["method_name"])
+        self.assertEqual("tok", payload["params"][0]["session_token"])
+        self.assertEqual({"a": 1}, payload["params"][1])
+
+
+class TestRetryHelpers(unittest.TestCase):
+    """Retry decisions shared by the sync and async clients."""
+
+    def setUp(self):
+        self.sg = api.Shotgun("http://server_path", "script", "key", connect=False)
+        self.sg.config.rpc_attempt_interval = 0
+        self.sg.BACKOFF = 0.5
+
+    @staticmethod
+    def _protocol_error(code, msg="msg"):
+        return api.ProtocolError("host", code, msg, {})
+
+    def test_ssl_errors_are_retryable(self):
+        is_retryable = shotgun._SGCore._is_retryable_connection_error
+        self.assertTrue(is_retryable(ssl.SSLEOFError()))
+        self.assertTrue(is_retryable(ssl.SSLError()))
+        self.assertTrue(is_retryable(ssl.CertificateError()))
+
+    def test_other_errors_are_not_retryable(self):
+        is_retryable = shotgun._SGCore._is_retryable_connection_error
+        self.assertFalse(is_retryable(socket.timeout()))
+        self.assertFalse(is_retryable(ValueError()))
+
+    def test_gateway_retry_delay_scales_with_attempt(self):
+        for code in (502, 504):
+            err = self._protocol_error(code)
+            self.assertEqual(0.5, self.sg._gateway_retry_delay(err, 1))
+            self.assertEqual(1.0, self.sg._gateway_retry_delay(err, 2))
+
+    def test_gateway_retry_delay_none_on_last_attempt(self):
+        err = self._protocol_error(502)
+        self.assertIsNone(self.sg._gateway_retry_delay(err, self.sg.MAX_ATTEMPTS))
+
+    def test_gateway_retry_delay_none_for_other_statuses(self):
+        for code in (400, 403, 500, 503):
+            self.assertIsNone(
+                self.sg._gateway_retry_delay(self._protocol_error(code), 1)
+            )
+
+    def test_annotate_protocol_error(self):
+        err = shotgun._SGCore._annotate_protocol_error(
+            self._protocol_error(500, "boom"), {"h": "v"}, "body"
+        )
+        self.assertEqual({"h": "v"}, err.headers)
+        self.assertEqual("boom", err.errmsg)
+
+    def test_annotate_protocol_error_403_appends_body(self):
+        err = shotgun._SGCore._annotate_protocol_error(
+            self._protocol_error(403, "Forbidden"), {}, "blocked page"
+        )
+        self.assertEqual("Forbidden: blocked page", err.errmsg)
+
+    def test_make_call_retries_ssl_error_then_succeeds(self):
+        ok = ((200, "OK"), {}, "body")
+        self.sg._http_request = mock.Mock(
+            side_effect=[ssl.SSLEOFError(), ssl.SSLError(), ok]
+        )
+        self.sg._close_connection = mock.Mock()
+
+        self.assertEqual(ok, self.sg._make_call("POST", "/p", None, None))
+        self.assertEqual(3, self.sg._http_request.call_count)
+        self.assertEqual(2, self.sg._close_connection.call_count)
+
+    def test_make_call_raises_ssl_error_when_attempts_exhausted(self):
+        self.sg._http_request = mock.Mock(side_effect=ssl.SSLEOFError())
+        self.sg._close_connection = mock.Mock()
+
+        with self.assertRaises(ssl.SSLEOFError):
+            self.sg._make_call("POST", "/p", None, None)
+        self.assertEqual(
+            self.sg.config.max_rpc_attempts, self.sg._http_request.call_count
+        )
+
+    def test_make_call_does_not_retry_other_errors(self):
+        self.sg._http_request = mock.Mock(side_effect=socket.timeout())
+        self.sg._close_connection = mock.Mock()
+
+        with self.assertRaises(socket.timeout):
+            self.sg._make_call("POST", "/p", None, None)
+        self.assertEqual(1, self.sg._http_request.call_count)
+        self.sg._close_connection.assert_called_once_with()
+
+
+def _caps(version):
+    return shotgun.ServerCapabilities("server_path", {"version": version})
+
+
+class TestFindFlow(unittest.TestCase):
+    """``_find_flow`` is driven by hand: no I/O, the test plays the driver."""
+
+    NEW = (8, 0, 0)  # supports pagination without counts
+    OLD = (7, 0, 0)  # pagination with counts
+
+    def setUp(self):
+        self.sg = api.Shotgun("http://server_path", "script", "key", connect=False)
+        self.sg.config._records_per_page = 2  # the property is read-only
+
+    def _flow(self, limit=0, page=0, **kw):
+        kw.setdefault("include_archived_projects", True)
+        return self.sg._find_flow(
+            "Shot",
+            [],
+            None,
+            None,
+            None,
+            limit,
+            False,
+            page,
+            **{
+                "include_archived_projects": kw["include_archived_projects"],
+                "additional_filter_presets": kw.get("additional_filter_presets"),
+            }
+        )
+
+    def _run(self, flow, version, replies):
+        """Play the driver; returns (steps requested, final value)."""
+        steps, replies = [], list(replies)
+        reply = None
+        while True:
+            try:
+                step = flow.send(reply)
+            except StopIteration as stop:
+                return steps, stop.value
+            # the flow mutates one params dict between requests: keep a snapshot
+            steps.append(step if step is shotgun.NEED_CAPS else copy.deepcopy(step))
+            reply = _caps(version) if step is shotgun.NEED_CAPS else replies.pop(0)
+
+    @staticmethod
+    def _rec(i):
+        return {"type": "Shot", "id": i}
+
+    def test_invalid_limit_raises_before_requesting_caps(self):
+        with self.assertRaises(ValueError):
+            next(self._flow(limit="x"))
+
+    def test_invalid_page_raises_before_requesting_caps(self):
+        with self.assertRaises(ValueError):
+            next(self._flow(page=-1))
+
+    def test_filter_operator_with_dict_filters_raises(self):
+        flow = self.sg._find_flow(
+            "Shot", {}, None, None, "all", 0, False, 0, True, None
+        )
+        with self.assertRaises(api.ShotgunError):
+            next(flow)
+
+    def test_requests_caps_first(self):
+        self.assertIs(shotgun.NEED_CAPS, next(self._flow()))
+
+    def test_unsupported_server_raises(self):
+        flow = self._flow(include_archived_projects=False)
+        next(flow)
+        with self.assertRaises(api.ShotgunError):
+            flow.send(_caps((5, 3, 13)))
+
+    def test_single_page_when_limit_fits(self):
+        steps, result = self._run(
+            self._flow(limit=1), self.NEW, [{"entities": [self._rec(1)]}]
+        )
+
+        self.assertEqual(2, len(steps))
+        method, params = steps[1]
+        self.assertEqual("read", method)
+        self.assertEqual({"entities_per_page": 1, "current_page": 1}, params["paging"])
+        self.assertFalse(params["return_paging_info_without_counts"])
+        self.assertEqual([self._rec(1)], result)
+
+    def test_explicit_page(self):
+        steps, result = self._run(
+            self._flow(page=3), self.NEW, [{"entities": [self._rec(7)]}]
+        )
+
+        self.assertEqual(3, steps[1][1]["paging"]["current_page"])
+        self.assertEqual([self._rec(7)], result)
+
+    def test_paginates_without_counts(self):
+        replies = [
+            {
+                "entities": [self._rec(1), self._rec(2)],
+                "paging_info": {"has_next_page": True},
+            },
+            {"entities": [self._rec(3)], "paging_info": {"has_next_page": False}},
+        ]
+        steps, result = self._run(self._flow(), self.NEW, replies)
+
+        pages = [s[1]["paging"]["current_page"] for s in steps[1:]]
+        self.assertEqual([1, 2], pages)
+        self.assertTrue(steps[1][1]["return_paging_info_without_counts"])
+        self.assertEqual([self._rec(1), self._rec(2), self._rec(3)], result)
+
+    def test_paginates_with_counts_on_older_server(self):
+        replies = [
+            {
+                "entities": [self._rec(1), self._rec(2)],
+                "paging_info": {"entity_count": 3},
+            },
+            {"entities": [self._rec(3)], "paging_info": {"entity_count": 3}},
+        ]
+        steps, result = self._run(self._flow(), self.OLD, replies)
+
+        self.assertEqual(2, len(steps[1:]))
+        self.assertTrue(steps[1][1]["return_paging_info"])
+        self.assertEqual([self._rec(i) for i in (1, 2, 3)], result)
+
+    def test_older_server_stops_on_empty_page(self):
+        replies = [{"entities": [], "paging_info": {"entity_count": 0}}]
+        steps, result = self._run(self._flow(), self.OLD, replies)
+
+        self.assertEqual(1, len(steps[1:]))
+        self.assertEqual([], result)
+
+    def test_limit_truncates_across_pages(self):
+        replies = [
+            {
+                "entities": [self._rec(1), self._rec(2)],
+                "paging_info": {"has_next_page": True},
+            },
+            {
+                "entities": [self._rec(3), self._rec(4)],
+                "paging_info": {"has_next_page": True},
+            },
+        ]
+        steps, result = self._run(self._flow(limit=3), self.NEW, replies)
+
+        self.assertEqual(2, len(steps[1:]))
+        self.assertEqual([self._rec(i) for i in (1, 2, 3)], result)
+
+    def test_sync_find_drives_the_flow(self):
+        self.sg._server_caps = _caps(self.NEW)
+        self.sg._call_rpc = mock.Mock(return_value={"entities": [self._rec(1)]})
+
+        result = self.sg.find("Shot", [], limit=1)
+
+        self.assertEqual([self._rec(1)], result)
+        self.assertEqual("read", self.sg._call_rpc.call_args[0][0])
+
+    def test_sync_find_does_not_swallow_stop_iteration_from_rpc(self):
+        # A mock with an exhausted side_effect raises StopIteration from _call_rpc itself.
+        self.sg._server_caps = _caps(self.NEW)
+        self.sg._call_rpc = mock.Mock(side_effect=StopIteration)
+
+        with self.assertRaises(StopIteration):
+            self.sg.find("Shot", [], limit=1)
+
+
+class TestSharedBuilders(unittest.TestCase):
+    def setUp(self):
+        self.sg = api.Shotgun("http://server_path", "script", "key", connect=False)
+
+    # create
+    def test_prepare_create_defaults_and_splits_image(self):
+        params, image, filmstrip = self.sg._prepare_create(
+            "Shot", {"code": "a", "image": "p.png"}, None
+        )
+
+        self.assertEqual(["id"], params["return_fields"])
+        self.assertEqual([{"field_name": "code", "value": "a"}], params["fields"])
+        self.assertEqual(("p.png", None), (image, filmstrip))
+
+    def test_prepare_create_does_not_mutate_input(self):
+        data = {"code": "a", "image": "p.png"}
+        self.sg._prepare_create("Shot", data, ["id"])
+        self.assertEqual({"code": "a", "image": "p.png"}, data)
+
+    def test_prepare_create_filmstrip_needs_caps(self):
+        with self.assertRaises(shotgun._ServerCapsRequired):
+            self.sg._prepare_create("Shot", {"filmstrip_image": "f.png"}, None)
+        with self.assertRaises(api.ShotgunError):
+            self.sg._prepare_create(
+                "Shot", {"filmstrip_image": "f.png"}, None, caps=_caps((3, 0, 9))
+            )
+
+        _, _, filmstrip = self.sg._prepare_create(
+            "Shot", {"filmstrip_image": "f.png"}, None, caps=_caps((3, 1, 0))
+        )
+        self.assertEqual("f.png", filmstrip)
+
+    def test_prepare_create_without_filmstrip_needs_no_caps(self):
+        self.sg._prepare_create("Shot", {"code": "a"}, None)  # does not raise
+
+    # update
+    def test_prepare_update_only_image_has_no_rpc_params(self):
+        params, image, _ = self.sg._prepare_update("Shot", 1, {"image": "p.png"}, None)
+
+        self.assertIsNone(params)
+        self.assertEqual("p.png", image)
+
+    def test_prepare_update_none_image_is_sent_as_a_field(self):
+        params, image, _ = self.sg._prepare_update("Shot", 1, {"image": None}, None)
+
+        self.assertIsNone(image)
+        self.assertEqual([{"field_name": "image", "value": None}], params["fields"])
+
+    def test_prepare_update_filmstrip_needs_caps(self):
+        with self.assertRaises(shotgun._ServerCapsRequired):
+            self.sg._prepare_update("Shot", 1, {"filmstrip_image": "f.png"}, None)
+
+    # batch
+    def test_build_batch_calls_empty(self):
+        self.assertEqual([], self.sg._build_batch_calls([]))
+
+    def test_build_batch_calls_rejects_non_list(self):
+        with self.assertRaises(api.ShotgunError):
+            self.sg._build_batch_calls(({},))
+
+    def test_build_batch_calls_rejects_invalid_request(self):
+        for bad in (
+            {"request_type": "create"},
+            {"request_type": "nope", "entity_type": "Shot"},
+            {"request_type": "update", "entity_type": "Shot", "data": {}},
+        ):
+            with self.assertRaises(api.ShotgunError):
+                self.sg._build_batch_calls([bad])
+
+    def test_build_batch_calls_shapes(self):
+        calls = self.sg._build_batch_calls(
+            [
+                {
+                    "request_type": "create",
+                    "entity_type": "Shot",
+                    "data": {"code": "a"},
+                },
+                {
+                    "request_type": "update",
+                    "entity_type": "Shot",
+                    "entity_id": 2,
+                    "data": {"code": "b"},
+                    "multi_entity_update_modes": {"code": "add"},
+                },
+                {"request_type": "delete", "entity_type": "Shot", "entity_id": 3},
+            ]
+        )
+
+        self.assertEqual(["id"], calls[0]["return_fields"])
+        self.assertEqual(
+            [{"field_name": "code", "value": "b", "multi_entity_update_mode": "add"}],
+            calls[1]["fields"],
+        )
+        self.assertEqual({"request_type": "delete", "type": "Shot", "id": 3}, calls[2])
+
+    # records
+    def test_parse_records_without_image_needs_no_caps(self):
+        self.assertEqual(
+            [{"type": "Shot", "id": 1}],
+            shotgun._SGCore._parse_records(self.sg, {"type": "Shot", "id": 1}, None),
+        )
+
+    def test_parse_records_with_image_needs_caps(self):
+        rec = {"type": "Shot", "id": 1, "image": "http://x/y.png"}
+        with self.assertRaises(shotgun._ServerCapsRequired):
+            shotgun._SGCore._parse_records(self.sg, [dict(rec)], None)
+
+        self.assertEqual(
+            [rec],
+            shotgun._SGCore._parse_records(self.sg, [dict(rec)], _caps((8, 0, 0))),
+        )
+
+    def test_parse_records_old_server_thumbnail_fallback_is_pluggable(self):
+        rec = {"type": "Shot", "id": 1, "image": "x"}
+        with mock.patch.object(
+            self.sg, "_build_thumb_url", return_value="http://thumb"
+        ):
+            out = shotgun._SGCore._parse_records(self.sg, [rec], _caps((3, 2, 0)))
+        self.assertEqual("http://thumb", out[0]["image"])
+
+    def test_core_has_no_thumbnail_fallback(self):
+        with self.assertRaises(NotImplementedError):
+            shotgun._SGCore._build_thumb_url(self.sg, "Shot", 1)
+
+    def test_sync_parse_records_fetches_caps_only_for_images(self):
+        with mock.patch.object(
+            self.sg, "info", return_value={"version": [8, 0, 0]}
+        ) as info:
+            self.sg._parse_records([{"type": "Shot", "id": 1}])
+            info.assert_not_called()
+            self.sg._parse_records([{"type": "Shot", "id": 1, "image": "u"}])
+            info.assert_called_once_with()
+
+
+class TestSyncMethodsUseSharedHelpers(unittest.TestCase):
+    """The sync methods are thin glue over the core helpers; check the glue with rpc mocked."""
+
+    def setUp(self):
+        self.sg = api.Shotgun("http://server_path", "script", "key", connect=False)
+        self.sg._server_caps = _caps((8, 0, 0))
+        self.sg._call_rpc = mock.Mock()
+
+    def test_create(self):
+        self.sg._call_rpc.return_value = {"type": "Shot", "id": 5, "code": "a"}
+
+        result = self.sg.create("Shot", {"code": "a"})
+
+        self.assertEqual({"type": "Shot", "id": 5, "code": "a"}, result)
+        self.sg._call_rpc.assert_called_once_with(
+            "create",
+            {
+                "type": "Shot",
+                "fields": [{"field_name": "code", "value": "a"}],
+                "return_fields": ["id"],
+            },
+            first=True,
+        )
+
+    def test_create_with_image_uploads_thumbnail(self):
+        self.sg._call_rpc.return_value = {"type": "Shot", "id": 5}
+        self.sg.upload_thumbnail = mock.Mock()
+        self.sg.find_one = mock.Mock(return_value={"image": "http://thumb"})
+
+        result = self.sg.create("Shot", {"image": "p.png"})
+
+        self.sg.upload_thumbnail.assert_called_once_with("Shot", 5, "p.png")
+        self.assertEqual("http://thumb", result["image"])
+
+    def test_update(self):
+        self.sg._call_rpc.return_value = {"type": "Shot", "id": 5, "code": "b"}
+
+        result = self.sg.update("Shot", 5, {"code": "b"})
+
+        self.assertEqual("b", result["code"])
+        method, params = self.sg._call_rpc.call_args[0]
+        self.assertEqual("update", method)
+        self.assertEqual([{"field_name": "code", "value": "b"}], params["fields"])
+
+    def test_update_only_image_makes_no_rpc(self):
+        self.sg.upload_thumbnail = mock.Mock()
+        self.sg.find_one = mock.Mock(return_value={"image": "http://thumb"})
+
+        result = self.sg.update("Shot", 5, {"image": "p.png"})
+
+        self.sg._call_rpc.assert_not_called()
+        self.assertEqual({"id": 5, "type": "Shot", "image": "http://thumb"}, result)
+
+    def test_batch_empty_makes_no_rpc(self):
+        self.assertEqual([], self.sg.batch([]))
+        self.sg._call_rpc.assert_not_called()
+
+    def test_batch(self):
+        self.sg._call_rpc.return_value = [True]
+
+        self.assertEqual(
+            [True],
+            self.sg.batch(
+                [{"request_type": "delete", "entity_type": "Shot", "entity_id": 3}]
+            ),
+        )
+        self.sg._call_rpc.assert_called_once_with(
+            "batch", [{"request_type": "delete", "type": "Shot", "id": 3}]
+        )
+
+    def test_batch_rejects_non_list_without_rpc(self):
+        with self.assertRaises(api.ShotgunError):
+            self.sg.batch(({},))
+        self.sg._call_rpc.assert_not_called()
 
 
 if __name__ == "__main__":

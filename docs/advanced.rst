@@ -11,6 +11,7 @@ with your suggestions and we'll get it added!
 .. toctree::
     :maxdepth: 1
 
+    advanced/async
     advanced/packaging
     advanced/iron_python
     changelog

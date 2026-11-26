@@ -49,3 +49,19 @@ from .shotgun import (
     __version__,
 )
 from .shotgun import SG_TIMEZONE as sg_timezone  # noqa unused imports
+
+# The async client needs the optional httpx dependency (pip install shotgun_api3[async]).
+# Without it, importing this package still works and only using AsyncShotgun fails.
+try:
+    from .aio import AsyncShotgun  # noqa unused imports
+except ModuleNotFoundError as e:
+    if e.name != "httpx":
+        raise
+
+    def __getattr__(name):
+        if name == "AsyncShotgun":
+            raise ImportError(
+                "AsyncShotgun requires the optional httpx dependency. "
+                "Install it with: pip install shotgun_api3[async]"
+            )
+        raise AttributeError("module %r has no attribute %r" % (__name__, name))

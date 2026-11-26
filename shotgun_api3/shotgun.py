@@ -32,9 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 from __future__ import annotations  # Required for compatibility with Python 3.7
 
 import base64
-import copy
 import datetime
-import json
 import http.client  # Used for secure file upload
 import http.cookiejar  # used for attachment upload
 import io
@@ -61,7 +59,6 @@ from typing import (
     List,
     Optional,
     Tuple,
-    TypeVar,
     Union,
 )
 
@@ -77,7 +74,23 @@ from .lib.httplib2 import (
     ProxyInfo,
     socks,
 )
-from .lib.sgtimezone import SgTimezone
+from . import _core
+from .lib.sgtimezone import SgTimezone  # noqa: F401 (still importable from here)
+from ._core import (  # noqa: F401 (re-exported as part of the public API)
+    NEED_CAPS,
+    SG_TIMEZONE,
+    AuthenticationFault,
+    Fault,
+    MissingTwoFactorAuthenticationFault,
+    ShotgunError,
+    ShotgunFileDownloadError,
+    ShotgunThumbnailNotReady,
+    UserCredentialsNotAllowedForOxygenAuthenticationFault,
+    UserCredentialsNotAllowedForSSOAuthenticationFault,
+    _SGCore,
+    _ServerCapsRequired,
+    _translate_filters,
+)
 
 LOG = logging.getLogger("shotgun_api3")
 """
@@ -94,11 +107,6 @@ LOG.setLevel(logging.WARN)
 mimetypes.add_type("video/webm", ".webm")  # webm and mp4 seem to be missing
 mimetypes.add_type("video/mp4", ".mp4")  # from some OS/distros
 
-SG_TIMEZONE = SgTimezone()
-
-SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = False
-
-
 # ----------------------------------------------------------------------------
 # Version
 __version__ = "3.10.5"
@@ -107,8 +115,6 @@ __version__ = "3.10.5"
 # ----------------------------------------------------------------------------
 # Types
 
-
-T = TypeVar("T")
 
 if sys.version_info < (3, 9):
     OrderItem = Dict
@@ -269,77 +275,6 @@ class KeepaliveHttp(Http):
             redirections=redirections,
             connection_type=connection_type,
         )
-
-
-# ----------------------------------------------------------------------------
-# Errors
-
-
-class ShotgunError(Exception):
-    """
-    Base for all Shotgun API Errors.
-    """
-
-    pass
-
-
-class ShotgunFileDownloadError(ShotgunError):
-    """
-    Exception for file download-related errors.
-    """
-
-    pass
-
-
-class ShotgunThumbnailNotReady(ShotgunError):
-    """
-    Exception for when trying to use a 'pending thumbnail' (aka transient thumbnail) in an operation
-    """
-
-    pass
-
-
-class Fault(ShotgunError):
-    """
-    Exception when server-side exception detected.
-    """
-
-    pass
-
-
-class AuthenticationFault(Fault):
-    """
-    Exception when the server side reports an error related to authentication.
-    """
-
-    pass
-
-
-class MissingTwoFactorAuthenticationFault(Fault):
-    """
-    Exception when the server side reports an error related to missing two-factor authentication
-    credentials.
-    """
-
-    pass
-
-
-class UserCredentialsNotAllowedForSSOAuthenticationFault(Fault):
-    """
-    Exception when the server is configured to use SSO. It is not possible to use
-    a username/password pair to authenticate on such server.
-    """
-
-    pass
-
-
-class UserCredentialsNotAllowedForOxygenAuthenticationFault(Fault):
-    """
-    Exception when the server is configured to use Oxygen. It is not possible to use
-    a username/password pair to authenticate on such server.
-    """
-
-    pass
 
 
 # ----------------------------------------------------------------------------
@@ -657,7 +592,325 @@ class _Config(object):
         return self._records_per_page
 
 
-class Shotgun(object):
+class _SGClient(_SGCore):
+    """
+    State and setup shared by the sync (``Shotgun``) and async (``AsyncShotgun``) clients.
+    """
+
+    def _init_config(
+        self,
+        base_url,
+        script_name,
+        api_key,
+        convert_datetimes_to_utc,
+        http_proxy,
+        require_credentials,
+        login,
+        password,
+        sudo_as_login,
+        session_token,
+        auth_token,
+    ) -> None:
+        """
+        Validate the constructor arguments and set up ``config``, client capabilities and
+        the user agent. Shared by the sync and async clients; does no network I/O.
+        """
+        if session_token is not None:
+            if script_name is not None or api_key is not None:
+                raise ValueError(
+                    "cannot provide both session_token " "and script_name/api_key"
+                )
+            if login is not None or password is not None:
+                raise ValueError(
+                    "cannot provide both session_token " "and login/password"
+                )
+
+        if login is not None or password is not None:
+            if script_name is not None or api_key is not None:
+                raise ValueError(
+                    "cannot provide both login/password " "and script_name/api_key"
+                )
+            if login is None:
+                raise ValueError("password provided without login")
+            if password is None:
+                raise ValueError("login provided without password")
+
+        if script_name is not None or api_key is not None:
+            if script_name is None:
+                raise ValueError("api_key provided without script_name")
+            if api_key is None:
+                raise ValueError("script_name provided without api_key")
+
+        if auth_token is not None:
+            if login is None or password is None:
+                raise ValueError(
+                    "must provide a user login and password with an auth_token"
+                )
+
+            if script_name is not None or api_key is not None:
+                raise ValueError("cannot provide an auth_code with script_name/api_key")
+
+        if require_credentials and not any(
+            [session_token, script_name, api_key, login, password]
+        ):
+            raise ValueError(
+                "must provide login/password, session_token or script_name/api_key"
+            )
+
+        self.config: _Config = _Config(self)
+        self.config.api_key = api_key
+        self.config.script_name = script_name
+        self.config.user_login = login
+        self.config.user_password = password
+        self.config.auth_token = auth_token
+        self.config.session_token = session_token
+        self.config.sudo_as_login = sudo_as_login
+        self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
+        self.config.raw_http_proxy = http_proxy
+
+        try:
+            self.config.rpc_attempt_interval = int(
+                os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000)
+            )
+        except ValueError:
+            retry_interval = os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000)
+            raise ValueError(
+                "Invalid value '%s' found in environment variable "
+                "SHOTGUN_API_RETRY_INTERVAL, must be int." % retry_interval
+            )
+        if self.config.rpc_attempt_interval < 0:
+            raise ValueError(
+                "Value of SHOTGUN_API_RETRY_INTERVAL must be positive, "
+                "got '%s'." % self.config.rpc_attempt_interval
+            )
+
+        max_idle = os.environ.get("SHOTGUN_API_MAX_CONNECTION_IDLE")
+        if max_idle is not None:
+            try:
+                self.config.max_connection_idle_secs = int(max_idle)
+            except ValueError:
+                raise ValueError(
+                    "Invalid value '%s' found in environment variable "
+                    "SHOTGUN_API_MAX_CONNECTION_IDLE, must be int." % max_idle
+                )
+            if self.config.max_connection_idle_secs < 0:
+                raise ValueError(
+                    "Value of SHOTGUN_API_MAX_CONNECTION_IDLE must be positive, "
+                    "got '%s'." % self.config.max_connection_idle_secs
+                )
+
+        if (
+            os.environ.get("SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", "0")
+            .strip()
+            .lower()
+            == "1"
+        ):
+            _core.SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = True
+
+        self.base_url = (base_url or "").lower()
+        self.config.set_server_params(self.base_url)
+
+        # if the service contains user information strip it out
+        # copied from the xmlrpclib which turned the user:password into
+        # and auth header
+
+        # Do NOT self._split_url(self.base_url) here, as it contains the lower
+        # case version of the base_url argument. Doing so would base64.encodebytes
+        # the lowercase version of the credentials.
+        auth, self.config.server = self._split_url(base_url)
+        if auth:
+            auth = base64.encodebytes(
+                urllib.parse.unquote(auth).encode("utf-8")
+            ).decode("utf-8")
+            self.config.authorization = "Basic " + auth.strip()
+
+        # foo:bar@123.456.789.012:3456
+        if http_proxy:
+            # check if we're using authentication. Start from the end since
+            # there might be @ in the user's password.
+            p = http_proxy.rsplit("@", 1)
+            if len(p) > 1:
+                self.config.proxy_user, self.config.proxy_pass = p[0].split(":", 1)
+                proxy_server = p[1]
+            else:
+                proxy_server = http_proxy
+            proxy_netloc_list = proxy_server.split(":", 1)
+            self.config.proxy_server = proxy_netloc_list[0]
+            if len(proxy_netloc_list) > 1:
+                try:
+                    self.config.proxy_port = int(proxy_netloc_list[1])
+                except ValueError:
+                    raise ValueError(
+                        "Invalid http_proxy address '%s'. Valid "
+                        "format is '123.456.789.012' or '123.456.789.012:3456'"
+                        ". If no port is specified, a default of %d will be "
+                        "used." % (http_proxy, self.config.proxy_port)
+                    )
+
+            # now populate self.config.proxy_handler
+            if self.config.proxy_user and self.config.proxy_pass:
+                auth_string = "%s:%s@" % (
+                    self.config.proxy_user,
+                    self.config.proxy_pass,
+                )
+            else:
+                auth_string = ""
+            proxy_addr = "http://%s%s:%d" % (
+                auth_string,
+                self.config.proxy_server,
+                self.config.proxy_port,
+            )
+            self.config.proxy_handler = urllib.request.ProxyHandler(
+                {self.config.scheme: proxy_addr}
+            )
+
+        self.client_caps = ClientCapabilities()
+        # this relies on self.client_caps being set first
+        self.reset_user_agent()
+
+        self._server_caps: Optional[ServerCapabilities] = None
+
+    def _call_headers(self, headers: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Headers for an http call: the user agent, basic auth if any, then ``headers``.
+        """
+        req_headers = {}
+        req_headers["user-agent"] = "; ".join(self._user_agents)
+        if self.config.authorization:
+            req_headers["Authorization"] = self.config.authorization
+
+        req_headers.update(headers or {})
+        return req_headers
+
+    def set_session_uuid(self, session_uuid: str) -> None:
+        """
+        Set the browser session_uuid in the current Shotgun API instance.
+
+        When this is set, any events generated by the API will include the ``session_uuid`` value
+        on the corresponding EventLogEntries. If there is a current browser session open with
+        this ``session_uuid``, the browser will display updates for these events.
+
+        >>> sg.set_session_uuid("5a1d49b0-0c69-11e0-a24c-003048d17544")
+
+        :param str session_uuid: The uuid of the browser session to be updated.
+        """
+
+        self.config.session_uuid = session_uuid
+        return
+
+    def _split_url(self, base_url: str) -> Tuple[Optional[str], Optional[str]]:
+        """
+        Extract the hostname:port and username/password/token from base_url
+        sent when connect to the API.
+        """
+        auth = None
+        results = urllib.parse.urlparse(base_url)
+        server = results.hostname
+        if results.port:
+            server = "{}:{}".format(server, results.port)
+
+        if results.username:
+            auth = results.username
+
+            if results.password:
+                auth = "{}:{}".format(auth, results.password)
+
+        return auth, server
+
+    @classmethod
+    def _get_certs_file(cls, ca_certs):
+        """
+        The following method tells the API where to look for
+        certificate authorities certificates (we will be referring to these
+        as CAC from now on). Here's how the Python API interacts with those.
+
+        Auth and CRUD operations
+        ========================
+        These operations are executed with httplib2. httplib2 ships with a
+        list of CACs instead of asking Python's ssl module for them.
+
+        Upload/Downloads
+        ================
+        These operations are executed using urllib2. urllib2 asks a Python
+        module called `ssl` for CACs. We have bundled certifi with the API
+        so that we can be sure the certs are correct at the time of the API
+        release. This does however mean when the certs change we must update
+        the API to contain the latest certifi.
+        This approach is preferable to not using certifi since, on Windows,
+        ssl searches for CACs in the Windows Certificate Store, on
+        Linux/macOS, it asks the OpenSSL library linked with Python for CACs.
+        Depending on how Python was compiled for a given DCC, Python may be
+        linked against the OpenSSL from the OS or a copy of OpenSSL distributed
+        with the DCC. This impacts which versions of the certificates are
+        available to Python, as an OS level OpenSSL will be aware of system
+        wide certificates that have been added, while an OpenSSL that comes
+        with a DCC is likely bundling a list of certificates that get update
+        with each release and may not contain system wide certificates.
+
+        Using custom CACs
+        =================
+        When a user requires a non-standard CAC, the SHOTGUN_API_CACERTS
+        environment variable allows to provide an alternate location for
+        the CACs.
+
+        :param ca_certs: A default cert can be provided
+        :return: The cert file path to use.
+        """
+        if ca_certs is not None:
+            # certs were provided up front so use these
+            return ca_certs
+        elif "SHOTGUN_API_CACERTS" in os.environ:
+            return os.environ.get("SHOTGUN_API_CACERTS")
+        else:
+            # No certs have been specifically provided fallback to using the
+            # certs shipped with this API.
+            # We bundle certifi with this API so that we have a higher chance
+            # of using an uptodate certificate, rather than relying
+            # on the certs that are bundled with Python or the OS in some cases.
+            # However we can't use certifi.where() since that searches for the
+            # cacert.pem file using the sys.path and this means that if another
+            # copy of certifi can be found first, then it won't use ours.
+            # So we manually generate the path to the cert, but still use certifi
+            # to make it easier for updating the bundled cert with the API.
+            cur_dir = os.path.dirname(os.path.abspath(__file__))
+            # Now add the rest of the path to the cert file.
+            cert_file = os.path.join(cur_dir, "lib", "certifi", "cacert.pem")
+            return cert_file
+
+    def add_user_agent(self, agent: str) -> None:
+        """
+        Add agent to the user-agent header.
+
+        Appends agent to the user-agent string sent with every API request.
+
+        >>> sg.add_user_agent("my_tool 1.0")
+
+        :param str agent: string to append to user-agent.
+        """
+        self._user_agents.append(agent)
+
+    def reset_user_agent(self) -> None:
+        """
+        Reset user agent to the default value.
+
+        Example default user-agent::
+
+            shotgun-json (3.0.17); Python 2.6 (Mac); ssl OpenSSL 1.0.2d 9 Jul 2015 (validate)
+
+        """
+        ua_platform = "Unknown"
+        if self.client_caps.platform is not None:
+            ua_platform = self.client_caps.platform.capitalize()
+
+        # create ssl validation string based on settings
+        self._user_agents = [
+            "shotgun-json (%s)" % __version__,
+            "Python %s (%s)" % (self.client_caps.py_version, ua_platform),
+            "ssl %s" % (self.client_caps.ssl_version),
+        ]
+
+
+class Shotgun(_SGClient):
     """
     Shotgun Client connection.
     """
@@ -666,14 +919,8 @@ class Shotgun(object):
     # http://underground.infovark.com/2008/07/22/iso-date-validation-regex/
     # Note a length check is done before checking the reg ex
     _DATE_PATTERN = re.compile(r"^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])$")
-    _DATE_TIME_PATTERN = re.compile(
-        r"^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])"
-        r"(\D?([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?)?$"
-    )
 
     _MULTIPART_UPLOAD_CHUNK_SIZE = 20000000
-    MAX_ATTEMPTS = 3  # Retries on failure
-    BACKOFF = 0.75  # Seconds to wait before retry, times the attempt number
 
     def __init__(
         self,
@@ -760,98 +1007,6 @@ class Shotgun(object):
         """
 
         # verify authentication arguments
-        if session_token is not None:
-            if script_name is not None or api_key is not None:
-                raise ValueError(
-                    "cannot provide both session_token " "and script_name/api_key"
-                )
-            if login is not None or password is not None:
-                raise ValueError(
-                    "cannot provide both session_token " "and login/password"
-                )
-
-        if login is not None or password is not None:
-            if script_name is not None or api_key is not None:
-                raise ValueError(
-                    "cannot provide both login/password " "and script_name/api_key"
-                )
-            if login is None:
-                raise ValueError("password provided without login")
-            if password is None:
-                raise ValueError("login provided without password")
-
-        if script_name is not None or api_key is not None:
-            if script_name is None:
-                raise ValueError("api_key provided without script_name")
-            if api_key is None:
-                raise ValueError("script_name provided without api_key")
-
-        if auth_token is not None:
-            if login is None or password is None:
-                raise ValueError(
-                    "must provide a user login and password with an auth_token"
-                )
-
-            if script_name is not None or api_key is not None:
-                raise ValueError("cannot provide an auth_code with script_name/api_key")
-
-        if not any([session_token, script_name, api_key, login, password]):
-            if connect:
-                raise ValueError(
-                    "must provide login/password, session_token or script_name/api_key"
-                )
-
-        self.config: _Config = _Config(self)
-        self.config.api_key = api_key
-        self.config.script_name = script_name
-        self.config.user_login = login
-        self.config.user_password = password
-        self.config.auth_token = auth_token
-        self.config.session_token = session_token
-        self.config.sudo_as_login = sudo_as_login
-        self.config.convert_datetimes_to_utc = convert_datetimes_to_utc
-        self.config.raw_http_proxy = http_proxy
-
-        try:
-            self.config.rpc_attempt_interval = int(
-                os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000)
-            )
-        except ValueError:
-            retry_interval = os.environ.get("SHOTGUN_API_RETRY_INTERVAL", 3000)
-            raise ValueError(
-                "Invalid value '%s' found in environment variable "
-                "SHOTGUN_API_RETRY_INTERVAL, must be int." % retry_interval
-            )
-        if self.config.rpc_attempt_interval < 0:
-            raise ValueError(
-                "Value of SHOTGUN_API_RETRY_INTERVAL must be positive, "
-                "got '%s'." % self.config.rpc_attempt_interval
-            )
-
-        max_idle = os.environ.get("SHOTGUN_API_MAX_CONNECTION_IDLE")
-        if max_idle is not None:
-            try:
-                self.config.max_connection_idle_secs = int(max_idle)
-            except ValueError:
-                raise ValueError(
-                    "Invalid value '%s' found in environment variable "
-                    "SHOTGUN_API_MAX_CONNECTION_IDLE, must be int." % max_idle
-                )
-            if self.config.max_connection_idle_secs < 0:
-                raise ValueError(
-                    "Value of SHOTGUN_API_MAX_CONNECTION_IDLE must be positive, "
-                    "got '%s'." % self.config.max_connection_idle_secs
-                )
-
-        global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
-        if (
-            os.environ.get("SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION", "0")
-            .strip()
-            .lower()
-            == "1"
-        ):
-            SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION = True
-
         self._connection: Optional[Http] = None
         # Monotonic timestamp of the last request that completed on
         # self._connection, used to expire connections that have gone stale
@@ -860,68 +1015,19 @@ class Shotgun(object):
 
         self.__ca_certs = self._get_certs_file(ca_certs)
 
-        self.base_url = (base_url or "").lower()
-        self.config.set_server_params(self.base_url)
-
-        # if the service contains user information strip it out
-        # copied from the xmlrpclib which turned the user:password into
-        # and auth header
-
-        # Do NOT self._split_url(self.base_url) here, as it contains the lower
-        # case version of the base_url argument. Doing so would base64.encodebytes
-        # the lowercase version of the credentials.
-        auth, self.config.server = self._split_url(base_url)
-        if auth:
-            auth = base64.encodebytes(
-                urllib.parse.unquote(auth).encode("utf-8")
-            ).decode("utf-8")
-            self.config.authorization = "Basic " + auth.strip()
-
-        # foo:bar@123.456.789.012:3456
-        if http_proxy:
-            # check if we're using authentication. Start from the end since
-            # there might be @ in the user's password.
-            p = http_proxy.rsplit("@", 1)
-            if len(p) > 1:
-                self.config.proxy_user, self.config.proxy_pass = p[0].split(":", 1)
-                proxy_server = p[1]
-            else:
-                proxy_server = http_proxy
-            proxy_netloc_list = proxy_server.split(":", 1)
-            self.config.proxy_server = proxy_netloc_list[0]
-            if len(proxy_netloc_list) > 1:
-                try:
-                    self.config.proxy_port = int(proxy_netloc_list[1])
-                except ValueError:
-                    raise ValueError(
-                        "Invalid http_proxy address '%s'. Valid "
-                        "format is '123.456.789.012' or '123.456.789.012:3456'"
-                        ". If no port is specified, a default of %d will be "
-                        "used." % (http_proxy, self.config.proxy_port)
-                    )
-
-            # now populate self.config.proxy_handler
-            if self.config.proxy_user and self.config.proxy_pass:
-                auth_string = "%s:%s@" % (
-                    self.config.proxy_user,
-                    self.config.proxy_pass,
-                )
-            else:
-                auth_string = ""
-            proxy_addr = "http://%s%s:%d" % (
-                auth_string,
-                self.config.proxy_server,
-                self.config.proxy_port,
-            )
-            self.config.proxy_handler = urllib.request.ProxyHandler(
-                {self.config.scheme: proxy_addr}
-            )
-
-        self.client_caps = ClientCapabilities()
-        # this relies on self.client_caps being set first
-        self.reset_user_agent()
-
-        self._server_caps: Optional[ServerCapabilities] = None
+        self._init_config(
+            base_url,
+            script_name,
+            api_key,
+            convert_datetimes_to_utc,
+            http_proxy,
+            connect,
+            login,
+            password,
+            sudo_as_login,
+            session_token,
+            auth_token,
+        )
         # test to ensure the the server supports the json API
         # call to server will only be made once and will raise error
         if connect:
@@ -934,25 +1040,6 @@ class Shotgun(object):
             self.config.user_login = None
             self.config.user_password = None
             self.config.auth_token = None
-
-    def _split_url(self, base_url: str) -> Tuple[Optional[str], Optional[str]]:
-        """
-        Extract the hostname:port and username/password/token from base_url
-        sent when connect to the API.
-        """
-        auth = None
-        results = urllib.parse.urlparse(base_url)
-        server = results.hostname
-        if results.port:
-            server = "{}:{}".format(server, results.port)
-
-        if results.username:
-            auth = results.username
-
-            if results.password:
-                auth = "{}:{}".format(auth, results.password)
-
-        return auth, server
 
     # ========================================================================
     # API Functions
@@ -1234,167 +1321,20 @@ class Shotgun(object):
         :rtype: list
         """
 
-        if not isinstance(limit, int) or limit < 0:
-            raise ValueError("limit parameter must be a positive integer")
-
-        if not isinstance(page, int) or page < 0:
-            raise ValueError("page parameter must be a positive integer")
-
-        if isinstance(filters, (list, tuple)):
-            filters = _translate_filters(filters, filter_operator)
-        elif filter_operator:
-            # TODO: Not sure if this test is correct, replicated from prev api
-            raise ShotgunError(
-                "Deprecated: Use of filter_operator for find() is not valid any more."
-                " See the documentation on find()"
+        return self._run_flow(
+            self._find_flow(
+                entity_type,
+                filters,
+                fields,
+                order,
+                filter_operator,
+                limit,
+                retired_only,
+                page,
+                include_archived_projects,
+                additional_filter_presets,
             )
-
-        if not include_archived_projects:
-            # This defaults to True on the server (no argument is sent)
-            # So we only need to check the server version if it is False
-            self.server_caps.ensure_include_archived_projects()
-
-        if additional_filter_presets:
-            self.server_caps.ensure_support_for_additional_filter_presets()
-
-        params = self._construct_read_parameters(
-            entity_type,
-            fields,
-            filters,
-            retired_only,
-            order,
-            include_archived_projects,
-            additional_filter_presets,
         )
-
-        if self.server_caps.ensure_return_image_urls_support():
-            params["api_return_image_urls"] = True
-
-        if self.server_caps.ensure_paging_info_without_counts_support():
-            paging_info_param = "return_paging_info_without_counts"
-        else:
-            paging_info_param = "return_paging_info"
-
-        params[paging_info_param] = False
-
-        if limit and limit <= self.config.records_per_page:
-            params["paging"]["entities_per_page"] = limit
-            # If page isn't set and the limit doesn't require pagination,
-            # then trigger the faster code path.
-            if page == 0:
-                page = 1
-
-        # if page is specified, then only return the page of records requested
-        if page != 0:
-            params["paging"]["current_page"] = page
-            records = self._call_rpc("read", params).get("entities", [])
-            return self._parse_records(records)
-
-        params[paging_info_param] = True
-        records = []
-
-        if self.server_caps.ensure_paging_info_without_counts_support():
-            has_next_page = True
-            while has_next_page:
-                result = self._call_rpc("read", params)
-                records.extend(result.get("entities"))
-
-                if limit and len(records) >= limit:
-                    records = records[:limit]
-                    break
-
-                has_next_page = result["paging_info"]["has_next_page"]
-                params["paging"]["current_page"] += 1
-        else:
-            result = self._call_rpc("read", params)
-            while result.get("entities"):
-                records.extend(result.get("entities"))
-
-                if limit and len(records) >= limit:
-                    records = records[:limit]
-                    break
-                if len(records) == result["paging_info"]["entity_count"]:
-                    break
-
-                params["paging"]["current_page"] += 1
-                result = self._call_rpc("read", params)
-
-        return self._parse_records(records)
-
-    def _construct_read_parameters(
-        self,
-        entity_type: str,
-        fields: Optional[List[str]],
-        filters: Dict[str, Any],
-        retired_only: bool,
-        order: Optional[List[Dict[str, Any]]],
-        include_archived_projects: bool,
-        additional_filter_presets: Optional[List[Dict[str, Any]]],
-    ) -> Dict[str, Any]:
-        params: Dict[str, Any] = {}
-        params["type"] = entity_type
-        params["return_fields"] = fields or ["id"]
-        params["filters"] = filters
-        params["return_only"] = (retired_only and "retired") or "active"
-        params["paging"] = {
-            "entities_per_page": self.config.records_per_page,
-            "current_page": 1,
-        }
-
-        if additional_filter_presets:
-            params["additional_filter_presets"] = additional_filter_presets
-
-        if include_archived_projects is False:
-            # Defaults to True on the server, so only pass it if it's False
-            params["include_archived_projects"] = False
-
-        if order:
-            sort_list = []
-            for sort in order:
-                if "column" in sort:
-                    # TODO: warn about deprecation of 'column' param name
-                    sort["field_name"] = sort["column"]
-                sort.setdefault("direction", "asc")
-                sort_list.append(
-                    {"field_name": sort["field_name"], "direction": sort["direction"]}
-                )
-            params["sorts"] = sort_list
-        return params
-
-    def _add_project_param(
-        self, params: Dict[str, Any], project_entity
-    ) -> Dict[str, Any]:
-
-        if project_entity and self.server_caps.ensure_per_project_customization():
-            params["project"] = project_entity
-
-        return params
-
-    def _translate_update_params(
-        self,
-        entity_type: str,
-        entity_id: int,
-        data: Dict,
-        multi_entity_update_modes: Optional[Dict],
-    ) -> Dict[str, Any]:
-        global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
-
-        def optimize_field(field_dict):
-            if SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION:
-                return field_dict
-            return {k: _optimize_filter_field(v) for k, v in field_dict.items()}
-
-        full_fields = self._dict_to_list(
-            data,
-            extra_data=self._dict_to_extra_data(
-                multi_entity_update_modes, "multi_entity_update_mode"
-            ),
-        )
-        return {
-            "type": entity_type,
-            "id": entity_id,
-            "fields": [optimize_field(field_dict) for field_dict in full_fields],
-        }
 
     def summarize(
         self,
@@ -1580,29 +1520,16 @@ class Shotgun(object):
         :rtype: dict
         """
 
-        if not isinstance(grouping, list) and grouping is not None:
-            msg = "summarize() 'grouping' parameter must be a list or None"
-            raise ValueError(msg)
-
-        if isinstance(filters, (list, tuple)):
-            filters = _translate_filters(filters, filter_operator)
-
-        if not include_archived_projects:
-            # This defaults to True on the server (no argument is sent)
-            # So we only need to check the server version if it is False
-            self.server_caps.ensure_include_archived_projects()
-
-        params = {"type": entity_type, "summaries": summary_fields, "filters": filters}
-
-        if include_archived_projects is False:
-            # Defaults to True on the server, so only pass it if it's False
-            params["include_archived_projects"] = False
-
-        if grouping is not None:
-            params["grouping"] = grouping
-
-        records = self._call_rpc("summarize", params)
-        return records
+        rpc, params = self._with_caps(
+            self._prepare_summarize,
+            entity_type,
+            filters,
+            summary_fields,
+            filter_operator,
+            grouping,
+            include_archived_projects,
+        )
+        return self._call_rpc(rpc, params)
 
     def create(
         self,
@@ -1646,28 +1573,9 @@ class Shotgun(object):
         :rtype: dict
         """
 
-        data = data.copy()
-        if not return_fields:
-            return_fields = ["id"]
-
-        upload_image = None
-        if "image" in data:
-            upload_image = data.pop("image")
-
-        upload_filmstrip_image = None
-        if "filmstrip_image" in data:
-            if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
-                raise ShotgunError(
-                    "Filmstrip thumbnail support requires server version 3.1 or "
-                    "higher, server is %s" % (self.server_caps.version,)
-                )
-            upload_filmstrip_image = data.pop("filmstrip_image")
-
-        params = {
-            "type": entity_type,
-            "fields": self._dict_to_list(data),
-            "return_fields": return_fields,
-        }
+        params, upload_image, upload_filmstrip_image = self._with_caps(
+            self._prepare_create, entity_type, data, return_fields
+        )
 
         record = self._call_rpc("create", params, first=True)
         result = self._parse_records(record)[0]
@@ -1735,23 +1643,15 @@ class Shotgun(object):
         :rtype: dict
         """
 
-        data = data.copy()
-        upload_image = None
-        if "image" in data and data["image"] is not None:
-            upload_image = data.pop("image")
-        upload_filmstrip_image = None
-        if "filmstrip_image" in data:
-            if not self.server_caps.version or self.server_caps.version < (3, 1, 0):
-                raise ShotgunError(
-                    "Filmstrip thumbnail support requires server version 3.1 or "
-                    "higher, server is %s" % (self.server_caps.version,)
-                )
-            upload_filmstrip_image = data.pop("filmstrip_image")
+        params, upload_image, upload_filmstrip_image = self._with_caps(
+            self._prepare_update,
+            entity_type,
+            entity_id,
+            data,
+            multi_entity_update_modes,
+        )
 
-        if data:
-            params = self._translate_update_params(
-                entity_type, entity_id, data, multi_entity_update_modes
-            )
+        if params is not None:
             record = self._call_rpc("update", params)
             result = self._parse_records(record)[0]
         else:
@@ -1815,9 +1715,8 @@ class Shotgun(object):
         :rtype: bool
         """
 
-        params = {"type": entity_type, "id": entity_id}
-
-        return self._call_rpc("revive", params)
+        rpc, params = self._with_caps(self._prepare_revive, entity_type, entity_id)
+        return self._call_rpc(rpc, params)
 
     def batch(self, requests: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
@@ -1879,58 +1778,13 @@ class Shotgun(object):
         :rtype: list
         """
 
-        if not isinstance(requests, list):
-            raise ShotgunError(
-                "batch() expects a list.  Instead was sent a %s" % type(requests)
-            )
+        calls = self._build_batch_calls(requests)
 
         # If we have no requests, just return an empty list immediately.
         # Nothing to process means nothing to get results of.
-        if len(requests) == 0:
+        if not calls:
             return []
 
-        calls = []
-
-        def _required_keys(message, required_keys, data):
-            missing = set(required_keys) - set(data.keys())
-            if missing:
-                raise ShotgunError(
-                    "%s missing required key: %s. "
-                    "Value was: %s." % (message, ", ".join(missing), data)
-                )
-
-        for req in requests:
-            _required_keys("Batched request", ["request_type", "entity_type"], req)
-            request_params = {
-                "request_type": req["request_type"],
-                "type": req["entity_type"],
-            }
-
-            if req["request_type"] == "create":
-                _required_keys("Batched create request", ["data"], req)
-                request_params["fields"] = self._dict_to_list(req["data"])
-                request_params["return_fields"] = req.get("return_fields") or ["id"]
-            elif req["request_type"] == "update":
-                _required_keys("Batched update request", ["entity_id", "data"], req)
-                request_params["id"] = req["entity_id"]
-                request_params["fields"] = self._dict_to_list(
-                    req["data"],
-                    extra_data=self._dict_to_extra_data(
-                        req.get("multi_entity_update_modes"), "multi_entity_update_mode"
-                    ),
-                )
-                if "multi_entity_update_mode" in req:
-                    request_params["multi_entity_update_mode"] = req[
-                        "multi_entity_update_mode"
-                    ]
-            elif req["request_type"] == "delete":
-                _required_keys("Batched delete request", ["entity_id"], req)
-                request_params["id"] = req["entity_id"]
-            else:
-                raise ShotgunError(
-                    "Invalid request_type '%s' for batch" % (req["request_type"])
-                )
-            calls.append(request_params)
         records = self._call_rpc("batch", calls)
         return self._parse_records(records)
 
@@ -1992,22 +1846,10 @@ class Shotgun(object):
         :rtype: dict
         """
 
-        if not self.server_caps.version or self.server_caps.version < (3, 2, 0):
-            raise ShotgunError(
-                "Work schedule support requires server version 3.2 or "
-                "higher, server is %s" % (self.server_caps.version,)
-            )
-
-        if not isinstance(start_date, str) or not isinstance(end_date, str):
-            raise ShotgunError(
-                "The start_date and end_date arguments must be strings in YYYY-MM-DD format"
-            )
-
-        params = dict(
-            start_date=start_date, end_date=end_date, project=project, user=user
+        rpc, params = self._with_caps(
+            self._prepare_work_schedule_read, start_date, end_date, project, user
         )
-
-        return self._call_rpc("work_schedule_read", params)
+        return self._call_rpc(rpc, params)
 
     def work_schedule_update(
         self,
@@ -2051,25 +1893,16 @@ class Shotgun(object):
         :rtype: dict
         """
 
-        if not self.server_caps.version or self.server_caps.version < (3, 2, 0):
-            raise ShotgunError(
-                "Work schedule support requires server version 3.2 or "
-                "higher, server is %s" % (self.server_caps.version,)
-            )
-
-        if not isinstance(date, str):
-            raise ShotgunError("The date argument must be string in YYYY-MM-DD format")
-
-        params = dict(
-            date=date,
-            working=working,
-            description=description,
-            project=project,
-            user=user,
-            recalculate_field=recalculate_field,
+        rpc, params = self._with_caps(
+            self._prepare_work_schedule_update,
+            date,
+            working,
+            description,
+            project,
+            user,
+            recalculate_field,
         )
-
-        return self._call_rpc("work_schedule_update", params)
+        return self._call_rpc(rpc, params)
 
     def export_page(self, page_id, format, layout_name=None):
         """
@@ -2095,9 +1928,10 @@ class Shotgun(object):
         :rtype: string
         """
 
-        params = dict(format=format, page_id=page_id, layout_name=layout_name)
-
-        return self._call_rpc("export_page", params)
+        rpc, params = self._with_caps(
+            self._prepare_export_page, page_id, format, layout_name
+        )
+        return self._call_rpc(rpc, params)
 
     def follow(self, user: Dict[str, Any], entity: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -2117,15 +1951,8 @@ class Shotgun(object):
         :rtype: dict
         """
 
-        if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
-            raise ShotgunError(
-                "Follow support requires server version 5.2 or "
-                "higher, server is %s" % (self.server_caps.version,)
-            )
-
-        params = dict(user=user, entity=entity)
-
-        return self._call_rpc("follow", params)
+        rpc, params = self._with_caps(self._prepare_follow, user, entity)
+        return self._call_rpc(rpc, params)
 
     def unfollow(self, user: Dict[str, Any], entity: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -2144,15 +1971,8 @@ class Shotgun(object):
         :rtype: dict
         """
 
-        if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
-            raise ShotgunError(
-                "Follow support requires server version 5.2 or "
-                "higher, server is %s" % (self.server_caps.version,)
-            )
-
-        params = dict(user=user, entity=entity)
-
-        return self._call_rpc("unfollow", params)
+        rpc, params = self._with_caps(self._prepare_unfollow, user, entity)
+        return self._call_rpc(rpc, params)
 
     def followers(self, entity: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
@@ -2172,15 +1992,8 @@ class Shotgun(object):
         :versionadded:
         """
 
-        if not self.server_caps.version or self.server_caps.version < (5, 1, 22):
-            raise ShotgunError(
-                "Follow support requires server version 5.2 or "
-                "higher, server is %s" % (self.server_caps.version,)
-            )
-
-        params = dict(entity=entity)
-
-        return self._call_rpc("followers", params)
+        rpc, params = self._with_caps(self._prepare_followers, entity)
+        return self._call_rpc(rpc, params)
 
     def following(
         self,
@@ -2208,15 +2021,10 @@ class Shotgun(object):
         :rtype: list
         """
 
-        self.server_caps.ensure_user_following_support()
-
-        params = {"user": user}
-        if project:
-            params["project"] = project
-        if entity_type:
-            params["entity_type"] = entity_type
-
-        return self._call_rpc("following", params)
+        rpc, params = self._with_caps(
+            self._prepare_following, user, project, entity_type
+        )
+        return self._call_rpc(rpc, params)
 
     def schema_entity_read(
         self, project_entity: Optional[BaseEntity] = None
@@ -2255,14 +2063,8 @@ class Shotgun(object):
             The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
         """
 
-        params: Dict[str, Any] = {}
-
-        params = self._add_project_param(params, project_entity)
-
-        if params:
-            return self._call_rpc("schema_entity_read", params)
-        else:
-            return self._call_rpc("schema_entity_read", None)
+        rpc, params = self._with_caps(self._prepare_schema_entity_read, project_entity)
+        return self._call_rpc(rpc, params)
 
     def schema_read(
         self, project_entity: Optional[BaseEntity] = None
@@ -2329,14 +2131,8 @@ class Shotgun(object):
             The returned display names for this method will be localized when the ``localize`` Shotgun config property is set to ``True``. See :ref:`localization` for more information.
         """
 
-        params: Dict[str, Any] = {}
-
-        params = self._add_project_param(params, project_entity)
-
-        if params:
-            return self._call_rpc("schema_read", params)
-        else:
-            return self._call_rpc("schema_read", None)
+        rpc, params = self._with_caps(self._prepare_schema_read, project_entity)
+        return self._call_rpc(rpc, params)
 
     def schema_field_read(
         self,
@@ -2396,16 +2192,10 @@ class Shotgun(object):
         :rtype: dict
         """
 
-        params = {
-            "type": entity_type,
-        }
-
-        if field_name:
-            params["field_name"] = field_name
-
-        params = self._add_project_param(params, project_entity)
-
-        return self._call_rpc("schema_field_read", params)
+        rpc, params = self._with_caps(
+            self._prepare_schema_field_read, entity_type, field_name, project_entity
+        )
+        return self._call_rpc(rpc, params)
 
     def schema_field_create(
         self,
@@ -2439,16 +2229,14 @@ class Shotgun(object):
         :rtype: str
         """
 
-        params = {
-            "type": entity_type,
-            "data_type": data_type,
-            "properties": [{"property_name": "name", "value": display_name}],
-        }
-        params["properties"].extend(
-            self._dict_to_list(properties, key_name="property_name", value_name="value")
+        rpc, params = self._with_caps(
+            self._prepare_schema_field_create,
+            entity_type,
+            data_type,
+            display_name,
+            properties,
         )
-
-        return self._call_rpc("schema_field_create", params)
+        return self._call_rpc(rpc, params)
 
     def schema_field_update(
         self,
@@ -2487,15 +2275,14 @@ class Shotgun(object):
         :rtype: bool
         """
 
-        params = {
-            "type": entity_type,
-            "field_name": field_name,
-            "properties": [
-                {"property_name": k, "value": v} for k, v in (properties or {}).items()
-            ],
-        }
-        params = self._add_project_param(params, project_entity)
-        return self._call_rpc("schema_field_update", params)
+        rpc, params = self._with_caps(
+            self._prepare_schema_field_update,
+            entity_type,
+            field_name,
+            properties,
+            project_entity,
+        )
+        return self._call_rpc(rpc, params)
 
     def schema_field_delete(self, entity_type: str, field_name: str) -> bool:
         """
@@ -2510,57 +2297,10 @@ class Shotgun(object):
         :rtype: bool
         """
 
-        params = {"type": entity_type, "field_name": field_name}
-
-        return self._call_rpc("schema_field_delete", params)
-
-    def add_user_agent(self, agent: str) -> None:
-        """
-        Add agent to the user-agent header.
-
-        Appends agent to the user-agent string sent with every API request.
-
-        >>> sg.add_user_agent("my_tool 1.0")
-
-        :param str agent: string to append to user-agent.
-        """
-        self._user_agents.append(agent)
-
-    def reset_user_agent(self) -> None:
-        """
-        Reset user agent to the default value.
-
-        Example default user-agent::
-
-            shotgun-json (3.0.17); Python 2.6 (Mac); ssl OpenSSL 1.0.2d 9 Jul 2015 (validate)
-
-        """
-        ua_platform = "Unknown"
-        if self.client_caps.platform is not None:
-            ua_platform = self.client_caps.platform.capitalize()
-
-        # create ssl validation string based on settings
-        self._user_agents = [
-            "shotgun-json (%s)" % __version__,
-            "Python %s (%s)" % (self.client_caps.py_version, ua_platform),
-            "ssl %s" % (self.client_caps.ssl_version),
-        ]
-
-    def set_session_uuid(self, session_uuid: str) -> None:
-        """
-        Set the browser session_uuid in the current Shotgun API instance.
-
-        When this is set, any events generated by the API will include the ``session_uuid`` value
-        on the corresponding EventLogEntries. If there is a current browser session open with
-        this ``session_uuid``, the browser will display updates for these events.
-
-        >>> sg.set_session_uuid("5a1d49b0-0c69-11e0-a24c-003048d17544")
-
-        :param str session_uuid: The uuid of the browser session to be updated.
-        """
-
-        self.config.session_uuid = session_uuid
-        return
+        rpc, params = self._with_caps(
+            self._prepare_schema_field_delete, entity_type, field_name
+        )
+        return self._call_rpc(rpc, params)
 
     def share_thumbnail(
         self,
@@ -3500,20 +3240,10 @@ class Shotgun(object):
         :rtype: list
         """
 
-        if self.server_caps.version and self.server_caps.version < (6, 2, 0):
-            raise ShotgunError(
-                "note_thread requires server version 6.2.0 or "
-                "higher, server is %s" % (self.server_caps.version,)
-            )
-
-        entity_fields = entity_fields or {}
-
-        if not isinstance(entity_fields, dict):
-            raise ValueError("entity_fields parameter must be a dictionary")
-
-        params = {"note_id": note_id, "entity_fields": entity_fields}
-
-        record = self._call_rpc("note_thread_contents", params)
+        rpc, params = self._with_caps(
+            self._prepare_note_thread_read, note_id, entity_fields
+        )
+        record = self._call_rpc(rpc, params)
         result = self._parse_records(record)
         return result
 
@@ -3579,39 +3309,10 @@ class Shotgun(object):
         :returns: A complex dictionary structure, see above for example.
         :rtype: dict
         """
-        if self.server_caps.version and self.server_caps.version < (6, 2, 0):
-            raise ShotgunError(
-                "auto_complete requires server version 6.2.0 or "
-                "higher, server is %s" % (self.server_caps.version,)
-            )
-
-        # convert entity_types structure into the form
-        # that the API endpoint expects
-        if not isinstance(entity_types, dict):
-            raise ValueError("entity_types parameter must be a dictionary")
-
-        api_entity_types = {}
-        for entity_type, filter_list in entity_types.items():
-
-            if isinstance(filter_list, (list, tuple)):
-                resolved_filters = _translate_filters(filter_list, filter_operator=None)
-                api_entity_types[entity_type] = resolved_filters
-            else:
-                raise ValueError(
-                    "value of entity_types['%s'] must "
-                    "be a list or tuple." % entity_type
-                )
-
-        project_ids = project_ids or []
-
-        params = {
-            "text": text,
-            "entity_types": api_entity_types,
-            "project_ids": project_ids,
-            "max_results": limit,
-        }
-
-        record = self._call_rpc("query_display_name_cache", params)
+        rpc, params = self._with_caps(
+            self._prepare_text_search, text, entity_types, project_ids, limit
+        )
+        record = self._call_rpc(rpc, params)
         result = self._parse_records(record)[0]
         return result
 
@@ -3688,28 +3389,16 @@ class Shotgun(object):
         :returns: A complex activity stream data structure. See above for details.
         :rtype: dict
         """
-        if self.server_caps.version and self.server_caps.version < (6, 2, 0):
-            raise ShotgunError(
-                "activity_stream requires server version 6.2.0 or "
-                "higher, server is %s" % (self.server_caps.version,)
-            )
-
-        # set up parameters to send to server.
-        entity_fields = entity_fields or {}
-
-        if not isinstance(entity_fields, dict):
-            raise ValueError("entity_fields parameter must be a dictionary")
-
-        params = {
-            "type": entity_type,
-            "id": entity_id,
-            "max_id": max_id,
-            "min_id": min_id,
-            "limit": limit,
-            "entity_fields": entity_fields,
-        }
-
-        record = self._call_rpc("activity_stream", params)
+        rpc, params = self._with_caps(
+            self._prepare_activity_stream_read,
+            entity_type,
+            entity_id,
+            entity_fields,
+            min_id,
+            max_id,
+            limit,
+        )
+        record = self._call_rpc(rpc, params)
         result = self._parse_records(record)[0]
         return result
 
@@ -3724,14 +3413,10 @@ class Shotgun(object):
             arguments, and argument types may change at any point.
 
         """
-        return self._call_rpc(
-            "nav_expand",
-            {
-                "path": path,
-                "seed_entity_field": seed_entity_field,
-                "entity_fields": entity_fields,
-            },
+        rpc, params = self._with_caps(
+            self._prepare_nav_expand, path, seed_entity_field, entity_fields
         )
+        return self._call_rpc(rpc, params)
 
     def nav_search_string(
         self, root_path: str, search_string: str, seed_entity_field=None
@@ -3745,14 +3430,10 @@ class Shotgun(object):
             python-api. Usage of this method is discouraged. This method's name,
             arguments, and argument types may change at any point.
         """
-        return self._call_rpc(
-            "nav_search",
-            {
-                "root_path": root_path,
-                "seed_entity_field": seed_entity_field,
-                "search_criteria": {"search_string": search_string},
-            },
+        rpc, params = self._with_caps(
+            self._prepare_nav_search_string, root_path, search_string, seed_entity_field
         )
+        return self._call_rpc(rpc, params)
 
     def nav_search_entity(
         self,
@@ -3770,14 +3451,10 @@ class Shotgun(object):
             arguments, and argument types may change at any point.
 
         """
-        return self._call_rpc(
-            "nav_search",
-            {
-                "root_path": root_path,
-                "seed_entity_field": seed_entity_field,
-                "search_criteria": {"entity": entity},
-            },
+        rpc, params = self._with_caps(
+            self._prepare_nav_search_entity, root_path, entity, seed_entity_field
         )
+        return self._call_rpc(rpc, params)
 
     def get_session_token(self) -> str:
         """
@@ -3816,15 +3493,8 @@ class Shotgun(object):
         :returns: Dictionary of preferences and their values.
         :rtype: dict
         """
-        if self.server_caps.version and self.server_caps.version < (7, 10, 0):
-            raise ShotgunError(
-                "preferences_read requires server version 7.10.0 or "
-                "higher, server is %s" % (self.server_caps.version,)
-            )
-
-        prefs = prefs or []
-
-        return self._call_rpc("preferences_read", {"prefs": prefs})
+        rpc, params = self._with_caps(self._prepare_preferences_read, prefs)
+        return self._call_rpc(rpc, params)
 
     def user_subscriptions_read(self) -> List:
         """
@@ -3836,7 +3506,8 @@ class Shotgun(object):
         :rtype: list
         """
 
-        return self._call_rpc("user_subscriptions_read", None)
+        rpc, params = self._with_caps(self._prepare_user_subscriptions_read)
+        return self._call_rpc(rpc, params)
 
     def user_subscriptions_create(
         self, users: List[Dict[str, Union[str, List[str], None]]]
@@ -3856,10 +3527,7 @@ class Shotgun(object):
 
         response = self._call_rpc("user_subscriptions_create", {"users": users})
 
-        if not isinstance(response, dict):
-            return False
-
-        return response.get("status") == "success"
+        return self._user_subscriptions_created(response)
 
     def custom_entity_read(self, entity_type: str) -> Dict[str, Any]:
         """
@@ -3880,9 +3548,8 @@ class Shotgun(object):
         :rtype: dict
         :raises shotgun_api3.ShotgunError: if the entity type is invalid (fault code 104).
         """
-        self.server_caps.ensure_custom_entity_config_support()
-
-        return self._call_rpc("custom_entity_read", {"entity_type": entity_type})
+        rpc, params = self._with_caps(self._prepare_custom_entity_read, entity_type)
+        return self._call_rpc(rpc, params)
 
     def custom_entity_enable(self, entity_type: str) -> Dict[str, Any]:
         """
@@ -3915,9 +3582,8 @@ class Shotgun(object):
         :raises shotgun_api3.ShotgunError: if the entity type is invalid
             (fault code 104).
         """
-        self.server_caps.ensure_custom_entity_config_support()
-
-        return self._call_rpc("custom_entity_enable", {"entity_type": entity_type})
+        rpc, params = self._with_caps(self._prepare_custom_entity_enable, entity_type)
+        return self._call_rpc(rpc, params)
 
     def custom_entity_configure(
         self,
@@ -3956,15 +3622,13 @@ class Shotgun(object):
             ``entity_config`` is invalid, such as a blank display name or an
             unknown flag (fault code 103).
         """
-        self.server_caps.ensure_custom_entity_config_support()
-
-        params = {"entity_type": entity_type}
-        if display_name is not None:
-            params["display_name"] = display_name
-        if entity_config is not None:
-            params["entity_config"] = entity_config
-
-        return self._call_rpc("custom_entity_configure", params)
+        rpc, params = self._with_caps(
+            self._prepare_custom_entity_configure,
+            entity_type,
+            display_name,
+            entity_config,
+        )
+        return self._call_rpc(rpc, params)
 
     def custom_entity_disable(
         self, entity_type: str, force: bool = False
@@ -4001,13 +3665,10 @@ class Shotgun(object):
             (fault code 104), or if the entity has active records and ``force``
             was not set (fault code 104).
         """
-        self.server_caps.ensure_custom_entity_config_support()
-
-        params = {"entity_type": entity_type}
-        if force is True:
-            params["force"] = True
-
-        return self._call_rpc("custom_entity_disable", params)
+        rpc, params = self._with_caps(
+            self._prepare_custom_entity_disable, entity_type, force
+        )
+        return self._call_rpc(rpc, params)
 
     def _build_opener(self, handler) -> urllib.request.OpenerDirector:
         """
@@ -4029,66 +3690,6 @@ class Shotgun(object):
         if handler is not None:
             handlers.append(handler)
         return urllib.request.build_opener(*handlers)
-
-    @classmethod
-    def _get_certs_file(cls, ca_certs):
-        """
-        The following method tells the API where to look for
-        certificate authorities certificates (we will be referring to these
-        as CAC from now on). Here's how the Python API interacts with those.
-
-        Auth and CRUD operations
-        ========================
-        These operations are executed with httplib2. httplib2 ships with a
-        list of CACs instead of asking Python's ssl module for them.
-
-        Upload/Downloads
-        ================
-        These operations are executed using urllib2. urllib2 asks a Python
-        module called `ssl` for CACs. We have bundled certifi with the API
-        so that we can be sure the certs are correct at the time of the API
-        release. This does however mean when the certs change we must update
-        the API to contain the latest certifi.
-        This approach is preferable to not using certifi since, on Windows,
-        ssl searches for CACs in the Windows Certificate Store, on
-        Linux/macOS, it asks the OpenSSL library linked with Python for CACs.
-        Depending on how Python was compiled for a given DCC, Python may be
-        linked against the OpenSSL from the OS or a copy of OpenSSL distributed
-        with the DCC. This impacts which versions of the certificates are
-        available to Python, as an OS level OpenSSL will be aware of system
-        wide certificates that have been added, while an OpenSSL that comes
-        with a DCC is likely bundling a list of certificates that get update
-        with each release and may not contain system wide certificates.
-
-        Using custom CACs
-        =================
-        When a user requires a non-standard CAC, the SHOTGUN_API_CACERTS
-        environment variable allows to provide an alternate location for
-        the CACs.
-
-        :param ca_certs: A default cert can be provided
-        :return: The cert file path to use.
-        """
-        if ca_certs is not None:
-            # certs were provided up front so use these
-            return ca_certs
-        elif "SHOTGUN_API_CACERTS" in os.environ:
-            return os.environ.get("SHOTGUN_API_CACERTS")
-        else:
-            # No certs have been specifically provided fallback to using the
-            # certs shipped with this API.
-            # We bundle certifi with this API so that we have a higher chance
-            # of using an uptodate certificate, rather than relying
-            # on the certs that are bundled with Python or the OS in some cases.
-            # However we can't use certifi.where() since that searches for the
-            # cacert.pem file using the sys.path and this means that if another
-            # copy of certifi can be found first, then it won't use ours.
-            # So we manually generate the path to the cert, but still use certifi
-            # to make it easier for updating the bundled cert with the API.
-            cur_dir = os.path.dirname(os.path.abspath(__file__))
-            # Now add the rest of the path to the cert file.
-            cert_file = os.path.join(cur_dir, "lib", "certifi", "cacert.pem")
-            return cert_file
 
     # Deprecated methods from old wrapper
     def schema(self, entity_type):
@@ -4129,13 +3730,7 @@ class Shotgun(object):
         )
         encoded_payload = self._encode_payload(payload)
 
-        req_headers = {
-            "content-type": "application/json; charset=utf-8",
-            "connection": "keep-alive",
-        }
-
-        if self.config.localized is True:
-            req_headers["locale"] = "auto"
+        req_headers = self._rpc_request_headers()
 
         attempt = 1
         while attempt <= self.MAX_ATTEMPTS:
@@ -4151,131 +3746,57 @@ class Shotgun(object):
             try:
                 self._parse_http_status(http_status)
             except ProtocolError as e:
-                e.headers = resp_headers
+                self._annotate_protocol_error(e, resp_headers, body)
 
-                # We've seen some rare instances of PTR returning 502 for issues that
-                # appear to be caused by something internal to PTR. We're going to
-                # allow for limited retries for those specifically.
-                if attempt != self.MAX_ATTEMPTS and e.errcode in [502, 504]:
+                # Allow limited retries for gateway errors specifically.
+                delay = self._gateway_retry_delay(e, attempt)
+                if delay is not None:
                     LOG.debug("Got a 502 or 504 response. Waiting and retrying...")
-                    time.sleep(float(attempt) * self.BACKOFF)
+                    time.sleep(delay)
                     attempt += 1
                     continue
-                elif e.errcode == 403:
-                    # 403 is returned with custom error page when api access is blocked
-                    e.errmsg += ": %s" % body
                 raise
             else:
                 break
 
-        response = self._decode_response(resp_headers, body)
-        self._response_errors(response)
-        response = self._transform_inbound(response)
+        return self._finish_rpc(resp_headers, body, first)
 
-        if not isinstance(response, dict) or "results" not in response:
-            return response
-
-        results = response.get("results")
-        if first and isinstance(results, list):
-            return results[0]
-        return results
-
-    def _auth_params(self) -> Dict[str, Any]:
+    def _with_caps(self, fn, *args, **kwargs):
         """
-        Return a dictionary of the authentication parameters being used.
+        Call a core helper that takes ``caps``. It is called without them first and only
+        given the server capabilities (a blocking ``info()`` call, cached) if it asks.
         """
-        # Used to authenticate HumanUser credentials
-        if self.config.user_login and self.config.user_password:
-            auth_params = {
-                "user_login": str(self.config.user_login),
-                "user_password": str(self.config.user_password),
-            }
-            if self.config.auth_token:
-                auth_params["auth_token"] = str(self.config.auth_token)
+        try:
+            return fn(*args, **kwargs)
+        except _ServerCapsRequired:
+            return fn(*args, caps=self.server_caps, **kwargs)
 
-        # Use script name instead
-        elif self.config.script_name and self.config.api_key:
-            auth_params = {
-                "script_name": str(self.config.script_name),
-                "script_key": str(self.config.api_key),
-            }
-
-        # Authenticate using session_id
-        elif self.config.session_token:
-            if self.server_caps.version and self.server_caps.version < (5, 3, 0):
-                raise ShotgunError(
-                    "Session token based authentication requires server version "
-                    "5.3.0 or higher, server is %s" % (self.server_caps.version,)
-                )
-
-            auth_params = {"session_token": str(self.config.session_token)}
-
-            # Request server side to raise exception for expired sessions.
-            # This was added in as part of Shotgun 5.4.4
-            if self.server_caps.version and self.server_caps.version > (5, 4, 3):
-                auth_params["reject_if_expired"] = True
-
-        else:
-            raise ValueError("invalid auth params")
-
-        if self.config.session_uuid:
-            auth_params["session_uuid"] = self.config.session_uuid
-
-        # Make sure sudo_as_login is supported by server version
-        if self.config.sudo_as_login:
-            if self.server_caps.version and self.server_caps.version < (5, 3, 12):
-                raise ShotgunError(
-                    "Option 'sudo_as_login' requires server version 5.3.12 or "
-                    "higher, server is %s" % (self.server_caps.version,)
-                )
-            auth_params["sudo_as_login"] = self.config.sudo_as_login
-
-        if self.config.extra_auth_params:
-            auth_params.update(self.config.extra_auth_params)
-
-        return auth_params
-
-    def _sanitize_auth_params(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def _run_flow(self, flow):
         """
-        Given an authentication parameter dictionary, sanitize any sensitive
-        information and return the sanitized dict copy.
+        Drive a generator flow from the core (see ``_SGCore._find_flow``) with blocking calls.
         """
-        sanitized_params = copy.copy(params)
-        for k in ["user_password", "script_key", "session_token"]:
-            if k in sanitized_params:
-                sanitized_params[k] = "********"
-        return sanitized_params
+        reply = None
+        while True:
+            try:
+                step = flow.send(reply)
+            except StopIteration as stop:
+                return stop.value
+            reply = self.server_caps if step is NEED_CAPS else self._call_rpc(*step)
 
-    def _build_payload(
-        self, method: str, params, include_auth_params: bool = True
-    ) -> Dict[str, Any]:
+    def _parse_records(self, records: List, caps=None) -> List:
+        if caps is not None:
+            return super()._parse_records(records, caps)
+        return self._with_caps(super()._parse_records, records)
+
+    def _auth_params(self, caps=None) -> Dict[str, Any]:
         """
-        Build the payload to be send to the rpc endpoint.
+        Return the authentication parameters, fetching the server capabilities
+        (a blocking ``info()`` call, cached) only if a version-gated option needs them.
         """
-        if not method:
-            raise ValueError("method is empty")
-
-        call_params = []
-
-        if include_auth_params:
-            auth_params = self._auth_params()
-            call_params.append(auth_params)
-
-        if params:
-            call_params.append(params)
-
-        return {"method_name": method, "params": call_params}
-
-    def _encode_payload(self, payload) -> bytes:
-        """
-        Encode the payload to a string to be passed to the rpc endpoint.
-
-        The payload is json encoded as a unicode string if the content
-        requires it. The unicode string is then encoded as 'utf-8' as it must
-        be in a single byte encoding to go over the wire.
-        """
-
-        return json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        try:
+            return super()._auth_params(caps)
+        except _ServerCapsRequired:
+            return super()._auth_params(self.server_caps)
 
     def _make_call(
         self, verb: str, path: str, body, headers: Optional[Dict[str, Any]]
@@ -4287,12 +3808,7 @@ class Shotgun(object):
         """
 
         attempt = 0
-        req_headers = {}
-        req_headers["user-agent"] = "; ".join(self._user_agents)
-        if self.config.authorization:
-            req_headers["Authorization"] = self.config.authorization
-
-        req_headers.update(headers or {})
+        req_headers = self._call_headers(headers)
         body = body or None
 
         max_rpc_attempts = self.config.max_rpc_attempts
@@ -4302,26 +3818,21 @@ class Shotgun(object):
             attempt += 1
             try:
                 return self._http_request(verb, path, body, req_headers)
-            except ssl.SSLEOFError as e:
-                # SG-34910 - EOF occurred in violation of protocol (_ssl.c:2426)
-                # This issue seems to be related to proxy and keep alive.
-                # It looks like, sometimes, the proxy drops the connection on
-                # the TCP/TLS level despites the keep-alive. So we need to close
-                # the connection and make a new attempt.
-                LOG.debug("SSLEOFError: {}".format(e))
-                self._close_connection()
-                if attempt == max_rpc_attempts:
-                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
-                    raise
-            except (ssl.SSLError, ssl.CertificateError) as e:
-                self._close_connection()
-                if attempt == max_rpc_attempts:
-                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
-                    raise
             except Exception as e:
                 self._close_connection()
-                LOG.debug(f"Request failed.  Reason: {e}", exc_info=True)
-                raise
+                if not self._is_retryable_connection_error(e):
+                    LOG.debug(f"Request failed.  Reason: {e}", exc_info=True)
+                    raise
+                if isinstance(e, ssl.SSLEOFError):
+                    # SG-34910 - EOF occurred in violation of protocol (_ssl.c:2426)
+                    # This issue seems to be related to proxy and keep alive.
+                    # It looks like, sometimes, the proxy drops the connection on
+                    # the TCP/TLS level despites the keep-alive. So we need to close
+                    # the connection and make a new attempt.
+                    LOG.debug("SSLEOFError: {}".format(e))
+                if attempt == max_rpc_attempts:
+                    LOG.debug("Request failed.  Giving up after %d attempts." % attempt)
+                    raise
 
             LOG.debug(
                 "Request failed, attempt %d of %d.  Retrying in %.2f seconds..."
@@ -4374,193 +3885,6 @@ class Shotgun(object):
         except urllib.error.HTTPError:
             raise
         return result
-
-    def _parse_http_status(self, status: Tuple) -> None:
-        """
-        Parse the status returned from the http request.
-
-        :param tuple status: Tuple of (code, reason).
-        :raises: RuntimeError if the http status is non success.
-        """
-        error_code = status[0]
-        errmsg = status[1]
-
-        if status[0] >= 300:
-            headers = "HTTP error from server"
-            if status[0] == 503:
-                errmsg = "Flow Production Tracking is currently down for maintenance or too busy to reply. Please try again later."
-            raise ProtocolError(self.config.server, error_code, errmsg, headers)
-
-        return
-
-    def _decode_response(
-        self, headers: Dict[str, Any], body: str
-    ) -> Union[str, Dict[str, Any]]:
-        """
-        Decode the response from the server from the wire format to
-        a python data structure.
-
-        :param dict headers: Headers from the server.
-        :param str body: Raw response body from the server.
-        :returns: If the content-type starts with application/json or
-            text/javascript the body is json decoded. Otherwise the raw body is
-            returned.
-        :rtype: str
-        """
-        if not body:
-            return body
-
-        ct = (headers.get("content-type") or "application/json").lower()
-
-        if ct.startswith("application/json") or ct.startswith("text/javascript"):
-            return self._json_loads(body)
-        return body
-
-    def _json_loads(self, body: str) -> Any:
-        return json.loads(body)
-
-    def _response_errors(self, sg_response):
-        """
-        Raise any API errors specified in the response.
-
-        :raises ShotgunError: If the server response contains an exception.
-        """
-
-        # error code for authentication related problems
-        ERR_AUTH = 102
-        # error code when 2FA authentication is required but no 2FA token provided.
-        ERR_2FA = 106
-        # error code when SSO is activated on the site, preventing the use of username/password for authentication.
-        ERR_SSO = 108
-        # error code when Oxygen is activated on the site, preventing the use of username/password for authentication.
-        ERR_OXYG = 110
-
-        if isinstance(sg_response, dict) and sg_response.get("exception"):
-            if sg_response.get("error_code") == ERR_AUTH:
-                raise AuthenticationFault(
-                    sg_response.get("message", "Unknown Authentication Error")
-                )
-            elif sg_response.get("error_code") == ERR_2FA:
-                raise MissingTwoFactorAuthenticationFault(
-                    sg_response.get("message", "Unknown 2FA Authentication Error")
-                )
-            elif sg_response.get("error_code") == ERR_SSO:
-                raise UserCredentialsNotAllowedForSSOAuthenticationFault(
-                    sg_response.get(
-                        "message",
-                        "Authentication using username/password is not "
-                        "allowed for an SSO-enabled Flow Production Tracking site",
-                    )
-                )
-            elif sg_response.get("error_code") == ERR_OXYG:
-                raise UserCredentialsNotAllowedForOxygenAuthenticationFault(
-                    sg_response.get(
-                        "message",
-                        "Authentication using username/password is not "
-                        "allowed for an Autodesk Identity enabled Flow Production Tracking site",
-                    )
-                )
-            else:
-                # raise general Fault
-                raise Fault(sg_response.get("message", "Unknown Error"))
-        return
-
-    def _visit_data(self, data: T, visitor) -> T:
-        """
-        Walk the data (simple python types) and call the visitor.
-        """
-
-        if not data:
-            return data
-
-        recursive = self._visit_data
-        if isinstance(data, list):
-            return [recursive(i, visitor) for i in data]  # type: ignore[return-value]
-
-        if isinstance(data, tuple):
-            return tuple(recursive(i, visitor) for i in data)  # type: ignore[return-value]
-
-        if isinstance(data, dict):
-            return dict((k, recursive(v, visitor)) for k, v in data.items())  # type: ignore[return-value]
-
-        return visitor(data)
-
-    def _transform_outbound(self, data: T) -> T:
-        """
-        Transform data types or values before they are sent by the client.
-
-        - changes timezones
-        - converts dates and times to strings
-        """
-
-        if self.config.convert_datetimes_to_utc:
-
-            def _change_tz(value):
-                if value.tzinfo is None:
-                    value = value.replace(tzinfo=SG_TIMEZONE.local)
-                return value.astimezone(SG_TIMEZONE.utc)
-
-        else:
-            _change_tz = None
-
-        local_now = datetime.datetime.now()
-
-        def _outbound_visitor(value):
-
-            if isinstance(value, datetime.datetime):
-                if _change_tz:
-                    value = _change_tz(value)
-
-                return value.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-            if isinstance(value, datetime.date):
-                # existing code did not tz transform dates.
-                return value.strftime("%Y-%m-%d")
-
-            if isinstance(value, datetime.time):
-                value = local_now.replace(
-                    hour=value.hour,
-                    minute=value.minute,
-                    second=value.second,
-                    microsecond=value.microsecond,
-                )
-                if _change_tz:
-                    value = _change_tz(value)
-                return value.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-            return value
-
-        return self._visit_data(data, _outbound_visitor)
-
-    def _transform_inbound(self, data: T) -> T:
-        """
-        Transforms data types or values after they are received from the server.
-        """
-        # NOTE: The time zone is removed from the time after it is transformed
-        # to the local time, otherwise it will fail to compare to datetimes
-        # that do not have a time zone.
-        if self.config.convert_datetimes_to_utc:
-
-            def _change_tz(x):
-                return x.replace(tzinfo=SG_TIMEZONE.utc).astimezone(SG_TIMEZONE.local)
-
-        else:
-            _change_tz = None
-
-        def _inbound_visitor(value):
-            if isinstance(value, str):
-                if len(value) == 20 and self._DATE_TIME_PATTERN.match(value):
-                    try:
-                        value = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
-                    except ValueError:
-                        return value
-                    if _change_tz:
-                        return _change_tz(value)
-                    return value
-
-            return value
-
-        return self._visit_data(data, _inbound_visitor)
 
     # ========================================================================
     # Connection Functions
@@ -4646,62 +3970,6 @@ class Shotgun(object):
     # ========================================================================
     # Utility
 
-    def _parse_records(self, records: List) -> List:
-        """
-        Parse 'records' returned from the api to do local modifications:
-
-        - Insert thumbnail urls
-        - Insert local file paths.
-        - Revert &lt; html entities that may be the result of input sanitization
-          mechanisms back to a litteral < character.
-
-        :param records: List of records (dicts) to process or a single record.
-
-        :returns: A list of the records processed.
-        """
-
-        if not records:
-            return []
-
-        if not isinstance(records, (list, tuple)):
-            records = [
-                records,
-            ]
-
-        for rec in records:
-            # skip results that aren't entity dictionaries
-            if not isinstance(rec, dict):
-                continue
-
-            # iterate over each item and check each field for possible injection
-            for k, v in rec.items():
-                if not v:
-                    continue
-
-                # Check for html entities in strings
-                if isinstance(v, str):
-                    rec[k] = rec[k].replace("&lt;", "<")
-
-                # check for thumbnail for older version (<3.3.0) of shotgun
-                if (
-                    k == "image"
-                    and self.server_caps.version
-                    and self.server_caps.version < (3, 3, 0)
-                ):
-                    rec["image"] = self._build_thumb_url(rec["type"], rec["id"])
-                    continue
-
-                if (
-                    isinstance(v, dict)
-                    and v.get("link_type") == "local"
-                    and self.client_caps.local_path_field in v
-                ):
-                    local_path = v[self.client_caps.local_path_field]
-                    v["local_path"] = local_path
-                    v["url"] = "file://%s" % (local_path or "",)
-
-        return records
-
     def _build_thumb_url(self, entity_type: str, entity_id: int) -> str:
         """
         Return the URL for the thumbnail of an entity given the entity type and the entity id.
@@ -4748,40 +4016,6 @@ class Shotgun(object):
 
         # Comments in prev version said we can get this sometimes.
         raise RuntimeError("Unknown code %s %s" % (code, thumb_url))
-
-    def _dict_to_list(
-        self,
-        d: Optional[Dict[str, Any]],
-        key_name: str = "field_name",
-        value_name: str = "value",
-        extra_data=None,
-    ) -> List[Dict[str, Any]]:
-        """
-        Utility function to convert a dict into a list dicts using the key_name and value_name keys.
-
-        e.g. d {'foo' : 'bar'} changed to [{'field_name':'foo', 'value':'bar'}]
-
-        Any dictionary passed in via extra_data will be merged into the resulting dictionary.
-        e.g. d as above and extra_data of {'foo': {'thing1': 'value1'}} changes into
-        [{'field_name': 'foo', 'value': 'bar', 'thing1': 'value1'}]
-        """
-        ret = []
-        for k, v in (d or {}).items():
-            d = {key_name: k, value_name: v}
-            d.update((extra_data or {}).get(k, {}))
-            ret.append(d)
-        return ret
-
-    def _dict_to_extra_data(
-        self, d: Optional[Dict[str, Any]], key_name="value"
-    ) -> Dict[str, Any]:
-        """
-        Utility function to convert a dict into a dict compatible with the extra_data arg
-        of _dict_to_list.
-
-        e.g. d {'foo' : 'bar'} changed to {'foo': {"value": 'bar'}]
-        """
-        return dict([(k, {key_name: v}) for (k, v) in (d or {}).items()])
 
     def _upload_file_to_storage(self, path: str, storage_url: str) -> None:
         """
@@ -5173,106 +4407,8 @@ def _escape_multipart_name(name: str) -> str:
     return name.replace("\r", "%0D").replace("\n", "%0A").replace('"', "%22")
 
 
-def _translate_filters(filters: Union[List, Tuple], filter_operator) -> Dict[str, Any]:
-    """
-    Translate filters params into data structure expected by rpc call.
-    """
-    wrapped_filters = {"filter_operator": filter_operator or "all", "filters": filters}
-
-    return _translate_filters_dict(wrapped_filters)
-
-
-def _translate_filters_dict(sg_filter: Dict[str, Any]) -> Dict[str, Any]:
-    new_filters = {}
-    filter_operator = sg_filter.get("filter_operator")
-
-    if filter_operator == "all" or filter_operator == "and":
-        new_filters["logical_operator"] = "and"
-    elif filter_operator == "any" or filter_operator == "or":
-        new_filters["logical_operator"] = "or"
-    else:
-        raise ShotgunError("Invalid filter_operator %s" % filter_operator)
-
-    if not isinstance(sg_filter["filters"], (list, tuple)):
-        raise ShotgunError(
-            "Invalid filters, expected a list or a tuple, got %s" % sg_filter["filters"]
-        )
-
-    new_filters["conditions"] = _translate_filters_list(sg_filter["filters"])
-
-    return new_filters
-
-
-def _translate_filters_list(filters):
-    conditions = []
-
-    for sg_filter in filters:
-        if isinstance(sg_filter, (list, tuple)):
-            conditions.append(_translate_filters_simple(sg_filter))
-        elif isinstance(sg_filter, dict):
-            conditions.append(_translate_filters_dict(sg_filter))
-        else:
-            raise ShotgunError(
-                "Invalid filters, expected a list, tuple or dict, got %s" % sg_filter
-            )
-
-    return conditions
-
-
-def _translate_filters_simple(sg_filter):
-    condition = {"path": sg_filter[0], "relation": sg_filter[1]}
-
-    values = sg_filter[2:]
-    if len(values) == 1 and isinstance(values[0], (list, tuple)):
-        values = values[0]
-
-    # Payload optimization: Do not send a full object
-    # just send the `type` and `id` when combining related queries
-    global SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
-    if (
-        not SHOTGUN_API_DISABLE_ENTITY_OPTIMIZATION
-        and condition["path"] != "id"
-        and condition["relation"] in ["is", "is_not", "in", "not_in"]
-        and isinstance(values[0], dict)
-    ):
-        values = [_optimize_filter_field(v) for v in values]
-
-    condition["values"] = values
-
-    return condition
-
-
 def _version_str(version) -> str:
     """
     Convert a tuple of int's to a '.' separated str.
     """
     return ".".join(map(str, version))
-
-
-def _optimize_filter_field(
-    field_value: Union[Dict[str, Any], List], recursive: bool = True
-) -> Union[Dict, List]:
-    """
-    For an FPT entity, returns a new dictionary with only the type,
-    id, and other allowed keys.
-    If case of any processing error, the original dictionary is returned.
-
-    At least `type` and `id` keys are required to do the optimization
-    """
-    allowed_keys = {
-        "id",
-        "type",
-        "url",
-        "name",
-        "content_type",
-        "local_path",
-        "storage",
-        "relative_path",
-    }
-    if isinstance(field_value, dict) and "id" in field_value and "type" in field_value:
-        return {key: field_value[key] for key in allowed_keys if key in field_value}
-
-    elif recursive and isinstance(field_value, list):
-        return [_optimize_filter_field(fv, recursive=False) for fv in field_value]
-
-    return field_value

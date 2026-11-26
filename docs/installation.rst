@@ -24,6 +24,10 @@ We recommend using Python 3.13.
     Python versions older than 3.9 are no longer supported as of March 2025 and compatibility will be discontinued after
     March 2026.
 
+.. note::
+    The optional async client needs the ``httpx`` library. Install it with ``pip install shotgun_api3[async]``.
+    See :ref:`async_client`.
+
 
 ******************************
 Installing into ``PYTHONPATH``

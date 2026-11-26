@@ -33,6 +33,8 @@ setup(
     package_data={"": ["cacerts.txt", "cacert.pem", "py.typed"]},
     zip_safe=False,
     python_requires=">=3.9.0",
+    # The async client (shotgun_api3.aio) is optional: pip install shotgun_api3[async]
+    extras_require={"async": ["httpx>=0.26"]},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
