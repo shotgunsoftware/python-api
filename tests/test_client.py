@@ -715,6 +715,41 @@ class TestShotgunClient(base.MockTestBase):
         self._mock_http(resp, headers={"content-type": "text/plain"})
         self.assertRaises(RuntimeError, self.sg._build_thumb_url, "FakeAsset", 456)
 
+    def test_user_subscriptions_read_returns_subscriptions_keyed_by_user_id(self):
+        """user_subscriptions_read returns the server's subscriptions keyed by user id"""
+        subscriptions = {"1": "not_for_resale", "2": None}
+        self._mock_http({"results": subscriptions})
+
+        result = self.sg.user_subscriptions_read()
+
+        self._assert_http_method("user_subscriptions_read", None)
+        self.assertEqual(subscriptions, result, "subscriptions returned as sent")
+
+    def test_user_subscriptions_create_sends_subscriptions_keyed_by_user_id(self):
+        """user_subscriptions_create sends each subscription under its user id"""
+        self._mock_http({"results": {"1": None, "2": None}})
+
+        self.sg.user_subscriptions_create(
+            [
+                {"humanUserId": 1, "subscription": "not_for_resale"},
+                {"humanUserId": 2, "subscription": None},
+            ]
+        )
+
+        self._assert_http_method(
+            "user_subscriptions_create", {"1": "not_for_resale", "2": None}
+        )
+
+    def test_user_subscriptions_create_returns_true_when_accepted(self):
+        """user_subscriptions_create returns True when the server accepts the call"""
+        self._mock_http({"results": {"1": None}})
+
+        result = self.sg.user_subscriptions_create(
+            [{"humanUserId": 1, "subscription": "not_for_resale"}]
+        )
+
+        self.assertTrue(result, "an accepted call returns True")
+
 
 class TestShotgunClientInterface(base.MockTestBase):
     """Tests expected interface for shotgun module and client"""
