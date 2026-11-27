@@ -115,9 +115,14 @@ Below is a non-exhaustive list of things that we still need to implement:
 """
 
 import datetime
+import mimetypes
+import os
+import shutil
+import tempfile
+import weakref
 from typing import Any
 
-from ... import ShotgunError
+from ... import ShotgunError, ShotgunFileDownloadError
 from ...shotgun import _Config
 from .errors import MockgunError
 from .schema import SchemaFactory
@@ -206,6 +211,9 @@ class Shotgun(object):
 
         # initialize the "database"
         self._db = dict((entity, {}) for entity in self._schema)
+        # the copies of uploaded files, by Attachment id, in a folder made on the first upload
+        self._uploads = {}
+        self._upload_folder = None
 
         # set some basic public members that exist in the Shotgun API
         self.base_url = base_url
@@ -446,8 +454,106 @@ class Shotgun(object):
         else:
             return False
 
-    def upload(self, entity_type, entity_id, path, field_name=None, display_name=None, tag_list=None):
-        raise NotImplementedError
+    def upload(self, entity_type, entity_id, path, field_name=None, display_name=None, tag_list=None,
+               created_at=None):
+        """
+        Leaves the records an upload leaves on the server: an Attachment linked to the entity, and
+        the entity's field pointing at it, with the tags of tag_list. A copy of the file is kept in a
+        temporary folder, which download_attachment returns and which is removed with this instance.
+
+        :returns: Id of the Attachment entity, as the server returns.
+        """
+        self._validate_entity_type(entity_type)
+        self._validate_entity_exists(entity_type, entity_id)
+        path = os.path.abspath(os.path.expanduser(path or ""))
+        if not os.path.isfile(path):
+            raise ShotgunError("Path must be a valid file, got '%s'" % path)
+        if os.path.getsize(path) == 0:
+            raise ShotgunError("Path cannot be an empty file: '%s'" % path)
+        is_thumbnail = field_name in ("thumb_image", "filmstrip_thumb_image", "image", "filmstrip_image")
+        if field_name and not is_thumbnail:
+            self._validate_entity_fields(entity_type, [field_name])
+            if self._get_field_type(entity_type, field_name) != "url":
+                raise ShotgunError("%s.%s is not a File/Link field" % (entity_type, field_name))
+
+        filename = os.path.basename(path)
+        entity = {"type": entity_type, "id": entity_id}
+        data = {
+            "filename": filename,
+            "display_name": display_name or filename,
+            "file_size": os.path.getsize(path),
+            "file_extension": os.path.splitext(filename)[1].lstrip(".") or None,
+            "attachment_links": [entity],
+            "project": self._db[entity_type][entity_id].get("project"),
+            "created_at": created_at,
+        }
+        # Schemas differ between sites: only set the fields this one has.
+        data = dict((k, v) for k, v in data.items() if v is not None and k in self._schema["Attachment"])
+        attachment_id = self.create("Attachment", data)["id"]
+        if self._upload_folder is None:
+            self._upload_folder = tempfile.mkdtemp(prefix="mockgun_uploads_")
+            weakref.finalize(self, shutil.rmtree, self._upload_folder, True)
+        copy = os.path.join(self._upload_folder, str(attachment_id), filename)
+        os.makedirs(os.path.dirname(copy))
+        shutil.copyfile(path, copy)
+        self._uploads[attachment_id] = copy
+
+        url = "%s://%s/file_serve/attachment/%d" % (self.config.scheme, self.config.server, attachment_id)
+        this_file = {
+            "type": "Attachment",
+            "id": attachment_id,
+            "name": display_name or filename,
+            "url": url,
+            "link_type": "upload",
+            "content_type": mimetypes.guess_type(filename)[0],
+        }
+        self.update("Attachment", attachment_id, {"this_file": this_file})
+        if tag_list and "tag_list" in self._schema["Attachment"]:
+            # A tag field holds the tag names. Written to the row directly, as Mockgun does not
+            # take writes to tag fields.
+            tags = [tag.strip() for tag in tag_list.split(",") if tag.strip()]
+            self._db["Attachment"][attachment_id]["tag_list"] = tags
+        if is_thumbnail:
+            # An image field holds the thumbnail's URL. Written to the row directly, as Mockgun
+            # does not take writes to image fields.
+            image_field = "filmstrip_image" if "filmstrip" in field_name else "image"
+            if image_field in self._schema[entity_type]:
+                self._db[entity_type][entity_id][image_field] = url
+        elif field_name:
+            self.update(entity_type, entity_id, {field_name: this_file})
+        return attachment_id
+
+    def download_attachment(self, attachment=False, file_path=None, attachment_id=None):
+        """
+        Returns a file this instance uploaded, or the file a local file link points at.
+
+        :param attachment: An Attachment entity, the value of a File/Link field, or an Attachment id.
+        :param str file_path: Optional path to write the file to.
+        :returns: file_path if given, the file's content as bytes otherwise, None for an attachment of None.
+        """
+        if attachment is False:
+            if isinstance(attachment_id, int):
+                attachment = attachment_id
+            else:
+                raise TypeError(
+                    "Missing parameter 'attachment'. Expected a dict, int, NoneType value or "
+                    "an int for parameter attachment_id"
+                )
+        if attachment is None:
+            return None
+        if isinstance(attachment, dict) and attachment.get("link_type") == "local":
+            source = attachment.get("local_path")
+        else:
+            source = self._uploads.get(attachment.get("id") if isinstance(attachment, dict) else attachment)
+        if not source or not os.path.isfile(source):
+            raise ShotgunFileDownloadError(
+                "Failed to open %s\nAttachment may not exist or is a local file?" % (attachment,)
+            )
+        if file_path:
+            shutil.copyfile(source, file_path)
+            return file_path
+        with open(source, "rb") as f:
+            return f.read()
 
     def upload_thumbnail(self, entity_type, entity_id, path, **kwargs):
         pass
