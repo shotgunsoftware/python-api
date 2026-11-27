@@ -236,26 +236,38 @@ automatically set whenever an entity is created or updated.
 Logging Messages from the API
 *****************************
 
-The API uses standard python logging but does not define a handler.
+The library uses the standard Python logging module under the logger name
+``shotgun_api3``. Developers are free to configure logging handlers as they see
+fit in their applications.
 
 To see the logging output in stdout, define a streamhandler in your script::
 
     import logging
-    import shotgun_api3 as shotgun
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig()
+
+    import shotgun_api3
+
+    sg_log = logging.getLogger("shotgun_api3")
+    sg_log.setLevel(logging.DEBUG)
+
 
 To write logging output from the Flow Production Tracking API to a file, define a file handler in your script::
 
     import logging
-    import shotgun_api3 as shotgun
-    logging.basicConfig(level=logging.DEBUG, filename='/path/to/your/log')
+    logging.basicConfig(filename="/path/to/your/log")
+
+    import shotgun_api3
+
+    sg_log = logging.getLogger("shotgun_api3")
+    sg_log.setLevel(logging.DEBUG)
+
 
 To suppress the logging output from the API in a script which uses logging, set the level of the
 Flow Production Tracking logger to a higher level::
 
     import logging
     import shotgun_api3 as shotgun
-    sg_log = logging.getLogger('shotgun_api3')
+    sg_log = logging.getLogger("shotgun_api3")
     sg_log.setLevel(logging.ERROR)
 
 *************
